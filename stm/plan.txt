@@ -1,0 +1,53 @@
+High priority:
+1. Move diffusion over to an interface similar to advect(). Should update a time step. Everything else goes into a driver.
+2. Handle multiple constituents. Definitions should be same as advect(). Use what you need.
+3. Multiple constituents should use a loop ivar for outer loop, F90 array ops for derivatives
+4. Do diffusion on the whole conc() array then create a routine replace_diffusive_flux() for boundaries (later special cases like network and hydraulic devices)
+5. Move the diffusion operator to a separate routine. You will use  this for advection predictor step later.
+6. Use the explicit diffusion operator for the RHS of your implicit operator.
+7. Note that the matrix can be re-used once constructed.
+8. Syntax: move the stuff at top of file either to doxygen or remove it and let SVN handle it.
+
+
+
+TODO (before we move on to network calculations):
+1. test_uniform_flow_source.f90:  Test source integration assuming an abstract linear source term
+2. test_tidal_flow_advection.f90: Flow from an analytical wave solution.
+3. Driver with file I/O. This is a "full app" everyone seems to really want for example problems.
+4. Move the diffusion to framework. Supply the diffusion elements we need for the predictor step of advection. We need to talk to Kaveh about this
+5. test_diffusion.f90:       Unit test of diffusion
+6. test_advect_diffuse.f90   System test of advection and diffusion together
+7. test_advect_diffuse_source.f90   At least a convergence test, maybe analytical
+
+
+
+Modules
+simulation_data
+contains, dx, dt
+
+
+Use test_uniform_flow as a starting point. Need to add:
+
+initialize()                reads in parameters from a file, initializes values, initializes time series reader, allocates state 
+cfl_restriction(flow,area)  computes the cfl restriction step by step. We will want a parameter called max_cfl
+hydro_data_impl             interface for reading (and possibly interpolating source
+source
+replace_boundary_flux       reads and implements boundary conditions
+adjust_differences          think the default will work
+output_state                think about this
+finalize                    deallocate state, close readers and files
+
+Steps:
+initialize()
+dt = dt_initial
+if (adaptive_time) adjust dt
+do while time <= max time
+  pre_step(time)            ! if needed .... do reading or whatever... don't use this unless motivated
+  hydro_data(time,flow,...) ! sets hydrodynamics 
+  advect                    ! uses replace_boundary_flux
+  output_state
+end do
+finalize()
+
+
+
