@@ -1,3 +1,5 @@
+This file contains notes from Eli and Kevin on possible next steps in the STM development
+
 High priority:
 1. Move diffusion over to an interface similar to advect(). Should update a time step. Everything else goes into a driver.
 2. Handle multiple constituents. Definitions should be same as advect(). Use what you need.
