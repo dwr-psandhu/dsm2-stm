@@ -1,0 +1,9 @@
+================================
+256.0d-3	 d50
+128.0d-3	 diameter
+2650.0d0    rho_s
+20.0d0   temp    
+0.0d0   salinity
+1.65    specific gravity
+ "grc_prkr"    Entrainment formula !"grc_prkr"  "van_rijn"  "smt_mcln"  "zsr_frds"
+================================
