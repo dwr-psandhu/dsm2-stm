@@ -387,7 +387,7 @@ source = zero
 ! now recalculate the update using a source half from the old state and half from the new state guess 
 mass =   mass_prev &
        - dtbydx*div_flux &
-       + dtbydx*half*source_prev &
+       + dt*half*source_prev &
        + dt*half*source
 
 return
