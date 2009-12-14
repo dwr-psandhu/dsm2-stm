@@ -18,49 +18,54 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Explicit and implicit diffusion operators go here
+!> Module orchestrating the diffusion scheme. The main
+!> routine in the module is diffuse().
+!> Explicit and implicit diffusion operators are included here.
 !>@ingroup transport
 module diffusion
+use stm_precision
 
-! We need a single step routine with inputs and outputs that
-! do not involve computation detail (like matrices)
-! This is just stolen from the interface for advection, 
-! but the real diffusion API will look similar
-!subroutine diffuse(mass,     &
-!                  mass_prev,&
-!                  flow,     &                  
-!                  flow_lo,  &
-!                  flow_hi,  &
-!                  area,     &
-!                  area_prev,&
-!                  area_lo,  &
-!                  area_hi,  &
-!                  ncell,    &
-!                  nvar,     &
-!                  time,     &
-!                  dt,       &
-!                  dx)
+contains
 
-! This routine should give the effects of diffusion fluxes on each cell
+! This subroutine calculates the diffusive portion of the constituent transport.
+! It contains an explicit version of the diffusion operator and a general (involving all
+! potential cases) diffusion operator as well, with a coefficient theta_stm for 
+! selecting the level of implicitness. (theta_stm=0.5 is Crank Nicolson.).
+! The matrix is solved via a tri-diagonal solver.  
+subroutine diffuse(conc,     &
+                  conc_prev,&
+                  area,     &
+                  area_prev,&
+                  area_lo,  &
+                  area_hi,  &
+                  ks_lo,    &
+                  ks_hi,    &
+                  ncell,    &
+                  nvar,     &
+                  time,     &
+                  theta_stm,&
+                  dt,       &
+                  dx)
+
+use primitive_variable_conversion
+implicit none
+
+! This routine gives the effects of diffusion fluxes on each cell
 ! for a single time step (ie, explicit). This is needed for the advection step.
 ! It is also probably part of the right hand side of the implicit diffusion solver 
 ! matrix calculation. 
-!subroutine diffusion_operator(mass,     &
-!                  mass_prev,&
-!                  flow,     &                  
-!                  flow_lo,  &
-!                  flow_hi,  &
-!                  area,     &
-!                  area_prev,&
-!                  area_lo,  &
-!                  area_hi,  &
-!                  ncell,    &
-!                  nvar,     &
-!                  time,     &
-!                  dt,       &
-!                  dx)
+call explicit_diffusion_operator(mass,     &
+                  dx)
 
-! The rest of this should be neat, but is not important to the public use of the library
+! 
+call construct_diffusion_matrix()
 
+call construct_right_hand_side()
 
-end module
+call apply_diffusion_boundary()
+
+call solve
+
+end subroutine
+
+end module diffusion
