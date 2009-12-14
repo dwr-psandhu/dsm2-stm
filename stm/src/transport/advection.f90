@@ -66,8 +66,8 @@ implicit none
 integer,intent(in)  :: ncell  !< Number of cells
 integer,intent(in)  :: nvar   !< Number of variables
 
-real(STM_REAL),intent(out) :: mass(ncell,nvar)     !< mass concentration at new time
-real(STM_REAL),intent(in) :: mass_prev(ncell,nvar) !< mass concentration at new time
+real(STM_REAL),intent(out) :: mass(ncell,nvar)     !< mass at new time
+real(STM_REAL),intent(in) :: mass_prev(ncell,nvar) !< mass at old time
 real(STM_REAL),intent(in) :: flow   (ncell,nvar)   !< cell-centered flow, old time
 real(STM_REAL),intent(in) :: flow_lo(ncell,nvar)   !< flow on lo side of cells centered in time
 real(STM_REAL),intent(in) :: flow_hi(ncell,nvar)   !< flow on hi side of cells centered in time
