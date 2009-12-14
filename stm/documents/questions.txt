@@ -1,0 +1,26 @@
+Questions for the DWR from meeting on 12-14-09:
+
+1) Regarding our question 6 from our e-mail to Eli on Friday, how should we proceed 
+with the addition of the area? Could you please check that this is indeed a discrepancy and not our
+misinterpretation? In the case it is a bug, should we include it in the source subroutine or make the
+change in "extrapolate"? We would prefer to do it here, because it is ore clear to identify.
+
+2) What are we going to do first, advection or diffusion in the splitting? The reason for doing diffusion
+first is to smooth out potential problems with the solution in the previous time step, and the reason
+for doing advection first is that it is the main transport mechanism.
+
+3) What does the symbols "" mean in Doxygen?
+
+4) Does test_gradient test the "difference" subroutine as well? Or another separate test code is needed? Our
+understanding is that the subroutine is called in most tests to test other subrotines, so we are
+wondering if there is an actual test for "differences".
+
+5) Could you please give us a hint on what allocate_state(nx,nconst) means, or where to look for
+information?
+
+6) "flow" is a variable used in advect() to denote the volume flow rate or the discharge. When I saw it I felt
+that this may be confusing to some people, because people talk about flow velocity, flow depth, etc. Should
+we use a longer name, such as volume_flow_rate?
+
+7) Eli, we have not been able to find a test of the boundary conditions for the advection part. Do you think 
+we should include a test for the boundary conditions of the diffusion part?
