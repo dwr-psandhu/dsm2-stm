@@ -91,7 +91,7 @@ real(STM_REAL) :: grad_lo(ncell,nvar) !< gradient based on lo side difference
 real(STM_REAL) :: grad_hi(ncell,nvar) !< gradient based on hi side difference
 real(STM_REAL) :: grad_center(ncell,nvar) !< cell centered difference
 real(STM_REAL) :: grad_lim(ncell,nvar) !< limited cell centered difference
-real(STM_REAL) :: grad(ncell,nvar)     !< cell centered difference adusted for boundaries and hydraulic devices
+real(STM_REAL) :: grad(ncell,nvar)     !< cell centered difference adujsted for boundaries and hydraulic devices
 
 real(STM_REAL) :: flux_lo(ncell,nvar) !< flux on lo side of cell, time centered
 real(STM_REAL) :: flux_hi(ncell,nvar) !< flux on hi side of cell, time centered
