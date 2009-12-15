@@ -132,14 +132,14 @@ call extrapolate(conc_lo,  &
 ! Compute upwind value of fluxes. This is a naive guess based on the extrapolated states
 ! It doesn't include any node-based sources or reservoirs or the like.
 call compute_flux(flux_lo,           &
-             flux_hi,  &
-             conc_lo,  &
-             conc_hi,  &                       
-             flow_lo,  &
-             flow_hi,  &
-             ncell,    &
-             nvar      &
-             )
+                  flux_hi,  &
+                  conc_lo,  &
+                  conc_hi,  &                       
+                  flow_lo,  &
+                  flow_hi,  &
+                  ncell,    &
+                  nvar      &
+                  )
 
 ! Replace fluxes for special cases having to do with boundaries, network and structures
 ! Keeps the dirty stuff in one place. For now this is an empty call
@@ -166,17 +166,17 @@ end subroutine
 !> a Taylor series in time and space in which an explicit discretization
 !> of the PDE is used to represent the time part.
 pure subroutine extrapolate(conc_lo,  &
-                       conc_hi,  &
-                       conc,     &
-                       grad,     &
-                       source,     &                       
-                       flow,     &  
-                       area,     &
-                       ncell,&
-                       nvar, &
-                       time, &
-                       dt,   &
-                       dx)
+                            conc_hi,  &
+                            conc,     &
+                            grad,     &
+                            source,   &                       
+                            flow,     &  
+                            area,     &
+                            ncell,    &
+                            nvar,     &
+                            time,     &
+                            dt,       &
+                            dx)
 
 use stm_precision
 implicit none
@@ -221,14 +221,14 @@ end subroutine
 !> Compute the upwinded fluxes 
 !> The calculation here does not include tributaries, boundaries or special objects
 pure subroutine compute_flux(flux_lo,  &
-                        flux_hi,  &
-                        conc_lo,  &
-                        conc_hi,  &                       
-                        flow_lo,  &
-                        flow_hi,  &
-                        ncell,    &
-                        nvar      &
-                        )
+                             flux_hi,  &
+                             conc_lo,  &
+                             conc_hi,  &                       
+                             flow_lo,  &
+                             flow_hi,  &
+                             ncell,    &
+                             nvar      &
+                             )
 use stm_precision
 implicit none
 !--- args
@@ -345,9 +345,9 @@ subroutine update_conservative(mass,       &
                                source_prev,&
                                area,       &
                                ncell,      &
-                               nvar,   &
-                               dt,     &
-                               dx      &                   
+                               nvar,       &
+                               dt,         &
+                               dx          &                   
                                )
 use stm_precision
 use primitive_variable_conversion
@@ -408,7 +408,7 @@ integer,intent(in)  :: nvar   !< Number of variables
 real(STM_REAL) :: grad_lo(ncell,nvar) !< gradient based on lo side difference
 real(STM_REAL) :: grad_hi(ncell,nvar) !< gradient based on hi side difference
 real(STM_REAL) :: grad_lim(ncell,nvar) !< limited cell centered difference
-real(STM_REAL) :: grad(ncell,nvar)     !< cell centered difference adusted for boundaries and hydraulic devices
+real(STM_REAL) :: grad(ncell,nvar)     !< cell centered difference adjusted for boundaries and hydraulic devices
 !---------
 grad          = grad_lim
 grad(1,:)     = grad_hi(1,:)
