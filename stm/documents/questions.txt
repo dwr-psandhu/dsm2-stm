@@ -1,3 +1,33 @@
+Questions and Answers 12-15-2009 :
+    Hi Eli,
+    Kevin and I could not figure out these things, would you please help us?
+
+    1- In diffusion  should  I work with mass( A*C) or C or both?
+
+I was thinking A*C, but maybe I am not thinking of something. Is there a place where the formula suggests just C?
+
+    2- Should we use Area_lo and Area_hi (in advection these are centered in time)or  at previous  time? (e.g. area_hi_prev)?
+
+Hmm. Here are some thoughts:
+1. The proper centering is the old time step.
+2. I believe that it is reasonable to use the centered time estimate for a reason that is a little bit subtle:
+   a. A second order accurate estimate of area at time t+1/2 is a first order accurate estimate of area at time t.
+   b. This may be good enough for second order overall. Diffusion plays a role in the predictor step that is sort of like a source term. Because sources are multiplied by an extra "delta" they can be one order lower than a flux term without affecting the order of the algorithm as a whole. I'll double check this.
+3. This should only be a documentation issue for the computational routine, right? The driver and test routine will know what they pass in, but not the computational routine.
+
+    3- In diffusion regardless of your advection code,  should we use matrix solver even-if theta = 0?
+
+I assume you are now out of the explicit operator and talking about the diffusion solver itself, right?
+
+Let's not bother. My guess is we will never run any code with theta=0. An implicit solve is more stable and accurate (for diffusion, not advection) and in 1D is probably not too costly. Was there a case you envisioned where theta = 0 might be important?
+
+
+    4- In diffusion_explicit operator what should we do with Boundary Condition?
+
+You want boundary fluxes according to your design document. Try to do the same thing in the explicit boundary conditions as you do for the known part of the implicit.
+
+The only most reasonable simple (non-network aware) boundary condition is a flux=0. You may, if it interests you, want to implement Dirichlet but in the split algorithm these will be hard to reconcile with the advection boundary conditions. The split problem becomes overdetermined/inconsistent -- we can talk about that sometime if you would like, and Kevin may have read about it in the Google document I gave him 1-2 months ago.
+
 Questions for the DWR from meeting on 12-14-09:
 
 1) Regarding our question 6 from our e-mail to Eli on Friday, how should we proceed 
