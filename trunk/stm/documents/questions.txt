@@ -24,3 +24,140 @@ we use a longer name, such as volume_flow_rate?
 
 7) Eli, we have not been able to find a test of the boundary conditions for the advection part. Do you think 
 we should include a test for the boundary conditions of the diffusion part?
+
+
+-------------------------------------------------------------------------------------------
+E-mail exchange on 12-10-09 with Eli regarding Advection code
+ 1)      Is the advective code able to compile? We have not being able to 
+compile the code so far in our computer. 
+Yes. The code compiled for me and the test suite passed every test except a couple I left unfixed in order to demonstrate the testing framework or quirks of the code. 
+ 
+What is the compiler message? We have moved around a lot of stuff and we might have left out a chunk. I think Kevin was compiling and running no problem, but I'll let him comment.
+ 
+2)      Why do we need the variable “mass” which is the mass per unit 
+length? Is it something especially interesting for any given 
+constituent? 
+Mass is the conserved quantity and is the conservative variable (CA) that you wrote in your formulation that gets updated. I think that would be very hard to reconcile anything else with more complicated boundary conditions that involve fluxes (Q and C) or with complex junctions.
+ 
+Is your point that you prefer to pass cell centered C and A into the function? If so, this seems quite reasonable to me and I take your point.
+
+3)      Checking the van Leer limiter, we were not able to find the “1/2” 
+in the computation of grad_lim (line 94 in gradient.f90). Please see 
+our report from Dec. 1, 2009 on that.
+Can you send me your report? I don't seem to have it. I'll double check if you'd like.
+ 
+4)      Are you considering implementing the fourth-order van Leer limiter? 
+Perhaps it is not necessary. 
+There is no reason I can think why we would ever need fourth order limiters. We need the existing limiter to be right, but let's not get distracted by limiters... van Leer is fine.
+
+5)      What is the objective of the definition of variables of the 
+subroutine “adjust_differences”? We understand the purpose but the 
+question is can we do this in the “limiter” subroutine?  
+To me, these jobs are orthogonal concepts and should be kept separate. The adjust_differences function is for application-specific adjustments on the differences. For instance dsm2 will have a very specific implementation based on reservoirs, gates, boundaries, junctions. This adjustment may decide not to use the limiter for particular cells, but it should not redefine what the basic limiter is. 
+ 
+Plus the obvious...routines should do what their name says they do and this should be concise and self-documenting. The limiter routine should apply a limiter, not mix in anything else. If we decide to make the limiter swappable that is even more reason to totally isolate it.
+
+6)      We have a discrepancy in the subroutine “extrapolate”. If you read 
+our last report sent on Dec. 1, 2009, page 6, there is an “A” (area) 
+dividing the source term, which does not appear in the code. We hope 
+not to be mistaken on this. 
+I'll check it out, but your comment sounds correct to me. I'd say put it in...it won't harm the advection. All sources are zero in the code and sources are not designed, implemented or tested. For this reason I also did not document the source routine very carefully either (whether it takes conservative or primitive variables as the argument). I expect it to change a lot.
+ 
+One of the items on the "todo" list is to write tests for flow with a linear source term. We will want to do this both for a bathtub (no flow), for advection-diffusion problem of a gaussian function and for a problem that includes boundaries (which can be a sticky issue in split schemes). The source term should be designed in a way that can be easily swapped. 
+ 
+The source interface is a significant design topic (possibly involving callbacks) that merits a meeting. Please don't do anything on this... significant work on sources should be deferred until after diffusion is done, though of course I would appreciate if you would correct the mistakes you identified.
+
+7)      Why you set ivar=2 at the end of “extrapolate”. 
+I think that line is detritus from a print statement that never got completely erased. Go ahead and zap it. 
+
+8)      We have found an error in line 390 of “advection.f90” in the final 
+step of the computation of the mass: the “dtbydx” should be replaced 
+by “dt”. We hope not to be mistaken on this. 
+ 
+Agreed. I assume you mean the source term. As with 6, go ahead and change it. 
+
+9)      I still do not get why we need to solve for diffusion in the 
+advective portion of the solution (sorry for repeating this question; 
+we want to be sure). 
+The idea is to estimate the diffusion operator in order to improve second order estimate of the primitive variables at the cell faces. This is purely part of the predictor step that is pretty distinct from the actual conservative update. Once we get the estimates we calculate QC (the purely advective flux) and this is the only thing we use for advection ... we estimate the state based on the diffusive operator but we don't use the diffusive flux. This is a critical point and we want a explicit diffusion operator, NOT an update routine that applies the explicit operator.
+ 
+It is legitimate to ignore this quantity in the predictor step, but well known to reduce the effective order of the split scheme. If you'd like, we can do a little experiment later to check/quantify this point.
+ 
+10)     I have checked the file “performance_example_1.f90” and I am not 
+able to understand it. 
+The things in the sandbox are just for experiments. This experiment illustrates some things about auto-parallelization in case you ever asked about it. 
+
+11)     Same with other “performance_example..” files and “testbed.f90”. 
+Sandbox.
+
+12)     We do not get the file “callback.f90”. It seems important based on 
+your statement in “advection.f90”. 
+Sandbox. This was a small example Kevin and I were going over that describes callbacks and function pointers. Later we may use callbacks to implement sources and or replace_boundary_flux. Neither of these is in its permanent state.
+ 
+
+13)     I will be extremely pleased (really pleased) if you could give us 
+some feedback on the lines of our codes regarding the quality and 
+efficiency of our programming. Since we are moving to a more modular 
+version, we would like to please have some comments on that as well.
+ 
+I'd be happy to do that sometime. I thought the way you decomposed the computation was very methodical.  The pieces were the right size, and I think they will get better as everyone gets used to a) testing b) using interfaces to make the code self-documenting and c) communicating bits that are needed for reuse...this latter process would probably have avoided the explicit diffusion fiasco. 
+ 
+The only design critique I specifically noticed was mixture of driver code with computation and mixture of matrix setup with rhs setup. Consider using the new "pure" specification for all the computational routines. This will help insure their independence and reusability. It is an F2003 item, but is widely implemented in F95 compilers and is a great addition to the standard.
+ 
+On computation, I haven't seen the very latest diffusion code but these hints applied before:
+1. Don't worry too much about performance. "No premature optimization" is an absolute mantra of the computing world. The real issue is getting the interfaces to the routines 90% right and at least a little bit friendly to performance. Then we can always go back and hone specific jobs that we prove (using a profiler) are taking time. 
+2. Use f90 vector-based ops to loops. Kevin can show you what this means using the explicit part of the diffusion operator as an example. Modern compilers parallelize this better, and it is an easy win. It is important to have the (i,j) indexes in column-major order.
+3. Avoid per-cell routines inside loops. These never get auto-parallelized. There were some before but I think you got rid of them. 
+4. Use BLAS libraries. Consider dropping your tridiagonal solver optional or making it optional with compiler pragmas. It is usually not good to write linear algebra in the (usual) case where a BLAS, Lapack, Intel or other high performance library is available. Advantages of not rolling your own:
+   a. a good library will do the computation very well, often in ways that involves unrolling loops and/or taking advantage of how information is stored on the chip.
+   b. you don't have to test something that is in a high-profile library. That is their problem.
+   c. if we go to a sparse solver when network flow comes we concentrate on matrix setup, not writing solvers (writing a good sparse solver is very advanced).
+   d. the interface to the standard tridiagonal solvers are quite standard...if you write for Intel you will be able to substitute Harwell. 
+
+14)     What verification of the advective part have you already 
+developed, Eli? Kaveh had started to route some fronts with the Matlab 
+code and we can do it in Fortran as well. 
+I have second order convergence tests of pure advection (no source term) implemented as a unit test. I transport a steep gaussian plume right and left again. I verified the convergence rate in L-1 and L-2 norms. I also illustrate the L-inf norm fails when the limiter is on (unless I got the limiter wrong like you mentioned above may have happened). Secretly I looked at it visually and it looked good too...but of course this is unit testing and I removed the printing.
+ 
+More tests with other fronts are welcome if you want to write them. 
+ 
+I would like to differentiate between tests and examples that require human intervention. If you guys want to do an example driver to play with inputs we can talk about that very soon. It is also on the "todo" list I included with the code. The latter will go in the /examples directory. However to me this is second priority to unit/regression tests and involves a decision on I/O.  I would appreciate if you would hold off on that for the moment...diffusion beckons, then sources, and we need to stay focused on one job at a time. 
+
+15)     Did you attempt to work with Doxygen on the advective part already? 
+Yes, every routine and every argument to every computational routine is completely documented using doxygen markup, sandbox not included. At least I think the coverage is 100%...certainly that is true for the computational routines and I put in section markers as well. To generate the documentation, run document.bat (you might have to change some path names inside the batch file).
+ 
+ 
+Let’s meet on Monday, as planned, to go over this and other issues, 
+and to move diffusion to a more modular version.  Thanks in advance. 
+Thank you Jamie for your e-mails and phone call. 
+Sincerely yours, 
+
+Fabian 
+
+Hi Eli,
+I am now at home but about case 1,
+advective code compiled on my computer and it yeild 98.06 % pass in test 
+ but with some error in compile.. 
+
+about case limiter please take a look at attached word document
+line 
+delta = min (2delta right,2delta left, delta_center /2)
+you missed the 1/2 for delta_center 
+(Actually it seamed weird for me at the first, but you may find it in the attached paper by saltzman page 156 on the right column I prepared the document base on this paper) 
+
+Good Night,
+:)
+Kaveh
+
+Hi Kaveh,
+This is not a coding issue or difference mathematically between my approach and Jeff Salzman’s…more of a documentation nuance.
+
+Jeff starts with “delta” 
+u(i+1) – u(i-1)
+and I start with a central difference that I calculate in gradent.f90
+ (u(i+1 – u(i-1))*half
+
+Then later in the limiter routine Jeff includes the half and I don’t. I mildly prefer having the half be in the gradient because it makes the hi-side lo-side and central differences directly comparable…but if the choices were reversed I’m sure I would make up some reason why I liked the other way. There is precedent for both. One small thing I can do is check the usage of the term “undivided difference” since I have seen it used for both. Or I’ll just put a more detailed description in doxygen and avoid ambiguity completely.
+ 
+Cheers,
+Eli
