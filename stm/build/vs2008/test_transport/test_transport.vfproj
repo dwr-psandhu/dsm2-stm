@@ -31,7 +31,7 @@
 		<File RelativePath="..\..\..\test\transport\example_hydro_data.f90"/>
 		<File RelativePath="..\..\..\test\transport\example_initial_conditions.f90"/>
 		<File RelativePath="..\..\..\test\transport\example_sources.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_diffusion.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_diffusion_explicit.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_extrapolate.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_gradient.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>

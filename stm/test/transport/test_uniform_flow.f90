@@ -149,10 +149,10 @@ do icoarse = 1,nrefine
       call cons2prim(conc,mass,area,nx,nconc) 
     end do
     
-    write(filename, "(a\i3\'.txt')"), "uniform_gaussian_start_", ncell 
-    call printout(reference,filename)
-    write(filename, "(a\i3\'.txt')"), "uniform_gaussian_end_", ncell 
-    call printout(conc(:,2),filename)
+    !write(filename, "(a\i3\'.txt')"), "uniform_gaussian_start_", ncell 
+    !call printout(reference,filename)
+    !write(filename, "(a\i3\'.txt')"), "uniform_gaussian_end_", ncell 
+    !call printout(conc(:,2),filename)
     call error_norm(error(1,icoarse),error(2,icoarse),error(3,icoarse),conc(:,2),reference,ncell,dx)
 
     deallocate(reference)

@@ -65,6 +65,7 @@ subroutine test_gradient_calc
   call assertEquals(grad_lo(1,2),LARGEREAL,"5: ")
   call assertEquals(grad_lo(2,2),zero,"6: ")
   
+  !todo: need names on the following tests
   call assertEquals(grad_hi(1,2),zero)
   call assertEquals(grad_hi(7,2),half)
   call assertEquals(grad_hi(8,2),LARGEREAL)
