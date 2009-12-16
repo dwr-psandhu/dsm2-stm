@@ -22,7 +22,7 @@ module primitive_variable_conversion
 
 contains
 !> Convert conservative variables (ie mass) to primitive (concentration)
-subroutine cons2prim(conc,mass,area,nloc,nvar)
+pure subroutine cons2prim(conc,mass,area,nloc,nvar)
 use stm_precision
 implicit none
 real(STM_REAL),intent(out) :: conc(nloc,nvar)   !< concentration (converted from mass per unit length )
@@ -41,7 +41,7 @@ return
 end subroutine
 
 !> Convert  primitive (concentration) to conservative variables (ie mass)
-subroutine prim2cons(mass,conc,area,nloc,nvar)
+pure subroutine prim2cons(mass,conc,area,nloc,nvar)
 use stm_precision
 implicit none
 real(STM_REAL),intent(out) :: mass(nloc,nvar) !< mass per unit length (converted from concentration)
