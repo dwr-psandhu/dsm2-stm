@@ -95,23 +95,10 @@ real(stm_real), intent (in) :: strt_flx_bc_prev         !< flux at left hand sid
 
 
 
-call explicit_diffusion_operator (explicit_diffusion_term, &
-                                                        conc,             &
-                                                        conc_prev,        &
-                                                        mass,             &
-                                                        mass_prev,        & 
-                                                        area,             &      
-                                                        area_lo,          &
-                                                        area_hi,          &
-                                                        ks_lo,            &
-                                                        ks_hi,            &
-                                                        ncell,            &
-                                                        nvar,             &
-                                                        time,             &
-                                                        strt_flx_bc_prev, &   
-                                                        end_flx_bc_prev,  &
-                                                        dt,               &
-                                                        dx)
+
+
+! difference them here or in another subroutine
+call explicit_diffusion_operator()
 ! 
 call construct_diffusion_matrix()
 
@@ -125,25 +112,25 @@ call solve
 return
 end subroutine diffuse
 
-
+!todo: totally fine to create an explicit update, but not the main thing we need right now.
 
 !> Calculate the explicit diffusion term.
-subroutine explicit_diffusion_operator (explicit_diffusion_term, &
-                                        conc,             &
+subroutine explicit_diffusion_operator (explicit_diffuse_op, &
+                                        conc,             &  ! todo: not needed as output
                                         conc_prev,        &
-                                        mass,             &
-                                        mass_prev,        & 
-                                        area,             &      
+                                        mass,             &  ! todo: redundant with conc+area
+                                        mass_prev,        &  ! todo: redundant
+                                        area,             &
                                         area_lo,          &
                                         area_hi,          &
-                                        ks_lo,            &
+                                        ks_lo,            &  ! todo: rename
                                         ks_hi,            &
                                         ncell,            &
                                         nvar,             &
                                         time,             &
-                                        strt_flx_bc_prev, &   
-                                        end_flx_bc_prev,  &
-                                        dt,               &
+                                        start_flux_bc_prev, &   !todo: this will be in boundary_diffuse_flux
+                                        end_flx_bc_prev,  &     !todo: this will be in boundary_diffuse_flux
+                                        dt,               &     !todo: not needed for operator
                                         dx)
                                                                                           
 use stm_precision
@@ -177,13 +164,51 @@ integer :: icell
 real(stm_real) :: dtbydx2
 
 
+
+call interior_diffusive_flux (explicit_diffusion_term, &
+                                                        conc,             &
+                                                        conc_prev,        &
+                                                        mass,             &
+                                                        mass_prev,        & 
+                                                        area,             &      
+                                                        area_lo,          &
+                                                        area_hi,          &
+                                                        ks_lo,            &
+                                                        ks_hi,            &
+                                                        ncell,            &
+                                                        nvar,             &
+                                                        time,             &
+                                                        strt_flx_bc_prev, &   
+                                                        end_flx_bc_prev,  &
+                                                        dt,               &
+                                                        dx)
+                                                        
+call boundary_diffusive_flux (explicit_diffusion_term, &
+                                                        conc,             &
+                                                        conc_prev,        &
+                                                        mass,             &
+                                                        mass_prev,        & 
+                                                        area,             &      
+                                                        area_lo,          &
+                                                        area_hi,          &
+                                                        ks_lo,            &
+                                                        ks_hi,            &
+                                                        ncell,            &
+                                                        nvar,             &
+                                                        time,             &
+                                                        strt_flx_bc_prev, &   
+                                                        end_flx_bc_prev,  &
+                                                        dt,               &
+                                                        dx)
+
+
 dtbydx2 = dt/dx/dx
 
 do ivar = 1, nvar 
     do icell = 2,ncell-1
     
         if ( ks_lo(icell,ivar)*dtbydx2> half .or. ks_hi(icell,ivar)*dtbydx2 > half) then 
-            print *, 'Diffusion Unstable!'
+            print *, 'Diffusion Unstable!'  !todo: logging
             pause
         end if 
         
@@ -198,7 +223,10 @@ do ivar = 1, nvar
     end do
 
 
-  ! ---- rhs boundary
+  ! ----  boundary conditions on on lo side of domain
+  ! todo: make dtbydx2 just dx and separate into diffuse_flux_hi and diffuse_flux_lo
+  ! then call boundary_diffusive_flux
+  ! then difference the fluxes one more time
         explicit_diffusion_term(1,ivar) = dtbydx2 *(area_hi(1,ivar)*ks_hi(1,ivar)* conc_prev(2,ivar) &
                                             -  area_hi(1,ivar)*ks_hi(1,ivar)*conc_prev(1,ivar) &
                                             -  area_lo(1,ivar)*ks_lo(1,ivar)*conc_prev(1,ivar) &
@@ -207,7 +235,7 @@ do ivar = 1, nvar
         mass(1,ivar) = mass_prev(1,ivar) + explicit_diffusion_term(1,ivar)
         
         
-  ! --- lhs boundary
+  ! ----  boundary conditions on on hi side of domain
         explicit_diffusion_term(ncell,ivar) =  dtbydx2 * (area_hi(ncell,ivar)*ks_hi(ncell,ivar)* (conc_prev(ncell-1,ivar)+ two*dx*end_flx_bc_prev) &
                                                 -  area_hi(ncell,ivar)*ks_hi(ncell,ivar)*conc_prev(ncell,ivar)  &
                                                 -  area_lo(ncell,ivar)*ks_lo(ncell,ivar)*conc_prev(ncell,ivar) &

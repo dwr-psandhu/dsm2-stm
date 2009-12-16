@@ -45,17 +45,18 @@ subroutine fill_gaussian(vals,nloc,origin,dx,mean,sd)
 use stm_precision
 implicit none
 integer, intent(in) :: nloc
-real(STM_REAL), intent(out) :: vals(nloc)
-real(STM_REAL), intent(in)  :: origin
-real(STM_REAL), intent(in)  :: dx
-real(STM_REAL), intent(in)  :: mean
-real(STM_REAL), intent(in)  :: sd
+real(STM_REAL), intent(out) :: vals(nloc)  !< values to be filled
+real(STM_REAL), intent(in)  :: origin      !< origin (lo side of channel)
+real(STM_REAL), intent(in)  :: dx          !< dx
+real(STM_REAL), intent(in)  :: mean        !< center of the gaussian shape
+real(STM_REAL), intent(in)  :: sd          !< length of gaussian shape
 !-----locals
 real(STM_REAL) :: xlo
 real(STM_REAL) :: xhi
 integer        :: iloc
 !-----------
-do iloc = 1,nloc   
+do iloc = 1,nloc
+   !todo: this looks like it is off by 0.5*dx
    xlo = origin + dble(iloc - 1)*dx
    xhi = origin + dble(iloc)*dx
   ! need to populate using cell averages
@@ -71,6 +72,7 @@ subroutine fill_discontinuity(vals,nloc,origin,dx,x0,value_lo,value_hi)
 use stm_precision
 implicit none
 integer, intent(in) ::  nloc
+!todo: document arguments and make sure dx/2 problem is taken care of
 real(STM_REAL), intent(out) :: vals(nloc)
 real(STM_REAL), intent(in)  :: origin
 real(STM_REAL), intent(in)  :: dx

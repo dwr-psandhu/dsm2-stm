@@ -43,7 +43,7 @@ contains
 !>   - Compute conservative divergence
 !>   - Apply divergence in conservative_update along with Huen's method for sources
 !>   Note that all these steps are operations on entire arrays of values -- this keeps things efficient
-subroutine advect(mass,     &
+pure subroutine advect(mass,     &
                   mass_prev,&
                   flow,     &                  
                   flow_lo,  &
