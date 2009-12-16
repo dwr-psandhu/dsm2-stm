@@ -21,4 +21,15 @@
 !> todo: write tests for explicit operator and implicit diffusion
 !>@ingroup test
 module test_diffusion
+
+use fruit
+use stm_precision
+
+contains
+
+subroutine test_diffusion_calc
+
+  call assertEquals(two,one," test...")
+
+end subroutine
 end module
