@@ -44,7 +44,7 @@ subroutine diffuse(conc,     &
                   area_prev,&
                   area_lo,  &
                   area_hi,  &
-                  ks_lo,    &
+                  ks_lo,    &  !todo: rename diff_coeff_lo 
                   ks_hi,    &
                   ncell,    &
                   nvar,     &
@@ -115,7 +115,7 @@ call explicit_diffusion_operator (explicit_diffusion_term, &
 ! 
 call construct_diffusion_matrix()
 
-call kevin_conflict
+call eli_conflict_create()
 
 call construct_right_hand_side()
 
