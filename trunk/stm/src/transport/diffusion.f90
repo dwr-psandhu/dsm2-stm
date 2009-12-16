@@ -115,8 +115,6 @@ call explicit_diffusion_operator (explicit_diffusion_term, &
 ! 
 call construct_diffusion_matrix()
 
-call eli_conflict_create()
-
 call construct_right_hand_side()
 
 call apply_diffusion_boundary()
