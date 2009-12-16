@@ -22,6 +22,7 @@
 !>@ingroup test
 program test_transport_driver
   use fruit
+  use test_diffusion
   use test_gradient
   use test_extrapolate
   use test_prim_cons_conversion
@@ -29,6 +30,7 @@ program test_transport_driver
   use example_initial_conditions
   
   call init_fruit
+  call test_diffusion_calc
   call test_gradient_calc
   call test_limiter
   call test_prim_cons_convert
