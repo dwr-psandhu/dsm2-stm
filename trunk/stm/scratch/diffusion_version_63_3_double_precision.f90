@@ -574,7 +574,7 @@ do ivar= ncell-1, 1, -1
 end do
 
 return
-end 
+end subroutine 
 
 !*******************************************************************************************
 subroutine exact_sol(error,conc_exact &  
