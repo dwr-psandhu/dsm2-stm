@@ -181,14 +181,14 @@ implicit none
 integer, intent (in) :: ncell !< Number of cells
 integer, intent (in) :: nvar  !< Number of variables
 
-real(stm_real), intent (out) :: explicit_diffuse_op(ncell,nvar)         !< Explicit diffusion operator
+real(stm_real), intent (out) :: explicit_diffuse_op(ncell,nvar)             !< Explicit diffusion operator
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
 real(stm_real), intent (in)  :: area_lo_prev (ncell,nvar)                   !< Low side area at old time
 real(stm_real), intent (in)  :: area_hi_prev (ncell,nvar)                   !< High side area at old time 
-real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)              !< Low side sediment dispersion coef. at old time
-real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)              !< High side sediment dispersion coef. at old time
-real(stm_real), intent (in)  :: time                                   !< Current time
-real(stm_real), intent (in)  :: dx                                     !< Spacial step  
+real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< Low side sediment dispersion coef. at old time
+real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side sediment dispersion coef. at old time
+real(stm_real), intent (in)  :: time                                        !< Current time
+real(stm_real), intent (in)  :: dx                                          !< Spacial step  
 
 !--- locals
 integer :: ivar
@@ -273,8 +273,8 @@ subroutine interior_diffusive_flux (diffusive_flux_interior, &
                                         nvar,             &
                                         time,             &
                                         dx)
- 
-end subroutine
+return
+end subroutine interior_diffusive_flux
                                                       
 subroutine boundary_diffusive_flux (diffusive_flux_boundary, &
                                         conc_prev,        &
@@ -287,13 +287,60 @@ subroutine boundary_diffusive_flux (diffusive_flux_boundary, &
                                         nvar,             &
                                         time,             &
                                         dx)
-
-end subroutine
+return
+end subroutine boundary_diffusive_flux
 
 end module diffusion
 
-!////////////////////////////
+!/////////////////////////////////////////////////
+
+subroutine construct_right_hand_side( right_hand_side,         & 
+                                  explicit_diffuse_op,   & 
+                                  area_prev,             &
+                                  area_lo_prev,          &
+                                  area_hi_prev,          &
+                                  disp_coef_lo_prev,     &
+                                  disp_coef_hi_prev,     &
+                                  conc_prev,             &
+                                  theta_stm,             &
+                                  ncell,                 &
+                                  time,                  &  
+                                  dx,                    &
+                                  dt)
+                                  
+return
+
+end subroutine construct_right_hand_side
+
+!/////////////////////////////////////////////////
+subroutine construct_diffusion_matrix( center_diag ,      &
+                                  up_diag,          &     
+                                  down_diag,        &
+                                  area,             &
+                                  area_lo,          &
+                                  area_hi,          &
+                                  disp_coef_lo,     &
+                                  disp_coef_hi,     &
+                                  theta_stm,        &
+                                  ncell,            &
+                                  time,             &  
+                                  dx,               &
+                                  dt)
+                                  
+                                  
+return
+end subroutine construct_diffusion_matrix
+!/////////////////////////////////////////////////
+subroutine solve ( center_diag ,      &
+                  up_diag,          &     
+                  down_diag,        &
+                  right_hand_side,  &
+                  conc)
 
 
+
+return
+end subroutine solve
+!/////////////////////////////////////////////////
                                  
 
