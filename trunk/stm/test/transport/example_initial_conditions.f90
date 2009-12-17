@@ -56,7 +56,6 @@ real(STM_REAL) :: xhi
 integer        :: iloc
 !-----------
 do iloc = 1,nloc
-   !todo: this looks like it is off by 0.5*dx
    xlo = origin + dble(iloc - 1)*dx
    xhi = origin + dble(iloc)*dx
   ! need to populate using cell averages
@@ -72,7 +71,7 @@ subroutine fill_discontinuity(vals,nloc,origin,dx,x0,value_lo,value_hi)
 use stm_precision
 implicit none
 integer, intent(in) ::  nloc
-!todo: document arguments and make sure dx/2 problem is taken care of
+!todo: document arguments
 real(STM_REAL), intent(out) :: vals(nloc)
 real(STM_REAL), intent(in)  :: origin
 real(STM_REAL), intent(in)  :: dx
