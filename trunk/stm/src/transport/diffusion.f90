@@ -331,11 +331,97 @@ subroutine construct_diffusion_matrix( center_diag ,      &
 return
 end subroutine construct_diffusion_matrix
 !/////////////////////////////////////////////////
-subroutine solve ( center_diag ,      &
-                  up_diag,          &     
-                  down_diag,        &
-                  right_hand_side,  &
-                  conc)
+!> Solvers the system of equations
+pure subroutine solve ( center_diag ,           &
+                          up_diag,              &     
+                          down_diag,            &
+                          right_hand_side,      &
+                          conc,                 &
+                          ncell)
+                                                        
+! ----- args
+
+integer,intent (in) :: ncell                          !< Number of volumes 
+
+real(stm_real),intent (in)  :: down_diag(ncell)       !< Values of the coefficients below diagonal in matrix
+real(stm_real),intent (in)  :: center_diag(ncell)     !< Values of the coefficients at the diagonal in matrix
+real(stm_real),intent (in)  :: up_diag(ncell)         !< Values of the coefficients above the diagonal in matrix
+real(stm_real),intent (in)  :: right_hand_side(ncell) !< Values of the right hand side vector
+real(stm_real),intent (out) :: conc(ncell)            !<  Values of the computed solution
+
+
+call tridi_solver ( center_diag ,               &
+                          up_diag,              &     
+                          down_diag,            &
+                          right_hand_side,      &
+                          conc,                 &
+                          ncell)
+
+!> tri-diagonal solver PURPOSE:
+!> Solves a tridiagonal system for X. This sub-routine was taken from the Numerical Recipes in Fortran, page 43 (Edition of 1992)
+!> 
+!>             [B1,C1,00,00,00]  
+!> [X1,X2,...] [A2,B2,C2,00,00] = [D1,D2,....]
+!>             [00,A3,B3,C3,00]  
+!>             [00,00,A4,B4,C4]
+!>             [00,00,00,A5,B5]    
+!>
+!> Variables:
+!>
+!> A(i): Values of the coefficients below diagonal in matrix
+!> B(i): Values of the coefficients at the diagonal in matrix
+!> C(i): Values of the coefficients above diagonal in matrix
+!> D(i): Values of the right hand side vector 
+!> X(i): Values of the computed solution
+pure subroutine tridi_solver ( center_diag ,    &
+                          up_diag,              &     
+                          down_diag,            &
+                          right_hand_side,      &
+                          conc,                 &
+                          ncell)
+
+
+! ----- args
+
+integer,intent (in) :: ncell                          !< Number of volumes 
+
+real(stm_real),intent (in)  :: down_diag(ncell)       !< Values of the coefficients below diagonal in matrix
+real(stm_real),intent (in)  :: center_diag(ncell)     !< Values of the coefficients at the diagonal in matrix
+real(stm_real),intent (in)  :: up_diag(ncell)         !< Values of the coefficients above the diagonal in matrix
+real(stm_real),intent (in)  :: right_hand_side(ncell) !< Values of the right hand side vector
+real(stm_real),intent (out) :: conc(ncell)            !<  Values of the computed solution
+
+!---- Local 
+
+integer :: ivar
+real(stm_real) :: gam(ncell)
+real(stm_real) :: bet
+
+
+
+if(center_diag(1) == 0)then
+  print *, 'there is a problem in tridi-solver '
+  stop
+end if
+
+bet = center_diag(1)
+conc(1) = right_hand_side(1) / bet
+
+do ivar=2, ncell
+  gam(ivar) = up_diag(ivar - 1) / bet
+  bet = center_diag(ivar) - down_diag(ivar) * gam(ivar)
+  if(bet == 0)then
+    print *, 'tridiagonal solver failed'
+  end if
+  conc(ivar) = (right_hand_side(ivar) - down_diag(ivar) * conc(ivar - 1)) / bet 
+end do
+
+do ivar= ncell-1, 1, -1
+  conc(ivar) = x(ivar) - gam(ivar + 1) * conc(ivar + 1)
+end do
+
+return
+end subroutine tridi_solver
 
 
 
