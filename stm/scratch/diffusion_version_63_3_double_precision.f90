@@ -521,7 +521,7 @@ return
 end
 
 !*****************************************************************************************    
-subroutine tridi_solver(x & 
+pure subroutine tridi_solver(x & 
                     ,a, b, c, d, ncell)
 ! PURPOSE:
 
