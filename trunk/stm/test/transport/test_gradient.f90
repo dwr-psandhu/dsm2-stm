@@ -28,6 +28,7 @@ use state_variables
 
 contains
 
+!> Test the gradient algorithm
 !> Tesitng routine for undivided differences
 subroutine test_gradient_calc
   use gradient
