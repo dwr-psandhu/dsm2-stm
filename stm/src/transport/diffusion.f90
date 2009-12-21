@@ -24,9 +24,6 @@
 !>@ingroup transport
 module diffusion
 
-use stm_precision
-use primitive_variable_conversion
-
 contains
 
 ! ///////////////////////////////////////////////////////////////////
@@ -63,6 +60,7 @@ subroutine diffuse(conc,             &
                   dt,                &
                   dx                 )
 
+use stm_precision
 use primitive_variable_conversion 
 
 implicit none
@@ -291,6 +289,8 @@ subroutine interior_diffusive_flux (diffusive_flux_interior,  &
                                             nvar,             &
                                             time,             &
                                             dx)
+
+use stm_precision
 ! --- args
                                             
 integer, intent (in) :: ncell !< Number of cells
@@ -321,6 +321,8 @@ subroutine boundary_diffusive_flux(diffusive_flux_boundary,       &
                                                 nvar,             &
                                                 time,             &
                                                 dx)
+use stm_precision
+
  ! --- args
                                             
 integer, intent (in) :: ncell !< Number of cells
