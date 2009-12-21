@@ -35,6 +35,7 @@
 		<File RelativePath="..\..\..\test\transport\error_metric.f90"/>
 		<File RelativePath="..\..\..\src\transport\gradient.f90"/>
 		<File RelativePath="..\..\..\src\transport\hydro_data_if.f90"/>
+		<File RelativePath="..\..\..\src\transport\matrix_solver.f90"/>
 		<File RelativePath="..\..\..\src\transport\primitive_variable_conversion.f90"/>
 		<File RelativePath="..\..\..\src\transport\source_if.f90"/>
 		<File RelativePath="..\..\..\src\transport\state_variables.f90"/>
