@@ -410,10 +410,10 @@ implicit none
 integer,intent(in)  :: ncell  !< Number of cells
 integer,intent(in)  :: nvar   !< Number of variables
 
-real(STM_REAL) :: grad_lo(ncell,nvar) !< gradient based on lo side difference
-real(STM_REAL) :: grad_hi(ncell,nvar) !< gradient based on hi side difference
-real(STM_REAL) :: grad_lim(ncell,nvar) !< limited cell centered difference
-real(STM_REAL) :: grad(ncell,nvar)     !< cell centered difference adjusted for boundaries and hydraulic devices
+real(STM_REAL),intent(in)  :: grad_lo(ncell,nvar) !< gradient based on lo side difference
+real(STM_REAL),intent(in)  :: grad_hi(ncell,nvar) !< gradient based on hi side difference
+real(STM_REAL),intent(in)  :: grad_lim(ncell,nvar) !< limited cell centered difference
+real(STM_REAL),intent(out) :: grad(ncell,nvar)     !< cell centered difference adjusted for boundaries and hydraulic devices
 !---------
 grad          = grad_lim
 grad(1,:)     = grad_hi(1,:)
