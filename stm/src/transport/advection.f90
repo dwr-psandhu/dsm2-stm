@@ -22,7 +22,7 @@
 !> routine in the module is advection().
 !>@ingroup transport
 module advection
-use stm_precision
+
 
 contains
 
@@ -43,7 +43,7 @@ contains
 !>   - Compute conservative divergence
 !>   - Apply divergence in conservative_update along with Huen's method for sources
 !>   Note that all these steps are operations on entire arrays of values -- this keeps things efficient
-pure subroutine advect(mass,     &
+subroutine advect(mass,     &
                   mass_prev,&
                   flow,     &                  
                   flow_lo,  &
@@ -58,6 +58,7 @@ pure subroutine advect(mass,     &
                   dt,       &
                   dx)
 !use source_if
+use stm_precision
 use primitive_variable_conversion
 use gradient
 implicit none
@@ -66,44 +67,46 @@ implicit none
 integer,intent(in)  :: ncell  !< Number of cells
 integer,intent(in)  :: nvar   !< Number of variables
 
-real(STM_REAL),intent(out) :: mass(ncell,nvar)     !< mass at new time
-real(STM_REAL),intent(in) :: mass_prev(ncell,nvar) !< mass at old time
-real(STM_REAL),intent(in) :: flow   (ncell,nvar)   !< cell-centered flow, old time
-real(STM_REAL),intent(in) :: flow_lo(ncell,nvar)   !< flow on lo side of cells centered in time
-real(STM_REAL),intent(in) :: flow_hi(ncell,nvar)   !< flow on hi side of cells centered in time
-real(STM_REAL),intent(in) :: area_prev(ncell,nvar) !< cell-centered area at old time??
-real(STM_REAL),intent(in) :: area(ncell,nvar)      !< cell-centered area at new time
-real(STM_REAL),intent(in) :: area_lo(ncell,nvar)   !< lo side area centered in time
-real(STM_REAL),intent(in) :: area_hi(ncell,nvar)   !< hi side area centered in time
-real(STM_REAL), intent(in) :: time                 !< current time
-real(STM_REAL), intent(in) :: dt                   !< current time step
-real(STM_REAL), intent(in) :: dx                   !< spatial step
+real(STM_REAL),intent(out) :: mass(ncell,nvar)      !< mass at new time
+real(STM_REAL),intent(in)  :: mass_prev(ncell,nvar) !< mass at old time
+real(STM_REAL),intent(in)  :: flow   (ncell,nvar)   !< cell-centered flow, old time
+real(STM_REAL),intent(in)  :: flow_lo(ncell,nvar)   !< flow on lo side of cells centered in time
+real(STM_REAL),intent(in)  :: flow_hi(ncell,nvar)   !< flow on hi side of cells centered in time
+real(STM_REAL),intent(in)  :: area_prev(ncell,nvar) !< cell-centered area at old time??
+real(STM_REAL),intent(in)  :: area(ncell,nvar)      !< cell-centered area at new time
+real(STM_REAL),intent(in)  :: area_lo(ncell,nvar)   !< lo side area centered in time
+real(STM_REAL),intent(in)  :: area_hi(ncell,nvar)   !< hi side area centered in time
+real(STM_REAL),intent(in)  :: time                  !< current time
+real(STM_REAL),intent(in)  :: dt                    !< current time step
+real(STM_REAL),intent(in)  :: dx                    !< spatial step
 
 
 !---------- locals
 
 
-real(STM_REAL) :: source(ncell,nvar) !< cell centered source 
-real(STM_REAL) :: conc(ncell,nvar) !< cell centered concentration
-real(STM_REAL) :: conc_lo(ncell,nvar) !< concentration extrapolated to lo face
-real(STM_REAL) :: conc_hi(ncell,nvar) !< concentration extrapolated to hi face
-real(STM_REAL) :: grad_lo(ncell,nvar) !< gradient based on lo side difference
-real(STM_REAL) :: grad_hi(ncell,nvar) !< gradient based on hi side difference
+real(STM_REAL) :: source(ncell,nvar)      !< cell centered source 
+real(STM_REAL) :: conc(ncell,nvar)        !< cell centered concentration
+real(STM_REAL) :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
+real(STM_REAL) :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
+real(STM_REAL) :: grad_lo(ncell,nvar)     !< gradient based on lo side difference
+real(STM_REAL) :: grad_hi(ncell,nvar)     !< gradient based on hi side difference
 real(STM_REAL) :: grad_center(ncell,nvar) !< cell centered difference
-real(STM_REAL) :: grad_lim(ncell,nvar) !< limited cell centered difference
-real(STM_REAL) :: grad(ncell,nvar)     !< cell centered difference adujsted for boundaries and hydraulic devices
+real(STM_REAL) :: grad_lim(ncell,nvar)    !< limited cell centered difference
+real(STM_REAL) :: grad(ncell,nvar)        !< cell centered difference adujsted for boundaries and hydraulic devices
 
-real(STM_REAL) :: flux_lo(ncell,nvar) !< flux on lo side of cell, time centered
-real(STM_REAL) :: flux_hi(ncell,nvar) !< flux on hi side of cell, time centered
+real(STM_REAL) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
+real(STM_REAL) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
  
-real(STM_REAL) :: div_flux(ncell,nvar)!< cell centered flux divergence, time centered
+real(STM_REAL) :: div_flux(ncell,nvar)    !< cell centered flux divergence, time centered
 
 
 call cons2prim(conc,mass_prev,area,ncell,nvar)
 
 ! Calculate the (undivided) differences of concentrations
 call difference(grad_lo,grad_hi,grad_center,conc,ncell,nvar)
-!call printout(grad_center(:,1),ncell)
+
+
+! call printout(grad_center(:,1),ncell)
 call limiter(grad_lim,grad_lo,grad_hi,grad_center,ncell,nvar)
 
 ! Adjust differences to account for places (boundaries, gates, etc) where one-sided
@@ -277,6 +280,8 @@ end subroutine
 !> Compute the divergence of fluxes.
 !> At present, this is undivided...which may be not what we want.
 subroutine compute_divergence(div_flux, flux_lo, flux_hi, ncell, nvar)
+
+use stm_precision
 implicit none
 
 !--- args
