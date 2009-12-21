@@ -473,24 +473,6 @@ call tridi_solver ( center_diag ,           &
                           ncell,                &
                           nvar)
 
-    !> Solves a tridiagonal system. 
-    !> This sub-routine was taken from the Numerical Recipes in Fortran, page 43 (Edition of 1992)
-    !> 
-    !>             [B1,C1,00,00,00]  
-    !> [X1,X2,...] [A2,B2,C2,00,00] = [D1,D2,....]
-    !>             [00,A3,B3,C3,00]  
-    !>             [00,00,A4,B4,C4]
-    !>             [00,00,00,A5,B5]    
-    !>
-    !> Variables:
-    !>
-    !> A(i): Values of the coefficients below diagonal in matrix
-    !> B(i): Values of the coefficients at the diagonal in matrix
-    !> C(i): Values of the coefficients above diagonal in matrix
-    !> D(i): Values of the right hand side vector 
-    !> X(i): Values of the computed solution
-
-
 
 return
 end subroutine solve
