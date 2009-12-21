@@ -134,7 +134,7 @@ call extrapolate(conc_lo,  &
 
 ! Compute upwind value of fluxes. This is a naive guess based on the extrapolated states
 ! It doesn't include any node-based sources or reservoirs or the like.
-call compute_flux(flux_lo,           &
+call compute_flux(flux_lo,  &
                   flux_hi,  &
                   conc_lo,  &
                   conc_hi,  &                       
@@ -215,7 +215,7 @@ do ivar = 1,nvar
     conc_hi(:,ivar) = conc(:,ivar) + half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel +half*dt*source(:,ivar)
     
 end do
-ivar =2
+
 return
 end subroutine
 
@@ -251,6 +251,7 @@ integer :: icell
 !--------------------
 ! For each constitutuent, go through the cells and calculate the upwinded flux
 ! todo: make sure this tests OK for the variables
+! todo: this could cause problems in mass conservation. kevin
 do ivar = 1,nvar
     do icell = 2,ncell
         if (flow_lo(icell) > zero) then
@@ -366,8 +367,8 @@ real(STM_REAL),intent(in)  :: mass_prev(ncell,nvar)  !< old time mass
 real(STM_REAL),intent(in)  :: area(ncell)            !< area of cells
 real(STM_REAL),intent(in)  :: source_prev(ncell,nvar)!< old time source term
 real(STM_REAL),intent(in)  :: div_flux(ncell,nvar)   !< flux divergence, time centered
-real(STM_REAL), intent(in) :: dt                     !< length of current time step
-real(STM_REAL), intent(in) :: dx                     !< spatial step
+real(STM_REAL),intent(in)  :: dt                     !< length of current time step
+real(STM_REAL),intent(in)  :: dx                     !< spatial step
 
 !--- locals
 real(STM_REAL) :: dtbydx
