@@ -23,7 +23,7 @@
 !>@ingroup input_processing
 module input_processing
 
-use stm_precision
+
 
 
 contains
@@ -31,7 +31,7 @@ contains
 
 !> Input processing
 subroutine process_input ( )
-
+use stm_precision
 
 end subroutine process_input
     
