@@ -35,8 +35,8 @@ implicit none
 integer,intent(in)  :: ncell  !< Number of cells
 integer,intent(in)  :: nvar   !< Number of variables
 real(STM_REAL),intent(in) :: vals(ncell,nvar)         !< data to be differenced
-real(STM_REAL),intent(out) :: grad_lo(ncell,nvar)     !< gradient on lo side, LARGEREAL in first index
-real(STM_REAL),intent(out) :: grad_hi(ncell,nvar)     !< hi side (n+1) minus (n) LARGEREAL for last index
+real(STM_REAL),intent(out) :: grad_lo(ncell,nvar)     !< difference on lo side, LARGEREAL in first index
+real(STM_REAL),intent(out) :: grad_hi(ncell,nvar)     !< difference on hi side (n+1) minus (n) LARGEREAL for last index
 real(STM_REAL),intent(out) :: grad_center(ncell,nvar) !< centered diff, LARGEREAL for undefined boundary cells
 
 !----
@@ -59,7 +59,7 @@ end subroutine
 !///////////////////////////////////////////////////////////////////////
 
 
-!> Apply a flux limiter (van Leer) given one-sided and centered gradients
+!> Apply a flux limiter (van Leer) given one-sided and centered differences
 subroutine limiter(grad_lim,grad_lo,grad_hi,grad_center,ncell,nvar)
 
 use stm_precision
@@ -68,10 +68,10 @@ implicit none
 !--- args
 integer,intent(in)  :: ncell  !< Number of cells
 integer,intent(in)  :: nvar   !< Number of variables
-real(STM_REAL),intent(in) :: grad_lo(ncell,nvar) !< gradient on lo side, LARGEREAL in first index
-real(STM_REAL),intent(in) :: grad_hi(ncell,nvar) !< hi side (n+1) minus (n) LARGEREAL for last index
-real(STM_REAL),intent(in) :: grad_center(ncell,nvar) !< centered diff, LARGEREAL for undefined boundary cells 
-real(STM_REAL),intent(out) :: grad_lim(ncell,nvar) !< limited gradient
+real(STM_REAL),intent(in) :: grad_lo(ncell,nvar) !< difference on lo side, LARGEREAL in first index
+real(STM_REAL),intent(in) :: grad_hi(ncell,nvar) !< difference on hi side (n+1) minus (n) LARGEREAL for last index
+real(STM_REAL),intent(in) :: grad_center(ncell,nvar) !< centered difference, LARGEREAL for undefined boundary cells 
+real(STM_REAL),intent(out) :: grad_lim(ncell,nvar) !< limited difference
 
 !----
 
