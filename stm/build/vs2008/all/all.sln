@@ -17,6 +17,12 @@ Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "example_single_channel", ".
 EndProject
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "input_processing", "..\input_processing\input_processing.vfproj", "{A388B71A-ABCA-40DB-8222-28E6C0A9242A}"
 EndProject
+Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "report", "..\report\report.vfproj", "{26AA3FAA-AAA3-4B05-A98C-A761095A5531}"
+	ProjectSection(ProjectDependencies) = postProject
+		{60C0982F-68F9-499E-92FD-2BC71D98A315} = {60C0982F-68F9-499E-92FD-2BC71D98A315}
+		{202C25E9-D1E7-44F9-8922-3301A3621F8D} = {202C25E9-D1E7-44F9-8922-3301A3621F8D}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -24,7 +30,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{18C6C5B1-9FE4-457D-BB54-0ECA6ED19EED}.Debug|Win32.ActiveCfg = Debug|Win32
-		{18C6C5B1-9FE4-457D-BB54-0ECA6ED19EED}.Debug|Win32.Build.0 = Debug|Win32
 		{18C6C5B1-9FE4-457D-BB54-0ECA6ED19EED}.Release|Win32.ActiveCfg = Release|Win32
 		{18C6C5B1-9FE4-457D-BB54-0ECA6ED19EED}.Release|Win32.Build.0 = Release|Win32
 		{202C25E9-D1E7-44F9-8922-3301A3621F8D}.Debug|Win32.ActiveCfg = Debug|Win32
@@ -46,6 +51,10 @@ Global
 		{A388B71A-ABCA-40DB-8222-28E6C0A9242A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{A388B71A-ABCA-40DB-8222-28E6C0A9242A}.Release|Win32.ActiveCfg = Release|Win32
 		{A388B71A-ABCA-40DB-8222-28E6C0A9242A}.Release|Win32.Build.0 = Release|Win32
+		{26AA3FAA-AAA3-4B05-A98C-A761095A5531}.Debug|Win32.ActiveCfg = Debug|Win32
+		{26AA3FAA-AAA3-4B05-A98C-A761095A5531}.Debug|Win32.Build.0 = Debug|Win32
+		{26AA3FAA-AAA3-4B05-A98C-A761095A5531}.Release|Win32.ActiveCfg = Release|Win32
+		{26AA3FAA-AAA3-4B05-A98C-A761095A5531}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

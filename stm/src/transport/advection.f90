@@ -191,21 +191,23 @@ integer,intent(in)  :: nvar   !< Number of variables
 real(STM_REAL),intent(out) :: conc_lo(ncell,nvar)
 
 !> estimate from this cell extrapolated to hi face at half time
-real(STM_REAL),intent(out) :: conc_hi(ncell,nvar)
-real(STM_REAL),intent(in) :: conc(ncell,nvar) !< cell centered conc at old time
-real(STM_REAL),intent(in) :: grad(ncell,nvar) !< cell centered gradient of conc at old time, currently assuming these are undivided differences
-real(STM_REAL),intent(in) :: area(ncell)      !< cell-centered area at old time
-real(STM_REAL),intent(in) :: flow(ncell)      !< cell-centered flow at old time
+real(STM_REAL),intent(out):: conc_hi(ncell,nvar)
+real(STM_REAL),intent(in) :: conc(ncell,nvar)   !< cell centered conc at old time
+real(STM_REAL),intent(in) :: grad(ncell,nvar)   !< cell centered difference of conc at old time, currently assuming these are undivided differences
+real(STM_REAL),intent(in) :: area(ncell)        !< cell-centered area at old time
+real(STM_REAL),intent(in) :: flow(ncell)        !< cell-centered flow at old time
 real(STM_REAL),intent(in) :: source(ncell,nvar) !< source terms at old time
-real(STM_REAL), intent(in) :: time            !< time
-real(STM_REAL), intent(in) :: dt              !< length of current time step being advanced
-real(STM_REAL), intent(in) :: dx              !< spatial step
+real(STM_REAL),intent(in) :: time               !< time
+real(STM_REAL),intent(in) :: dt                 !< length of current time step being advanced
+real(STM_REAL),intent(in) :: dx                 !< spatial step
 !----- locals
 real(STM_REAL) :: vel(ncell) !< cell-centered flow at old time
 integer        :: ivar
 real(STM_REAL) :: dtbydx
 !--------------------
 vel=flow/area
+
+! todo: prepare for variable dx i.e., dx(ncell)
 dtbydx = dt/dx
 
 do ivar = 1,nvar
@@ -411,8 +413,8 @@ implicit none
 integer,intent(in)  :: ncell  !< Number of cells
 integer,intent(in)  :: nvar   !< Number of variables
 
-real(STM_REAL),intent(in)  :: grad_lo(ncell,nvar) !< gradient based on lo side difference
-real(STM_REAL),intent(in)  :: grad_hi(ncell,nvar) !< gradient based on hi side difference
+real(STM_REAL),intent(in)  :: grad_lo(ncell,nvar)  !< difference based on lo side difference
+real(STM_REAL),intent(in)  :: grad_hi(ncell,nvar)  !< gdifference based on hi side difference
 real(STM_REAL),intent(in)  :: grad_lim(ncell,nvar) !< limited cell centered difference
 real(STM_REAL),intent(out) :: grad(ncell,nvar)     !< cell centered difference adjusted for boundaries and hydraulic devices
 !---------
