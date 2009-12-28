@@ -35,6 +35,7 @@ use example_hydro_data
 use example_sources
 use error_metric
 use fruit
+use logging
 implicit none
 
 !--- Problem variables

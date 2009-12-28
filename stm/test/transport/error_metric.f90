@@ -65,18 +65,4 @@ return
 end subroutine
 
 
-!< Prints an array to file
-subroutine printout(arr,filename)
-use stm_precision
-implicit none
-real(STM_REAL),intent(in) :: arr(:)       !< array values
-character(LEN=*)          :: filename     !< name of file to write
-integer icell
-open(unit = 11, file = filename)
-do icell = 1,size(arr)
-  write(11,*)arr(icell)
-end do
-close(11)
-end subroutine
-
 end module
