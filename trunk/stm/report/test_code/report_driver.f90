@@ -23,13 +23,12 @@
 program report_driver
   use fruit
 
-  use example_initial_conditions
-  use test_advection_uniform_flow
+  use report_advection
 
   
   call init_fruit
 
-  call test_uniform_flow_advection
+  call report_advection_uniform_flow
   
   call fruit_summary
   

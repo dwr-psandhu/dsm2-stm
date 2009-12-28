@@ -18,18 +18,18 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Test of advection in uniform flow
+!> Test of advection
 !>@ingroup test
-module test_advection_uniform_flow
+module report_advection
 
     contains
-    !> Subroutine that runs a small advective simulation
-    subroutine test_uniform_flow_advection
+    !> Subroutine that runs a uniform flow advection
+    subroutine report_advection_uniform_flow
         use stm_precision
         use state_variables
         use primitive_variable_conversion
         use advection
-        use example_initial_conditions
+        use report_initial_conditions
         use logging
 
         !use example_hydro_data
@@ -124,8 +124,8 @@ module test_advection_uniform_flow
 
 
       return
-      end subroutine 
+      end subroutine report_advection_uniform_flow
 
 
 
-      end module test_advection_uniform_flow
+      end module report_advection

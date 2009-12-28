@@ -20,7 +20,7 @@
 
 !> Sample initial conditions for tests!>@ingroup test
 
-module example_initial_conditions
+module report_initial_conditions
     use stm_precision
     private gaussian_cdf
     
