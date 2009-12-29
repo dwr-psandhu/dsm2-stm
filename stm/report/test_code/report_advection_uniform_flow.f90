@@ -41,13 +41,13 @@ module report_advection
         !--- Problem variables
 
         integer, parameter  :: nstep  = 5
-        integer, parameter  :: nx = 20
+        integer, parameter  :: nx = 10
         real(STM_REAL), parameter :: cfl = 0.8
 
 
         integer, parameter  :: nconc = 2
-        real(STM_REAL), parameter :: origin = zero   ! meters
-        real(STM_REAL), parameter :: domain_length = 100
+        real(STM_REAL), parameter :: origin = zero        ! meters
+        real(STM_REAL), parameter :: domain_length = 100  ! meters
         real(STM_REAL) :: dt              ! seconds
         real(STM_REAL) :: dx              ! meters
         real(STM_REAL), parameter :: ic_center      = three*fourth*domain_length
@@ -76,11 +76,11 @@ module report_advection
         dx = domain_length/dble(nx)
         dt = cfl*dx/vel
 
-        call fill_gaussian(conc(:,1),nx,origin,dx,0.75*domain_length,ic_gaussian_sd)
-        call fill_gaussian(conc(:,2),nx,origin,dx,0.25*domain_length,ic_gaussian_sd)
+        !call fill_gaussian(conc(:,1),nx,origin,dx,0.75*domain_length,ic_gaussian_sd)
+        !call fill_gaussian(conc(:,2),nx,origin,dx,0.25*domain_length,ic_gaussian_sd)
         
-        call fill_rectangular(conc(:,1),nx,1,nx,5.0D0,2.0D0)
-        call fill_rectangular(conc(:,2),nx,1,nx,5.0D0,2.0D0)
+        call fill_rectangular(conc(:,1),nx,3,6,5D0,0D0)
+        call fill_rectangular(conc(:,2),nx,3,6,5D0,0D0)
         
         call prim2cons( mass_prev,conc,area,nx,nconc)
         mass = mass_prev
@@ -90,7 +90,7 @@ module report_advection
         time = zero
         ! forwards
         do itime = 1,nstep
-            time = time + dt
+            time = itime * dt
            
               ! call transport using no_source as the callback 
               call advect(mass,     &
@@ -111,10 +111,14 @@ module report_advection
               mass_prev = mass
               call cons2prim(conc,mass,area,nx,nconc) 
 
+              write(filename, "(a\i3\'.txt')"), "uniform_rectangular_at_itime_", itime 
+              call printout(conc(:,2),origin,domain_length,filename)
+
+
+
         end do
 
-        write(filename, "(a\i3\'.txt')"), "uniform_rectangular_", ncell 
-        call printout(conc(:,2),filename)
+
 
 
 
