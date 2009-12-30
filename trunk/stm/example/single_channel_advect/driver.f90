@@ -18,13 +18,19 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-program simple_channel
+!> Main program unit for report generation on advection tests
+!>@ingroup example
 
+program single_channel
+  use fruit
 
+  use example_advection
 
-
-
+  call example_advection_uniform_flow
+   
 end program
+
+
 
 
 

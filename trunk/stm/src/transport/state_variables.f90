@@ -42,7 +42,7 @@ module state_variables
     !> Concentration in the previous time step,
     !> dimensions (ncell, nvar)
     real(STM_REAL),save,allocatable :: conc_prev(:,:)
-    
+
     !> Cell-centered area
     !> dimensions (ncell)
     real(STM_REAL),save,allocatable :: area(:)
@@ -88,7 +88,7 @@ module state_variables
         conc_prev = LARGEREAL
         allocate(mass(ncell,nvar), mass_prev(ncell,nvar))
         mass      = LARGEREAL  ! absurd value helps expose bugs  
-        mass_prev = LARGEREAL
+        mass_prev = LARGEREAL       
         allocate(area(ncell), area_prev(ncell), area_lo(ncell), area_hi(ncell))
         area      = LARGEREAL
         area_prev = LARGEREAL

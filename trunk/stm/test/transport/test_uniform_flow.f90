@@ -120,8 +120,8 @@ do icoarse = 1,nrefine
 
     end do
 
-    write(filename, "(a\i3\'.txt')"), "uniform_gaussian_mid_", ncell 
-    call printout(conc(:,2),filename)
+    !write(filename, "(a\i3\'.txt')"), "uniform_gaussian_mid_", ncell 
+    !call printout(conc(:,2),filename)
 
 
     ! back
