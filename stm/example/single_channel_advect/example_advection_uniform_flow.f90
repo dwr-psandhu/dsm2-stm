@@ -18,18 +18,18 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Test of advection
-!>@ingroup test
-module report_advection
+!> examples of advection
+!>@ingroup example
+module example_advection
 
     contains
     !> Subroutine that runs a uniform flow advection
-    subroutine report_advection_uniform_flow
+    subroutine example_advection_uniform_flow
         use stm_precision
         use state_variables
         use primitive_variable_conversion
         use advection
-        use report_initial_conditions
+        use example_initial_conditions
         use logging
 
         !use example_hydro_data
@@ -40,10 +40,9 @@ module report_advection
 
         !--- Problem variables
 
-        integer, parameter  :: nstep  = 5
-        integer, parameter  :: nx = 10
+        integer, parameter  :: nstep  = 20
+        integer, parameter  :: nx = 50
         real(STM_REAL), parameter :: cfl = 0.8
-
 
         integer, parameter  :: nconc = 2
         real(STM_REAL), parameter :: origin = zero        ! meters
@@ -57,10 +56,12 @@ module report_advection
         real(STM_REAL) :: vel
         real(STM_REAL) :: time
         integer :: itime = 0
-        !integer :: icell ! debug only -- remove later
-        !------
-        real(STM_REAL),allocatable :: reference(:)
+
+        !------ local
+        real(STM_REAL), allocatable :: reference(:)
+        real(STM_REAL), allocatable :: x(:)
         character(LEN=64) :: filename
+        integer :: i    
 
         call allocate_state(nx,nconc)
         
@@ -74,13 +75,15 @@ module report_advection
         flow_lo = flow
         vel = constant_flow/constant_area
         dx = domain_length/dble(nx)
-        dt = cfl*dx/vel
-
-        !call fill_gaussian(conc(:,1),nx,origin,dx,0.75*domain_length,ic_gaussian_sd)
-        !call fill_gaussian(conc(:,2),nx,origin,dx,0.25*domain_length,ic_gaussian_sd)
+        dt = cfl*dx/vel   
         
-        call fill_rectangular(conc(:,1),nx,3,6,5D0,0D0)
-        call fill_rectangular(conc(:,2),nx,3,6,5D0,0D0)
+        allocate(x(nx))
+        do i = 1,nx                
+            x(i) = dx*(dble(i)-half)+origin
+        end do        
+        
+        call fill_rectangular(conc(:,1),x,nx,10D0,40D0,5D0,0D0)
+        call fill_rectangular(conc(:,2),x,nx,10D0,40D0,5D0,0D0)
         
         call prim2cons( mass_prev,conc,area,nx,nconc)
         mass = mass_prev
@@ -88,6 +91,10 @@ module report_advection
         reference = conc(:,2)
 
         time = zero
+
+        write(filename, "(a)"), "uniform_rectangular_at_itime_0.txt" 
+        call printout(conc(:,2),x,filename)
+
         ! forwards
         do itime = 1,nstep
             time = itime * dt
@@ -112,24 +119,13 @@ module report_advection
               call cons2prim(conc,mass,area,nx,nconc) 
 
               write(filename, "(a\i3\'.txt')"), "uniform_rectangular_at_itime_", itime 
-              call printout(conc(:,2),origin,domain_length,filename)
-
-
+              call printout(conc(:,2),x,filename)
 
         end do
 
-
-
-
-
-
         deallocate(reference)
         call deallocate_state
-
-
-      return
-      end subroutine report_advection_uniform_flow
-
-
-
-      end module report_advection
+        
+    end subroutine example_advection_uniform_flow
+    
+end module example_advection

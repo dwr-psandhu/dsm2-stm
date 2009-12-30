@@ -27,28 +27,25 @@ contains
 !> Calculate the L1, L2 and Linf error between calculated values and a reference
 
 !< Prints an array to file
-subroutine printout(arr,origin,domain_length,filename)
+subroutine printout(arr,x,filename)
 
     use stm_precision
     implicit none
     real(STM_REAL),intent(in) :: arr(:)         !< array values
-    real(STM_REAL),intent(in) :: origin        
-    real(STM_REAL),intent(in) :: domain_length  ! meters 
+    real(STM_REAL),intent(in) :: x(:)           !< x values
     character(LEN=*)          :: filename       !< name of file to write
     integer                   :: icell
     
     !--local
-    real                      :: dx
     integer                   :: nx
     
     nx = size(arr)
-    dx = domain_length/nx
     
     open(unit = 11, file = filename)
     !write(11,'(a,i5)')    "nx    ", nx
     
     do icell = 1,nx
-      write(11,'(f10.5, f20.10)') dx*(icell-0.5)+origin, arr(icell)
+      write(11,'(f10.5, f20.10)') x(icell), arr(icell)
     end do
     close(11)
 end subroutine
