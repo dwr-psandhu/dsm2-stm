@@ -3,21 +3,23 @@ import numpy as np
 
 #x = np.linspace(xmin,xmax,n)
 
-datafile   = open('D:/delta/trunk/stm/build/vs2008/example_single_channel/uniform_rectangular_at_itime_ 20.txt', 'r')
-datafile0  = open('D:/delta/trunk/stm/build/vs2008/example_single_channel/uniform_rectangular_at_itime_0.txt', 'r')
+datafile = []
+datafile.append(open('../../../stm/build/vs2008/example_single_channel/uniform_rectangular_at_itime_0.txt', 'r'))
+datafile.append(open('../../../stm/build/vs2008/example_single_channel/uniform_rectangular_at_itime_ 20.txt', 'r'))
 
-data  = [line.split() for line in datafile ]
-data0 = [line.split() for line in datafile0]
+data=[]
+data.append(line.split() for line in datafile[0])
+data.append(line.split() for line in datafile[1])
 
 # transpose to [(x1, x2,... xn), (y1, y2, ... yn)]
-data = zip(*data)
-data0 = zip(*data0)
+data[1] = zip(*data[1])
+data[0] = zip(*data[0])
 
-x = np.array(map(float, data[0]))
-y = np.array(map(float, data[1]))
+x0 = np.array(map(float, data[0][0]))
+y0 = np.array(map(float, data[0][1]))
 
-x0 = np.array(map(float, data0[0]))
-y0 = np.array(map(float, data0[1]))
+x = np.array(map(float, data[1][0]))
+y = np.array(map(float, data[1][1]))
 
 n=10000
 
