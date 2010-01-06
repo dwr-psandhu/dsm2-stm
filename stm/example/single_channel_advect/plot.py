@@ -1,54 +1,80 @@
 import pylab as pl
 import numpy as np
+import sys
+
+for arg in sys.argv:
+    print arg
 
 #x = np.linspace(xmin,xmax,n)
 
-datafile = []
-datafile.append(open('../../../stm/build/vs2008/example_single_channel/uniform_rectangular_at_itime_0.txt', 'r'))
-datafile.append(open('../../../stm/build/vs2008/example_single_channel/uniform_rectangular_at_itime_ 20.txt', 'r'))
+xmin = 0
+xmax = 100.
+ymin = 0
+ymax = 6.
+nx = 0
+nplot = 0 
 
+datafile      = open('../../../stm/build/vs2008/example_single_channel/temp.dat', 'r')
+datafile_ref  = open('../../../stm/build/vs2008/example_single_channel/temp_ref.dat', 'r')
+datalines     = datafile.readlines()
+datalines_ref = datafile_ref.readlines()
+dataraw=[]
 data=[]
-data.append(line.split() for line in datafile[0])
-data.append(line.split() for line in datafile[1])
+i=0
 
-# transpose to [(x1, x2,... xn), (y1, y2, ... yn)]
-data[1] = zip(*data[1])
-data[0] = zip(*data[0])
+# todo: rewrite below code into a function
 
-x0 = np.array(map(float, data[0][0]))
-y0 = np.array(map(float, data[0][1]))
+while i< len(datalines):
 
-x = np.array(map(float, data[1][0]))
-y = np.array(map(float, data[1][1]))
+    if "zone" in datalines[i]:
+        nx = int(datalines[i].split()[3])
+        nplot += 1 
+        
+        # read x y 
+        dataraw.append(line.split() for line in datalines[i+1:i+nx+1])
+        
+        # fast forward
+        i += nx
 
-n=10000
+    else:
+        i += 1
+        
+x=[]
+y=[]
 
-x_exact = np.linspace(float(x[0]), float(x[-1]),n)
-y_exact = np.zeros(n).tolist()
+for set in dataraw:
+    # transpose to [(x1, x2,... xn), (y1, y2, ... yn)]
+    datatranspose =  zip(*set)
+    
+    x.append(np.array(map(float,datatranspose[0]) ))
+    y.append(np.array(map(float,datatranspose[1]) ))
+    
 
-for i in range(n):
-    if (x_exact[i] >= 10. and x_exact[i] <= 40.):
-        y_exact[i] = 5.
 
-y_exact =np.array(y_exact)
+
+v = [xmin,xmax,ymin,ymax]
 
 def plot():
 
     pl.figure(1)
     pl.xlabel('x (m)')
     pl.ylabel('concentration')    
-    pl.plot(x0,y0,'ro',x_exact,y_exact,'g')
-    #pl.axis('scaled')
+    pl.plot(x[0],y[0],'ro',x[0],y[0],'g')
+    pl.axis(v)
 
-    pl.savefig("test.pdf", dpi=None, facecolor='w', edgecolor='w',
+    pl.savefig("test1.pdf", dpi=None, facecolor='w', edgecolor='w',
         orientation='portrait', papertype=None, format='pdf',
         transparent=False)
 
     pl.figure(2)
     pl.xlabel('x (m)')
     pl.ylabel('concentration')
-    pl.plot(x,y,'ro',x_exact,y_exact,'g')
+    pl.plot(x[1],y[1],'ro',x[1],y[1],'g')
+    pl.axis(v)
 
+    pl.savefig("test2.pdf", dpi=None, facecolor='w', edgecolor='w',
+        orientation='portrait', papertype=None, format='pdf',
+        transparent=False)
 
 plot()
 pl.show()
