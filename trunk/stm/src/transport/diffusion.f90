@@ -74,10 +74,10 @@ real(stm_real), intent (out) :: conc(ncell,nvar)             !< Concentration at
 real(stm_real), intent (out) :: mass(ncell,nvar)             !< Mass (A*C) at new time
 real(stm_real), intent (in) :: mass_prev(ncell,nvar)         !< Mass (A*C) at old time
 real(stm_real), intent (in) :: conc_prev(ncell,nvar)         !< Concentration at old time
-real(stm_real), intent (in) :: area (ncell)             !< Cell-centered area at new time
-real(stm_real), intent (in) :: area_prev (ncell)        !< Cell-centered area at old time
-real(stm_real), intent (in) :: area_lo (ncell)          !< Low side area centered in time
-real(stm_real), intent (in) :: area_hi (ncell)          !< High side area centered in time 
+real(stm_real), intent (in) :: area (ncell)                  !< Cell-centered area at new time
+real(stm_real), intent (in) :: area_prev (ncell)             !< Cell-centered area at old time
+real(stm_real), intent (in) :: area_lo (ncell)               !< Low side area centered in time
+real(stm_real), intent (in) :: area_hi (ncell)               !< High side area centered in time 
 real(stm_real), intent (in) :: area_lo_prev (ncell)          !< Low side area centered at old time
 real(stm_real), intent (in) :: area_hi_prev (ncell)          !< High side area centered at old time 
 real(stm_real), intent (in) :: disp_coef_lo (ncell,nvar)     !< Low side constituent dispersion coef. at new time
@@ -92,9 +92,9 @@ real(stm_real), intent (in) :: dx                            !< Spacial step
 ! ---- locals
 
 real(stm_real) :: explicit_diffuse_op(ncell,nvar)
-real(stm_real) :: down_diag(ncell)       !< Values of the coefficients below diagonal in matrix
-real(stm_real) :: center_diag(ncell)     !< Values of the coefficients at the diagonal in matrix
-real(stm_real) :: up_diag(ncell)         !< Values of the coefficients above the diagonal in matrix
+real(stm_real) :: down_diag(ncell)                            !< Values of the coefficients below diagonal in matrix
+real(stm_real) :: center_diag(ncell)                          !< Values of the coefficients at the diagonal in matrix
+real(stm_real) :: up_diag(ncell)                              !< Values of the coefficients above the diagonal in matrix
 real(stm_real) :: diffusive_flux_boundary(ncell,nvar)         !< Explicit diffusive boundary flux
 real(stm_real) :: diffusive_flux_interior(ncell,nvar)         !< Explicit diffusive interior flux
 real(stm_real) :: right_hand_side(ncell,nvar)         
@@ -200,8 +200,8 @@ integer, intent (in) :: nvar  !< Number of variables
 
 real(stm_real), intent (out) :: explicit_diffuse_op(ncell,nvar)             !< Explicit diffusion operator
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
-real(stm_real), intent (in)  :: area_lo_prev (ncell)                   !< Low side area at old time
-real(stm_real), intent (in)  :: area_hi_prev (ncell)                   !< High side area at old time 
+real(stm_real), intent (in)  :: area_lo_prev (ncell)                        !< Low side area at old time
+real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< High side area at old time 
 real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< Low side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: time                                        !< Current time
@@ -298,8 +298,8 @@ integer, intent (in) :: nvar  !< Number of variables
 
 real(stm_real), intent (out) :: diffusive_flux_interior(ncell,nvar)         !< Explicit diffusive flux
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
-real(stm_real), intent (in)  :: area_lo_prev (ncell)                   !< Low side area at old time
-real(stm_real), intent (in)  :: area_hi_prev (ncell)                   !< High side area at old time 
+real(stm_real), intent (in)  :: area_lo_prev (ncell)                        !< Low side area at old time
+real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< High side area at old time 
 real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< Low side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: time                                        !< Current time
@@ -330,8 +330,8 @@ integer, intent (in) :: nvar  !< Number of variables
 
 real(stm_real), intent (out) :: diffusive_flux_boundary(ncell,nvar)         !< Explicit diffusive boundary flux
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
-real(stm_real), intent (in)  :: area_lo_prev (ncell)                   !< Low side area at old time
-real(stm_real), intent (in)  :: area_hi_prev (ncell)                   !< High side area at old time 
+real(stm_real), intent (in)  :: area_lo_prev (ncell)                        !< Low side area at old time
+real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< High side area at old time 
 real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< Low side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: time                                        !< Current time
@@ -369,10 +369,10 @@ integer, intent (in) :: nvar  !< Number of variables
 
 real(stm_real), intent (out) :: right_hand_side(ncell,nvar)                 !< The right hand side vector
 real(stm_real), intent (in)  :: explicit_diffuse_op (ncell,nvar)            !< Explicit diffusion operator
-real(stm_real), intent (in)  :: area_prev (ncell)                      !< Cell centered area at old time 
+real(stm_real), intent (in)  :: area_prev (ncell)                           !< Cell centered area at old time 
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
-real(stm_real), intent (in)  :: area_lo_prev (ncell)                   !< Low side area at old time
-real(stm_real), intent (in)  :: area_hi_prev (ncell)                   !< High side area at old time 
+real(stm_real), intent (in)  :: area_lo_prev (ncell)                        !< Low side area at old time
+real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< High side area at old time 
 real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< Low side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: time                                        !< Current time
@@ -467,7 +467,7 @@ real(stm_real),intent (in)  :: right_hand_side(ncell) !< Values of the right han
 real(stm_real),intent (out) :: conc(ncell)            !< Values of the computed solution
 
 
-call tridi_solver ( center_diag ,           &
+call tridi_solver ( center_diag ,               &
                           up_diag,              &     
                           down_diag,            &
                           right_hand_side,      &
