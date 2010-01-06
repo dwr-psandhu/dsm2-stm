@@ -99,8 +99,8 @@ real(stm_real) :: diffusive_flux_boundary(ncell,nvar)         !< Explicit diffus
 real(stm_real) :: diffusive_flux_interior(ncell,nvar)         !< Explicit diffusive interior flux
 real(stm_real) :: right_hand_side(ncell,nvar)  
 ! to do : are they local?
-real(stm_real)  :: diffusive_flux_boundary_lo (nvar)
-real(stm_real)  :: diffusive_flux_boundary_hi (nvar)       
+real(stm_real)  :: diffusive_flux_boundary_lo (nvar)           !< flux Neumann B.C. at start
+real(stm_real)  :: diffusive_flux_boundary_hi (nvar)           !< flux Neumann B.C. at end 
 
 !todo: remove this
 mass=0
@@ -375,8 +375,8 @@ real(stm_real), intent (in)  :: time                                        !< C
 real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in)  :: dx                                          !< Spatial step  
 real(stm_real), intent (in)  :: dt                                          !< Time step                                   
-real(stm_real), intent (in)  :: diffusive_flux_boundary_lo (nvar)
-real(stm_real), intent (in)  :: diffusive_flux_boundary_hi (nvar) 
+real(stm_real), intent (in)  :: diffusive_flux_boundary_lo (nvar)           !< flux Nuemann B.C. at start
+real(stm_real), intent (in)  :: diffusive_flux_boundary_hi (nvar)           !< flux Nuemann B.C. at end
   
   
   !---- locals
@@ -444,7 +444,7 @@ real(stm_real), intent (in)  :: dt                                          !< T
                                   
 !---local                                  
 real(stm_real) :: explicit_diffuse_op (ncell,nvar)                          !< Explicit diffusion operator
-real(stm_real) :: d_star
+real(stm_real) :: d_star                                                    !< dt/dx2 or D star 
 
 integer :: icell
 integer :: ivar
