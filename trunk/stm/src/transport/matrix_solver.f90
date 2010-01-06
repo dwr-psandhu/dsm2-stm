@@ -52,15 +52,13 @@ pure subroutine tridi_solver ( center_diag ,                &
                                       down_diag,            &
                                       right_hand_side,      &
                                       conc,                 &
-                                      ncell,                &
-                                      nvar)
+                                      ncell)
 
 
     ! ----- args
 
     integer,intent (in) :: ncell                          !< Number of volumes 
-    integer, intent(in) :: nvar                           !< Number of variables 
-
+    
     real(stm_real),intent (in)  :: down_diag(ncell)       !< Values of the coefficients below diagonal in matrix
     real(stm_real),intent (in)  :: center_diag(ncell)     !< Values of the coefficients at the diagonal in matrix
     real(stm_real),intent (in)  :: up_diag(ncell)         !< Values of the coefficients above the diagonal in matrix
