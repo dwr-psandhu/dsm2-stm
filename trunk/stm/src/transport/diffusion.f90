@@ -92,12 +92,15 @@ real(stm_real), intent (in) :: dx                            !< Spacial step
 ! ---- locals
 
 real(stm_real) :: explicit_diffuse_op(ncell,nvar)
-real(stm_real) :: down_diag(ncell)                            !< Values of the coefficients below diagonal in matrix
-real(stm_real) :: center_diag(ncell)                          !< Values of the coefficients at the diagonal in matrix
-real(stm_real) :: up_diag(ncell)                              !< Values of the coefficients above the diagonal in matrix
+real(stm_real) :: down_diag(ncell,nvar)                            !< Values of the coefficients below diagonal in matrix
+real(stm_real) :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix
+real(stm_real) :: up_diag(ncell,nvar)                              !< Values of the coefficients above the diagonal in matrix
 real(stm_real) :: diffusive_flux_boundary(ncell,nvar)         !< Explicit diffusive boundary flux
 real(stm_real) :: diffusive_flux_interior(ncell,nvar)         !< Explicit diffusive interior flux
-real(stm_real) :: right_hand_side(ncell,nvar)         
+real(stm_real) :: right_hand_side(ncell,nvar)  
+! to do : are they local?
+real(stm_real)  :: diffusive_flux_boundary_lo (nvar)
+real(stm_real)  :: diffusive_flux_boundary_hi (nvar)       
 
 !todo: remove this
 mass=0
@@ -134,6 +137,8 @@ call construct_right_hand_side( right_hand_side,   &
                                   conc_prev,             &
                                   theta_stm,             &
                                   ncell,                 &
+                                  diffusive_flux_boundary_lo, &
+                                  diffusive_flux_boundary_hi, &
                                   time,                  &
                                   nvar,                  &  
                                   dx,                    &
@@ -213,9 +218,10 @@ integer :: icell
 real(stm_real):: diffusive_flux_interior_lo (ncell,nvar)
 real(stm_real):: diffusive_flux_interior_hi (ncell,nvar) 
 real(stm_real):: diffusive_flux_boundary_lo_prev (nvar)
-real(stm_real):: diffusive_flux_boundary_hi_prev (nvar) 
+real(stm_real):: diffusive_flux_boundary_hi_prev (nvar)
 real(stm_real):: diffusive_flux_boundary_lo (nvar)
 real(stm_real):: diffusive_flux_boundary_hi (nvar) 
+
 
 call interior_diffusive_flux (diffusive_flux_interior_lo,  &
                                diffusive_flux_interior_hi,  &
@@ -229,7 +235,7 @@ call interior_diffusive_flux (diffusive_flux_interior_lo,  &
                                             time,             &
                                             dx)
                                                         
-call bboundary_diffusive_flux(diffusive_flux_boundary_lo,            &
+call boundary_diffusive_flux(diffusive_flux_boundary_lo,            &
                                    diffusive_flux_boundary_hi,            &
                                    diffusive_flux_boundary_lo_prev,       &
                                    diffusive_flux_boundary_hi_prev,       &
@@ -317,7 +323,7 @@ integer, intent (in) :: nvar  !< Number of variables
 real(stm_real), intent (out) :: diffusive_flux_boundary_lo_prev(nvar)         !< Explicit diffusive boundary flux low side old time
 real(stm_real), intent (out) :: diffusive_flux_boundary_hi_prev(nvar)         !< Explicit diffusive boundary flux high side old time
 real(stm_real), intent (out) :: diffusive_flux_boundary_lo(nvar)              !< Explicit diffusive boundary flux low side new time
-real(stm_real), intent (out) :: diffusive_flux_boundary_hi(nvar)              !< Explicit diffusive boundary flux high sid new time
+real(stm_real), intent (out) :: diffusive_flux_boundary_hi(nvar)              !< Explicit diffusive boundary flux high side new time
    ! --- local
    integer :: ivar
    
@@ -346,6 +352,8 @@ pure subroutine construct_right_hand_side( right_hand_side,   &
                                   conc_prev,             &
                                   theta_stm,             &
                                   ncell,                 &
+                                  diffusive_flux_boundary_lo, &
+                                  diffusive_flux_boundary_hi, &
                                   time,                  &
                                   nvar,                  &  
                                   dx,                    &
@@ -367,6 +375,8 @@ real(stm_real), intent (in)  :: time                                        !< C
 real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in)  :: dx                                          !< Spatial step  
 real(stm_real), intent (in)  :: dt                                          !< Time step                                   
+real(stm_real), intent (in)  :: diffusive_flux_boundary_lo (nvar)
+real(stm_real), intent (in)  :: diffusive_flux_boundary_hi (nvar) 
   
   
   !---- locals
@@ -383,8 +393,8 @@ real(stm_real), intent (in)  :: dt                                          !< T
     
  end do
  
- !right_hand_side(1,ivar) = right_hand_side(1,ivar) -  
- !right_hand_side(ncell,ivar) = right_hand_side(ncell,ivar) +
+ right_hand_side(1,ivar) = right_hand_side(1,ivar) - dt*theta_stm* diffusive_flux_boundary_lo(ivar)  /dx 
+ right_hand_side(ncell,ivar) = right_hand_side(ncell,ivar) + dt*theta_stm* diffusive_flux_boundary_hi(ivar)  /dx
 
                                 
                                   
@@ -417,9 +427,9 @@ use stm_precision
 integer, intent (in) :: ncell !< Number of cells
 integer, intent (in) :: nvar  !< Number of variables
 
-real(stm_real),intent (out)  :: down_diag(ncell)                            !< Values of the coefficients below diagonal in matrix
-real(stm_real),intent (out)  :: center_diag(ncell)                          !< Values of the coefficients at the diagonal in matrix
-real(stm_real),intent (out)  :: up_diag(ncell)                              !< Values of the coefficients above the diagonal in matrix
+real(stm_real),intent (out)  :: down_diag(ncell,nvar)                            !< Values of the coefficients below diagonal in matrix
+real(stm_real),intent (out)  :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix
+real(stm_real),intent (out)  :: up_diag(ncell,nvar)                              !< Values of the coefficients above the diagonal in matrix
 real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
 real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration at new time
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
@@ -433,21 +443,39 @@ real(stm_real), intent (in)  :: dx                                          !< S
 real(stm_real), intent (in)  :: dt                                          !< Time step                                   
                                   
 !---local                                  
-real(stm_real) :: explicit_diffuse_op (ncell,nvar)                         !< Explicit diffusion operator
-                                  
-                                  
-!todo: remove this                                  
-center_diag=0
-up_diag=0    
-down_diag=0                                 
-                                  
-                                  
-                                  
-                                  
-                                  
-                                  
+real(stm_real) :: explicit_diffuse_op (ncell,nvar)                          !< Explicit diffusion operator
+real(stm_real) :: d_star
+
+integer :: icell
+integer :: ivar
+
+d_star = dt/dx/dx
+  
+    do ivar = 1,nvar 
+        do icell = 2,ncell-1
+                                          
+         down_diag(icell,ivar) = - theta_stm*d_star*area_lo(icell)*disp_coef_lo(icell,ivar) 
+         
+         center_diag(icell,ivar) = area(icell) + theta_stm*d_star*(area_hi(icell)*disp_coef_hi(icell,ivar) + area_lo(icell)*disp_coef_lo(icell,ivar))
+         
+         up_diag(icell,ivar) = - theta_stm*d_star*area_hi(icell)*disp_coef_hi(icell,ivar)       
+             
+        end do                            
+                             
+        center_diag(1,ivar) = area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,ivar) )
+         
+        up_diag(1,ivar) = - theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,ivar)+ area_lo(1)*disp_coef_lo(1,ivar) )        
+        
+        down_diag(ncell,ivar)  =   - theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,ivar)+ area_lo(ncell)*disp_coef_lo(ncell,ivar) )
+         
+        center_diag(ncell,ivar) = area(ncell) + theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,ivar) )
+    
+    end do     
+           
+    
 return
 end subroutine construct_diffusion_matrix
+
 !/////////////////////////////////////////////////
 !> Solve the system of linear equations
 subroutine solve ( center_diag ,           &
@@ -471,15 +499,18 @@ real(stm_real),intent (in)  :: up_diag(ncell)         !< Values of the coefficie
 real(stm_real),intent (in)  :: right_hand_side(ncell) !< Values of the right hand side vector
 real(stm_real),intent (out) :: conc(ncell)            !< Values of the computed solution
 
+! --- local
+integer :: ivar
 
-call tridi_solver ( center_diag ,               &
-                          up_diag,              &     
-                          down_diag,            &
-                          right_hand_side,      &
-                          conc,                 &
-                          ncell,                &
-                          nvar)
+do ivar = 1 ,nvar
 
+    call tridi_solver ( center_diag ,               &
+                              up_diag,              &     
+                              down_diag,            &
+                              right_hand_side,      &
+                              conc,                 &
+                              ncell)
+end do
 
 return
 end subroutine solve
