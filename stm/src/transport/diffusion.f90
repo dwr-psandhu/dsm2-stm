@@ -210,13 +210,14 @@ real(stm_real), intent (in)  :: dx                                          !< S
 !--- locals
 integer :: ivar
 integer :: icell
-real(stm_real):: diffusive_flux_interior (ncell,nvar) 
-real(stm_real):: diffusive_flux_boundary (ncell,nvar) 
+real(stm_real):: diffusive_flux_interior_lo (ncell,nvar)
+real(stm_real):: diffusive_flux_interior_hi (ncell,nvar) 
+real(stm_real):: diffusive_flux_boundary_lo (nvar)
+real(stm_real):: diffusive_flux_boundary_hi (nvar) 
 
-!todo: remove this
-explicit_diffuse_op =0
 
-call interior_diffusive_flux ( diffusive_flux_interior,       &
+call interior_diffusive_flux (diffusive_flux_interior_lo,  &
+                               diffusive_flux_interior_hi,  &
                                             conc_prev,        &
                                             area_lo_prev,     &
                                             area_hi_prev,     &
@@ -227,59 +228,36 @@ call interior_diffusive_flux ( diffusive_flux_interior,       &
                                             time,             &
                                             dx)
                                                         
-call boundary_diffusive_flux ( diffusive_flux_boundary,       &
-                                            conc_prev,        &
-                                            area_lo_prev,     &
-                                            area_hi_prev,     &
-                                            disp_coef_lo_prev,&  
-                                            disp_coef_hi_prev,&
-                                            ncell,            &
-                                            nvar,             &
-                                            time,             &
-                                            dx)
-
+call boundary_diffusive_flux(diffusive_flux_boundary_lo,       &
+                             diffusive_flux_boundary_hi,       &
+                                                conc_prev,        &
+                                                area_lo_prev,     &
+                                                area_hi_prev,     &
+                                                disp_coef_lo_prev,&  
+                                                disp_coef_hi_prev,&
+                                                ncell,            &
+                                                nvar,             &
+                                                time,             &
+                                                dx)
         
-!do ivar = 1, nvar 
-!    do icell = 2,ncell-1
-!    
-!       
-!        explicit_diffusion_term(icell,ivar) =  (area_hi(icell,ivar)*disp_coef_hi(icell,ivar)* conc_prev(icell+1,ivar) &
-!                                              -  area_hi(icell,ivar)*disp_coef_hi(icell,ivar)*conc_prev(icell,ivar) &
-!                                              -  area_lo(icell,ivar)*disp_coef_lo(icell,ivar)*conc_prev(icell,ivar)   &
-!                                              +  area_lo(icell,ivar)*disp_coef_lo(icell,ivar)*conc_prev(icell-1,ivar) )/dx/dx
-!                
-!               
-!           
-!    end do
-!
-!
-!  ! ----  boundary conditions on on lo side of domain
-!  ! todo: make dtbydx2 just dx and separate into diffuse_flux_hi and diffuse_flux_lo
-!  ! then call boundary_diffusive_flux
-!  ! then difference the fluxes one more time
-!        explicit_diffusion_term(1,ivar) = (area_hi(1,ivar)*disp_coef_hi(1,ivar)* conc_prev(2,ivar) &
-!                                            -  area_hi(1,ivar)*disp_coef_hi(1,ivar)*conc_prev(1,ivar) &
-!                                            -  area_lo(1,ivar)*disp_coef_lo(1,ivar)*conc_prev(1,ivar) &
-!                                            +  area_lo(1,ivar)*disp_coef_lo(1,ivar)*(conc_prev(2,ivar)- two * dx * bc_start_flux ) )/dx/dx
-!        
-!   
-!        
-!        
-!  ! ----  boundary conditions on on hi side of domain
-!        explicit_diffusion_term(ncell,ivar) =  (area_hi(ncell,ivar)*disp_coef_hi(ncell,ivar)* (conc_prev(ncell-1,ivar)+ two*dx*bc_end_flux) &
-!                                                -  area_hi(ncell,ivar)*disp_coef_hi(ncell,ivar)*conc_prev(ncell,ivar)  &
-!                                                -  area_lo(ncell,ivar)*disp_coef_lo(ncell,ivar)*conc_prev(ncell,ivar) &
-!                                                +  area_lo(ncell,ivar)*disp_coef_lo(ncell,ivar)*conc_prev(icell-1,ivar) )/dx/dx
-!        
-!        
-!    end do                          
-                                  
+   explicit_diffuse_op (1,:) = (diffusive_flux_interior_hi(1,:) - diffusive_flux_boundary_lo )/dx
+   explicit_diffuse_op (ncell,:) = (diffusive_flux_boundary_hi - diffusive_flux_interior_lo(ncell,:) )/dx
          
+    do ivar = 1,nvar
+        do icell = 2,ncell-1 
+         
+         explicit_diffuse_op (icell,ivar) = (diffusive_flux_interior_hi (icell,ivar) - diffusive_flux_interior_lo (icell,ivar))/dx
+        
+        end do
+    end do
+    
+    
 return
 end subroutine explicit_diffusion_operator 
 
 
-subroutine interior_diffusive_flux (diffusive_flux_interior,  &
+subroutine interior_diffusive_flux (diffusive_flux_interior_lo,  &
+                                    diffusive_flux_interior_hi,  &
                                             conc_prev,        &
                                             area_lo_prev,     &
                                             area_hi_prev,     &
@@ -296,7 +274,8 @@ use stm_precision
 integer, intent (in) :: ncell !< Number of cells
 integer, intent (in) :: nvar  !< Number of variables
 
-real(stm_real), intent (out) :: diffusive_flux_interior(ncell,nvar)         !< Explicit diffusive flux
+real(stm_real), intent (out) :: diffusive_flux_interior_hi(ncell,nvar)      !< Explicit diffusive flux high side
+real(stm_real), intent (out) :: diffusive_flux_interior_lo(ncell,nvar)      !< Explicit diffusive flux low side
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
 real(stm_real), intent (in)  :: area_lo_prev (ncell)                        !< Low side area at old time
 real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< High side area at old time 
@@ -305,13 +284,29 @@ real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< H
 real(stm_real), intent (in)  :: time                                        !< Current time
 real(stm_real), intent (in)  :: dx                                          !< Spatial step   
 
-!todo: remove this
-diffusive_flux_interior=0
-                                            
+!--- local
+integer :: icell 
+integer :: ivar 
+
+
+
+do ivar = 1,nvar
+    do icell = 2,ncell
+      
+            diffusive_flux_interior_lo(icell,ivar) = (area_lo(icell,ivar)*disp_coef_lo(icell,ivar)* (conc_prev(icell,ivar)- conc_prev(icell-1,ivar)))/dx
+                       
+    end do
+    
+end do 
+
+  diffusive_flux_interior_hi(1:ncell-1,:) =  diffusive_flux_interior_lo(2:ncell,:)                 
+
+                                        
 return
 end subroutine interior_diffusive_flux
                                                       
-subroutine boundary_diffusive_flux(diffusive_flux_boundary,       &
+subroutine boundary_diffusive_flux(diffusive_flux_boundary_lo,       &
+                                   diffusive_flux_boundary_hi,       &
                                                 conc_prev,        &
                                                 area_lo_prev,     &
                                                 area_hi_prev,     &
@@ -321,6 +316,8 @@ subroutine boundary_diffusive_flux(diffusive_flux_boundary,       &
                                                 nvar,             &
                                                 time,             &
                                                 dx)
+                                                
+  
 use stm_precision
 
  ! --- args
@@ -328,7 +325,8 @@ use stm_precision
 integer, intent (in) :: ncell !< Number of cells
 integer, intent (in) :: nvar  !< Number of variables
 
-real(stm_real), intent (out) :: diffusive_flux_boundary(ncell,nvar)         !< Explicit diffusive boundary flux
+real(stm_real), intent (out) :: diffusive_flux_boundary_lo(nvar)         !< Explicit diffusive boundary flux low side
+real(stm_real), intent (out) :: diffusive_flux_boundary_hi(nvar)         !< Explicit diffusive boundary flux high side
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
 real(stm_real), intent (in)  :: area_lo_prev (ncell)                        !< Low side area at old time
 real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< High side area at old time 
@@ -336,9 +334,10 @@ real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< L
 real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: time                                        !< Current time
 real(stm_real), intent (in)  :: dx                                          !< Spatial step   
-                                                                                           
-!todo: remove this
-diffusive_flux_boundary = 0                                               
+   
+diffusive_flux_boundary_lo= zero
+diffusive_flux_boundary_hi= zero                                                                                           
+                                             
                                                 
 return
 end subroutine boundary_diffusive_flux
@@ -415,11 +414,11 @@ integer, intent (in) :: nvar  !< Number of variables
 real(stm_real),intent (out)  :: down_diag(ncell)                            !< Values of the coefficients below diagonal in matrix
 real(stm_real),intent (out)  :: center_diag(ncell)                          !< Values of the coefficients at the diagonal in matrix
 real(stm_real),intent (out)  :: up_diag(ncell)                              !< Values of the coefficients above the diagonal in matrix
-real(stm_real), intent (in)  :: area (ncell)                           !< Cell centered area at new time 
+real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
 real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration at new time
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
-real(stm_real), intent (in)  :: area_lo(ncell)                   !< Low side area at new time
-real(stm_real), intent (in)  :: area_hi(ncell)                   !< High side area at new time 
+real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
+real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
 real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
 real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
 real(stm_real), intent (in)  :: time                                        !< Current time
@@ -428,7 +427,7 @@ real(stm_real), intent (in)  :: dx                                          !< S
 real(stm_real), intent (in)  :: dt                                          !< Time step                                   
                                   
 !---local                                  
-real(stm_real) :: explicit_diffuse_op (ncell,nvar)            !< Explicit diffusion operator
+real(stm_real) :: explicit_diffuse_op (ncell,nvar)                         !< Explicit diffusion operator
                                   
                                   
 !todo: remove this                                  
