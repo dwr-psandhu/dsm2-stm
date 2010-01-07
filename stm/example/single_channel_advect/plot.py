@@ -1,6 +1,7 @@
 import pylab as pl
 import numpy as np
 import sys
+import re
 
 for arg in sys.argv:
     print arg
@@ -14,6 +15,8 @@ ymax = 6.
 nx = 0
 nplot = 0 
 
+
+# todo: read these file names from a input file or system arguments.
 datafile      = open('../../../stm/build/vs2008/example_single_channel/temp.dat', 'r')
 datafile_ref  = open('../../../stm/build/vs2008/example_single_channel/temp_ref.dat', 'r')
 datalines     = datafile.readlines()
@@ -27,7 +30,14 @@ i=0
 while i< len(datalines):
 
     if "zone" in datalines[i]:
-        nx = int(datalines[i].split()[3])
+        p = re.compile('i.*\= *(\d+)[, ].+\"(.+)\"')
+        ps = p.search(datalines[i])
+        
+        print ps.group(0)
+        print ps.group(1)
+        print ps.group(2)
+        
+        nx = int(ps.group(1))
         nplot += 1 
         
         # read x y 
