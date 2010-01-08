@@ -22,15 +22,18 @@
 !>@ingroup example
 module example_advection
 
+    use stm_precision
+
     contains
     !> Subroutine that runs a uniform flow advection
     subroutine example_advection_uniform_flow
-        use stm_precision
+
         use state_variables
         use primitive_variable_conversion
         use advection
         use example_initial_conditions
         use logging
+        !use m_vstring
 
         !use example_hydro_data
         !use example_sources
@@ -40,8 +43,8 @@ module example_advection
 
         !--- Problem variables
 
-        integer, parameter  :: nstep  = 20
-        integer, parameter  :: nx = 50
+        integer, parameter  :: nstep  = 40
+        integer, parameter  :: nx = 20
         real(STM_REAL), parameter :: cfl = 0.8
 
         integer, parameter  :: nconc = 2
@@ -59,9 +62,12 @@ module example_advection
 
         !------ local
         real(STM_REAL), allocatable :: reference(:)
-        real(STM_REAL), allocatable :: x(:)
+        real(STM_REAL), allocatable :: x(:), x_shifted(:)
+        real(STM_REAL), allocatable :: conc_exact(:)
         character(LEN=64) :: filename
-        integer :: i    
+        integer :: i
+        integer :: funit, funit_ref   
+
 
         call allocate_state(nx,nconc)
         
@@ -77,7 +83,7 @@ module example_advection
         dx = domain_length/dble(nx)
         dt = cfl*dx/vel   
         
-        allocate(x(nx))
+        allocate(x(nx),x_shifted(nx))
         do i = 1,nx                
             x(i) = dx*(dble(i)-half)+origin
         end do        
@@ -92,8 +98,17 @@ module example_advection
 
         time = zero
 
-        write(filename, "(a)"), "uniform_rectangular_at_itime_0.txt" 
-        call printout(conc(:,2),x,filename)
+        write(filename, "(a)"), "uniform_rectangular" 
+
+        !call printout(conc(:,2),x,filename)
+
+        funit     = 11
+        funit_ref = 12
+        open(unit = funit,     file = trim(filename)//".dat",     status = 'REPLACE')         
+        open(unit = funit_ref, file = trim(filename)//"_ref.dat", status = 'REPLACE')        
+        call printout(conc(:,2),x,time,11)
+        call printout(conc(:,2),x,time,12)
+        
 
         ! forwards
         do itime = 1,nstep
@@ -117,15 +132,40 @@ module example_advection
 
               mass_prev = mass
               call cons2prim(conc,mass,area,nx,nconc) 
+              
+              call printout(conc(:,2),x,time,funit)
 
-              write(filename, "(a\i3\'.txt')"), "uniform_rectangular_at_itime_", itime 
-              call printout(conc(:,2),x,filename)
+              call x_shift(x,x_shifted,nx,vel,time)
+              
+              call printout(reference,x_shifted,time,funit_ref)
 
         end do
-
+        close(funit)
+        close(funit_ref)
         deallocate(reference)
         call deallocate_state
         
     end subroutine example_advection_uniform_flow
+
+    !< simple shift function for uniform advection plot
+    subroutine x_shift(x_ref,x_shifted,nloc,vel,time)
+
+        implicit none
+
+        real(STM_REAL), intent(out)    :: x_shifted(nloc)  !< shifted x coordinate
+        real(STM_REAL), intent(in)     :: x_ref(nloc)      !< reference x coordinate        
+        real(STM_REAL), intent(in)     :: vel          !< constant velocity
+        real(STM_REAL), intent(in)     :: time         !< solution at this time
+        integer,        intent(in)     :: nloc         !< size of array
+
+        !--local 
+        integer :: i
+        
+        do i = 1, nloc
+            x_shifted(i) = x_ref(i) + vel*time
+        end do
+        
+        
+    end subroutine  
     
 end module example_advection

@@ -22,32 +22,61 @@
 !>@ingroup test
 module logging
 
-contains
-
-!> Calculate the L1, L2 and Linf error between calculated values and a reference
-
-!< Prints an array to file
-subroutine printout(arr,x,filename)
-
     use stm_precision
-    implicit none
-    real(STM_REAL),intent(in) :: arr(:)         !< array values
-    real(STM_REAL),intent(in) :: x(:)           !< x values
-    character(LEN=*)          :: filename       !< name of file to write
-    integer                   :: icell
     
-    !--local
-    integer                   :: nx
+    interface printout
+        module procedure printout
+        module procedure printout_append
+    end interface
     
-    nx = size(arr)
     
-    open(unit = 11, file = filename)
-    !write(11,'(a,i5)')    "nx    ", nx
+    contains
     
-    do icell = 1,nx
-      write(11,'(f10.5, f20.10)') x(icell), arr(icell)
-    end do
-    close(11)
-end subroutine
+    !< Prints an array to file
+    subroutine printout(arr,x,filename)
+
+        implicit none
+        real(STM_REAL),intent(in) :: arr(:)         !< array values
+        real(STM_REAL),intent(in) :: x(:)           !< x values
+        character(LEN=*)          :: filename       !< name of file to write
+        integer                   :: icell
+        
+        !--local
+        integer                   :: nx
+        
+        nx = size(arr)
+        
+        open(unit = 11, file = filename)
+        
+        do icell = 1,nx
+          write(11,'(f10.5, f20.10)') x(icell), arr(icell)
+        end do
+        close(11)
+    end subroutine
+
+    !< Prints an array to file
+    subroutine printout_append(arr,x,time,funit)
+
+        implicit none
+        real(STM_REAL),   intent(in)   :: arr(:)         !< array values
+        real(STM_REAL),   intent(in)   :: x(:)           !< x coordinate
+        real(STM_REAL),   intent(in)   :: time           !< time
+        integer,          intent(in)   :: funit          !< file unit
+                
+        !--local
+        integer           :: nx
+        integer           :: icell       
+
+        
+        nx = size(arr)        
+
+        write(funit,*) 'variables = "x", "conc"'
+        write(funit,*) "zone i = ", nx, ', t="', time, '"'
+        do icell = 1,nx
+          write(funit,'(f10.5, f20.10)') x(icell), arr(icell)
+        end do
+
+    end subroutine
+
 
 end module
