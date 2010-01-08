@@ -17,8 +17,8 @@ nplot = 0
 
 
 # todo: read these file names from a input file or system arguments.
-datafile      = open('../../../stm/build/vs2008/example_single_channel/temp.dat', 'r')
-datafile_ref  = open('../../../stm/build/vs2008/example_single_channel/temp_ref.dat', 'r')
+datafile      = open('../../../stm/build/vs2008/example_single_channel/uniform_rectangular.dat', 'r')
+datafile_ref  = open('../../../stm/build/vs2008/example_single_channel/uniform_rectangular_ref.dat', 'r')
 datalines     = datafile.readlines()
 datalines_ref = datafile_ref.readlines()
 dataraw=[]
