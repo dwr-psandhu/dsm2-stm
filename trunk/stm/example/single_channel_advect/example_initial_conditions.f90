@@ -91,7 +91,26 @@ module example_initial_conditions
         
         return
     end subroutine    
-    
+
+    subroutine fill_triangular(array,x,nloc,xlo,xhi,fill,fill_else)
+
+        implicit none
+        real(STM_REAL), intent(out) :: array(nloc)  !< array to be filled
+        real(STM_REAL), intent(in)  :: x(nloc)      !< cell-centered x coordinate
+        integer,        intent(in)  :: nloc         !< size of array
+        real(STM_REAL), intent(in)  :: xlo          !< lo side boundary of fill
+        real(STM_REAL), intent(in)  :: xhi          !< hi side boundary of fill
+        real(STM_REAL), intent(in)  :: fill         !< filled value between xlo and xhi
+        real(STM_REAL), intent(in)  :: fill_else    !< filled value if not between xlo and xhi
+                
+        array = fill_else
+        
+        where (x > xlo .and. x< xhi)
+            array = fill
+        end where
+        
+        return
+    end subroutine     
     
     !> Initialize the concentration fields with a step function
     subroutine fill_discontinuity(vals,nloc,origin,dx,x0,value_lo,value_hi)
