@@ -33,7 +33,6 @@ module example_advection
         use advection
         use example_initial_conditions
         use logging
-        !use m_vstring
 
         !use example_hydro_data
         !use example_sources
@@ -43,9 +42,9 @@ module example_advection
 
         !--- Problem variables
 
-        integer, parameter  :: nstep  = 40
-        integer, parameter  :: nx = 20
-        real(STM_REAL), parameter :: cfl = 0.8
+        integer, parameter  :: nstep  = 100
+        integer, parameter  :: nx = 100
+        real(STM_REAL), parameter :: cfl = 0.5
 
         integer, parameter  :: nconc = 2
         real(STM_REAL), parameter :: origin = zero        ! meters
