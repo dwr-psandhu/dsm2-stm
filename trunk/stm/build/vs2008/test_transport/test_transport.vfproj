@@ -31,10 +31,13 @@
 		<File RelativePath="..\..\..\test\transport\example_hydro_data.f90"/>
 		<File RelativePath="..\..\..\example\single_channel_advect\example_initial_conditions.f90"/>
 		<File RelativePath="..\..\..\test\transport\example_sources.f90"/>
+		<File RelativePath=".\test_boundary_diffusive_flux.F90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion.f90"/>
 		<File RelativePath="..\..\..\test\example\test_example_initial_conditions.f90"/>
+		<File RelativePath=".\test_explicit_diffusion_operator.F90"/>
 		<File RelativePath="..\..\..\test\transport\test_extrapolate.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_gradient.f90"/>
+		<File RelativePath=".\test_interior_diffusive_flux.F90"/>
 		<File RelativePath=".\test_matrix_solver.F90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_transport_driver.f90"/>
