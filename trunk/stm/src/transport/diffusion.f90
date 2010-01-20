@@ -124,22 +124,22 @@ call explicit_diffusion_operator(explicit_diffuse_op,     &
                                                                   
 
 
-call construct_right_hand_side( right_hand_side,   & 
-                                  explicit_diffuse_op,   & 
-                                  area_prev,             &
-                                  area_lo_prev,          &
-                                  area_hi_prev,          &
-                                  disp_coef_lo_prev,     &
-                                  disp_coef_hi_prev,     &
-                                  conc_prev,             &
-                                  theta_stm,             &
-                                  ncell,                 &
-                                  diffusive_flux_boundary_lo, &
-                                  diffusive_flux_boundary_hi, &
-                                  time,                  &
-                                  nvar,                  &  
-                                  dx,                    &
-                                  dt)
+!call construct_right_hand_side( right_hand_side,   & 
+!                                  explicit_diffuse_op,   & 
+!                                  area_prev,             &
+!                                  area_lo_prev,          &
+!                                  area_hi_prev,          &
+!                                  disp_coef_lo_prev,     &
+!                                  disp_coef_hi_prev,     &
+!                                  conc_prev,             &
+!                                  theta_stm,             &
+!                                  ncell,                 &
+!                                  diffusive_flux_boundary_lo, &
+!                                  diffusive_flux_boundary_hi, &
+!                                  time,                  &
+!                                  nvar,                  &  
+!                                  dx,                    &
+!                                  dt)
                                         
 ! Construct the matrix for the diffusion solver
 ! without boundary condition modification or structure on interior of domain
