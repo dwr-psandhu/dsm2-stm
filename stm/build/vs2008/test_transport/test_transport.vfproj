@@ -35,6 +35,7 @@
 		<File RelativePath="..\..\..\test\example\test_example_initial_conditions.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_extrapolate.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_gradient.f90"/>
+		<File RelativePath=".\test_matrix_solver.F90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_transport_driver.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_uniform_flow.f90"/></Filter></Files>
