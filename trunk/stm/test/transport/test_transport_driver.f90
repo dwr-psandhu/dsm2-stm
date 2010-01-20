@@ -27,6 +27,7 @@ program test_transport_driver
   use test_extrapolate
   use test_prim_cons_conversion
   use test_uniform_flow
+  use test_matrix_solver
   use example_initial_conditions
   
   call init_fruit
@@ -37,6 +38,9 @@ program test_transport_driver
   call test_example_initial_conditions
   call test_extrapolation
   call test_uniform_flow_advection
+  
+  call test_tridi_solver
+  
   
   call fruit_summary
   pause
