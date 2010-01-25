@@ -1,13 +1,9 @@
-Sediment Transport Project
+= Sediment Transport Project =
 
 = Introduction =
 
-Add your content here.
-
+ A Sediment and Transport Model (STM) is being developed as an expansion to the Delta Simulation Model 2 (DSM2). STM will be a one-dimensional transport model for the Delta that includes cohesive and non-cohesive sediment transport. 
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+ The [ProjectTaskPlan project plan] is under development.
