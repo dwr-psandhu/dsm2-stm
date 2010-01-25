@@ -33,6 +33,7 @@ program test_transport_driver
   use test_boundary_difussive_flux
   use test_interior_diffusive_flux
   use test_explicit_diffusion_operator
+  use test_interior_coef_matrix
   
       call init_fruit
       call test_diffusion_calc
@@ -46,6 +47,7 @@ program test_transport_driver
       call test_boundary_dif_flux
       call test_interior_dif_flux_sub
       call test_explicit_diffusion_op
+      call test_interior_coef_matrix_sub
     
   call fruit_summary
   pause
