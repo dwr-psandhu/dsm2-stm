@@ -390,9 +390,9 @@ real(stm_real), intent (in)  :: diffusive_flux_boundary_hi (nvar)
     end do      
     
  end do
- 
- right_hand_side(1,ivar) = right_hand_side(1,ivar) - dt*theta_stm* diffusive_flux_boundary_lo(ivar)  /dx 
- right_hand_side(ncell,ivar) = right_hand_side(ncell,ivar) + dt*theta_stm* diffusive_flux_boundary_hi(ivar)  /dx
+ ! to do :todo : take care of BC of right hand side
+! right_hand_side(1,ivar) = right_hand_side(1,ivar) - dt*theta_stm* diffusive_flux_boundary_lo(ivar)  /dx 
+! right_hand_side(ncell,ivar) = right_hand_side(ncell,ivar) + dt*theta_stm* diffusive_flux_boundary_hi(ivar)  /dx
 
                                 
                                   
