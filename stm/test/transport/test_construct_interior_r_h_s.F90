@@ -65,7 +65,7 @@ disp_coef_lo_prev(:,1) = (/0.9d0,0.92d0,0.94d0,0.96d0,0.98d0,1.d0/)
 disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1.d0,1.02d0/)
 time =LARGEREAL ! todo do wee need this?
 
-   
+   !--theta =1 
    
 call construct_right_hand_side( right_hand_side,   & 
                                   explicit_diffuse_op,   & 
@@ -85,9 +85,57 @@ call construct_right_hand_side( right_hand_side,   &
                                   dt)
                                   
                                   
-   print *,right_hand_side
-   pause
-     
+  call assertEquals (right_hand_side(2,1),29585d0,1d-8,"Error in r_h_s vector 2 ,theta=1")
+  call assertEquals (right_hand_side(5,1),30940d0,1d-8,"Error in r_h_s vector 5 ,theta=1")
+   
+     !--theta =0.6 
+     theta_stm = 0.6d0 
+   
+call construct_right_hand_side( right_hand_side,   & 
+                                  explicit_diffuse_op,   & 
+                                  area_prev,             &
+                                  area_lo_prev,          &
+                                  area_hi_prev,          &
+                                  disp_coef_lo_prev,     &
+                                  disp_coef_hi_prev,     &
+                                  conc_prev,             &
+                                  theta_stm,             &
+                                  ncell,                 &
+                                  diffusive_flux_boundary_lo, &
+                                  diffusive_flux_boundary_hi, &
+                                  time,                  &
+                                  nvar,                  &  
+                                  dx,                    &
+                                  dt)
+                                  
+                                  
+  call assertEquals (right_hand_side(2,1),29675.28d0,1d-8,"Error in r_h_s vector 2 ,theta = 0.6")
+  call assertEquals (right_hand_side(5,1),30939.84d0,1d-8,"Error in r_h_s vector 5 ,theta = 0.6")
+  
+  !--theta =0.1 
+     theta_stm = 0.1d0 
+   
+call construct_right_hand_side( right_hand_side,   & 
+                                  explicit_diffuse_op,   & 
+                                  area_prev,             &
+                                  area_lo_prev,          &
+                                  area_hi_prev,          &
+                                  disp_coef_lo_prev,     &
+                                  disp_coef_hi_prev,     &
+                                  conc_prev,             &
+                                  theta_stm,             &
+                                  ncell,                 &
+                                  diffusive_flux_boundary_lo, &
+                                  diffusive_flux_boundary_hi, &
+                                  time,                  &
+                                  nvar,                  &  
+                                  dx,                    &
+                                  dt)
+                                  
+                                  
+  call assertEquals (right_hand_side(2,1),29788.13d0,1d-8,"Error in r_h_s vector 2 ,theta = 0.1")
+  call assertEquals (right_hand_side(5,1),30939.64d0,1d-8,"Error in r_h_s vector 5 ,theta = 0.1")
+
 
 return
 end subroutine test_construct_interior_rhs
