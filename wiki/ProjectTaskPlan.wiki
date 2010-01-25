@@ -31,15 +31,32 @@ The main areas for STM Single Channel Model are shown below
  * [http://code.google.com/p/dsm2-stm/issues/detail?id=8 Issue 8: ] Adapt analytical tests to STM testing code framework
 
 ==Advection==
+ * Determine what needs to be done to complete this module
+ * Complete any code tests, if applicable
+ * Implement analytical tests in code test framework
 
 ==Input==
+ * Adapt input library from DSM2 or create simple input to later be replaced with DSM2 library
 
 ==Output==
+ * Determine how information will initially be written out from model
 
 ==Boundary Conditions==
+ * Implement Neuman boundary condition
+ * Implement Dirichlet boundary condition
+     ** have discussions on this topic
+     ** make appropriate changes in how to construct right hand side 
+     ** make appropriate changes in how to construct the diffusion matrix
+     ** adapt code tests if necessary
 
 ==Step through time==
+ * Write wrapper that steps through time, reads input, calls advection, then diffusion
 
 ==Source/Reaction==
+ * Have discussions on developing this module
 
 ==Test Reports==
+ * Create report generator for code and analytical tests
+   ** run STM tests
+   ** create plots
+   ** create PDF report with test description, expected outcome and plots
