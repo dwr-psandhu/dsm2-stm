@@ -1,0 +1,45 @@
+#summary A plan for this project
+#labels Featured,Phase-Design
+
+= Introduction =
+
+This document an evolving To Do List for the DSM2 Sediment and Transport Module (STM) project.
+
+The To Do Lists indicate tasks, work assignments, and status.
+
+It is intended that this To Do List will be frequently modified by the project participants to
+   * help plan the project direction
+   * break project goals into small tasks
+   * determine work assignments 
+   * prioritize tasks
+   * keep everyone informed of progress
+
+Future tasks can be listed in broad terms at first and then later refined to smaller tasks.
+
+
+= Details =
+The main areas for STM Single Channel Model are shown below
+
+==Diffusion==
+ * [http://code.google.com/p/dsm2-stm/issues/detail?id=1 Issue 1: ] Implement code tests as pass/fail tests for common scenarios and cases that could "break" the model 
+ ** [http://code.google.com/p/dsm2-stm/issues/detail?id=2 Issue 2: ] Explicit diffusion operator subroutine unit tests
+ ** [http://code.google.com/p/dsm2-stm/issues/detail?id=3 Issue 3: ] Interior diffusive flux subroutine unit tests
+ ** [http://code.google.com/p/dsm2-stm/issues/detail?id=4 Issue 4: ] Boundary diffusive flux subroutine unit tests
+ ** [http://code.google.com/p/dsm2-stm/issues/detail?id=5 Issue 5: ] Construct right hand side subroutine unit tests 
+ ** [http://code.google.com/p/dsm2-stm/issues/detail?id=6 Issue 6: ] Construct diffusion matrix subroutine unit tests
+ ** [http://code.google.com/p/dsm2-stm/issues/detail?id=7 Issue 7: ] Tri-diagonal matrix solver subroutine unit tests and analytical tests
+ * [http://code.google.com/p/dsm2-stm/issues/detail?id=8 Issue 8: ] Adapt analytical tests to STM testing code framework
+
+==Advection==
+
+==Input==
+
+==Output==
+
+==Boundary Conditions==
+
+==Step through time==
+
+==Source/Reaction==
+
+==Test Reports==
