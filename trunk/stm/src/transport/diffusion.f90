@@ -291,7 +291,7 @@ integer :: ivar
 do ivar = 1,nvar
     do icell = 2,ncell
       
-            diffusive_flux_interior_lo(icell,ivar) = (area_lo_prev(icell,ivar)*disp_coef_lo_prev(icell,ivar)* (conc_prev(icell,ivar)- conc_prev(icell-1,ivar)))/dx
+            diffusive_flux_interior_lo(icell,ivar) = (area_lo_prev(icell)*disp_coef_lo_prev(icell,ivar)* (conc_prev(icell,ivar)- conc_prev(icell-1,ivar)))/dx
                        
     end do
     
