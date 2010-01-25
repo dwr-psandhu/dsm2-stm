@@ -28,8 +28,8 @@ use stm_precision
 contains
 
 subroutine test_diffusion_calc
-
-  call assertEquals(two,one," test...")
+! todo: fill this part
+  !call assertEquals(two,one," test...")
 
 end subroutine
 
