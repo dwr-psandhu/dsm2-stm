@@ -21,6 +21,7 @@
 !> Main program unit for testing advection
 !>@ingroup test
 program test_transport_driver
+
   use fruit
   use test_diffusion
   use test_gradient
@@ -29,19 +30,24 @@ program test_transport_driver
   use test_uniform_flow
   use test_matrix_solver
   use example_initial_conditions
+  use test_boundary_difussive_flux
+  use test_interior_diffusive_flux
+  use test_explicit_diffusion_operator
   
-  call init_fruit
-  call test_diffusion_calc
-  call test_gradient_calc
-  call test_limiter
-  call test_prim_cons_convert
-  call test_example_initial_conditions
-  call test_extrapolation
-  call test_uniform_flow_advection
-  
-  call test_tridi_solver
-  
-  
+      call init_fruit
+      call test_diffusion_calc
+      call test_gradient_calc
+      call test_limiter
+      call test_prim_cons_convert
+      call test_example_initial_conditions
+      call test_extrapolation
+      call test_uniform_flow_advection
+      call test_tridi_solver
+      call test_boundary_dif_flux
+      call test_interior_dif_flux_sub
+      call test_explicit_diffusion_op
+    
   call fruit_summary
   pause
+  
 end program test_transport_driver
