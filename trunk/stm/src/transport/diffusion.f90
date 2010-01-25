@@ -149,8 +149,9 @@ call construct_diffusion_matrix( center_diag ,      &
                                   area,             &
                                   area_lo,          &
                                   area_hi,          &
-                                  conc,             &
-                                  conc_prev,        &
+                                  ! todo check these 
+!                                  conc,             &
+!                                  conc_prev,        &
                                   disp_coef_lo,     &
                                   disp_coef_hi,     &
                                   theta_stm,        &
@@ -407,8 +408,8 @@ subroutine construct_diffusion_matrix( center_diag ,      &
                                   area,             &
                                   area_lo,          &
                                   area_hi,          &
-                                  conc,             &
-                                  conc_prev,        &
+!                                  conc,             &
+!                                  conc_prev,        &
                                   disp_coef_lo,     &
                                   disp_coef_hi,     &
                                   theta_stm,        &
@@ -428,8 +429,8 @@ real(stm_real),intent (out)  :: down_diag(ncell,nvar)                           
 real(stm_real),intent (out)  :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix
 real(stm_real),intent (out)  :: up_diag(ncell,nvar)                              !< Values of the coefficients above the diagonal in matrix
 real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
-real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration at new time
-real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
+!real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration at new time
+!real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
 real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
 real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
 real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
