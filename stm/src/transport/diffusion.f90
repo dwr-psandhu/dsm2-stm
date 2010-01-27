@@ -100,8 +100,8 @@ real(stm_real) :: diffusive_flux_interior(ncell,nvar)         !< Explicit diffus
 real(stm_real) :: right_hand_side(ncell,nvar)         
 
 !todo: remove this
-mass=0
-conc=0
+!mass=0
+!conc=0
 
 ! This routine gives the effects of diffusion fluxes on each cell
 ! for a single time step (ie, explicit). This is needed for the advection step.
