@@ -49,6 +49,8 @@ subroutine diffuse(conc,             &
                   area_hi,           &
                   area_lo_prev,      &
                   area_hi_prev,      &
+                  diffusive_flux_boundary_lo, &
+                  diffusive_flux_boundary_hi, &
                   disp_coef_lo,      &  
                   disp_coef_hi,      &
                   disp_coef_lo_prev, &  
@@ -88,6 +90,8 @@ real(stm_real), intent (in) :: time                          !< Current time
 real(stm_real), intent (in) :: theta_stm                     !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in) :: dt                            !< Time step   
 real(stm_real), intent (in) :: dx                            !< Spacial step 
+real(stm_real), intent (in) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
+real(stm_real), intent (in) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side
 
 ! ---- locals
 
@@ -124,22 +128,22 @@ call explicit_diffusion_operator(explicit_diffuse_op,     &
                                                                   
 
 
-!call construct_right_hand_side( right_hand_side,   & 
-!                                  explicit_diffuse_op,   & 
-!                                  area_prev,             &
-!                                  area_lo_prev,          &
-!                                  area_hi_prev,          &
-!                                  disp_coef_lo_prev,     &
-!                                  disp_coef_hi_prev,     &
-!                                  conc_prev,             &
-!                                  theta_stm,             &
-!                                  ncell,                 &
-!                                  diffusive_flux_boundary_lo, &
-!                                  diffusive_flux_boundary_hi, &
-!                                  time,                  &
-!                                  nvar,                  &  
-!                                  dx,                    &
-!                                  dt)
+call construct_right_hand_side( right_hand_side,   & 
+                                  explicit_diffuse_op,   & 
+                                  area_prev,             &
+                                  area_lo_prev,          &
+                                  area_hi_prev,          &
+                                  disp_coef_lo_prev,     &
+                                  disp_coef_hi_prev,     &
+                                  conc_prev,             &
+                                  theta_stm,             &
+                                  ncell,                 &
+                                  diffusive_flux_boundary_lo, &
+                                  diffusive_flux_boundary_hi, &
+                                  time,                  &
+                                  nvar,                  &  
+                                  dx,                    &
+                                  dt)
                                         
 ! Construct the matrix for the diffusion solver
 ! without boundary condition modification or structure on interior of domain
@@ -373,8 +377,8 @@ real(stm_real), intent (in)  :: time                                        !< C
 real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in)  :: dx                                          !< Spatial step  
 real(stm_real), intent (in)  :: dt                                          !< Time step                                   
-real(stm_real), intent (in)  :: diffusive_flux_boundary_lo (nvar)
-real(stm_real), intent (in)  :: diffusive_flux_boundary_hi (nvar) 
+real(stm_real), intent (in) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
+real(stm_real), intent (in) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side 
   
   
   !---- locals
