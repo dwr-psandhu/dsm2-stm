@@ -160,9 +160,12 @@ do icoarse = 1,nrefine
     call deallocate_state
 end do
 
+! todo: four?
 call assert_true(error(1,2)/error(1,1) > four,"L-1 second order convergemce on uniform flow")
 call assert_true(error(2,2)/error(2,1) > four,"L-2 second order convergemce on uniform flow")
 ! This is known not to pass for second order convergence
+
+! todo: why 2.0d5 why not 4 ?
 call assert_true(error(3,2)/error(3,1) > 2.D5,"L-inf second order convergemce on uniform flow")
 
 return
