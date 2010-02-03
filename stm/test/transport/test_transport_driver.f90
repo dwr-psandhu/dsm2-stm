@@ -21,7 +21,7 @@
 !> Main program unit for testing advection
 !>@ingroup test
 program test_transport_driver
-
+!todo: remove !
   use fruit
   use test_diffusion
 !  use test_gradient
@@ -38,6 +38,7 @@ program test_transport_driver
 !  use test_diffusion_norms
   
       call init_fruit
+      
       call test_diffusion_calc
 !      call test_gradient_calc
 !      call test_limiter

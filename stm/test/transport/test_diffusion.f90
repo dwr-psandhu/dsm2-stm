@@ -31,7 +31,7 @@ contains
 
 subroutine test_diffusion_calc
 
-integer,parameter :: ncell = 4001                              !< Number of cells
+integer,parameter :: ncell = 126                              !< Number of cells
 integer,parameter :: nvar = 1                                  !< Number of variables
 
 real(stm_real) :: conc(ncell,nvar)              !< Concentration at new time
@@ -60,8 +60,11 @@ real(stm_real) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high sid
 integer :: iivar
 integer :: jjvar
 real(stm_real) :: xpos(ncell)
+! todo: remove this
+real(stm_real) :: dummy_higher
+real(stm_real) :: dummy_lower
 
-print *, ncell, "---------------"
+
 
 ! ---- these will remain same in the process
 time = LARGEREAL
@@ -83,6 +86,10 @@ disp_coef_hi_prev(:,:) = 0.1d0
 diffusive_flux_boundary_lo(nvar) = zero      
 diffusive_flux_boundary_hi (nvar) = zero   
 
+!todo: remove this
+print *,"Ncell", ncell, "---------------"
+print *,"Theta" , theta_stam ,"--------------"
+print *,"disp_coef", disp_coef_lo(1,1), "---------------"
 
 !---- t initial is t=1 sec 
 
@@ -91,9 +98,11 @@ do iivar = 1, ncell
  conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2.0d0)/(4.0d0*disp_coef_lo_prev(iivar,nvar)))
 
 end do
+
 open (4,file="IC.txt")
+
 do ivar=1,ncell
-write (4,*) xpos(ivar),conc_prev(ivar,1)
+    write (4,*) xpos(ivar),conc_prev(ivar,1)
 end do 
 
 
@@ -107,7 +116,7 @@ call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
 
 !---- march
 
-timemarch: do jjvar = 1,2
+timemarch: do jjvar = 1,1000
 
    !xmarch: do iivar = 1,ncell ! do I need this? I dont think so 
 
@@ -144,180 +153,184 @@ timemarch: do jjvar = 1,2
 end do timemarch
 
 open (3,file="results.txt")
+
 do ivar=1,ncell
-write (3,*) xpos(ivar),conc(ivar,1)
-end do 
+        if  ((-5.0d0 - 1d-8 < xpos(ivar)) .and. (xpos(ivar) < 5d0 + 1d-8 )) then
+        write (3,*) xpos(ivar),conc(ivar,1)
+    end if
+end do
+
 continue
-
-!! todo: remove these
-!print *, xpos(500) ,conc_prev(500,nvar)
-!print *, xpos(501) ,conc_prev(501,nvar)
-!print *, xpos(502) ,conc_prev(502,nvar)
-!print *, epsilon   
-!pause
-   
-  ! ---check symmetry in solutions
-  call assertEquals(conc_prev((ncell-1)/2 +1 + 5,nvar),conc_prev((ncell-1)/2 + 1 - 5,nvar),1d-9,"Diffusion solution is not symmetric! theta=0.6")
-!  call assertEquals(conc_prev((ncell-1)/2 +1 + 50,nvar),conc_prev((ncell-1)/2 + 1 - 50,nvar),1d-9,"Diffusion solution is not symmetric! theta=0.6")
-!  call assertEquals(conc_prev((ncell-1)/2 +1 + 250,nvar),conc_prev((ncell-1)/2 + 1 - 250,nvar),1d-9,"Diffusion solution is not symmetric!theta=0.6")
-!  
-!    !----- check with exact solution 
-!  call assertEquals(conc_prev(501 ,nvar),0.707106781d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
-!  call assertEquals(conc_prev(551,nvar),0.148217633d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
-!  call assertEquals(conc_prev(601,nvar),0.001365037d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
-  
-  
-  !--- test for theta = 1
-  theta_stm = 1d0
-  
-  !---- t initial is t=1 sec 
-
-do iivar = 1, ncell
- xpos(iivar) = (iivar -1 - (ncell-1)/2)*dx
- conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2)/4.0d0/disp_coef_lo_prev(iivar,nvar))
-
-end do
-
-call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
-
-! !todo: remove these 
-!print *, xpos(4) ,conc_prev(4,nvar)
-!print *, xpos(501) ,conc_prev(501,nvar)
-!print *, xpos(998) ,conc_prev(998,nvar)   
-!pause
-
-!---- march
-
-timemarch1: do jjvar = 1,1000
-
-   !xmarch: do iivar = 1,ncell ! do I need this? I dont think so 
-
-     call diffuse(conc,             &
-                  conc_prev,         &
-                  mass,              &
-                  mass_prev,         &
-                  area,              &
-                  area_prev,         &
-                  area_lo,           &
-                  area_hi,           &
-                  area_lo_prev,      &
-                  area_hi_prev,      &
-                  diffusive_flux_boundary_lo, &
-                  diffusive_flux_boundary_hi, &
-                  disp_coef_lo,      &  
-                  disp_coef_hi,      &
-                  disp_coef_lo_prev, &  
-                  disp_coef_hi_prev, &
-                  ncell,             &
-                  nvar,              &
-                  time,              &
-                  theta_stm,         &
-                  dt,                &
-                  dx                 )
-
-    conc_prev(:,nvar) = conc(:,nvar)
-    
-
-          
-    call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
-   
-    
-end do timemarch1
-
-!! todo: remove these
-!print *, xpos(500) ,conc_prev(500,nvar)
-!print *, xpos(501) ,conc_prev(501,nvar)
-!print *, xpos(502) ,conc_prev(502,nvar)
-!print *, epsilon   
-!pause
-   
-  ! ---check symmetry in solutions
-  call assertEquals(conc_prev((ncell-1)/2 +1 + 5,nvar),conc_prev((ncell-1)/2 + 1 - 5,nvar),1d-9,"Diffusion solution is not symmetric! theta=1")
-!  call assertEquals(conc_prev((ncell-1)/2 +1 + 50,nvar),conc_prev((ncell-1)/2 + 1 - 50,nvar),1d-9,"Diffusion solution is not symmetric! theta=1")
-!  call assertEquals(conc_prev((ncell-1)/2 +1 + 250,nvar),conc_prev((ncell-1)/2 + 1 - 250,nvar),1d-9,"Diffusion solution is not symmetric!theta=1")
-!  
-!    !----- check with exact solution 
-!  call assertEquals(conc_prev(501 ,nvar),0.707106781d0,1d-8,"Diffusion solution is not same as exact! theta=1")
-!  call assertEquals(conc_prev(551,nvar),0.148217633d0,1d-8,"Diffusion solution is not same as exact! theta=1")
-!  call assertEquals(conc_prev(601,nvar),0.001365037d0,1d-8,"Diffusion solution is not same as exact! theta=1")
-  
-  
-  !--- test for theta = 0.0
-  theta_stm = 0.0d0
-  
-  !---- t initial is t=1 sec 
-
-do iivar = 1, ncell
- xpos(iivar) = (iivar -1 - (ncell-1)/2)*dx
- conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2)/4.0d0/disp_coef_lo_prev(iivar,nvar))
-
-end do
-
-call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
-
-! !todo: remove these 
-!print *, xpos(4) ,conc_prev(4,nvar)
-!print *, xpos(501) ,conc_prev(501,nvar)
-!print *, xpos(998) ,conc_prev(998,nvar)   
-!pause
-
-!---- march
-
-timemarch2: do jjvar = 1,1000
-
-   !xmarch: do iivar = 1,ncell ! do I need this? I dont think so 
-
-     call diffuse(conc,             &
-                  conc_prev,         &
-                  mass,              &
-                  mass_prev,         &
-                  area,              &
-                  area_prev,         &
-                  area_lo,           &
-                  area_hi,           &
-                  area_lo_prev,      &
-                  area_hi_prev,      &
-                  diffusive_flux_boundary_lo, &
-                  diffusive_flux_boundary_hi, &
-                  disp_coef_lo,      &  
-                  disp_coef_hi,      &
-                  disp_coef_lo_prev, &  
-                  disp_coef_hi_prev, &
-                  ncell,             &
-                  nvar,              &
-                  time,              &
-                  theta_stm,         &
-                  dt,                &
-                  dx                 )
-
-    conc_prev(:,nvar) = conc(:,nvar)
-    
-
-          
-    call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
-   
-    
-end do timemarch2
-
-!! todo: remove these
-!print *, xpos(500) ,conc_prev(500,nvar)
-!print *, xpos(501) ,conc_prev(501,nvar)
-!print *, xpos(502) ,conc_prev(502,nvar)
-!print *, epsilon   
-!pause
-   
-  ! ---check symmetry in solutions
-  call assertEquals(conc_prev((ncell-1)/2 +1 + 5,nvar),conc_prev((ncell-1)/2 + 1 - 5,nvar),1d-9,"Diffusion solution is not symmetric! theta=0")
-!  call assertEquals(conc_prev((ncell-1)/2 +1 + 50,nvar),conc_prev((ncell-1)/2 + 1 - 50,nvar),1d-9,"Diffusion solution is not symmetric! theta=0")
-!  call assertEquals(conc_prev((ncell-1)/2 +1 + 250,nvar),conc_prev((ncell-1)/2 + 1 - 250,nvar),1d-9,"Diffusion solution is not symmetric!theta=0")
-!  
-!    !----- check with exact solution 
-!  call assertEquals(conc_prev(501 ,nvar),0.707106781d0,1d-8,"Diffusion solution is not same as exact! theta=0")
-!  call assertEquals(conc_prev(551,nvar),0.148217633d0,1d-8,"Diffusion solution is not same as exact! theta=0")
-!  call assertEquals(conc_prev(601,nvar),0.001365037d0,1d-8,"Diffusion solution is not same as exact! theta=0")
-! 
-!todo remove
-
+!!!
+!!!!! todo: remove these
+!!!!print *, xpos(500) ,conc_prev(500,nvar)
+!!!!print *, xpos(501) ,conc_prev(501,nvar)
+!!!!print *, xpos(502) ,conc_prev(502,nvar)
+!!!!print *, epsilon   
+!!!!pause
+!!!   
+!!!  ! ---check symmetry in solutions
+!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 5,nvar),conc_prev((ncell-1)/2 + 1 - 5,nvar),1d-9,"Diffusion solution is not symmetric! theta=0.6")
+!!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 50,nvar),conc_prev((ncell-1)/2 + 1 - 50,nvar),1d-9,"Diffusion solution is not symmetric! theta=0.6")
+!!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 250,nvar),conc_prev((ncell-1)/2 + 1 - 250,nvar),1d-9,"Diffusion solution is not symmetric!theta=0.6")
+!!!!  
+!!!!    !----- check with exact solution 
+!!!!  call assertEquals(conc_prev(501 ,nvar),0.707106781d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
+!!!!  call assertEquals(conc_prev(551,nvar),0.148217633d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
+!!!!  call assertEquals(conc_prev(601,nvar),0.001365037d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
+!!!  
+!!!  
+!!!  !--- test for theta = 1
+!!!  theta_stm = 1d0
+!!!  
+!!!  !---- t initial is t=1 sec 
+!!!
+!!!do iivar = 1, ncell
+!!! xpos(iivar) = (iivar -1 - (ncell-1)/2)*dx
+!!! conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2)/4.0d0/disp_coef_lo_prev(iivar,nvar))
+!!!
+!!!end do
+!!!
+!!!call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
+!!!
+!!!! !todo: remove these 
+!!!!print *, xpos(4) ,conc_prev(4,nvar)
+!!!!print *, xpos(501) ,conc_prev(501,nvar)
+!!!!print *, xpos(998) ,conc_prev(998,nvar)   
+!!!!pause
+!!!
+!!!!---- march
+!!!
+!!!timemarch1: do jjvar = 1,1000
+!!!
+!!!   !xmarch: do iivar = 1,ncell ! do I need this? I dont think so 
+!!!
+!!!     call diffuse(conc,             &
+!!!                  conc_prev,         &
+!!!                  mass,              &
+!!!                  mass_prev,         &
+!!!                  area,              &
+!!!                  area_prev,         &
+!!!                  area_lo,           &
+!!!                  area_hi,           &
+!!!                  area_lo_prev,      &
+!!!                  area_hi_prev,      &
+!!!                  diffusive_flux_boundary_lo, &
+!!!                  diffusive_flux_boundary_hi, &
+!!!                  disp_coef_lo,      &  
+!!!                  disp_coef_hi,      &
+!!!                  disp_coef_lo_prev, &  
+!!!                  disp_coef_hi_prev, &
+!!!                  ncell,             &
+!!!                  nvar,              &
+!!!                  time,              &
+!!!                  theta_stm,         &
+!!!                  dt,                &
+!!!                  dx                 )
+!!!
+!!!    conc_prev(:,nvar) = conc(:,nvar)
+!!!    
+!!!
+!!!          
+!!!    call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
+!!!   
+!!!    
+!!!end do timemarch1
+!!!
+!!!!! todo: remove these
+!!!!print *, xpos(500) ,conc_prev(500,nvar)
+!!!!print *, xpos(501) ,conc_prev(501,nvar)
+!!!!print *, xpos(502) ,conc_prev(502,nvar)
+!!!!print *, epsilon   
+!!!!pause
+!!!   
+!!!  ! ---check symmetry in solutions
+!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 5,nvar),conc_prev((ncell-1)/2 + 1 - 5,nvar),1d-9,"Diffusion solution is not symmetric! theta=1")
+!!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 50,nvar),conc_prev((ncell-1)/2 + 1 - 50,nvar),1d-9,"Diffusion solution is not symmetric! theta=1")
+!!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 250,nvar),conc_prev((ncell-1)/2 + 1 - 250,nvar),1d-9,"Diffusion solution is not symmetric!theta=1")
+!!!!  
+!!!!    !----- check with exact solution 
+!!!!  call assertEquals(conc_prev(501 ,nvar),0.707106781d0,1d-8,"Diffusion solution is not same as exact! theta=1")
+!!!!  call assertEquals(conc_prev(551,nvar),0.148217633d0,1d-8,"Diffusion solution is not same as exact! theta=1")
+!!!!  call assertEquals(conc_prev(601,nvar),0.001365037d0,1d-8,"Diffusion solution is not same as exact! theta=1")
+!!!  
+!!!  
+!!!  !--- test for theta = 0.0
+!!!  theta_stm = 0.0d0
+!!!  
+!!!  !---- t initial is t=1 sec 
+!!!
+!!!do iivar = 1, ncell
+!!! xpos(iivar) = (iivar -1 - (ncell-1)/2)*dx
+!!! conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2)/4.0d0/disp_coef_lo_prev(iivar,nvar))
+!!!
+!!!end do
+!!!
+!!!call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
+!!!
+!!!! !todo: remove these 
+!!!!print *, xpos(4) ,conc_prev(4,nvar)
+!!!!print *, xpos(501) ,conc_prev(501,nvar)
+!!!!print *, xpos(998) ,conc_prev(998,nvar)   
+!!!!pause
+!!!
+!!!!---- march
+!!!
+!!!timemarch2: do jjvar = 1,1000
+!!!
+!!!   !xmarch: do iivar = 1,ncell ! do I need this? I dont think so 
+!!!
+!!!     call diffuse(conc,             &
+!!!                  conc_prev,         &
+!!!                  mass,              &
+!!!                  mass_prev,         &
+!!!                  area,              &
+!!!                  area_prev,         &
+!!!                  area_lo,           &
+!!!                  area_hi,           &
+!!!                  area_lo_prev,      &
+!!!                  area_hi_prev,      &
+!!!                  diffusive_flux_boundary_lo, &
+!!!                  diffusive_flux_boundary_hi, &
+!!!                  disp_coef_lo,      &  
+!!!                  disp_coef_hi,      &
+!!!                  disp_coef_lo_prev, &  
+!!!                  disp_coef_hi_prev, &
+!!!                  ncell,             &
+!!!                  nvar,              &
+!!!                  time,              &
+!!!                  theta_stm,         &
+!!!                  dt,                &
+!!!                  dx                 )
+!!!
+!!!    conc_prev(:,nvar) = conc(:,nvar)
+!!!    
+!!!
+!!!          
+!!!    call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
+!!!   
+!!!    
+!!!end do timemarch2
+!!!
+!!!!! todo: remove these
+!!!!print *, xpos(500) ,conc_prev(500,nvar)
+!!!!print *, xpos(501) ,conc_prev(501,nvar)
+!!!!print *, xpos(502) ,conc_prev(502,nvar)
+!!!!print *, epsilon   
+!!!!pause
+!!!   
+!!!  ! ---check symmetry in solutions
+!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 5,nvar),conc_prev((ncell-1)/2 + 1 - 5,nvar),1d-9,"Diffusion solution is not symmetric! theta=0")
+!!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 50,nvar),conc_prev((ncell-1)/2 + 1 - 50,nvar),1d-9,"Diffusion solution is not symmetric! theta=0")
+!!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 250,nvar),conc_prev((ncell-1)/2 + 1 - 250,nvar),1d-9,"Diffusion solution is not symmetric!theta=0")
+!!!!  
+!!!!    !----- check with exact solution 
+!!!!  call assertEquals(conc_prev(501 ,nvar),0.707106781d0,1d-8,"Diffusion solution is not same as exact! theta=0")
+!!!!  call assertEquals(conc_prev(551,nvar),0.148217633d0,1d-8,"Diffusion solution is not same as exact! theta=0")
+!!!!  call assertEquals(conc_prev(601,nvar),0.001365037d0,1d-8,"Diffusion solution is not same as exact! theta=0")
+!!!! 
+!!!!todo remove
+!!!
 
   return
 end subroutine test_diffusion_calc
