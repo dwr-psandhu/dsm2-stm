@@ -34,6 +34,7 @@
 		<File RelativePath="..\..\..\test\transport\test_boundary_diffusive_flux.F90"/>
 		<File RelativePath="..\..\..\test\transport\test_construct_interior_r_h_s.F90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion.f90"/>
+		<File RelativePath=".\test_diffusion_norms.F90"/>
 		<File RelativePath="..\..\..\test\example\test_example_initial_conditions.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_explicit_diffusion_operator.F90"/>
 		<File RelativePath="..\..\..\test\transport\test_extrapolate.f90"/>
