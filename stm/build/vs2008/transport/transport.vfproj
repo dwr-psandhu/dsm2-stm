@@ -25,7 +25,8 @@
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration></Configurations>
 	<Files>
 		<Filter Name="Header Files" Filter="fi;fd">
-		<File RelativePath="..\..\..\src\transport\hydro_data.fi"/></Filter>
+		<File RelativePath="..\..\..\src\transport\hydro_data_if.f90"/>
+		<File RelativePath="..\..\..\src\transport\source_if.f90"/></Filter>
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 		<File RelativePath="..\..\..\plan.txt"/>
 		<File RelativePath="..\..\..\src\transport\ReadMe.txt"/></Filter>
@@ -34,11 +35,9 @@
 		<File RelativePath="..\..\..\src\transport\diffusion.f90"/>
 		<File RelativePath="..\..\..\test\transport\error_metric.f90"/>
 		<File RelativePath="..\..\..\src\transport\gradient.f90"/>
-		<File RelativePath="..\..\..\src\transport\hydro_data_if.f90"/>
 		<File RelativePath="..\..\..\src\transport\logging.f90"/>
 		<File RelativePath="..\..\..\src\transport\matrix_solver.f90"/>
 		<File RelativePath="..\..\..\src\transport\primitive_variable_conversion.f90"/>
-		<File RelativePath="..\..\..\src\transport\source_if.f90"/>
 		<File RelativePath="..\..\..\src\transport\state_variables.f90"/>
 		<File RelativePath="..\..\..\src\transport\stm_precision.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>
