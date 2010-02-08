@@ -36,6 +36,7 @@ program test_transport_driver
 !  use test_interior_coef_matrix
 !  use test_construct_interior_r_h_s
   use test_diffusion_norms
+  use test_diffusion_neumann_dirichlet
   
       call init_fruit
       
@@ -52,7 +53,8 @@ program test_transport_driver
 !      call test_explicit_diffusion_op
 !      call test_interior_coef_matrix_sub
 !      call test_construct_interior_rhs
-       call test_diffusion_error_norms
+!      call test_diffusion_error_norms
+       call test_diffusion_n_d
     
   call fruit_summary
   pause
