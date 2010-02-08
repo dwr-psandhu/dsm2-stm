@@ -28,9 +28,8 @@ use fruit
 use stm_precision
 use error_metric
 use primitive_variable_conversion
-!use state_variables
-! todo: replace with this 
-! use example_initial_conditions
+use state_variables
+use example_initial_conditions
 
 contains
 
@@ -59,7 +58,8 @@ real(stm_real) :: dt                            !< Time step
 real(stm_real) :: dx                            !< Spacial step 
 real(stm_real) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
 real(stm_real) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side
-
+! todo remove this
+!real(8) :: test_variable(31)
 
 !--- locals
 integer :: iivar
@@ -72,11 +72,6 @@ real(stm_real) :: norm_1(n_err_try)
 real(stm_real) :: norm_2(n_err_try)
 real(stm_real) :: norm_inf(n_err_try)
 
-
-
-
-!todo remove that
-! dx = 0.05d0
   
 
  do kkvar=1,n_err_try
@@ -123,8 +118,19 @@ disp_coef_hi_prev(:,:) = 0.5d0
 ! to do : we need it evry time step
 diffusive_flux_boundary_lo(nvar) = zero      
 diffusive_flux_boundary_hi (nvar) = zero 
+
  
  
+ !todo remove
+! call fill_gaussian(test_variable,31,-15.0d0,1.0d0,zero,one)
+!
+!
+!do iivar= 1,31
+!    print*, iivar, test_variable(iivar)
+!    
+!end do 
+!print * ,"--------end"
+!pause
  
 
 
@@ -170,16 +176,19 @@ timemarch: do jjvar = 1,1000
     
 end do timemarch
 
-do iivar = 1, ncell
- xpos(iivar) = (iivar -1.0d0 - (ncell-1.0d0)/2.0d0)*dx
- conc_exact (iivar, nvar) = sqrt(0.5d0)* exp(-(xpos(iivar)**2.0d0)/4.0d0/disp_coef_lo_prev(iivar,nvar))
- end do
+
+
+! todo: remove
+!do iivar = 1, ncell
+! xpos(iivar) = (iivar -1.0d0 - (ncell-1.0d0)/2.0d0)*dx
+! conc_exact (iivar, nvar) = sqrt(0.5d0)* exp(-(xpos(iivar)**2.0d0)/4.0d0/disp_coef_lo_prev(iivar,nvar))
+!end do
 
 call error_norm(norm_1(kkvar),norm_2(kkvar),norm_inf(kkvar),conc,conc_exact,ncell,dx)
 
 ! todo: remove this!
-print *,('L1 = '), norm_1(kkvar), ('L2 = '),norm_2(kkvar),('L_inf = '),norm_inf(kkvar),('N cell = '), ncell-1
-pause
+!print *,('L1 = '), norm_1(kkvar), ('L2 = '),norm_2(kkvar),('L_inf = '),norm_inf(kkvar),('N cell = '), ncell-1
+!pause
 
 deallocate(conc, conc_prev, mass,mass_prev)
 deallocate(area, area_prev, area_lo, area_hi)

@@ -23,36 +23,36 @@
 program test_transport_driver
 !todo: remove !
   use fruit
-  use test_diffusion
-  use test_gradient
-  use test_extrapolate
-  use test_prim_cons_conversion
-  use test_uniform_flow
-  use test_matrix_solver
-  use example_initial_conditions
-  use test_boundary_difussive_flux
-  use test_interior_diffusive_flux
-  use test_explicit_diffusion_operator
-  use test_interior_coef_matrix
-  use test_construct_interior_r_h_s
+!  use test_diffusion
+!  use test_gradient
+!  use test_extrapolate
+!  use test_prim_cons_conversion
+!  use test_uniform_flow
+!  use test_matrix_solver
+!  use example_initial_conditions
+!  use test_boundary_difussive_flux
+!  use test_interior_diffusive_flux
+!  use test_explicit_diffusion_operator
+!  use test_interior_coef_matrix
+!  use test_construct_interior_r_h_s
   use test_diffusion_norms
   
       call init_fruit
       
-      call test_diffusion_calc
-      call test_gradient_calc
-      call test_limiter
-      call test_prim_cons_convert
-      call test_example_initial_conditions
-      call test_extrapolation
-      call test_uniform_flow_advection
-      call test_tridi_solver
-      call test_boundary_dif_flux
-      call test_interior_dif_flux_sub
-      call test_explicit_diffusion_op
-      call test_interior_coef_matrix_sub
-      call test_construct_interior_rhs
-      call test_diffusion_error_norms
+!     call test_diffusion_calc
+!      call test_gradient_calc
+!      call test_limiter
+!      call test_prim_cons_convert
+!      call test_example_initial_conditions
+!      call test_extrapolation
+!      call test_uniform_flow_advection
+!      call test_tridi_solver
+!      call test_boundary_dif_flux
+!      call test_interior_dif_flux_sub
+!      call test_explicit_diffusion_op
+!      call test_interior_coef_matrix_sub
+!      call test_construct_interior_rhs
+       call test_diffusion_error_norms
     
   call fruit_summary
   pause
