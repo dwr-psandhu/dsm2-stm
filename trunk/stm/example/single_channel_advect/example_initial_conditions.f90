@@ -1,4 +1,4 @@
-!<license>
+!<!license>
 !    Copyright (C) 1996, 1997, 1998, 2001, 2007, 2009 State of California,
 !    Department of Water Resources.
 !    This file is part of DSM2.
@@ -62,7 +62,7 @@ module example_initial_conditions
            xhi = origin + dble(iloc)*dx
           ! need to populate using cell averages
            vals(iloc) =  (gaussian_cdf(xhi,mean,sd) & 
-                        -gaussian_cdf(xlo,mean,sd))
+                        - gaussian_cdf(xlo,mean,sd))
            vals(iloc)=vals(iloc)*sqrt(two*acos(-one)*sd*sd)/dx   !todo: move out of loop and make pi a constant instead of acos(zero)
         end do
         return

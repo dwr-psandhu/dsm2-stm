@@ -86,10 +86,7 @@ disp_coef_hi_prev(:,:) = 0.1d0
 diffusive_flux_boundary_lo(nvar) = zero      
 diffusive_flux_boundary_hi (nvar) = zero   
 
-!todo: remove this
-!print *,"Ncell", ncell, "---------------"
-!print *,"Theta" , theta_stam ,"--------------"
-!print *,"disp_coef", disp_coef_lo(1,1), "---------------"
+
 
 !---- t initial is t=1 sec 
 
