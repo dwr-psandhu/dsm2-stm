@@ -291,20 +291,12 @@ real(stm_real), intent (in)  :: dx                                          !< S
 integer :: icell 
 integer :: ivar 
 
-
-
 do ivar = 1,nvar
     do icell = 2,ncell
-      
-            diffusive_flux_interior_lo(icell,ivar) = (area_lo_prev(icell)*disp_coef_lo_prev(icell,ivar)* (conc_prev(icell,ivar)- conc_prev(icell-1,ivar)))/dx
-                       
+        diffusive_flux_interior_lo(icell,ivar) = (area_lo_prev(icell)*disp_coef_lo_prev(icell,ivar)* (conc_prev(icell,ivar)- conc_prev(icell-1,ivar)))/dx                       
     end do
-    
 end do 
-
-  diffusive_flux_interior_hi(1:ncell-1,:) =  diffusive_flux_interior_lo(2:ncell,:)                 
-
-                                        
+diffusive_flux_interior_hi(1:ncell-1,:) =  diffusive_flux_interior_lo(2:ncell,:)                                        
 return
 end subroutine interior_diffusive_flux
                                                       
@@ -326,15 +318,15 @@ real(stm_real), intent (out) :: diffusive_flux_boundary_lo_prev(nvar)         !<
 real(stm_real), intent (out) :: diffusive_flux_boundary_hi_prev(nvar)         !< Explicit diffusive boundary flux high side old time
 real(stm_real), intent (out) :: diffusive_flux_boundary_lo(nvar)              !< Explicit diffusive boundary flux low side new time
 real(stm_real), intent (out) :: diffusive_flux_boundary_hi(nvar)              !< Explicit diffusive boundary flux high side new time
-   ! --- local
-   integer :: ivar
-   
-   do  ivar=1,nvar
-        diffusive_flux_boundary_lo(ivar) = zero
-        diffusive_flux_boundary_hi(ivar) = zero    
-        diffusive_flux_boundary_lo_prev(ivar) = zero
-        diffusive_flux_boundary_hi_prev(ivar) = zero                                                                                           
-   end do                                         
+! --- local
+integer :: ivar
+
+do  ivar=1,nvar
+    diffusive_flux_boundary_lo(ivar) = zero
+    diffusive_flux_boundary_hi(ivar) = zero    
+    diffusive_flux_boundary_lo_prev(ivar) = zero
+    diffusive_flux_boundary_hi_prev(ivar) = zero                                                                                           
+end do                                         
                                                 
 return
 end subroutine boundary_diffusive_flux
@@ -397,11 +389,7 @@ real(stm_real), intent (in) :: diffusive_flux_boundary_hi (nvar)    !< Neumann B
  ! to do :todo : take care of BC of right hand side
 ! right_hand_side(1,ivar) = right_hand_side(1,ivar) - dt*theta_stm* diffusive_flux_boundary_lo(ivar)  /dx 
 ! right_hand_side(ncell,ivar) = right_hand_side(ncell,ivar) + dt*theta_stm* diffusive_flux_boundary_hi(ivar)  /dx
-
-                                
-                                  
 return
-
 end subroutine construct_right_hand_side
 
 !/////////////////////////////////////////////////
@@ -451,30 +439,18 @@ real(stm_real) :: d_star
 integer :: icell
 integer :: ivar
 
-d_star = dt/dx/dx
-  
+d_star = dt/dx/dx  
     do ivar = 1,nvar 
         do icell = 2,ncell-1
-                                          
          down_diag(icell,ivar) = - theta_stm*d_star*area_lo(icell)*disp_coef_lo(icell,ivar) 
-         
          center_diag(icell,ivar) = area(icell) + theta_stm*d_star*(area_hi(icell)*disp_coef_hi(icell,ivar) + area_lo(icell)*disp_coef_lo(icell,ivar))
-         
-         up_diag(icell,ivar) = - theta_stm*d_star*area_hi(icell)*disp_coef_hi(icell,ivar)       
-             
+         up_diag(icell,ivar) = - theta_stm*d_star*area_hi(icell)*disp_coef_hi(icell,ivar)             
         end do                            
-                             
         center_diag(1,ivar) = area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,ivar) )
-         
         up_diag(1,ivar) = - theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,ivar)+ area_lo(1)*disp_coef_lo(1,ivar) )        
-        
         down_diag(ncell,ivar)  =   - theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,ivar)+ area_lo(ncell)*disp_coef_lo(ncell,ivar) )
-         
-        center_diag(ncell,ivar) = area(ncell) + theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,ivar) )
-    
-    end do     
-           
-    
+        center_diag(ncell,ivar) = area(ncell) + theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,ivar) )    
+    end do   
 return
 end subroutine construct_diffusion_matrix
 
@@ -503,9 +479,7 @@ real(stm_real),intent (out) :: conc(ncell)            !< Values of the computed 
 
 ! --- local
 integer :: ivar
-
 do ivar = 1 ,nvar
-
     call tridi_solver ( center_diag ,               &
                               up_diag,              &     
                               down_diag,            &
@@ -513,7 +487,6 @@ do ivar = 1 ,nvar
                               conc,                 &
                               ncell)
 end do
-
 return
 end subroutine solve
 

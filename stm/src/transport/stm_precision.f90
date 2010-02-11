@@ -40,7 +40,7 @@ real(STM_REAL), parameter :: ten   =  1.D1    !< Real constant  10. properly typ
 real(STM_REAL), parameter :: sixteen  =  1.6D1  !< Real constant  16. properly typed
 real(STM_REAL), parameter :: half     =  5.D-1  !< Real constant  0.5 properly typed
 real(STM_REAL), parameter :: fourth   =  2.5D-1 !< Real constant  0.25 properly typed
-
+real(STM_REAL), parameter :: pi = acos(-one)
 
 !> Absurd high value, for initialization and for marking undefined
 !> data in calculations. This makes bugs easier to spot.
