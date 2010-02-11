@@ -63,7 +63,7 @@ module example_initial_conditions
           ! need to populate using cell averages
            vals(iloc) =  (gaussian_cdf(xhi,mean,sd) & 
                         - gaussian_cdf(xlo,mean,sd))
-           vals(iloc)=vals(iloc)*sqrt(two*acos(-one)*sd*sd)/dx   !todo: move out of loop and make pi a constant instead of acos(zero)
+           vals(iloc)=vals(iloc)*sqrt(two*pi*sd*sd)/dx   !todo: move out of loop and make pi a constant instead of acos(zero)
         end do
         return
     end subroutine
