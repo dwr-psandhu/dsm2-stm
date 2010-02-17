@@ -77,8 +77,6 @@ call construct_right_hand_side( right_hand_side,   &
                                   conc_prev,             &
                                   theta_stm,             &
                                   ncell,                 &
-                                  diffusive_flux_boundary_lo, &
-                                  diffusive_flux_boundary_hi, &
                                   time,                  &
                                   nvar,                  &  
                                   dx,                    &
@@ -101,8 +99,6 @@ call construct_right_hand_side( right_hand_side,   &
                                   conc_prev,             &
                                   theta_stm,             &
                                   ncell,                 &
-                                  diffusive_flux_boundary_lo, &
-                                  diffusive_flux_boundary_hi, &
                                   time,                  &
                                   nvar,                  &  
                                   dx,                    &
@@ -125,8 +121,6 @@ call construct_right_hand_side( right_hand_side,   &
                                   conc_prev,             &
                                   theta_stm,             &
                                   ncell,                 &
-                                  diffusive_flux_boundary_lo, &
-                                  diffusive_flux_boundary_hi, &
                                   time,                  &
                                   nvar,                  &  
                                   dx,                    &

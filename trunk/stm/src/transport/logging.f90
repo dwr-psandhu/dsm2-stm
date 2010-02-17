@@ -23,11 +23,12 @@
 module logging
 
     use stm_precision
-    integer,parameter :: ERROR
-    integer,parameter :: WARNING
-    integer,parameter :: FINE
-    integer,parameter :: INFO
-    
+    ! todo: an initialization expression is required when using the PARAMETER attribute
+    ! i added one
+    integer,parameter :: ERROR = 8
+    integer,parameter :: WARNING = 6
+    integer,parameter :: FINE = 4
+    integer,parameter :: INFO =2
     
     
     interface printout
@@ -40,6 +41,10 @@ module logging
     
     subroutine stm_log(level,message)
     implicit none
+    ! todo: This name does not have a type, and must have an explicit type
+    ! I added something just to compile
+    integer :: level
+    character(LEN=*) :: message
     !todo: do real logging
     print*,message
     return

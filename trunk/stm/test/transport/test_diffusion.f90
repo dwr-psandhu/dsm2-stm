@@ -26,6 +26,7 @@ use fruit
 use stm_precision
 use primitive_variable_conversion
 use diffusion
+use boundary_diffusion
 
 contains
 
@@ -82,9 +83,13 @@ disp_coef_lo (:,:) = 0.1d0
 disp_coef_hi (:,:) = 0.1d0   
 disp_coef_lo_prev(:,:) = 0.1d0 
 disp_coef_hi_prev(:,:) = 0.1d0 
-! to do : we need it evry time step
-diffusive_flux_boundary_lo(nvar) = zero      
-diffusive_flux_boundary_hi (nvar) = zero   
+
+
+
+! add use boundary_diffusion
+! write neumann_diffusion_bc_flux and neumann_diffusion_bc_matrix
+boundary_diffusion_flux => neumann_no_flow_diffusive_flux
+!boundary_diffusion_matrix=> neumann_diffusion_bc_matrix
 
 
 
@@ -127,8 +132,6 @@ timemarch: do jjvar = 1,1000
                   area_hi,           &
                   area_lo_prev,      &
                   area_hi_prev,      &
-                  diffusive_flux_boundary_lo, &
-                  diffusive_flux_boundary_hi, &
                   disp_coef_lo,      &  
                   disp_coef_hi,      &
                   disp_coef_lo_prev, &  

@@ -53,7 +53,17 @@ dx = 2.0d0
 time =LARGEREAL ! todo do wee need this?
 
    
-   
+call explicit_diffusion_operator(explicit_diffuse_op,  &
+                                            conc_prev,        &
+                                            !conc,             &
+                                            area_lo_prev,     &
+                                            area_hi_prev,     &
+                                            disp_coef_lo_prev,&  
+                                            disp_coef_hi_prev,&
+                                            ncell,            &
+                                            nvar,             &
+                                            time,             &
+                                            dx)   
 call explicit_diffusion_operator (explicit_diffuse_op,  &
                                             conc_prev,        &
                                             area_lo_prev,     &

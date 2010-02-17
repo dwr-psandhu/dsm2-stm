@@ -151,8 +151,6 @@ timemarch: do jjvar = 1,1000
                   area_hi,           &
                   area_lo_prev,      &
                   area_hi_prev,      &
-                  diffusive_flux_boundary_lo, &
-                  diffusive_flux_boundary_hi, &
                   disp_coef_lo,      &  
                   disp_coef_hi,      &
                   disp_coef_lo_prev, &  

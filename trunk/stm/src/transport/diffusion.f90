@@ -49,8 +49,8 @@ subroutine diffuse(conc,             &
                   area_hi,           &
                   area_lo_prev,      &
                   area_hi_prev,      &
-                  diffusive_flux_boundary_lo, &
-                  diffusive_flux_boundary_hi, &
+                 ! diffusive_flux_boundary_lo, &
+                 ! diffusive_flux_boundary_hi, &
                   disp_coef_lo,      &  
                   disp_coef_hi,      &
                   disp_coef_lo_prev, &  
@@ -64,6 +64,7 @@ subroutine diffuse(conc,             &
 
 use stm_precision
 use primitive_variable_conversion 
+
 
 implicit none
 
@@ -91,8 +92,8 @@ real(stm_real), intent (in) :: theta_stm                     !< Explicitness coe
 real(stm_real), intent (in) :: dt                            !< Time step   
 real(stm_real), intent (in) :: dx                            !< Spacial step 
 
-real(stm_real), intent (in) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
-real(stm_real), intent (in) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side
+!real(stm_real), intent (in) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
+!real(stm_real), intent (in) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side
 
 ! ---- locals
 
@@ -105,8 +106,8 @@ real(stm_real) :: diffusive_flux_interior(ncell,nvar)         !< Explicit diffus
 real(stm_real) :: right_hand_side(ncell,nvar)         
 
 !todo: remove this
-!mass=0
-!conc=0
+mass=0
+
 
 ! This routine gives the effects of diffusion fluxes on each cell
 ! for a single time step (ie, explicit). This is needed for the advection step.
@@ -116,16 +117,17 @@ real(stm_real) :: right_hand_side(ncell,nvar)
 ! Explicit diffusion operator construction. This creates the diffusive fluxes
 ! sends them for modification for boundaries and then differences the fluxes
 ! to get the operator d/dx(Ad/dx). 
-call explicit_diffusion_operator(explicit_diffuse_op,     &
-                                        conc_prev,        &
-                                        area_lo_prev,     &
-                                        area_hi_prev,     &
-                                        disp_coef_lo_prev,&  
-                                        disp_coef_hi_prev,&
-                                        ncell,            &
-                                        nvar,             &
-                                        time,             &
-                                        dx)
+call explicit_diffusion_operator(explicit_diffuse_op,  &
+                                            conc_prev,        &
+                                            !conc,             &
+                                            area_lo_prev,     &
+                                            area_hi_prev,     &
+                                            disp_coef_lo_prev,&  
+                                            disp_coef_hi_prev,&
+                                            ncell,            &
+                                            nvar,             &
+                                            time,             &
+                                            dx)
                                                                   
 
 ! need to change this to use just diffusive_flux_hi/lo
@@ -139,8 +141,8 @@ call construct_right_hand_side( right_hand_side,   &
                                   conc_prev,             &
                                   theta_stm,             &
                                   ncell,                 &
-                                  diffusive_flux_boundary_lo, &
-                                  diffusive_flux_boundary_hi, &
+                                  !diffusive_flux_boundary_lo, &
+                                  !diffusive_flux_boundary_hi, &
                                   time,                  &
                                   nvar,                  &  
                                   dx,                    &
@@ -178,6 +180,7 @@ call solve ( center_diag ,          &
                   nvar)
 
 
+
 return
 end subroutine diffuse
 
@@ -188,6 +191,7 @@ end subroutine diffuse
 !> to get the operator d/dx(Ad/dx). 
 subroutine explicit_diffusion_operator (explicit_diffuse_op,  &
                                             conc_prev,        &
+ !                                           conc,             &
                                             area_lo_prev,     &
                                             area_hi_prev,     &
                                             disp_coef_lo_prev,&  
@@ -198,6 +202,7 @@ subroutine explicit_diffusion_operator (explicit_diffuse_op,  &
                                             dx)
                                                                                           
 use stm_precision
+use boundary_diffusion
 
 implicit none 
 
@@ -208,6 +213,7 @@ integer, intent (in) :: nvar  !< Number of variables
 
 real(stm_real), intent (out) :: explicit_diffuse_op(ncell,nvar)             !< Explicit diffusion operator
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
+!real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration at new time
 real(stm_real), intent (in)  :: area_lo_prev (ncell)                        !< Low side area at old time
 real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< High side area at old time 
 real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< Low side constituent dispersion coef. at old time
@@ -218,22 +224,13 @@ real(stm_real), intent (in)  :: dx                                          !< S
 !--- locals
 integer :: ivar
 integer :: icell
-!! todo: remove this part ------------------------------
-!real(stm_real):: diffusive_flux_interior_lo (ncell,nvar)
-!real(stm_real):: diffusive_flux_interior_hi (ncell,nvar) 
-real(stm_real):: diffusive_flux_boundary_lo_prev (nvar)
-real(stm_real):: diffusive_flux_boundary_hi_prev (nvar)
-real(stm_real):: diffusive_flux_boundary_lo (nvar)
-real(stm_real):: diffusive_flux_boundary_hi (nvar) 
-!________________________________________________
+
 real(stm_real):: diffusive_flux_lo(ncell,nvar)
 real(stm_real):: diffusive_flux_hi(ncell,nvar)
 real(stm_real):: diffusive_flux_lo_prev(ncell,nvar)
 real(stm_real):: diffusive_flux_hi_prev(ncell,nvar)
 
-!todo: should define ends (LARGEVAL neumann is fine)
-!todo: should not be diffusive_flux_interior_lo and 
-! diffusive_flux_boundary_lo -- only diffusive_flux_lo
+
 ! todo : rename the subroutine 
 call interior_diffusive_flux ( diffusive_flux_lo,            &
                                diffusive_flux_hi,            &
@@ -248,15 +245,20 @@ call interior_diffusive_flux ( diffusive_flux_lo,            &
                                             nvar,             &
                                             time,             &
                                             dx)
-                                                        
-call boundary_diffusive_flux(diffusive_flux_boundary_lo,            &
-                                   diffusive_flux_boundary_hi,            &
-                                   diffusive_flux_boundary_lo_prev,       &
-                                   diffusive_flux_boundary_hi_prev,       &
-                                   nvar)
-        
-   explicit_diffuse_op (1,:) = (diffusive_flux_hi(1,:) - diffusive_flux_boundary_lo_prev )/dx
-   explicit_diffuse_op (ncell,:) = (diffusive_flux_boundary_hi_prev - diffusive_flux_lo(ncell,:) )/dx
+   
+   
+    !todo                                                    
+call boundary_diffusion_flux(diffusive_flux_lo, &
+                                             diffusive_flux_hi, &
+                                       !      conc,              &
+                                             conc_prev,         &
+                                             ncell,             &
+                                             nvar,              &
+                                             time)
+      
+      !todo :  
+!   explicit_diffuse_op (1,:) = (diffusive_flux_hi(1,:) - diffusive_flux_boundary_lo_prev )/dx
+!   explicit_diffuse_op (ncell,:) = (diffusive_flux_boundary_hi_prev - diffusive_flux_lo(ncell,:) )/dx
          
     do ivar = 1,nvar
         do icell = 2,ncell-1 
@@ -321,36 +323,37 @@ diffusive_flux_lo(1,:)=LARGEREAL
 return
 end subroutine interior_diffusive_flux
                                                       
-subroutine boundary_diffusive_flux(diffusive_flux_boundary_lo,            &
-                                   diffusive_flux_boundary_hi,            &
-                                   diffusive_flux_boundary_lo_prev,       &
-                                   diffusive_flux_boundary_hi_prev,       &
-                                   nvar)
-                                                
-  
-use stm_precision
-
- ! --- args
-                                            
-
-integer, intent (in) :: nvar  !< Number of variables
-
-real(stm_real), intent (out) :: diffusive_flux_boundary_lo_prev(nvar)         !< Explicit diffusive boundary flux low side old time
-real(stm_real), intent (out) :: diffusive_flux_boundary_hi_prev(nvar)         !< Explicit diffusive boundary flux high side old time
-real(stm_real), intent (out) :: diffusive_flux_boundary_lo(nvar)              !< Explicit diffusive boundary flux low side new time
-real(stm_real), intent (out) :: diffusive_flux_boundary_hi(nvar)              !< Explicit diffusive boundary flux high side new time
-! --- local
-integer :: ivar
-
-do  ivar=1,nvar
-    diffusive_flux_boundary_lo(ivar) = zero
-    diffusive_flux_boundary_hi(ivar) = zero    
-    diffusive_flux_boundary_lo_prev(ivar) = zero
-    diffusive_flux_boundary_hi_prev(ivar) = zero                                                                                           
-end do                                         
-                                                
-return
-end subroutine boundary_diffusive_flux
+!subroutine boundary_diffusive_flux(&
+!                                   !diffusive_flux_boundary_lo,            &
+!                                   !diffusive_flux_boundary_hi,            &
+!!                                   diffusive_flux_boundary_lo_prev,       &
+!!                                   diffusive_flux_boundary_hi_prev,       &
+!                                   nvar)
+!                                                
+!  
+!use stm_precision
+!
+! ! --- args
+!                                            
+!
+!integer, intent (in) :: nvar  !< Number of variables
+!
+!!real(stm_real), intent (out) :: diffusive_flux_boundary_lo_prev(nvar)         !< Explicit diffusive boundary flux low side old time
+!!real(stm_real), intent (out) :: diffusive_flux_boundary_hi_prev(nvar)         !< Explicit diffusive boundary flux high side old time
+!!real(stm_real), intent (out) :: diffusive_flux_boundary_lo(nvar)              !< Explicit diffusive boundary flux low side new time
+!!real(stm_real), intent (out) :: diffusive_flux_boundary_hi(nvar)              !< Explicit diffusive boundary flux high side new time
+!! --- local
+!integer :: ivar
+!
+!do  ivar=1,nvar
+! !   diffusive_flux_boundary_lo(ivar) = zero
+! !   diffusive_flux_boundary_hi(ivar) = zero    
+!!    diffusive_flux_boundary_lo_prev(ivar) = zero
+!!    diffusive_flux_boundary_hi_prev(ivar) = zero                                                                                           
+!end do                                         
+!                                                
+!return
+!end subroutine boundary_diffusive_flux
 
 
 
@@ -367,8 +370,8 @@ pure subroutine construct_right_hand_side( right_hand_side,   &
                                   conc_prev,             &
                                   theta_stm,             &
                                   ncell,                 &
-                                  diffusive_flux_boundary_lo, &
-                                  diffusive_flux_boundary_hi, &
+                                  !diffusive_flux_boundary_lo, &
+                                  !diffusive_flux_boundary_hi, &
                                   time,                  &
                                   nvar,                  &  
                                   dx,                    &
@@ -390,8 +393,8 @@ real(stm_real), intent (in)  :: time                                        !< C
 real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in)  :: dx                                          !< Spatial step  
 real(stm_real), intent (in)  :: dt                                          !< Time step                                   
-real(stm_real), intent (in) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
-real(stm_real), intent (in) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side 
+!real(stm_real), intent (in) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
+!real(stm_real), intent (in) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side 
   
   
   !---- locals
