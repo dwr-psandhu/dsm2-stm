@@ -45,7 +45,7 @@ real(STM_REAL), parameter :: pi = acos(-one)
 !> Absurd high value, for initialization and for marking undefined
 !> data in calculations. This makes bugs easier to spot.
 real(STM_REAL), parameter :: LARGEREAL = 1.23456789D8 
-
+!real(stm_real),parameter  :: pi = 3.14159265358979323846264338327950288d0
 
 end module
 
