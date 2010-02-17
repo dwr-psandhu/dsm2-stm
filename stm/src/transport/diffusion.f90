@@ -221,22 +221,22 @@ integer :: icell
 !! todo: remove this part ------------------------------
 !real(stm_real):: diffusive_flux_interior_lo (ncell,nvar)
 !real(stm_real):: diffusive_flux_interior_hi (ncell,nvar) 
-!real(stm_real):: diffusive_flux_boundary_lo_prev (nvar)
-!real(stm_real):: diffusive_flux_boundary_hi_prev (nvar)
-!real(stm_real):: diffusive_flux_boundary_lo (nvar)
-!real(stm_real):: diffusive_flux_boundary_hi (nvar) 
+real(stm_real):: diffusive_flux_boundary_lo_prev (nvar)
+real(stm_real):: diffusive_flux_boundary_hi_prev (nvar)
+real(stm_real):: diffusive_flux_boundary_lo (nvar)
+real(stm_real):: diffusive_flux_boundary_hi (nvar) 
 !________________________________________________
-real(stm_real):: diffusive_flux_lo
-real(stm_real):: diffusive_flux_hi
-real(stm_real):: diffusive_flux_lo_prev
-real(stm_real):: diffusive_flux_hi_prev
+real(stm_real):: diffusive_flux_lo(ncell,nvar)
+real(stm_real):: diffusive_flux_hi(ncell,nvar)
+real(stm_real):: diffusive_flux_lo_prev(ncell,nvar)
+real(stm_real):: diffusive_flux_hi_prev(ncell,nvar)
 
 !todo: should define ends (LARGEVAL neumann is fine)
 !todo: should not be diffusive_flux_interior_lo and 
 ! diffusive_flux_boundary_lo -- only diffusive_flux_lo
 ! todo : rename the subroutine 
 call interior_diffusive_flux ( diffusive_flux_lo,            &
-                               
+                               diffusive_flux_hi,            &
 !                               diffusive_flux_interior_lo,  &
 !                               diffusive_flux_interior_hi,  &
                                             conc_prev,        &
@@ -255,13 +255,13 @@ call boundary_diffusive_flux(diffusive_flux_boundary_lo,            &
                                    diffusive_flux_boundary_hi_prev,       &
                                    nvar)
         
-   explicit_diffuse_op (1,:) = (diffusive_flux_interior_hi(1,:) - diffusive_flux_boundary_lo_prev )/dx
-   explicit_diffuse_op (ncell,:) = (diffusive_flux_boundary_hi_prev - diffusive_flux_interior_lo(ncell,:) )/dx
+   explicit_diffuse_op (1,:) = (diffusive_flux_hi(1,:) - diffusive_flux_boundary_lo_prev )/dx
+   explicit_diffuse_op (ncell,:) = (diffusive_flux_boundary_hi_prev - diffusive_flux_lo(ncell,:) )/dx
          
     do ivar = 1,nvar
         do icell = 2,ncell-1 
          
-         explicit_diffuse_op (icell,ivar) = (diffusive_flux_interior_hi (icell,ivar) - diffusive_flux_interior_lo (icell,ivar))/dx
+         explicit_diffuse_op (icell,ivar) = (diffusive_flux_hi (icell,ivar) - diffusive_flux_lo (icell,ivar))/dx
         
         end do
     end do
@@ -271,8 +271,10 @@ return
 end subroutine explicit_diffusion_operator 
 
 
-subroutine interior_diffusive_flux (diffusive_flux_interior_lo,  &
-                                    diffusive_flux_interior_hi,  &
+subroutine interior_diffusive_flux ( diffusive_flux_lo,            &
+                                 diffusive_flux_hi,            &
+!                               diffusive_flux_interior_lo,  &
+!                               diffusive_flux_interior_hi,  &
                                             conc_prev,        &
                                             area_lo_prev,     &
                                             area_hi_prev,     &
@@ -289,8 +291,11 @@ use stm_precision
 integer, intent (in) :: ncell !< Number of cells
 integer, intent (in) :: nvar  !< Number of variables
 
-real(stm_real), intent (out) :: diffusive_flux_interior_hi(ncell,nvar)      !< Explicit diffusive flux high side
-real(stm_real), intent (out) :: diffusive_flux_interior_lo(ncell,nvar)      !< Explicit diffusive flux low side
+!real(stm_real), intent (out) :: diffusive_flux_interior_hi(ncell,nvar)      !< Explicit diffusive flux high side
+!real(stm_real), intent (out) :: diffusive_flux_interior_lo(ncell,nvar)      !< Explicit diffusive flux low side
+real(stm_real), intent (out) :: diffusive_flux_hi(ncell,nvar)                !< Explicit diffusive flux high side
+real(stm_real), intent (out) :: diffusive_flux_lo(ncell,nvar)                !< Explicit diffusive flux low side
+
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
 real(stm_real), intent (in)  :: area_lo_prev (ncell)                        !< Low side area at old time
 real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< High side area at old time 
@@ -305,10 +310,14 @@ integer :: ivar
 
 do ivar = 1,nvar
     do icell = 2,ncell
-        diffusive_flux_interior_lo(icell,ivar) = (area_lo_prev(icell)*disp_coef_lo_prev(icell,ivar)* (conc_prev(icell,ivar)- conc_prev(icell-1,ivar)))/dx                       
+        diffusive_flux_lo(icell,ivar) = (area_lo_prev(icell)*disp_coef_lo_prev(icell,ivar)* (conc_prev(icell,ivar)- conc_prev(icell-1,ivar)))/dx                       
     end do
 end do 
-diffusive_flux_interior_hi(1:ncell-1,:) =  diffusive_flux_interior_lo(2:ncell,:)                                        
+diffusive_flux_hi(1:ncell-1,:) =  diffusive_flux_lo(2:ncell,:)  
+! todo: 
+diffusive_flux_hi(ncell,:)=LARGEREAL
+diffusive_flux_lo(1,:)=LARGEREAL
+                                      
 return
 end subroutine interior_diffusive_flux
                                                       
