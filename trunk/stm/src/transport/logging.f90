@@ -23,6 +23,12 @@
 module logging
 
     use stm_precision
+    integer,parameter :: ERROR
+    integer,parameter :: WARNING
+    integer,parameter :: FINE
+    integer,parameter :: INFO
+    
+    
     
     interface printout
         module procedure printout
@@ -31,6 +37,13 @@ module logging
     
     
     contains
+    
+    subroutine stm_log(level,message)
+    implicit none
+    !todo: do real logging
+    print*,message
+    return
+    end subroutine
     
     !< Prints an array to file
     subroutine printout(arr,x,filename)
