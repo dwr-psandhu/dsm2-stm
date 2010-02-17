@@ -90,6 +90,7 @@ real(stm_real), intent (in) :: time                          !< Current time
 real(stm_real), intent (in) :: theta_stm                     !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in) :: dt                            !< Time step   
 real(stm_real), intent (in) :: dx                            !< Spacial step 
+
 real(stm_real), intent (in) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
 real(stm_real), intent (in) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side
 
@@ -127,7 +128,7 @@ call explicit_diffusion_operator(explicit_diffuse_op,     &
                                         dx)
                                                                   
 
-
+! need to change this to use just diffusive_flux_hi/lo
 call construct_right_hand_side( right_hand_side,   & 
                                   explicit_diffuse_op,   & 
                                   area_prev,             &
@@ -165,8 +166,8 @@ call construct_diffusion_matrix( center_diag ,      &
                                   dx,               &
                                   dt)
 
-! this function will add boundary conditions to the matrix
-
+! todo: this function will add boundary conditions to the matrix
+!call boundary_diffusion_matrix(center_diag...
 
 call solve ( center_diag ,          &
                   up_diag,          &     
@@ -217,16 +218,27 @@ real(stm_real), intent (in)  :: dx                                          !< S
 !--- locals
 integer :: ivar
 integer :: icell
-real(stm_real):: diffusive_flux_interior_lo (ncell,nvar)
-real(stm_real):: diffusive_flux_interior_hi (ncell,nvar) 
-real(stm_real):: diffusive_flux_boundary_lo_prev (nvar)
-real(stm_real):: diffusive_flux_boundary_hi_prev (nvar)
-real(stm_real):: diffusive_flux_boundary_lo (nvar)
-real(stm_real):: diffusive_flux_boundary_hi (nvar) 
+!! todo: remove this part ------------------------------
+!real(stm_real):: diffusive_flux_interior_lo (ncell,nvar)
+!real(stm_real):: diffusive_flux_interior_hi (ncell,nvar) 
+!real(stm_real):: diffusive_flux_boundary_lo_prev (nvar)
+!real(stm_real):: diffusive_flux_boundary_hi_prev (nvar)
+!real(stm_real):: diffusive_flux_boundary_lo (nvar)
+!real(stm_real):: diffusive_flux_boundary_hi (nvar) 
+!________________________________________________
+real(stm_real):: diffusive_flux_lo
+real(stm_real):: diffusive_flux_hi
+real(stm_real):: diffusive_flux_lo_prev
+real(stm_real):: diffusive_flux_hi_prev
 
-
-call interior_diffusive_flux (diffusive_flux_interior_lo,  &
-                               diffusive_flux_interior_hi,  &
+!todo: should define ends (LARGEVAL neumann is fine)
+!todo: should not be diffusive_flux_interior_lo and 
+! diffusive_flux_boundary_lo -- only diffusive_flux_lo
+! todo : rename the subroutine 
+call interior_diffusive_flux ( diffusive_flux_lo,            &
+                               
+!                               diffusive_flux_interior_lo,  &
+!                               diffusive_flux_interior_hi,  &
                                             conc_prev,        &
                                             area_lo_prev,     &
                                             area_hi_prev,     &
