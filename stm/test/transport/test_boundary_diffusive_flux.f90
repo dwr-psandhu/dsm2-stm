@@ -29,36 +29,31 @@ use stm_precision
 contains
 
 subroutine test_boundary_dif_flux
-  use diffusion 
+  use diffusion !todo ???
+  use boundary_diffusion
   implicit none
   
   integer,parameter :: nvar = 2  !< Number of variables
   integer,parameter :: ncell = 10 ! todo do we need this?
   
-real(stm_real) :: diffusive_flux_boundary_lo_prev(nvar)         !< Explicit diffusive boundary flux low side old time
-real(stm_real) :: diffusive_flux_boundary_hi_prev(nvar)         !< Explicit diffusive boundary flux high side old time
-real(stm_real) :: diffusive_flux_boundary_lo(nvar)              !< Explicit diffusive boundary flux low side new time
-real(stm_real) :: diffusive_flux_boundary_hi(nvar)              !< Explicit diffusive boundary flux high side new time
-real(stm_real) :: disp_coef_lo (ncell,nvar)! todo do we need this?              !< Low side constituent dispersion coef. at new time
+real(stm_real) :: diffusive_flux_lo(ncell,nvar)         !< Explicit diffusive boundary flux low side old time
+real(stm_real) :: diffusive_flux_hi(ncell,nvar)         !< Explicit diffusive boundary flux high side old time
+real(stm_real) :: conc(ncell,nvar)                      !< Explicit diffusive boundary flux low side new time
 real(stm_real) :: area_lo (ncell) ! todo do we need this?                       !< Low side area at new time
-
-   disp_coef_lo(:,:) = LARGEREAL ! todo do we need this?
-   area_lo(:) = LARGEREAL  ! todo do we need this?
+real(stm_real) :: time = zero
+real(stm_real) :: dx = zero
    
-   
-call boundary_diffusive_flux(diffusive_flux_boundary_lo,            &
-                                   diffusive_flux_boundary_hi,            &
-                                   diffusive_flux_boundary_lo_prev,       &
-                                   diffusive_flux_boundary_hi_prev,       &
-                                   nvar)
-                                   
-                                   
-                                   
-  call assertEquals (diffusive_flux_boundary_lo(nvar),zero,1d-8,"Error in diffusive boundary flux low at new time")
-  call assertEquals (diffusive_flux_boundary_hi(nvar),zero,1d-8,"Error in diffusive boundary flux high at new time")
-  call assertEquals (diffusive_flux_boundary_lo_prev(nvar),zero,1d-8,"Error in diffusive boundary flux low at old time")
-  call assertEquals (diffusive_flux_boundary_hi_prev(nvar),zero,1d-8,"Error in diffusive boundary flux high at old time")
-
+boundary_diffusion_flux => neumann_no_flow_diffusive_flux
+call boundary_diffusion_flux(diffusive_flux_lo, &
+                             diffusive_flux_hi, &
+                             conc,              &
+                             ncell,             &
+                             nvar,              &
+                             time)
+                                                           
+  call assertEquals (diffusive_flux_lo(1,nvar),zero,1d-8,"Error in diffusive boundary flux low at new time")
+  call assertEquals (diffusive_flux_hi(ncell,nvar),zero,1d-8,"Error in diffusive boundary flux high at new time")
+  call add_fail("Boundary diffusion flux not really tested in non-trivial way.")
 
 
 return

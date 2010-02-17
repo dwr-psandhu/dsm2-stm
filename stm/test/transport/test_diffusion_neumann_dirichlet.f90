@@ -31,12 +31,12 @@ contains
 
 subroutine test_diffusion_n_d
   use diffusion
+  
   implicit none
   
 integer,parameter :: ncell = 9                              !< Number of cells
 integer,parameter :: nvar = 1                                  !< Number of variables
-! todo remove this and put in stm_precision
-real(stm_real),parameter  :: pi = 3.14159265358979323846264338327950288d0
+
 
 
 real(stm_real) :: conc(ncell,nvar)              !< Concentration at new time
@@ -64,6 +64,8 @@ real(stm_real) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high sid
 integer :: jvar
 integer :: ivar
 real(stm_real) :: xpos
+
+
  !--- Small numbers on center diag large numbers on up and down diag
   
 time = zero
@@ -115,8 +117,6 @@ do jvar=1,1
                   area_hi,           &
                   area_lo_prev,      &
                   area_hi_prev,      &
-                  diffusive_flux_boundary_lo, &
-                  diffusive_flux_boundary_hi, &
                   disp_coef_lo,      &  
                   disp_coef_hi,      &
                   disp_coef_lo_prev, &  

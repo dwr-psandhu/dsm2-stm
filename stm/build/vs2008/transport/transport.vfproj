@@ -32,9 +32,11 @@
 		<File RelativePath="..\..\..\src\transport\ReadMe.txt"/></Filter>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath="..\..\..\src\transport\advection.f90"/>
+		<File RelativePath="..\..\..\src\transport\boundary_diffusion.f90"/>
 		<File RelativePath="..\..\..\src\transport\diffusion.f90"/>
 		<File RelativePath="..\..\..\test\transport\error_metric.f90"/>
 		<File RelativePath="..\..\..\src\transport\gradient.f90"/>
+		<File RelativePath="..\..\..\src\transport\error_handling.f90"/>
 		<File RelativePath="..\..\..\src\transport\logging.f90"/>
 		<File RelativePath="..\..\..\src\transport\matrix_solver.f90"/>
 		<File RelativePath="..\..\..\src\transport\primitive_variable_conversion.f90"/>
