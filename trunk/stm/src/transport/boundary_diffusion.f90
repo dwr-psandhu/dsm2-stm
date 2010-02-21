@@ -50,6 +50,59 @@ module boundary_diffusion
  procedure(boundary_diffusive_flux_if),pointer :: boundary_diffusion_flux  => null()
 
 
+
+ interface
+       !> Generic interface for calculating BC of matrix that should be fulfilled by
+       !> client programs
+       subroutine boundary_diffusion_matrix_if( center_diag ,      &
+                                                      up_diag,          &     
+                                                      down_diag,        &
+                                                      area,             &
+                                                      area_lo,          &
+                                                      area_hi,          &          
+                                                      disp_coef_lo,     &
+                                                      disp_coef_hi,     &
+                                                      theta_stm,        &
+                                                      ncell,            &
+                                                      time,             & 
+                                                      nvar,             & 
+                                                      dx,               &
+                                                      dt)
+        
+         use stm_precision
+         implicit none
+         !--- args
+                                       
+        integer, intent (in) :: ncell !< Number of cells
+        integer, intent (in) :: nvar  !< Number of variables
+
+        real(stm_real),intent (out)  :: down_diag(ncell,nvar)                            !< Values of the coefficients below diagonal in matrix
+        real(stm_real),intent (out)  :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix
+        real(stm_real),intent (out)  :: up_diag(ncell,nvar)                              !< Values of the coefficients above the diagonal in matrix
+        real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
+        real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
+        real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
+        real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
+        real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
+        real(stm_real), intent (in)  :: time                                        !< Current time
+        real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+        real(stm_real), intent (in)  :: dx                                          !< Spatial step  
+        real(stm_real), intent (in)  :: dt                                          !< Time step     
+      
+      
+       end subroutine boundary_diffusion_matrix_if
+ end interface
+
+ !> This pointer should be set by the driver or client code to specify the 
+ !> treatment at the first and last row of coefficient matrix
+ procedure(boundary_diffusion_matrix_if),pointer :: boundary_diffusion_matrix  => null()
+
+
+
+
+
+
+
  contains
  
  !> Example diffusive flux that prints an error and bails
@@ -103,6 +156,100 @@ module boundary_diffusion
      ! todo: implement and test
      return
  end subroutine
+ 
+ 
+!> Example matrix that prints an error and bails
+ subroutine uninitialized_diffusive_bc_matrix( center_diag ,      &
+                                                      up_diag,          &     
+                                                      down_diag,        &
+                                                      area,             &
+                                                      area_lo,          &
+                                                      area_hi,          &          
+                                                      disp_coef_lo,     &
+                                                      disp_coef_hi,     &
+                                                      theta_stm,        &
+                                                      ncell,            &
+                                                      time,             & 
+                                                      nvar,             & 
+                                                      dx,               &
+                                                      dt)
+                                         
+     use stm_precision 
+     use error_handling
+     
+     implicit none
+     !--- args
+        integer, intent (in) :: ncell !< Number of cells
+        integer, intent (in) :: nvar  !< Number of variables
+
+        real(stm_real),intent (inout)  :: down_diag(ncell,nvar)                            !< Values of the coefficients below diagonal in matrix
+        real(stm_real),intent (inout)  :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix
+        real(stm_real),intent (inout)  :: up_diag(ncell,nvar)                              !< Values of the coefficients above the diagonal in matrix
+        real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
+        real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
+        real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
+        real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
+        real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
+        real(stm_real), intent (in)  :: time                                        !< Current time
+        real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+        real(stm_real), intent (in)  :: dx                                          !< Spatial step  
+        real(stm_real), intent (in)  :: dt                                          !< Time step     
+      
+     call stm_fatal("Boundary not implemented!")
+     
+     return
+ end subroutine 
+ 
+ !> Example diffusive flux that imposes Neumann boundaries with zero flux at
+ !> both ends of the channel.
+ subroutine neumann_no_flow_matrix(center_diag ,      &
+                                                      up_diag,          &     
+                                                      down_diag,        &
+                                                      area,             &
+                                                      area_lo,          &
+                                                      area_hi,          &          
+                                                      disp_coef_lo,     &
+                                                      disp_coef_hi,     &
+                                                      theta_stm,        &
+                                                      ncell,            &
+                                                      time,             & 
+                                                      nvar,             & 
+                                                      dx,               &
+                                                      dt)
+     use stm_precision
+     implicit none
+     !--- args
+         integer, intent (in) :: ncell !< Number of cells
+        integer, intent (in) :: nvar  !< Number of variables
+
+        real(stm_real),intent (inout)  :: down_diag(ncell,nvar)                            !< Values of the coefficients below diagonal in matrix
+        real(stm_real),intent (inout)  :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix
+        real(stm_real),intent (inout)  :: up_diag(ncell,nvar)                              !< Values of the coefficients above the diagonal in matrix
+        real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
+        real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
+        real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
+        real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
+        real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
+        real(stm_real), intent (in)  :: time                                        !< Current time
+        real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+        real(stm_real), intent (in)  :: dx                                          !< Spatial step  
+        real(stm_real), intent (in)  :: dt                                          !< Time step   
+        
+        !---local
+        real(stm_real) :: d_star 
+        d_star = dt/(dx*dx)  
+      
+     ! todo: add other BC 
+     ! 
+     
+     center_diag(1,nvar)=area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar) + two*area_lo(1)*disp_coef_lo(1,nvar))
+     center_diag(ncell,nvar)= area(ncell) + theta_stm*d_star*(two*area_hi(ncell)*disp_coef_hi(ncell,nvar) + area_lo(ncell)*disp_coef_lo(ncell,nvar))
+     
+     
+     
+     ! todo: implement and test
+     return
+ end subroutine 
  
 end module
 
