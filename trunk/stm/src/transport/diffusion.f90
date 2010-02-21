@@ -41,16 +41,12 @@ contains
 !>   - Solve the system
 subroutine diffuse(conc,             &
                   conc_prev,         &
-                  mass,              &
-                  mass_prev,         &
                   area,              &
                   area_prev,         &
                   area_lo,           &
                   area_hi,           &
                   area_lo_prev,      &
                   area_hi_prev,      &
-                 ! diffusive_flux_boundary_lo, &
-                 ! diffusive_flux_boundary_hi, &
                   disp_coef_lo,      &  
                   disp_coef_hi,      &
                   disp_coef_lo_prev, &  
@@ -74,8 +70,6 @@ integer, intent (in) :: ncell                                !< Number of cells
 integer, intent (in) :: nvar                                 !< Number of variables
 
 real(stm_real), intent (out) :: conc(ncell,nvar)             !< Concentration at new time
-real(stm_real), intent (out) :: mass(ncell,nvar)             !< Mass (A*C) at new time
-real(stm_real), intent (in) :: mass_prev(ncell,nvar)         !< Mass (A*C) at old time
 real(stm_real), intent (in) :: conc_prev(ncell,nvar)         !< Concentration at old time
 real(stm_real), intent (in) :: area (ncell)                  !< Cell-centered area at new time
 real(stm_real), intent (in) :: area_prev (ncell)             !< Cell-centered area at old time
@@ -105,8 +99,6 @@ real(stm_real) :: diffusive_flux_boundary(ncell,nvar)         !< Explicit diffus
 real(stm_real) :: diffusive_flux_interior(ncell,nvar)         !< Explicit diffusive interior flux
 real(stm_real) :: right_hand_side(ncell,nvar)         
 
-!todo: remove this
-mass=0
 
 
 ! This routine gives the effects of diffusion fluxes on each cell
@@ -234,8 +226,6 @@ real(stm_real):: diffusive_flux_hi_prev(ncell,nvar)
 ! todo : rename the subroutine 
 call interior_diffusive_flux ( diffusive_flux_lo,            &
                                diffusive_flux_hi,            &
-!                               diffusive_flux_interior_lo,  &
-!                               diffusive_flux_interior_hi,  &
                                             conc_prev,        &
                                             area_lo_prev,     &
                                             area_hi_prev,     &
