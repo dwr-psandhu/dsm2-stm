@@ -40,7 +40,6 @@
 		<File RelativePath="..\..\..\src\transport\logging.f90"/>
 		<File RelativePath="..\..\..\src\transport\matrix_solver.f90"/>
 		<File RelativePath="..\..\..\src\transport\primitive_variable_conversion.f90"/>
-		<File RelativePath=".\boundary_diffusion_matrix.f90"/>
 		<File RelativePath="..\..\..\src\transport\state_variables.f90"/>
 		<File RelativePath="..\..\..\src\transport\stm_precision.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>
