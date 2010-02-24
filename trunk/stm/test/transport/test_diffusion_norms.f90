@@ -143,8 +143,6 @@ timemarch: do jjvar = 1,1000
 
      call diffuse(conc,             &
                   conc_prev,         &
-                  mass,              &
-                  mass_prev,         &
                   area,              &
                   area_prev,         &
                   area_lo,           &
