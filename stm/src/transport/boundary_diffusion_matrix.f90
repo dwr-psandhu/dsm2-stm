@@ -66,6 +66,7 @@ module boundary_diffusion_matrix_module
 
  !> This pointer should be set by the driver or client code to specify the 
  !> treatment at the first and last row of coefficient matrix
+ ! todo: check the "boundary_diffusion_matrix"
  procedure(boundary_diffusive_matrix_if),pointer :: boundary_diffusion_matrix  => null()
 
 
