@@ -31,11 +31,11 @@ module source_if
      !--- args
      integer,intent(in)  :: ncell  !< Number of cells
      integer,intent(in)  :: nvar   !< Number of variables
-     real(STM_REAL),intent(out) :: source(ncell,nvar) !< cell centered source 
-     real(STM_REAL),intent(in)  :: conc(ncell,nvar)   !< Concentration
-     real(STM_REAL),intent(in)  :: area(ncell)        !< area at source     
-     real(STM_REAL),intent(in)  :: flow(ncell)        !< flow at source location
-     real(STM_REAL),intent(in)  :: time               !< flow at source location
+     real(stm_real),intent(out) :: source(ncell,nvar) !< cell centered source 
+     real(stm_real),intent(in)  :: conc(ncell,nvar)   !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)        !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)        !< flow at source location
+     real(stm_real),intent(in)  :: time               !< flow at source location
    end subroutine
  end interface
 end module

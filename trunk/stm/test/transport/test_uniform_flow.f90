@@ -42,31 +42,31 @@ implicit none
 
 integer, parameter  :: nstep_base = 40
 integer, parameter  :: nx_base = 256
-real(STM_REAL), parameter :: cfl = 0.8
+real(stm_real), parameter :: cfl = 0.8
 
 integer :: icoarse = 0
 integer :: nstep
 integer  :: nx
 
 integer, parameter  :: nconc = 2
-real(STM_REAL), parameter :: origin = zero   ! meters
-real(STM_REAL), parameter :: domain_length = 51200
-real(STM_REAL) :: dt              ! seconds
-real(STM_REAL) :: dx              ! meters
-real(STM_REAL), parameter :: ic_center      = three*fourth*domain_length
-real(STM_REAL), parameter :: ic_gaussian_sd = domain_length/sixteen
-real(STM_REAL), parameter :: constant_flow = 1.D2
-real(STM_REAL), parameter :: constant_area = 1.D2
-real(STM_REAL) :: vel
-real(STM_REAL) :: time
+real(stm_real), parameter :: origin = zero   ! meters
+real(stm_real), parameter :: domain_length = 51200
+real(stm_real) :: dt              ! seconds
+real(stm_real) :: dx              ! meters
+real(stm_real), parameter :: ic_center      = three*fourth*domain_length
+real(stm_real), parameter :: ic_gaussian_sd = domain_length/sixteen
+real(stm_real), parameter :: constant_flow = 1.D2
+real(stm_real), parameter :: constant_area = 1.D2
+real(stm_real) :: vel
+real(stm_real) :: time
 integer :: itime = 0
 integer :: icell ! debug only -- remove later
 !------
 integer, parameter :: coarsen_factor = 2      ! coarsening factor used for convergence test
 integer :: coarsening
 integer, parameter :: nrefine = 3
-real(STM_REAL),allocatable :: reference(:)
-real(STM_REAL) norm_error(3,nrefine)
+real(stm_real),allocatable :: reference(:)
+real(stm_real) norm_error(3,nrefine)
 character(LEN=64) filename
 
 ! coarsening factor in convergence test

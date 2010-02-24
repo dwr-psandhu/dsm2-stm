@@ -31,14 +31,14 @@ module hydro_data_if
         use stm_precision
         implicit none
         integer, intent(in) :: ncell                   !< number of cells
-        real(STM_REAL), intent(in) :: time             !< time of request "old time"
-        real(STM_REAL), intent(in) :: dt               !< time step for 
-        real(STM_REAL), intent(out) :: flow(ncell)     !< cell and time centered flow
-        real(STM_REAL), intent(out) :: flow_lo(ncell)  !< lo face flow, time centered
-        real(STM_REAL), intent(out) :: flow_hi(ncell)  !< hi face flow, time centered
-        real(STM_REAL), intent(out) :: area(ncell)     !< cell center area, old time
-        real(STM_REAL), intent(out) :: area_lo(ncell)  !< area lo face, time centered
-        real(STM_REAL), intent(out) :: area_hi(ncell)  !< area hi face, time centered
+        real(stm_real), intent(in) :: time             !< time of request "old time"
+        real(stm_real), intent(in) :: dt               !< time step for 
+        real(stm_real), intent(out) :: flow(ncell)     !< cell and time centered flow
+        real(stm_real), intent(out) :: flow_lo(ncell)  !< lo face flow, time centered
+        real(stm_real), intent(out) :: flow_hi(ncell)  !< hi face flow, time centered
+        real(stm_real), intent(out) :: area(ncell)     !< cell center area, old time
+        real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face, time centered
+        real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
         end subroutine
       end interface
 end module

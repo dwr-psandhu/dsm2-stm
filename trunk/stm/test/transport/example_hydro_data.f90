@@ -32,11 +32,11 @@ implicit none
 !--- args
 integer,intent(in)  :: ncell  !< Number of cells
 
-real(STM_REAL),intent(out) :: flow(ncell)    !< cell-centered flow at time
-real(STM_REAL),intent(out) :: flow_lo(ncell) !< flow on lo side of cells at time
-real(STM_REAL),intent(out) :: flow_hi(ncell) !< flow on hi side at time
-real(STM_REAL), intent(in) :: time           !< time
-real(STM_REAL),intent(in) :: q_const         !< constant flow to be used
+real(stm_real),intent(out) :: flow(ncell)    !< cell-centered flow at time
+real(stm_real),intent(out) :: flow_lo(ncell) !< flow on lo side of cells at time
+real(stm_real),intent(out) :: flow_hi(ncell) !< flow on hi side at time
+real(stm_real), intent(in) :: time           !< time
+real(stm_real),intent(in) :: q_const         !< constant flow to be used
 
 
 !-------

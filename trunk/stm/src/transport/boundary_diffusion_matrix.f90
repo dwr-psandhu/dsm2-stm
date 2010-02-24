@@ -44,8 +44,8 @@ module boundary_diffusion_matrix
          implicit none
          !--- args
                                        
-        integer, intent (in) :: ncell !< Number of cells
-        integer, intent (in) :: nvar  !< Number of variables
+        integer, intent (in) :: ncell                                                 !< Number of cells
+        integer, intent (in) :: nvar                                                  !< Number of variables
 
         real(stm_real),intent (out)  :: down_diag(ncell,nvar)                            !< Values of the coefficients below diagonal in matrix
         real(stm_real),intent (out)  :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix

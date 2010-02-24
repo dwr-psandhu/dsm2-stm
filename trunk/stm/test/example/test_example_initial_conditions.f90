@@ -27,16 +27,16 @@ use example_initial_conditions
 use fruit
 implicit none
 integer, parameter :: nloc = 100
-real(STM_REAL) :: vals(nloc,2)
-real(STM_REAL), parameter  :: dx = ten
-real(STM_REAL), parameter  :: origin = zero
-real(STM_REAL), parameter  :: center1 = 405.  ! middle of cell 41
-real(STM_REAL), parameter  :: center2 = 605.  ! middle of cell 61
-real(STM_REAL), parameter  :: sd = dx*4
-real(STM_REAL), parameter  :: epsilon = 1.D-08 ! mediocre precision for a double because using tabulated values
-real(STM_REAL) :: offline_calc
-real(STM_REAL) :: cell_calc41
-real(STM_REAL) :: cell_calc61
+real(stm_real) :: vals(nloc,2)
+real(stm_real), parameter  :: dx = ten
+real(stm_real), parameter  :: origin = zero
+real(stm_real), parameter  :: center1 = 405.  ! middle of cell 41
+real(stm_real), parameter  :: center2 = 605.  ! middle of cell 61
+real(stm_real), parameter  :: sd = dx*4
+real(stm_real), parameter  :: epsilon = 1.D-08 ! mediocre precision for a double because using tabulated values
+real(stm_real) :: offline_calc
+real(stm_real) :: cell_calc41
+real(stm_real) :: cell_calc61
 character(LEN=32) :: message
 integer :: icell
 
