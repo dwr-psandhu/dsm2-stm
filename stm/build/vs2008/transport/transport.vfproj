@@ -32,6 +32,7 @@
 		<File RelativePath="..\..\..\src\transport\ReadMe.txt"/></Filter>
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath="..\..\..\src\transport\advection.f90"/>
+		<File RelativePath=".\boundary_codes.f90"/>
 		<File RelativePath="..\..\..\src\transport\boundary_diffusion.f90"/>
 		<File RelativePath="..\..\..\src\transport\boundary_diffusion_matrix.f90"/>
 		<File RelativePath="..\..\..\src\transport\diffusion.f90"/>
