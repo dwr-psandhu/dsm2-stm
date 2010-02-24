@@ -109,8 +109,6 @@ do jvar=1,1
  
     call diffuse(conc,             &
                   conc_prev,         &
-                  mass,              &
-                  mass_prev,         &
                   area,              &
                   area_prev,         &
                   area_lo,           &
@@ -127,6 +125,7 @@ do jvar=1,1
                   theta_stm,         &
                   dt,                &
                   dx                 )
+
    
    time = (jvar)*dt
    conc_prev(:,nvar) = conc(:,nvar)         

@@ -37,6 +37,7 @@ program test_transport_driver
   use test_construct_interior_r_h_s
   use test_diffusion_norms
   use test_diffusion_neumann_dirichlet
+  use source_module
   
       call init_fruit
       
