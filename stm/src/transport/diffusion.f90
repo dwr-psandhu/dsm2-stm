@@ -360,8 +360,7 @@ pure subroutine construct_right_hand_side( right_hand_side,   &
                                   conc_prev,             &
                                   theta_stm,             &
                                   ncell,                 &
-                                  !diffusive_flux_boundary_lo, &
-                                  !diffusive_flux_boundary_hi, &
+                                  
                                   time,                  &
                                   nvar,                  &  
                                   dx,                    &
@@ -383,9 +382,7 @@ real(stm_real), intent (in)  :: time                                        !< C
 real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in)  :: dx                                          !< Spatial step  
 real(stm_real), intent (in)  :: dt                                          !< Time step                                   
-!real(stm_real), intent (in) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
-!real(stm_real), intent (in) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side 
-  
+
   
   !---- locals
    integer :: ivar

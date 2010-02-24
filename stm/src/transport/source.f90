@@ -25,17 +25,139 @@ module source_if
  interface compute_source
    !> Generic interface for calculating source that should be fulfilled by
    !> client programs
-   subroutine compute_source(source,conc,area,flow,ncell,nvar,time)
+   
+   ! todo: check if the source must be inout or just out
+   subroutine compute_source_if(source, & 
+                                conc,   &
+                                area,   &
+                                flow,   &
+                                ncell,  &
+                                nvar,   &
+                                time)
      use stm_precision
      implicit none
      !--- args
-     integer,intent(in)  :: ncell  !< Number of cells
-     integer,intent(in)  :: nvar   !< Number of variables
-     real(stm_real),intent(out) :: source(ncell,nvar) !< cell centered source 
+     integer,intent(in)  :: ncell                     !< Number of cells
+     integer,intent(in)  :: nvar                      !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar) !< cell centered source 
      real(stm_real),intent(in)  :: conc(ncell,nvar)   !< Concentration
      real(stm_real),intent(in)  :: area(ncell)        !< area at source     
      real(stm_real),intent(in)  :: flow(ncell)        !< flow at source location
      real(stm_real),intent(in)  :: time               !< flow at source location
-   end subroutine
+     
+   end subroutine compute_source_if
  end interface
+ !> This pointer should be set by the driver or client code to specify the 
+ !> source term 
+ procedure(compute_source_if),pointer :: source  => null()
+ 
+ contains
+ 
+ subroutine no_source(source, & 
+                                conc,   &
+                                area,   &
+                                flow,   &
+                                ncell,  &
+                                nvar,   &
+                                time)
+                                         
+     use stm_precision 
+     use error_handling
+     
+     
+         implicit none
+     !--- args
+     integer,intent(in)  :: ncell                     !< Number of cells
+     integer,intent(in)  :: nvar                      !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar) !< cell centered source 
+     real(stm_real),intent(in)  :: conc(ncell,nvar)   !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)        !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)        !< flow at source location
+     real(stm_real),intent(in)  :: time               !< flow at source location
+     
+     call stm_fatal("No Source!")
+     
+     return
+ end subroutine no_source
+ 
+  subroutine linear_decay_source(source, & 
+                                conc,   &
+                                area,   &
+                                flow,   &
+                                ncell,  &
+                                nvar,   &
+                                time)
+                                         
+     use stm_precision 
+     use error_handling
+     
+     
+         implicit none
+     !--- args
+     integer,intent(in)  :: ncell                     !< Number of cells
+     integer,intent(in)  :: nvar                      !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar) !< cell centered source 
+     real(stm_real),intent(in)  :: conc(ncell,nvar)   !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)        !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)        !< flow at source location
+     real(stm_real),intent(in)  :: time               !< flow at source location
+     
+
+     ! todo: implement and test
+     return
+ end subroutine linear_decay_source
+ 
+ subroutine cohesive_source(source, & 
+                                conc,   &
+                                area,   &
+                                flow,   &
+                                ncell,  &
+                                nvar,   &
+                                time)
+                                
+     use stm_precision
+    
+          implicit none
+     !--- args
+     integer,intent(in)  :: ncell                     !< Number of cells
+     integer,intent(in)  :: nvar                      !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar) !< cell centered source 
+     real(stm_real),intent(in)  :: conc(ncell,nvar)   !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)        !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)        !< flow at source location
+     real(stm_real),intent(in)  :: time               !< flow at source location
+ 
+     ! todo: implement and test
+     ! todo: add other kind of sources
+     return
+ end subroutine
+ 
+ subroutine non_cohesive_source(source, & 
+                                conc,   &
+                                area,   &
+                                flow,   &
+                                ncell,  &
+                                nvar,   &
+                                time)
+                                
+     use stm_precision
+    
+          implicit none
+     !--- args
+     integer,intent(in)  :: ncell                     !< Number of cells
+     integer,intent(in)  :: nvar                      !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar) !< cell centered source 
+     real(stm_real),intent(in)  :: conc(ncell,nvar)   !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)        !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)        !< flow at source location
+     real(stm_real),intent(in)  :: time               !< flow at source location
+     
+        
+     
+     
+     ! todo: implement and test
+     return
+ end subroutine
+ 
 end module
+ 
