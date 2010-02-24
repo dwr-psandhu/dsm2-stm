@@ -28,13 +28,13 @@ module example_initial_conditions
     contains
     
     !> Gaussian cdf (integrated Guassian pdf) from -inf to x0
-    real(STM_REAL) function gaussian_cdf(x0,mean,sd)
+    real(stm_real) function gaussian_cdf(x0,mean,sd)
         use stm_precision
         implicit none
         
-        real(STM_REAL), intent(in) :: x0   !< end of integration
-        real(STM_REAL), intent(in) :: mean !< mean
-        real(STM_REAL), intent(in) :: sd   !< sigma/standard deviation
+        real(stm_real), intent(in) :: x0   !< end of integration
+        real(stm_real), intent(in) :: mean !< mean
+        real(stm_real), intent(in) :: sd   !< sigma/standard deviation
         gaussian_cdf = half + half*erf((x0-mean)/(sqrt(two)*sd))
         return
     end function
@@ -47,14 +47,14 @@ module example_initial_conditions
 
         implicit none
         integer, intent(in) :: nloc
-        real(STM_REAL), intent(out) :: vals(nloc)  !< values to be filled
-        real(STM_REAL), intent(in)  :: origin      !< origin (lo side of channel)
-        real(STM_REAL), intent(in)  :: dx          !< dx
-        real(STM_REAL), intent(in)  :: mean        !< center of the gaussian shape
-        real(STM_REAL), intent(in)  :: sd          !< length of gaussian shape
+        real(stm_real), intent(out) :: vals(nloc)  !< values to be filled
+        real(stm_real), intent(in)  :: origin      !< origin (lo side of channel)
+        real(stm_real), intent(in)  :: dx          !< dx
+        real(stm_real), intent(in)  :: mean        !< center of the gaussian shape
+        real(stm_real), intent(in)  :: sd          !< length of gaussian shape
         !-----locals
-        real(STM_REAL) :: xlo
-        real(STM_REAL) :: xhi
+        real(stm_real) :: xlo
+        real(stm_real) :: xhi
         integer        :: iloc
         !-----------
         do iloc = 1,nloc
@@ -75,13 +75,13 @@ module example_initial_conditions
     subroutine fill_rectangular(array,x,nloc,xlo,xhi,fill,fill_else)
 
         implicit none
-        real(STM_REAL), intent(out) :: array(nloc)  !< array to be filled
-        real(STM_REAL), intent(in)  :: x(nloc)      !< cell-centered x coordinate
+        real(stm_real), intent(out) :: array(nloc)  !< array to be filled
+        real(stm_real), intent(in)  :: x(nloc)      !< cell-centered x coordinate
         integer,        intent(in)  :: nloc         !< size of array
-        real(STM_REAL), intent(in)  :: xlo          !< lo side boundary of fill
-        real(STM_REAL), intent(in)  :: xhi          !< hi side boundary of fill
-        real(STM_REAL), intent(in)  :: fill         !< filled value between xlo and xhi
-        real(STM_REAL), intent(in)  :: fill_else    !< filled value if not between xlo and xhi
+        real(stm_real), intent(in)  :: xlo          !< lo side boundary of fill
+        real(stm_real), intent(in)  :: xhi          !< hi side boundary of fill
+        real(stm_real), intent(in)  :: fill         !< filled value between xlo and xhi
+        real(stm_real), intent(in)  :: fill_else    !< filled value if not between xlo and xhi
                 
         array = fill_else
         
@@ -95,13 +95,13 @@ module example_initial_conditions
     subroutine fill_triangular(array,x,nloc,xlo,xhi,fill,fill_else)
 
         implicit none
-        real(STM_REAL), intent(out) :: array(nloc)  !< array to be filled
-        real(STM_REAL), intent(in)  :: x(nloc)      !< cell-centered x coordinate
+        real(stm_real), intent(out) :: array(nloc)  !< array to be filled
+        real(stm_real), intent(in)  :: x(nloc)      !< cell-centered x coordinate
         integer,        intent(in)  :: nloc         !< size of array
-        real(STM_REAL), intent(in)  :: xlo          !< lo side boundary of fill
-        real(STM_REAL), intent(in)  :: xhi          !< hi side boundary of fill
-        real(STM_REAL), intent(in)  :: fill         !< filled value between xlo and xhi
-        real(STM_REAL), intent(in)  :: fill_else    !< filled value if not between xlo and xhi
+        real(stm_real), intent(in)  :: xlo          !< lo side boundary of fill
+        real(stm_real), intent(in)  :: xhi          !< hi side boundary of fill
+        real(stm_real), intent(in)  :: fill         !< filled value between xlo and xhi
+        real(stm_real), intent(in)  :: fill_else    !< filled value if not between xlo and xhi
                 
         array = fill_else
         
@@ -118,17 +118,17 @@ module example_initial_conditions
     implicit none
     integer, intent(in) ::  nloc
     !todo: document arguments
-    real(STM_REAL), intent(out) :: vals(nloc)
-    real(STM_REAL), intent(in)  :: origin
-    real(STM_REAL), intent(in)  :: dx
-    real(STM_REAL), intent(in)  :: x0
-    real(STM_REAL), intent(in)  :: value_lo
-    real(STM_REAL), intent(in)  :: value_hi
+    real(stm_real), intent(out) :: vals(nloc)
+    real(stm_real), intent(in)  :: origin
+    real(stm_real), intent(in)  :: dx
+    real(stm_real), intent(in)  :: x0
+    real(stm_real), intent(in)  :: value_lo
+    real(stm_real), intent(in)  :: value_hi
     !---locals
-    real(STM_REAL) :: fraction_lo
-    real(STM_REAL) :: fraction_hi
-    real(STM_REAL) :: xlo
-    real(STM_REAL) :: xhi
+    real(stm_real) :: fraction_lo
+    real(stm_real) :: fraction_hi
+    real(stm_real) :: xlo
+    real(stm_real) :: xhi
     integer :: iloc
     
     !----------------------------------

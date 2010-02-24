@@ -44,25 +44,25 @@ module example_advection
 
         integer, parameter  :: nstep  = 100
         integer, parameter  :: nx = 100
-        real(STM_REAL), parameter :: cfl = 0.5
+        real(stm_real), parameter :: cfl = 0.5
 
         integer, parameter  :: nconc = 2
-        real(STM_REAL), parameter :: origin = zero        ! meters
-        real(STM_REAL), parameter :: domain_length = 100  ! meters
-        real(STM_REAL) :: dt              ! seconds
-        real(STM_REAL) :: dx              ! meters
-        real(STM_REAL), parameter :: ic_center      = three*fourth*domain_length
-        real(STM_REAL), parameter :: ic_gaussian_sd = domain_length/sixteen
-        real(STM_REAL), parameter :: constant_flow = 100
-        real(STM_REAL), parameter :: constant_area = 100
-        real(STM_REAL) :: vel
-        real(STM_REAL) :: time
+        real(stm_real), parameter :: origin = zero        ! meters
+        real(stm_real), parameter :: domain_length = 100  ! meters
+        real(stm_real) :: dt              ! seconds
+        real(stm_real) :: dx              ! meters
+        real(stm_real), parameter :: ic_center      = three*fourth*domain_length
+        real(stm_real), parameter :: ic_gaussian_sd = domain_length/sixteen
+        real(stm_real), parameter :: constant_flow = 100
+        real(stm_real), parameter :: constant_area = 100
+        real(stm_real) :: vel
+        real(stm_real) :: time
         integer :: itime = 0
 
         !------ local
-        real(STM_REAL), allocatable :: reference(:)
-        real(STM_REAL), allocatable :: x(:), x_shifted(:)
-        real(STM_REAL), allocatable :: conc_exact(:)
+        real(stm_real), allocatable :: reference(:)
+        real(stm_real), allocatable :: x(:), x_shifted(:)
+        real(stm_real), allocatable :: conc_exact(:)
         character(LEN=64) :: filename
         integer :: i
         integer :: funit, funit_ref   
@@ -151,10 +151,10 @@ module example_advection
 
         implicit none
 
-        real(STM_REAL), intent(out)    :: x_shifted(nloc)  !< shifted x coordinate
-        real(STM_REAL), intent(in)     :: x_ref(nloc)      !< reference x coordinate        
-        real(STM_REAL), intent(in)     :: vel          !< constant velocity
-        real(STM_REAL), intent(in)     :: time         !< solution at this time
+        real(stm_real), intent(out)    :: x_shifted(nloc)  !< shifted x coordinate
+        real(stm_real), intent(in)     :: x_ref(nloc)      !< reference x coordinate        
+        real(stm_real), intent(in)     :: vel          !< constant velocity
+        real(stm_real), intent(in)     :: time         !< solution at this time
         integer,        intent(in)     :: nloc         !< size of array
 
         !--local 
