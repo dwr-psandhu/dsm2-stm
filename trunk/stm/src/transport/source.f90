@@ -20,7 +20,7 @@
 
 !> Source interface to be fulfilled by driver or application
 !>@ingroup transport
-module source_if
+module source_module
  !> Calculate source
  interface compute_source
    !> Generic interface for calculating source that should be fulfilled by
@@ -49,7 +49,8 @@ module source_if
  end interface
  !> This pointer should be set by the driver or client code to specify the 
  !> source term 
- procedure(compute_source_if),pointer :: source  => null()
+ procedure(compute_source_if),pointer :: source => null()
+
  
  contains
  

@@ -20,7 +20,7 @@
 
 !> boundary diffusive matrix interface to be fulfilled by driver or application
 !>@ingroup transport
-module boundary_diffusion_matrix
+module boundary_diffusion_matrix_module
  !> Calculate boundary diffusion matrix
  interface
        !> Generic interface for calculating BC of matrix that should be fulfilled by
