@@ -35,17 +35,17 @@ implicit none
   integer,parameter :: nx = 3       !interior and two ends
   integer,parameter :: nconst = 2
  
-  real(STM_REAL) :: grad(nx,nconst)
-  real(STM_REAL) :: conc(nx,nconst)
-  real(STM_REAL) :: conc_hi(nx,nconst)
-  real(STM_REAL) :: conc_lo(nx,nconst)
-  real(STM_REAL) :: source(nx,nconst)
+  real(stm_real) :: grad(nx,nconst)
+  real(stm_real) :: conc(nx,nconst)
+  real(stm_real) :: conc_hi(nx,nconst)
+  real(stm_real) :: conc_lo(nx,nconst)
+  real(stm_real) :: source(nx,nconst)
 
-  real(STM_REAL) :: flow(nx)
-  real(STM_REAL) :: area(nx)  
-  real(STM_REAL) :: dx
-  real(STM_REAL) :: dt
-  real(STM_REAL) :: time
+  real(stm_real) :: flow(nx)
+  real(stm_real) :: area(nx)  
+  real(stm_real) :: dx
+  real(stm_real) :: dt
+  real(stm_real) :: time
   integer        :: ix,ic
   
   conc(1,1)=62.D0
@@ -114,18 +114,18 @@ implicit none
   integer,parameter :: nx = 3       !interior and two ends
   integer,parameter :: nconst = 2
  
-  real(STM_REAL) :: flow_lo(nx)
-  real(STM_REAL) :: flow_hi(nx)  
-  real(STM_REAL) :: conc(nx,nconst)
-  real(STM_REAL) :: conc_hi(nx,nconst)
-  real(STM_REAL) :: conc_lo(nx,nconst)
-  real(STM_REAL) :: flux_lo(nx,nconst)
-  real(STM_REAL) :: flux_hi(nx,nconst)
-  real(STM_REAL) :: flow(nx)
-  real(STM_REAL) :: area(nx)  
-  real(STM_REAL) :: dx
-  real(STM_REAL) :: dt
-  real(STM_REAL) :: time
+  real(stm_real) :: flow_lo(nx)
+  real(stm_real) :: flow_hi(nx)  
+  real(stm_real) :: conc(nx,nconst)
+  real(stm_real) :: conc_hi(nx,nconst)
+  real(stm_real) :: conc_lo(nx,nconst)
+  real(stm_real) :: flux_lo(nx,nconst)
+  real(stm_real) :: flux_hi(nx,nconst)
+  real(stm_real) :: flow(nx)
+  real(stm_real) :: area(nx)  
+  real(stm_real) :: dx
+  real(stm_real) :: dt
+  real(stm_real) :: time
   integer        :: ix,ic
   
   conc_lo(1,1)=62.D0

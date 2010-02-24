@@ -30,20 +30,20 @@ use stm_precision
 implicit none
 
 integer, intent(in) :: ncell
-real(STM_REAL), intent(out) :: norm_1            !< L-1   error
-real(STM_REAL), intent(out) :: norm_2            !< L-2   error
-real(STM_REAL), intent(out) :: norm_inf          !< L-inf error
+real(stm_real), intent(out) :: norm_1            !< L-1   error
+real(stm_real), intent(out) :: norm_2            !< L-2   error
+real(stm_real), intent(out) :: norm_inf          !< L-inf error
 
-real(STM_REAL), intent(in) :: vals(ncell)        !< Calculated values
-real(STM_REAL), intent(in) :: reference(ncell)   !< Reference or 'other' values
-real(STM_REAL), intent(in) :: dx                 !< Spatial step !todo: do we use this????
+real(stm_real), intent(in) :: vals(ncell)        !< Calculated values
+real(stm_real), intent(in) :: reference(ncell)   !< Reference or 'other' values
+real(stm_real), intent(in) :: dx                 !< Spatial step !todo: do we use this????
 
 ! locals
 integer :: icell
 integer :: which_cell
-real(STM_REAL) :: err
-real(STM_REAL) :: sq_error
-real(STM_REAL) :: abs_error
+real(stm_real) :: err
+real(stm_real) :: sq_error
+real(stm_real) :: abs_error
 
 norm_1=zero
 norm_2=zero

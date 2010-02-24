@@ -35,12 +35,12 @@ module boundary_diffusion
          use stm_precision
          implicit none
          !--- args
-          integer,intent(in)  :: ncell                                   !< Number of cells
-         integer,intent(in)  :: nvar                                    !< Number of variables
-         real(STM_REAL),intent(inout) :: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
-         real(STM_REAL),intent(inout) :: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-         real(STM_REAL),intent(in)  :: time                             !< time
-         real(STM_REAL),intent(in)  :: conc(ncell,nvar)                 !< concentration 
+         integer,intent(in)  :: ncell                                   !< number of cells
+         integer,intent(in)  :: nvar                                    !< number of variables
+         real(stm_real),intent(inout) :: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
+         real(stm_real),intent(inout) :: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+         real(stm_real),intent(in)  :: time                             !< time
+         real(stm_real),intent(in)  :: conc(ncell,nvar)                 !< concentration 
        
        end subroutine boundary_diffusive_flux_if
  end interface
@@ -67,10 +67,10 @@ module boundary_diffusion
      !--- args
          integer,intent(in)  :: ncell                                   !< Number of cells
          integer,intent(in)  :: nvar                                    !< Number of variables
-         real(STM_REAL),intent(inout) :: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
-         real(STM_REAL),intent(inout) :: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-         real(STM_REAL),intent(in)  :: time                             !< time
-         real(STM_REAL),intent(in)  :: conc(ncell,nvar)                 !< concentration 
+         real(stm_real),intent(inout) :: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
+         real(stm_real),intent(inout) :: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+         real(stm_real),intent(in)  :: time                             !< time
+         real(stm_real),intent(in)  :: conc(ncell,nvar)                 !< concentration 
      call stm_fatal("Boundary not implemented")
      
      return
@@ -89,10 +89,10 @@ module boundary_diffusion
      !--- args
          integer,intent(in)  :: ncell                                   !< Number of cells
          integer,intent(in)  :: nvar                                    !< Number of variables
-         real(STM_REAL),intent(inout) :: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
-         real(STM_REAL),intent(inout) :: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-         real(STM_REAL),intent(in)  :: time                             !< time
-         real(STM_REAL),intent(in)  :: conc(ncell,nvar)                 !< concentration 
+         real(stm_real),intent(inout) :: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
+         real(stm_real),intent(inout) :: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+         real(stm_real),intent(in)  :: time                             !< time
+         real(stm_real),intent(in)  :: conc(ncell,nvar)                 !< concentration 
      
      ! todo: add other BC 
      ! neumann default

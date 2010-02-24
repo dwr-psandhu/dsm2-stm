@@ -34,10 +34,10 @@ implicit none
   integer,parameter :: nx = 3       !interior and two ends
   integer,parameter :: nconst = 2
   character(LEN=32) :: message
-  real(STM_REAL) :: mass(nx,nconst)
-  real(STM_REAL) :: conc(nx,nconst)
-  real(STM_REAL) :: conc2(nx,nconst)
-  real(STM_REAL) :: area(nx)
+  real(stm_real) :: mass(nx,nconst)
+  real(stm_real) :: conc(nx,nconst)
+  real(stm_real) :: conc2(nx,nconst)
+  real(stm_real) :: area(nx)
   integer :: ic, ix
   
   conc(1,1) = sixteen

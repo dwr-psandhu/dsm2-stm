@@ -41,8 +41,8 @@ module error_handling
     subroutine printout(arr,x,filename)
 
         implicit none
-        real(STM_REAL),intent(in) :: arr(:)         !< array values
-        real(STM_REAL),intent(in) :: x(:)           !< x values
+        real(stm_real),intent(in) :: arr(:)         !< array values
+        real(stm_real),intent(in) :: x(:)           !< x values
         character(LEN=*)          :: filename       !< name of file to write
         integer                   :: icell
         
@@ -63,9 +63,9 @@ module error_handling
     subroutine printout_append(arr,x,time,funit)
 
         implicit none
-        real(STM_REAL),   intent(in)   :: arr(:)         !< array values
-        real(STM_REAL),   intent(in)   :: x(:)           !< x coordinate
-        real(STM_REAL),   intent(in)   :: time           !< time
+        real(stm_real),   intent(in)   :: arr(:)         !< array values
+        real(stm_real),   intent(in)   :: x(:)           !< x coordinate
+        real(stm_real),   intent(in)   :: time           !< time
         integer,          intent(in)   :: funit          !< file unit
                 
         !--local

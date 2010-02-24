@@ -28,48 +28,48 @@ module state_variables
     
     !> Mass of constituent in the current/new time step,
     !> dimensions (ncell, nvar)
-    real(STM_REAL),save,allocatable :: mass(:,:)
+    real(stm_real),save,allocatable :: mass(:,:)
     
     !> Mass of constituent in the previous time step,
     !> dimensions (ncell, nvar)
-    real(STM_REAL),save,allocatable :: mass_prev(:,:)
+    real(stm_real),save,allocatable :: mass_prev(:,:)
     
     
     !> Concentration in the current/new time step,
     !> dimensions (ncell, nvar)
-    real(STM_REAL),save,allocatable :: conc(:,:)
+    real(stm_real),save,allocatable :: conc(:,:)
     
     !> Concentration in the previous time step,
     !> dimensions (ncell, nvar)
-    real(STM_REAL),save,allocatable :: conc_prev(:,:)
+    real(stm_real),save,allocatable :: conc_prev(:,:)
 
     !> Cell-centered area
     !> dimensions (ncell)
-    real(STM_REAL),save,allocatable :: area(:)
+    real(stm_real),save,allocatable :: area(:)
     
     !> Cell-centered area at old time step
     !> dimensions (ncell)
-    real(STM_REAL),save,allocatable :: area_prev(:)
+    real(stm_real),save,allocatable :: area_prev(:)
     
     !> Face area on lo side of cell (so this is cell-indexed),
     !> dimensions (ncell)
-    real(STM_REAL),save,allocatable :: area_lo(:)
+    real(stm_real),save,allocatable :: area_lo(:)
     
     !> Face-centered area on hi side of cell (so this is cell-indexed),
     !> dimensions (ncell)
-    real(STM_REAL),save,allocatable :: area_hi(:)
+    real(stm_real),save,allocatable :: area_hi(:)
     
     !> face-centered flow on lo side of cell  (so this is cell-indexed),
     !> dimensions (ncell)
-    real(STM_REAL),save,allocatable :: flow(:)
+    real(stm_real),save,allocatable :: flow(:)
     
     !> face-centered flow on lo side of cell  (so this is cell-indexed),
     !> dimensions (ncell)
-    real(STM_REAL),save,allocatable :: flow_lo(:)
+    real(stm_real),save,allocatable :: flow_lo(:)
     
     !> face-centered flow on hi side of cell  (so this is cell-indexed),
     !> dimensions (ncell)
-    real(STM_REAL),save,allocatable :: flow_hi(:)
+    real(stm_real),save,allocatable :: flow_hi(:)
     
     
     contains
