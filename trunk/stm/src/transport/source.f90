@@ -49,7 +49,7 @@ module source_module
  end interface
  !> This pointer should be set by the driver or client code to specify the 
  !> source term 
- procedure(compute_source_if),pointer :: source => null()
+ procedure(compute_source_if),pointer :: source => null() !no_source
 
  
  contains
