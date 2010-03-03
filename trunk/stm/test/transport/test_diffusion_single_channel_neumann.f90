@@ -28,6 +28,7 @@ use primitive_variable_conversion
 use diffusion
 use boundary_diffusion
 use boundary_diffusion_matrix_module
+use example_initial_conditions
 
 contains
 
@@ -96,11 +97,11 @@ disp_coef_hi_prev(:,:) = 0.1d0
 
 !---- t initial is t=0 sec 
 
-do iivar = 1, ncell
- xpos(iivar) = -25.0d0 + dx* (iivar-1)
- conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2.0d0)/(4.0d0*disp_coef_lo_prev(iivar,nvar)))
-
-end do
+call fill_gaussian(conc_prev,ncell, -25.0d0 ,dx,zero,one)
+!do iivar = 1, ncell
+! xpos(iivar) = -25.0d0 + dx* (iivar-1)
+! conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2.0d0)/(4.0d0*disp_coef_lo_prev(iivar,nvar)))
+!end do
 
 
 
@@ -374,28 +375,28 @@ subroutine single_channel_neumann_matrix (center_diag ,      &
                                                       nvar,             & 
                                                       dx,               &
                                                       dt)
+                                                      
                                               
  use stm_precision
  implicit none
  !--- args
-                               
-integer, intent (in) :: ncell                                                 !< Number of cells
-integer, intent (in) :: nvar                                                  !< Number of variables
 
-! todo: check in out or just out
-real(stm_real),intent (inout)  :: down_diag(ncell,nvar)                            !< Values of the coefficients below diagonal in matrix
-real(stm_real),intent (inout)  :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix
-real(stm_real),intent (inout)  :: up_diag(ncell,nvar)                              !< Values of the coefficients above the diagonal in matrix
-real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
-real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
-real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
-real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
-real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
-real(stm_real), intent (in)  :: time                                        !< Current time
-real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
-real(stm_real), intent (in)  :: dx                                          !< Spatial step  
-real(stm_real), intent (in)  :: dt                                          !< Time step     
+                                       
+        integer, intent (in) :: ncell                                                 !< Number of cells
+        integer, intent (in) :: nvar                                                  !< Number of variables
 
+        real(stm_real),intent (inout)  :: down_diag(ncell,nvar)                            !< Values of the coefficients below diagonal in matrix
+        real(stm_real),intent (inout)  :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix
+        real(stm_real),intent (inout)  :: up_diag(ncell,nvar)                              !< Values of the coefficients above the diagonal in matrix
+        real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
+        real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
+        real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
+        real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
+        real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
+        real(stm_real), intent (in)  :: time                                        !< Current time
+        real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+        real(stm_real), intent (in)  :: dx                                          !< Spatial step  
+        real(stm_real), intent (in)  :: dt       
 
 
 ! must follow interface

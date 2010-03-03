@@ -22,7 +22,7 @@
 !>@ingroup transport
 module boundary_diffusion
  !> Calculate boundary diffusion flux
- interface
+ abstract interface
        !> Generic interface for calculating BC that should be fulfilled by
        !> client programs
        subroutine boundary_diffusive_flux_if(diffusive_flux_lo, &
