@@ -158,7 +158,7 @@ call construct_diffusion_matrix( center_diag ,      &
                                   nvar,             & 
                                   dx,               &
                                   dt)
-
+call
 ! todo: this function will add boundary conditions to the matrix
 !call boundary_diffusion_matrix(center_diag...
 

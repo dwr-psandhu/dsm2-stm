@@ -36,7 +36,7 @@
 		<File RelativePath="..\..\..\test\transport\test_diffusion.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_neumann_dirichlet.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_norms.f90"/>
-		<File RelativePath="..\..\..\src\transport\test_diffusion_single_channel_Neumann.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_diffusion_single_channel_neumann.f90"/>
 		<File RelativePath="..\..\..\test\example\test_example_initial_conditions.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_explicit_diffusion_operator.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_extrapolate.f90"/>
