@@ -38,8 +38,6 @@ real(stm_real)  :: down_diag(ncell,nvar)                       !< Values of the 
 real(stm_real)  :: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
 real(stm_real)  :: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
 real(stm_real)  :: area (ncell)                                !< Cell centered area at new time 
-!real(stm_real)  :: conc(ncell,nvar)                            !< Concentration at new time
-!real(stm_real)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
 real(stm_real)  :: area_lo(ncell)                              !< Low side area at new time
 real(stm_real)  :: area_hi(ncell)                              !< High side area at new time 
 real(stm_real)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
@@ -58,7 +56,7 @@ disp_coef_lo =0.05d0
 disp_coef_hi =0.05d0
 theta_stm = 0.9d0
 dx = 0.045d0
-time =LARGEREAL ! todo do wee need this?
+time =LARGEREAL 
 dt = 0.001d0
 
  !---check for theta = 0.9
@@ -69,8 +67,6 @@ call construct_diffusion_matrix( center_diag ,      &
                                   area,             &
                                   area_lo,          &
                                   area_hi,          &
-!                                  conc,             &
-!                                  conc_prev,        &
                                   disp_coef_lo,     &
                                   disp_coef_hi,     &
                                   theta_stm,        &
@@ -104,8 +100,6 @@ call construct_diffusion_matrix( center_diag ,      &
                                   area,             &
                                   area_lo,          &
                                   area_hi,          &
-!                                  conc,             &
-!                                  conc_prev,        &
                                   disp_coef_lo,     &
                                   disp_coef_hi,     &
                                   theta_stm,        &
@@ -139,8 +133,6 @@ call construct_diffusion_matrix( center_diag ,      &
                                   area,             &
                                   area_lo,          &
                                   area_hi,          &
-!                                  conc,             &
-!                                  conc_prev,        &
                                   disp_coef_lo,     &
                                   disp_coef_hi,     &
                                   theta_stm,        &

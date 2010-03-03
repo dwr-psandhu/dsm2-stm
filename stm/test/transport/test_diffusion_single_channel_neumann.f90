@@ -33,9 +33,6 @@ use example_initial_conditions
 contains
 
 
-
-
-
 subroutine test_new_diffusion_calc
 
 integer,parameter :: ncell = 1001                              !< Number of cells
@@ -98,6 +95,7 @@ disp_coef_hi_prev(:,:) = 0.1d0
 !---- t initial is t=0 sec 
 
 call fill_gaussian(conc_prev,ncell, -25.0d0 ,dx,zero,one)
+!todo remove
 !do iivar = 1, ncell
 ! xpos(iivar) = -25.0d0 + dx* (iivar-1)
 ! conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2.0d0)/(4.0d0*disp_coef_lo_prev(iivar,nvar)))
@@ -402,8 +400,6 @@ subroutine single_channel_neumann_matrix (center_diag ,      &
 ! must follow interface
 return
 end subroutine
-
-
 
 
 end module

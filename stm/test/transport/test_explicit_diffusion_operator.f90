@@ -50,20 +50,10 @@ area_hi_prev(:) = (/98d0,96d0,94d0,92d0,90d0,88d0/)
 disp_coef_lo_prev(:,1) = (/0.9d0,0.92d0,0.94d0,0.96d0,0.98d0,1d0/)
 disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1d0,1.02d0/)
 dx = 2.0d0 
-time =LARGEREAL ! todo do wee need this?
+time =LARGEREAL 
 
-   
-call explicit_diffusion_operator(explicit_diffuse_op,  &
-                                            conc_prev,        &
-                                            !conc,             &
-                                            area_lo_prev,     &
-                                            area_hi_prev,     &
-                                            disp_coef_lo_prev,&  
-                                            disp_coef_hi_prev,&
-                                            ncell,            &
-                                            nvar,             &
-                                            time,             &
-                                            dx)   
+
+                                            
 call explicit_diffusion_operator (explicit_diffuse_op,  &
                                             conc_prev,        &
                                             area_lo_prev,     &
