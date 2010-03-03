@@ -35,30 +35,30 @@ subroutine test_diffusion_n_d
   implicit none
   
 integer,parameter :: ncell = 9                              !< Number of cells
-integer,parameter :: nvar = 1                                  !< Number of variables
+integer,parameter :: nvar = 1                               !< Number of variables
 
 
 
-real(stm_real) :: conc(ncell,nvar)              !< Concentration at new time
-real(stm_real) :: mass(ncell,nvar)              !< Mass (A*C) at new time
-real(stm_real) :: mass_prev(ncell,nvar)         !< Mass (A*C) at old time
-real(stm_real) :: conc_prev(ncell,nvar)         !< Concentration at old time
-real(stm_real) :: area (ncell)                  !< Cell-centered area at new time
-real(stm_real) :: area_prev (ncell)             !< Cell-centered area at old time
-real(stm_real) :: area_lo (ncell)               !< Low side area centered in time
-real(stm_real) :: area_hi (ncell)               !< High side area centered in time 
-real(stm_real) :: area_lo_prev (ncell)          !< Low side area centered at old time
-real(stm_real) :: area_hi_prev (ncell)          !< High side area centered at old time 
-real(stm_real) :: disp_coef_lo (ncell,nvar)     !< Low side constituent dispersion coef. at new time
-real(stm_real) :: disp_coef_hi (ncell,nvar)     !< High side constituent dispersion coef. at new time
-real(stm_real) :: disp_coef_lo_prev(ncell,nvar) !< Low side constituent dispersion coef. at old time
-real(stm_real) :: disp_coef_hi_prev(ncell,nvar) !< High side constituent dispersion coef. at old time
-real(stm_real) :: time                          !< Current time
-real(stm_real) :: theta_stm                     !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
-real(stm_real) :: dt                            !< Time step   
-real(stm_real) :: dx                            !< Spacial step 
-real(stm_real) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
-real(stm_real) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side
+real(stm_real) :: conc(ncell,nvar)                  !< Concentration at new time
+real(stm_real) :: mass(ncell,nvar)                  !< Mass (A*C) at new time
+real(stm_real) :: mass_prev(ncell,nvar)             !< Mass (A*C) at old time
+real(stm_real) :: conc_prev(ncell,nvar)             !< Concentration at old time
+real(stm_real) :: area (ncell)                      !< Cell-centered area at new time
+real(stm_real) :: area_prev (ncell)                 !< Cell-centered area at old time
+real(stm_real) :: area_lo (ncell)                   !< Low side area centered in time
+real(stm_real) :: area_hi (ncell)                   !< High side area centered in time 
+real(stm_real) :: area_lo_prev (ncell)              !< Low side area centered at old time
+real(stm_real) :: area_hi_prev (ncell)              !< High side area centered at old time 
+real(stm_real) :: disp_coef_lo (ncell,nvar)         !< Low side constituent dispersion coef. at new time
+real(stm_real) :: disp_coef_hi (ncell,nvar)         !< High side constituent dispersion coef. at new time
+real(stm_real) :: disp_coef_lo_prev(ncell,nvar)     !< Low side constituent dispersion coef. at old time
+real(stm_real) :: disp_coef_hi_prev(ncell,nvar)     !< High side constituent dispersion coef. at old time
+real(stm_real) :: time                              !< Current time
+real(stm_real) :: theta_stm                         !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+real(stm_real) :: dt                                !< Time step   
+real(stm_real) :: dx                                !< Spacial step 
+real(stm_real) :: diffusive_flux_boundary_lo(nvar)  !< Neumann BC on low side    
+real(stm_real) :: diffusive_flux_boundary_hi (nvar) !< Neumann BC on high side
 
 !---- locals
 integer :: jvar
@@ -151,6 +151,8 @@ do ivar=1,ncell
     print* ,"analytcal", ivar,xpos,conc_prev(ivar,nvar)
   
 end do
+
+!todo fill this part
 !conc_exact
 
 !  call assertEquals (

@@ -29,7 +29,7 @@ use stm_precision
 contains
 
 subroutine test_boundary_dif_flux
-  use diffusion !todo ???
+  use diffusion ! todo do we need this?
   use boundary_diffusion
   implicit none
   

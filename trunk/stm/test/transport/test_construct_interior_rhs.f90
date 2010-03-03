@@ -32,8 +32,8 @@ subroutine test_construct_interior_rhs
   use diffusion 
   implicit none
   
- integer,parameter :: ncell = 6 !< Number of cells
-integer,parameter :: nvar = 1 !< Number of variables
+ integer,parameter :: ncell = 6             !< Number of cells
+integer,parameter :: nvar = 1           !< Number of variables
 
 real(stm_real) :: right_hand_side(ncell,nvar)                 !< The right hand side vector
 real(stm_real)  :: explicit_diffuse_op (ncell,nvar)            !< Explicit diffusion operator
@@ -63,7 +63,7 @@ dt=1.0d0
 theta_stm = 1.0d0
 disp_coef_lo_prev(:,1) = (/0.9d0,0.92d0,0.94d0,0.96d0,0.98d0,1.d0/)
 disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1.d0,1.02d0/)
-time =LARGEREAL ! todo do wee need this?
+time =LARGEREAL 
 
    !--theta =1 
    
