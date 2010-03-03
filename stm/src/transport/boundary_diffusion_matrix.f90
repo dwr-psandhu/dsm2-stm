@@ -47,9 +47,9 @@ module boundary_diffusion_matrix_module
         integer, intent (in) :: ncell                                                 !< Number of cells
         integer, intent (in) :: nvar                                                  !< Number of variables
 
-        real(stm_real),intent (out)  :: down_diag(ncell,nvar)                            !< Values of the coefficients below diagonal in matrix
-        real(stm_real),intent (out)  :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix
-        real(stm_real),intent (out)  :: up_diag(ncell,nvar)                              !< Values of the coefficients above the diagonal in matrix
+        real(stm_real),intent (inout)  :: down_diag(ncell,nvar)                            !< Values of the coefficients below diagonal in matrix
+        real(stm_real),intent (inout)  :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix
+        real(stm_real),intent (inout)  :: up_diag(ncell,nvar)                              !< Values of the coefficients above the diagonal in matrix
         real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
         real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
         real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 

@@ -156,24 +156,7 @@ call construct_diffusion_matrix( center_diag ,      &
                                   dx,               &
                                   dt)
 
-! todo: this function will add boundary conditions to the matrix
-call boundary_diffusion_matrix (center_diag ,      &
-                                  up_diag,          &     
-                                  down_diag,        &
-                                  area,             &
-                                  area_lo,          &
-                                  area_hi,          &
-                                  ! todo: check these 
-!                                  conc,             &
-!                                  conc_prev,        &
-                                  disp_coef_lo,     &
-                                  disp_coef_hi,     &
-                                  theta_stm,        &
-                                  ncell,            &
-                                  time,             & 
-                                  nvar,             & 
-                                  dx,               &
-                                  dt)
+
                                   
 call boundary_diffusion_matrix( center_diag ,      &
                                   up_diag,          &     
@@ -333,28 +316,6 @@ diffusive_flux_lo(1,:)=LARGEREAL
 return
 end subroutine interior_diffusive_flux
 
-! todo: this should be removed                                                       
-!subroutine boundary_diffusive_flux(diffusive_flux_lo,          &
-!                                   diffusive_flux_hi,          &
-!                                   ncell,                      & 
-!                                   time,                       &
-!                                   nvar)
-!                                                
-!  
-!use stm_precision
-!use boundary_diffusion
-! ! --- args                                    
-!real(stm_real), intent (inout) :: diffusive_flux_hi(ncell,nvar)                !< Explicit diffusive flux high side
-!real(stm_real), intent (inout) :: diffusive_flux_lo(ncell,nvar)                !< Explicit diffusive flux low side
-!integer, intent (in) :: nvar                                                !< Number of variables
-!integer, intent (in) :: ncell                                               !< Number of cells
-!real(stm_real), intent (in) :: time                                         !<time
-!
-!
-!                                      
-!                                                
-!return
-!end subroutine boundary_diffusive_flux
 
 !/////////////////////////////////////////////////
 !> Construct the right hand side vector from previous step,
