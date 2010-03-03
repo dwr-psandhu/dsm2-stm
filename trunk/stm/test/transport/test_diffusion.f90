@@ -30,6 +30,9 @@ use boundary_diffusion
 
 contains
 
+
+
+
 subroutine test_diffusion_calc
 
 integer,parameter :: ncell = 126                              !< Number of cells
@@ -65,7 +68,7 @@ real(stm_real) :: xpos(ncell)
 real(stm_real) :: dummy_higher
 real(stm_real) :: dummy_lower
 
-
+boundary_diffusion_flux =>neumann_no_flow_diffusive_flux
 
 ! ---- these will remain same in the process
 time = LARGEREAL
