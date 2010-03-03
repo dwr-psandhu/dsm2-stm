@@ -30,9 +30,6 @@ use boundary_diffusion
 
 contains
 
-
-
-
 subroutine test_diffusion_calc
 
 integer,parameter :: ncell = 126                              !< Number of cells
@@ -113,12 +110,6 @@ end do
 
 call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
 
-! !todo: remove these 
-!print *, xpos(4) ,conc_prev(4,nvar)
-!print *, xpos(501) ,conc_prev(501,nvar)
-!print *, xpos(998) ,conc_prev(998,nvar)   
-!pause
-
 !---- march
 
 timemarch: do jjvar = 1,1000
@@ -154,13 +145,6 @@ timemarch: do jjvar = 1,1000
     
 end do timemarch
 
-open (3,file="results.txt")
-
-do ivar=1,ncell
-        if  ((-5.0d0 - 1d-8 < xpos(ivar)) .and. (xpos(ivar) < 5d0 + 1d-8 )) then
-        write (3,*) xpos(ivar),conc(ivar,1)
-    end if
-end do
 
 continue
 !!!

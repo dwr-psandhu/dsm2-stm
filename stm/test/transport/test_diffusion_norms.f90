@@ -28,9 +28,10 @@ use fruit
 use stm_precision
 use error_metric
 use primitive_variable_conversion
+
 !use state_variables
 ! todo: replace with this 
-! use example_initial_conditions
+use example_initial_conditions
 
 contains
 
