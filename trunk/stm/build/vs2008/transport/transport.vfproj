@@ -33,7 +33,6 @@
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath="..\..\..\src\transport\advection.f90"/>
 		<File RelativePath="..\..\..\src\transport\boundary_advection.f90"/>
-		<File RelativePath="..\..\..\src\transport\boundary_codes.f90"/>
 		<File RelativePath="..\..\..\src\transport\boundary_diffusion.f90"/>
 		<File RelativePath="..\..\..\src\transport\boundary_diffusion_matrix.f90"/>
 		<File RelativePath="..\..\..\src\transport\diffusion.f90"/>
@@ -44,6 +43,5 @@
 		<File RelativePath="..\..\..\src\transport\matrix_solver.f90"/>
 		<File RelativePath="..\..\..\src\transport\primitive_variable_conversion.f90"/>
 		<File RelativePath="..\..\..\src\transport\state_variables.f90"/>
-		<File RelativePath="..\..\..\src\transport\stm_precision.f90"/>
-		<File RelativePath="..\..\..\src\transport\stm_type.f90"/></Filter></Files>
+		<File RelativePath="..\..\..\src\transport\stm_precision.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>

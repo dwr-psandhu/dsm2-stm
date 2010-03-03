@@ -92,7 +92,7 @@ disp_coef_hi_prev(:,:) = 0.1d0
 
 
 
-!---- t initial is t=1 sec 
+!---- t initial is t=0 sec 
 
 do iivar = 1, ncell
  xpos(iivar) = -25.0d0 + dx* (iivar-1)
