@@ -71,7 +71,7 @@ module boundary_diffusion
          real(stm_real),intent(inout) :: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
          real(stm_real),intent(in)  :: time                             !< time
          real(stm_real),intent(in)  :: conc(ncell,nvar)                 !< concentration 
-     call stm_fatal("Boundary not implemented")
+     call stm_fatal("boundary not implemented")
      
      return
  end subroutine 

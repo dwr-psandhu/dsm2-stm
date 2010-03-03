@@ -109,7 +109,7 @@ module boundary_diffusion_matrix_module
         real(stm_real), intent (in)  :: dx                                          !< Spatial step  
         real(stm_real), intent (in)  :: dt                                          !< Time step     
       
-     call stm_fatal("Boundary not implemented!")
+     call stm_fatal("boundary not implemented!")
      
      return
  end subroutine 
