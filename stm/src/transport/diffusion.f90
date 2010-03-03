@@ -231,14 +231,7 @@ call interior_diffusive_flux ( diffusive_flux_lo,            &
                                             time,             &
                                             dx)
    
-   
-    !todo                                                    
-call boundary_diffusion_flux(diffusive_flux_lo, &
-                                             diffusive_flux_hi, &
-                                             conc_prev,         &
-                                             ncell,             &
-                                             nvar,              &
-                                             time)
+
       
       !todo :  
 !   explicit_diffuse_op (1,:) = (diffusive_flux_hi(1,:) - diffusive_flux_lo(1,:) )/dx
@@ -304,31 +297,6 @@ diffusive_flux_lo(1,:)=LARGEREAL
 return
 end subroutine interior_diffusive_flux
                                                       
-subroutine boundary_diffusive_flux(diffusive_flux_lo,          &
-                                   diffusive_flux_hi,          &
-                                   ncell,                      & 
-                                   Time,                       &
-                                   nvar)
-                                                
-  
-use stm_precision
-
- ! --- args
-                                            
-
-integer, intent (in) :: nvar        !< Number of variables
-integer, intent (in) :: ncell       !< Number of cells
-real(stm_real), intent (in) :: time !<time
-
-
-integer :: ivar
-
-do  ivar=1,nvar
-                                                                                            
-end do                                         
-                                                
-return
-end subroutine boundary_diffusive_flux
 
 
 
