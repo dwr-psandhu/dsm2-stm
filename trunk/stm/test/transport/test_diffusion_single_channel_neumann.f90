@@ -27,9 +27,13 @@ use stm_precision
 use primitive_variable_conversion
 use diffusion
 use boundary_diffusion
-use stm_type
+use boundary_diffusion_matrix_module
 
 contains
+
+
+
+
 
 subroutine test_new_diffusion_calc
 
@@ -54,7 +58,7 @@ real(stm_real) :: time                          !< Current time
 real(stm_real) :: theta_stm                     !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real) :: dt                            !< Time step   
 real(stm_real) :: dx                            !< Spacial step 
-type (bc_type) :: bc_single_canal               !< boundary condition of single channel -Type up- Value Up-Type Down- Value down
+
 
 !--- locals
 integer :: iivar
@@ -63,9 +67,12 @@ real(stm_real) :: xpos(ncell)
 ! todo: remove this
 real(stm_real) :: dummy_higher
 real(stm_real) :: dummy_lower
+procedure(boundary_diffusive_matrix_if),pointer :: boundary_diffusion_matrix  
+procedure(boundary_diffusive_flux_if),pointer :: boundary_diffusion_flux  
 
-
-
+boundary_diffusion_matrix  => single_channel_neumann_matrix
+boundary_diffusion_flux  => channel_neumann_gaussian_diffusive_flux
+ 
 ! ---- these will remain same in the process
 time = LARGEREAL
 dt = 0.001d0
@@ -85,11 +92,6 @@ disp_coef_hi_prev(:,:) = 0.1d0
 
 
 
-!! add use boundary_diffusion
-!! write neumann_diffusion_bc_flux and neumann_diffusion_bc_matrix
-!boundary_diffusion_flux => neumann_no_flow_diffusive_flux
-!!boundary_diffusion_matrix=> neumann_diffusion_bc_matrix
-
 
 
 !---- t initial is t=0 sec 
@@ -100,33 +102,21 @@ do iivar = 1, ncell
 
 end do
 
-!open (4,file="IC.txt")
-! todo: eliminate!
-!do ivar=1,ncell
-!    write (4,*) xpos(ivar),conc_prev(ivar,1)
-!end do 
 
 
 call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
 
-! !todo: remove these 
-!print *, xpos(4) ,conc_prev(4,nvar)
-!print *, xpos(501) ,conc_prev(501,nvar)
-!print *, xpos(998) ,conc_prev(998,nvar)   
-!pause
 
-!---- march
+
+!! add use boundary_diffusion
+!! write neumann_diffusion_bc_flux and neumann_diffusion_bc_matrix
+
+  
 
 timemarch: do jjvar = 1,1000
 
-   !xmarch: do iivar = 1,ncell ! do I need this? I dont think so 
 
-bc_single_canal.lo_type = 'N' 
-bc_single_canal.hi_type = 'N' 
-bc_single_canal.lo_value = zero 
-bc_single_canal.hi_value = zero 
-
-     call New_diffuse(conc,             &
+     call diffuse(conc,             &
                   conc_prev,         &
                   area,              &
                   area_prev,         &
@@ -143,8 +133,7 @@ bc_single_canal.hi_value = zero
                   time,              &
                   theta_stm,         &
                   dt,                &
-                  dx,               &                 
-                  bc_single_canal)
+                  dx)
 
 
     conc_prev(:,nvar) = conc(:,nvar)
@@ -338,5 +327,82 @@ continue
 
   return
 end subroutine test_new_diffusion_calc
+
+
+! may be fine to put this in diffusion
+subroutine channel_neumann_gaussian_diffusive_flux (diffusive_flux_lo, &
+                                                     diffusive_flux_hi, &
+                                                     conc,              &
+                                                     ncell,             &
+                                                     nvar,              &
+                                                     time)
+                                                     
+ use stm_precision
+ implicit none
+ !--- args
+ integer,intent(in)  :: ncell                                   !< number of cells
+ integer,intent(in)  :: nvar                                    !< number of variables
+ real(stm_real),intent(inout) :: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
+ real(stm_real),intent(inout) :: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+ real(stm_real),intent(in)  :: time                             !< time
+ real(stm_real),intent(in)  :: conc(ncell,nvar)                 !< concentration 
+       
+                                                     
+                                                     
+                                                     
+                                                     
+                                                     
+                                                     
+! must follow interface
+return
+end subroutine
+
+
+
+ 
+subroutine single_channel_neumann_matrix (center_diag ,      &
+                                                      up_diag,          &     
+                                                      down_diag,        &
+                                                      area,             &
+                                                      area_lo,          &
+                                                      area_hi,          &          
+                                                      disp_coef_lo,     &
+                                                      disp_coef_hi,     &
+                                                      theta_stm,        &
+                                                      ncell,            &
+                                                      time,             & 
+                                                      nvar,             & 
+                                                      dx,               &
+                                                      dt)
+                                              
+ use stm_precision
+ implicit none
+ !--- args
+                               
+integer, intent (in) :: ncell                                                 !< Number of cells
+integer, intent (in) :: nvar                                                  !< Number of variables
+
+! todo: check in out or just out
+real(stm_real),intent (inout)  :: down_diag(ncell,nvar)                            !< Values of the coefficients below diagonal in matrix
+real(stm_real),intent (inout)  :: center_diag(ncell,nvar)                          !< Values of the coefficients at the diagonal in matrix
+real(stm_real),intent (inout)  :: up_diag(ncell,nvar)                              !< Values of the coefficients above the diagonal in matrix
+real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
+real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
+real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
+real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
+real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
+real(stm_real), intent (in)  :: time                                        !< Current time
+real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+real(stm_real), intent (in)  :: dx                                          !< Spatial step  
+real(stm_real), intent (in)  :: dt                                          !< Time step     
+
+
+
+! must follow interface
+return
+end subroutine
+
+
+
 
 end module
