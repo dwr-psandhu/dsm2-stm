@@ -87,7 +87,7 @@ real(stm_real), intent (in) :: time                          !< Current time
 real(stm_real), intent (in) :: theta_stm                     !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in) :: dt                            !< Time step   
 real(stm_real), intent (in) :: dx                            !< Spacial step 
-!type (bc_type), intent (in) :: bc_single_canal               !< boundary condition of single channel -Type up- Value Up-Type Down- Value down
+
 
 ! ---- locals
 
@@ -219,17 +219,17 @@ real(stm_real):: diffusive_flux_hi_prev(ncell,nvar)
 
 
 ! todo : rename the subroutine 
-call interior_diffusive_flux ( diffusive_flux_lo,            &
-                               diffusive_flux_hi,            &
-                                            conc_prev,        &
-                                            area_lo_prev,     &
-                                            area_hi_prev,     &
-                                            disp_coef_lo_prev,&  
-                                            disp_coef_hi_prev,&
-                                            ncell,            &
-                                            nvar,             &
-                                            time,             &
-                                            dx)
+call interior_diffusive_flux (  diffusive_flux_lo,            &
+                                diffusive_flux_hi,            &
+                                conc_prev,                    &
+                                area_lo_prev,                 &
+                                area_hi_prev,                 &
+                                disp_coef_lo_prev,            &  
+                                disp_coef_hi_prev,            &
+                                ncell,                        &
+                                nvar,                         &
+                                time,                         &
+                                dx)
    
 
       
@@ -238,7 +238,6 @@ call interior_diffusive_flux ( diffusive_flux_lo,            &
 !   explicit_diffuse_op (ncell,:) = (diffusive_flux_hi(ncell,:) - diffusive_flux_lo(ncell,:) )/dx
          
     do ivar = 1,nvar
-    ! to do : 1, ncell
         do icell = 2,ncell-1 
          
          explicit_diffuse_op (icell,ivar) = (diffusive_flux_hi (icell,ivar) - diffusive_flux_lo (icell,ivar))/dx
