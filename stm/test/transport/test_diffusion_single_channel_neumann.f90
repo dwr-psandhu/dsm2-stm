@@ -20,12 +20,12 @@
 
 !> todo: write tests for explicit operator and implicit diffusion
 !>@ingroup test
-module test_diffusion_single_channel_Neumann
+module test_diffusion_single_channel_neumann
 
 use fruit
 use stm_precision
 use primitive_variable_conversion
-use new_diffusion
+use diffusion
 use boundary_diffusion
 use stm_type
 
