@@ -24,7 +24,7 @@
 !>@ingroup transport
 module diffusion
 
-use stm_type
+
 
 contains
 
