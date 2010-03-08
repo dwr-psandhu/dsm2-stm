@@ -54,7 +54,6 @@ pure subroutine tridi_solver ( center_diag ,                &
                                       conc,                 &
                                       ncell)
 
-
     ! ----- args
 
     integer,intent (in) :: ncell                          !< Number of volumes 

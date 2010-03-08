@@ -37,8 +37,8 @@ module boundary_diffusion
          !--- args
          integer,intent(in)  :: ncell                                   !< number of cells
          integer,intent(in)  :: nvar                                    !< number of variables
-         real(stm_real),intent(inout) :: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
-         real(stm_real),intent(inout) :: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+         real(stm_real),intent(inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
+         real(stm_real),intent(inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
          real(stm_real),intent(in)  :: time                             !< time
          real(stm_real),intent(in)  :: conc(ncell,nvar)                 !< concentration 
        
@@ -98,7 +98,6 @@ module boundary_diffusion
      ! neumann default
      diffusive_flux_lo(1,:) = zero
      diffusive_flux_hi(ncell,:) =zero
-     
      
      ! todo: implement and test
      return
