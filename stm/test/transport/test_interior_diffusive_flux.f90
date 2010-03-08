@@ -31,11 +31,12 @@ subroutine test_interior_dif_flux_sub
   use diffusion ! todo do we need it here?
   implicit none
   
- integer,parameter :: ncell = 6 !< Number of cells
-integer,parameter  :: nvar = 1  !< Number of variables
+ integer,parameter :: ncell = 6                              !< Number of cells
+integer,parameter  :: nvar = 1                               !< Number of variables
 
-real(stm_real) :: diffusive_flux_interior_hi(ncell,nvar)      !< Explicit diffusive flux high side
-real(stm_real) :: diffusive_flux_interior_lo(ncell,nvar)      !< Explicit diffusive flux low side
+!todo: remove!
+!real(stm_real) :: diffusive_flux_interior_hi(ncell,nvar)      !< Explicit diffusive flux high side
+!real(stm_real) :: diffusive_flux_interior_lo(ncell,nvar)      !< Explicit diffusive flux low side
 real(stm_real) :: conc_prev(ncell,nvar)                       !< Concentration at old time
 real(stm_real) :: area_lo_prev (ncell)                        !< Low side area at old time
 real(stm_real) :: area_hi_prev (ncell)                        !< High side area at old time 
@@ -52,8 +53,8 @@ disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1d0,1.02d0/)
 dx = 2.0d0 
 time =LARGEREAL ! todo do we need this?
  
-call interior_diffusive_flux (diffusive_flux_interior_lo,  &
-                                    diffusive_flux_interior_hi,  &
+call interior_diffusive_flux (diffusive_flux_interior_lo,     &
+                                 diffusive_flux_interior_hi,  &
                                             conc_prev,        &
                                             area_lo_prev,     &
                                             area_hi_prev,     &
