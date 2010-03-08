@@ -41,7 +41,7 @@ real(stm_real), intent(in) :: time           !< time
 real(stm_real),intent(in) :: q_const         !< constant flow to be used
 
 
-!-------
+!----- 
 flow = q_const
 flow_lo=flow
 flow_hi=flow
