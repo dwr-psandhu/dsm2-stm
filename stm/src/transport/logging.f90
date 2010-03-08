@@ -84,7 +84,6 @@ module logging
         !--local
         integer           :: nx
         integer           :: icell       
-
         
         nx = size(arr)        
 

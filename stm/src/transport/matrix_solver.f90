@@ -72,11 +72,8 @@ pure subroutine tridi_solver ( center_diag ,                &
     real(stm_real) :: bet
 
 
-
     if(center_diag(1) == 0)then
-! todo: print and stop can not exist in pure subroutine
-!      print *, 'there is a problem in tridi-solver '
-!      stop
+
     end if
 
     bet = center_diag(1)
@@ -86,8 +83,7 @@ pure subroutine tridi_solver ( center_diag ,                &
       gam(ivar) = up_diag(ivar - 1) / bet
       bet = center_diag(ivar) - down_diag(ivar) * gam(ivar)
       if(bet == 0)then
-! todo: print can not exist in pure subroutine      
-!        print *, 'tridiagonal solver failed'
+
       end if
       conc(ivar) = (right_hand_side(ivar) - down_diag(ivar) * conc(ivar - 1)) / bet 
     end do

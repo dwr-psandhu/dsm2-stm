@@ -21,16 +21,18 @@
 !> Testing of the extrapolate step.
 !>@ingroup test
 module test_extrapolate
+
 use fruit
 
 contains
-!///////////////////////////////////////
 
 !> Test the extrapolation part of the predictor step of the advection algorithm
 !> There are three cells and two constituents to test symmetry in space across constituents
 subroutine test_extrapolation
+
 use stm_precision
 use advection
+
 implicit none
   integer,parameter :: nx = 3       !interior and two ends
   integer,parameter :: nconst = 2
@@ -102,14 +104,13 @@ return
 end subroutine
 
 
-
-!///////////////////////////////////////
-
 !> Test the extrapolation part of the predictor step of the advection algorithm
 !> There are three cells and two constituents to test symmetry in space across constituents
 subroutine test_flux_calculation
+
 use stm_precision
 use advection
+
 implicit none
   integer,parameter :: nx = 3       !interior and two ends
   integer,parameter :: nconst = 2
@@ -149,9 +150,9 @@ implicit none
   flow_hi(2) = -1.D0
   flow_hi(3) = -4.D0
   
-
- ! Compute upwind value of fluxes. This is a naive guess based on the extrapolated states
- ! It doesn't include any node-based sources or reservoirs or the like.
+! todo: check documentation here
+ !> Compute upwind value of fluxes. This is a naive guess based on the extrapolated states
+ !> It doesn't include any node-based sources or reservoirs or the like.
  call compute_flux(flux_lo,  &
                    flux_hi,  &
                    conc_lo,  &
@@ -183,9 +184,6 @@ implicit none
 
 return
 end subroutine
-
-
-
 
 end module
 
