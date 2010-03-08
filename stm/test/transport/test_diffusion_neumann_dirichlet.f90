@@ -34,8 +34,8 @@ subroutine test_diffusion_n_d
   
   implicit none
   
-integer,parameter :: ncell = 9                              !< Number of cells
-integer,parameter :: nvar = 1                               !< Number of variables
+integer,parameter :: ncell = 9                      !< Number of cells
+integer,parameter :: nvar = 1                       !< Number of variables
 
 
 
@@ -85,29 +85,29 @@ disp_coef_lo_prev(:,:) = 0.1d0
 disp_coef_hi_prev(:,:) = 0.1d0 
 
 ! this analitical solution only valid for disp_coef =constant
-
-diffusive_flux_boundary_lo(nvar) = two -two *pi* sin(0.05d0*pi)
-diffusive_flux_boundary_hi (nvar) =  two - two *pi*sin(0.5d0*pi)
- 
+! todo: these must remove
+!diffusive_flux_boundary_lo(nvar) = two - two * pi* sin(0.05d0*pi)
+!diffusive_flux_boundary_hi(nvar) = two - two * pi* sin(0.5d0*pi)
+! 
  !---initial condition
   do ivar=1,ncell
   
     xpos = 0.1d0+ (ivar-half)*dx
     conc_prev(ivar,nvar) = two*xpos +two*two*cos(pi*xpos/two) 
-    print* ,"IC-----",ivar,xpos,conc_prev(ivar,nvar)
+!    print* ,"IC-----",ivar,xpos,conc_prev(ivar,nvar)
   
   end do
   
-  print *, "C at B lo", two*0.05d0 +two*two*cos(pi*0.05d0/two)
-  print *, " slope at B lo",(conc_prev(1,1) -   two*0.05d0 +two*two*cos(pi*0.05d0/two))/dx
-  pause
-  
+!  print *, "C at B lo", two*0.05d0 +two*two*cos(pi*0.05d0/two)
+!  print *, " slope at B lo",(conc_prev(1,1) -   two*0.05d0 +two*two*cos(pi*0.05d0/two))/dx
+!  pause
+!  
   
  call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
  
 do jvar=1,1 
  
-    call diffuse(conc,             &
+    call diffuse(conc,               &
                   conc_prev,         &
                   area,              &
                   area_prev,         &
@@ -128,8 +128,10 @@ do jvar=1,1
 
    
    time = (jvar)*dt
-   conc_prev(:,nvar) = conc(:,nvar)         
-   call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
+   conc_prev(:,nvar) = conc(:,nvar) 
+           
+call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
+
    diffusive_flux_boundary_lo(nvar) = two -two*pi*sin(0.05d0*pi)*exp(-0.1d0*time*pi*pi/4) 
    diffusive_flux_boundary_hi (nvar) =  two - two *pi*sin(0.5d0*pi)*exp(-0.1d0*time*pi*pi/4)
 
@@ -139,17 +141,13 @@ print *,diffusive_flux_boundary_lo
 
 end do
 
-print *,"time",time
-print *, conc
-pause
+
 
 do ivar=1,ncell
   
     xpos = 0.1d0+ (ivar-half)*dx
     conc_prev(ivar,nvar) = two*xpos +two*two*cos(pi*xpos/two)*exp(-0.1d0*time*pi*pi/4) 
-    print* ,"time = ", time
-    print* ,"analytcal", ivar,xpos,conc_prev(ivar,nvar)
-  
+      
 end do
 
 !todo fill this part
