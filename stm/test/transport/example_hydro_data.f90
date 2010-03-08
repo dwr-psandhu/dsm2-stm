@@ -27,10 +27,12 @@ contains
 !> Constant uniform flow
 !> todo: needs to satisfy the hydro_data_if interface, has to change
 subroutine constant_uniform(flow,flow_lo,flow_hi,ncell,time,q_const)
+
 use stm_precision
+
 implicit none
 !--- args
-integer,intent(in)  :: ncell  !< Number of cells
+integer,intent(in)  :: ncell                 !< Number of cells
 
 real(stm_real),intent(out) :: flow(ncell)    !< cell-centered flow at time
 real(stm_real),intent(out) :: flow_lo(ncell) !< flow on lo side of cells at time
