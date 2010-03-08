@@ -43,10 +43,11 @@ module example_initial_conditions
     !> Fill array with 1D gaussian shape
     !> This routine expects a 1D array, so multi-constituents
     !> have to be initialized separately
+    
     subroutine fill_gaussian(vals,nloc,origin,dx,mean,sd)
 
         implicit none
-        integer, intent(in) :: nloc
+        integer, intent(in) :: nloc                !< number of cells (size of array) 
         real(stm_real), intent(out) :: vals(nloc)  !< values to be filled
         real(stm_real), intent(in)  :: origin      !< origin (lo side of channel)
         real(stm_real), intent(in)  :: dx          !< dx
@@ -116,14 +117,13 @@ module example_initial_conditions
     subroutine fill_discontinuity(vals,nloc,origin,dx,x0,value_lo,value_hi)
 
     implicit none
-    integer, intent(in) ::  nloc
-    !todo: document arguments
-    real(stm_real), intent(out) :: vals(nloc)
-    real(stm_real), intent(in)  :: origin
-    real(stm_real), intent(in)  :: dx
-    real(stm_real), intent(in)  :: x0
-    real(stm_real), intent(in)  :: value_lo
-    real(stm_real), intent(in)  :: value_hi
+    integer, intent(in) ::  nloc                !< size of array
+    real(stm_real), intent(out) :: vals(nloc)   !< values to be filled
+    real(stm_real), intent(in)  :: origin       !< low side of channel 
+    real(stm_real), intent(in)  :: dx           !< dx
+    real(stm_real), intent(in)  :: x0           !< location of discontinuity todo: ??
+    real(stm_real), intent(in)  :: value_lo     !< value in the low side of discontinuity todo: ??
+    real(stm_real), intent(in)  :: value_hi     !< value in the high side of discontinuity todo: ??
     !---locals
     real(stm_real) :: fraction_lo
     real(stm_real) :: fraction_hi
