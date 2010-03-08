@@ -24,12 +24,13 @@ module test_prim_cons_conversion
 use fruit
 
 contains
-!///////////////////////////////////////
 
 !> Test code that converts between primitive and conservative forms of the variables
 subroutine test_prim_cons_convert
+
 use stm_precision
 use primitive_variable_conversion
+
 implicit none
   integer,parameter :: nx = 3       !interior and two ends
   integer,parameter :: nconst = 2

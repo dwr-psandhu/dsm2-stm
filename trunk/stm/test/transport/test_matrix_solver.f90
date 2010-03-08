@@ -29,10 +29,12 @@ use stm_precision
 contains
 
 subroutine test_tridi_solver
-  use matrix_solver
-  implicit none
+
+use matrix_solver
+
+implicit none
   
-  integer,parameter :: ncell = 11                          !< Number of volumes 
+  integer,parameter :: ncell = 11             !< Number of volumes 
     
     real(stm_real)  :: down_diag(ncell)       !< Values of the coefficients below diagonal in matrix
     real(stm_real)  :: center_diag(ncell)     !< Values of the coefficients at the diagonal in matrix
@@ -56,10 +58,10 @@ call tridi_solver (center_diag,up_diag,down_diag,right_hand_side,conc,ncell)
 
 !--- Large numbers on center diag small numbers on up and down diag
 
-center_diag = (/17D0,18D0,19D0,20D0,21D0,22D0,23D0,24D0,25D0,26D0,27D0/)
- down_diag = (/LARGEREAL,0.05d0,0.1d0,0.15d0,0.2d0,0.25d0,0.3d0,0.35d0,0.4d0,0.45d0,0.5d0/)
- up_diag = (/0.1d0,0.2d0,0.3d0,0.4d0,0.5d0,0.6d0,0.7d0,0.8d0,0.9d0,1D0,LARGEREAL/)
- right_hand_side = (/0.01D0,0.02D0,0.03D0,0.04D0,0.05d0,0.06D0,0.07D0,0.08D0,0.09D0,0.1D0,0.11D0/)
+    center_diag = (/17D0,18D0,19D0,20D0,21D0,22D0,23D0,24D0,25D0,26D0,27D0/)
+    down_diag = (/LARGEREAL,0.05d0,0.1d0,0.15d0,0.2d0,0.25d0,0.3d0,0.35d0,0.4d0,0.45d0,0.5d0/)
+    up_diag = (/0.1d0,0.2d0,0.3d0,0.4d0,0.5d0,0.6d0,0.7d0,0.8d0,0.9d0,1D0,LARGEREAL/)
+    right_hand_side = (/0.01D0,0.02D0,0.03D0,0.04D0,0.05d0,0.06D0,0.07D0,0.08D0,0.09D0,0.1D0,0.11D0/)
 
 call tridi_solver (center_diag,up_diag,down_diag,right_hand_side,conc,ncell)
 

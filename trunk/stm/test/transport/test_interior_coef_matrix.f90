@@ -31,8 +31,8 @@ subroutine test_interior_coef_matrix_sub
   use diffusion ! todo do we need it here?
   implicit none
   
-integer, parameter:: ncell = 21 !< Number of cells
-integer, parameter:: nvar = 1  !< Number of variables
+integer, parameter:: ncell = 21                                !< Number of cells
+integer, parameter:: nvar = 1                                  !< Number of variables
 
 real(stm_real)  :: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
 real(stm_real)  :: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
@@ -41,11 +41,11 @@ real(stm_real)  :: area (ncell)                                !< Cell centered 
 real(stm_real)  :: area_lo(ncell)                              !< Low side area at new time
 real(stm_real)  :: area_hi(ncell)                              !< High side area at new time 
 real(stm_real)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
-real(stm_real) :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
-real(stm_real) :: time                                        !< Current time
-real(stm_real) :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
-real(stm_real) :: dx                                          !< Spatial step  
-real(stm_real) :: dt                                          !< Time step                                   
+real(stm_real)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
+real(stm_real)  :: time                                        !< Current time
+real(stm_real)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+real(stm_real)  :: dx                                          !< Spatial step  
+real(stm_real)  :: dt                                          !< Time step                                   
                
         
                
