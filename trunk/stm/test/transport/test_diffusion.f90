@@ -106,7 +106,6 @@ call fill_gaussian(conc_prev,ncell,-25.0d0,dx,zero,sd)
 !    conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2.0d0)/(4.0d0*disp_coef_lo_prev(iivar,nvar)))
 !end do
 
-
 call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
 
 !---- march
