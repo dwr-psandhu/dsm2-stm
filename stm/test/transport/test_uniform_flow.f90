@@ -26,6 +26,7 @@ contains
 
 !> Subroutine that runs a small advective simulation
 subroutine test_uniform_flow_advection()
+
 use stm_precision
 use state_variables
 use primitive_variable_conversion
@@ -36,6 +37,7 @@ use example_sources
 use error_metric
 use fruit
 use logging
+
 implicit none
 
 !--- Problem variables
@@ -77,8 +79,8 @@ do icoarse = 1,nrefine
     call allocate_state(nx,nconc)
     area = constant_area
     area_prev = area
-    area_lo = area     ! todo: used?
-    area_hi = area     ! todo: used? remove from advect?
+!    area_lo = area     ! todo: used?
+!    area_hi = area     ! todo: used? remove from advect?
 
     flow = constant_flow 
     flow_hi = flow
@@ -175,7 +177,5 @@ call assert_true(norm_error(3,2)/norm_error(3,1) > 2.D5,"L-inf second order conv
 
 return
 end subroutine
-
-
 
 end module
