@@ -32,10 +32,10 @@ subroutine test_construct_interior_rhs
   use diffusion 
   implicit none
   
- integer,parameter :: ncell = 6             !< Number of cells
-integer,parameter :: nvar = 1           !< Number of variables
+integer,parameter :: ncell = 6                                !< Number of cells
+integer,parameter :: nvar = 1                                 !< Number of variables
 
-real(stm_real) :: right_hand_side(ncell,nvar)                 !< The right hand side vector
+real(stm_real) :: right_hand_side(ncell,nvar)                  !< The right hand side vector
 real(stm_real)  :: explicit_diffuse_op (ncell,nvar)            !< Explicit diffusion operator
 real(stm_real)  :: area_prev (ncell)                           !< Cell centered area at old time 
 real(stm_real)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
@@ -47,8 +47,8 @@ real(stm_real)  :: time                                        !< Current time
 real(stm_real)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real)  :: dx                                          !< Spatial step  
 real(stm_real)  :: dt                                          !< Time step                                   
-real(stm_real)  :: diffusive_flux_boundary_lo (nvar)
-real(stm_real)  :: diffusive_flux_boundary_hi (nvar) 
+real(stm_real)  :: diffusive_flux_boundary_lo (nvar)           !< diffusive flux operator at low side 
+real(stm_real)  :: diffusive_flux_boundary_hi (nvar)           !< diffusive flux operator at high side 
 
 
 conc_prev(:,1) = (/300.0d0,305.0d0,320.0d0,330.0d0,340.0d0,350.0d0/)
@@ -67,7 +67,7 @@ time =LARGEREAL
 
    !--theta =1 
    
-call construct_right_hand_side( right_hand_side,   & 
+call construct_right_hand_side( right_hand_side,         & 
                                   explicit_diffuse_op,   & 
                                   area_prev,             &
                                   area_lo_prev,          &
@@ -89,7 +89,7 @@ call construct_right_hand_side( right_hand_side,   &
      !--theta =0.6 
      theta_stm = 0.6d0 
    
-call construct_right_hand_side( right_hand_side,   & 
+call construct_right_hand_side( right_hand_side,         & 
                                   explicit_diffuse_op,   & 
                                   area_prev,             &
                                   area_lo_prev,          &
@@ -111,7 +111,7 @@ call construct_right_hand_side( right_hand_side,   &
   !--theta =0.1 
      theta_stm = 0.1d0 
    
-call construct_right_hand_side( right_hand_side,   & 
+call construct_right_hand_side( right_hand_side,         & 
                                   explicit_diffuse_op,   & 
                                   area_prev,             &
                                   area_lo_prev,          &
