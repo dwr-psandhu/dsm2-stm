@@ -35,13 +35,13 @@ contains
 
 subroutine test_diffusion_error_norms
 
-integer :: ncell                               !< Number of cells
-integer,parameter :: nvar = 1                                  !< Number of variables
+integer :: ncell                                      !< Number of cells
+integer,parameter :: nvar = 1                         !< Number of variables
 
-real(stm_real),allocatable :: conc(:,:)              !< Concentration at new time
-real(stm_real),allocatable :: mass(:,:)              !< Mass (A*C) at new time
-real(stm_real),allocatable :: mass_prev(:,:)         !< Mass (A*C) at old time
-real(stm_real),allocatable :: conc_prev(:,:)         !< Concentration at old time
+real(stm_real),allocatable :: conc(:,:)               !< Concentration at new time
+real(stm_real),allocatable :: mass(:,:)               !< Mass (A*C) at new time
+real(stm_real),allocatable :: mass_prev(:,:)          !< Mass (A*C) at old time
+real(stm_real),allocatable :: conc_prev(:,:)          !< Concentration at old time
 real(stm_real),allocatable :: area (:)                !< Cell-centered area at new time
 real(stm_real),allocatable :: area_prev (:)           !< Cell-centered area at old time
 real(stm_real),allocatable :: area_lo (:)             !< Low side area centered in time
@@ -71,12 +71,7 @@ real(stm_real) :: norm_1(n_err_try)
 real(stm_real) :: norm_2(n_err_try)
 real(stm_real) :: norm_inf(n_err_try)
 
-
-
-
-!todo remove that
-! dx = 0.05d0
-  
+ 
 
  do kkvar=1,n_err_try
  
@@ -102,12 +97,10 @@ allocate (disp_coef_hi_prev(ncell,nvar))
 
  
  
- 
- 
 time = LARGEREAL
 dt = 0.001d0
  
- theta_stam = 0.7d0 !todo: change this
+theta_stam = 0.7d0 
 
 area (:)= 1.0d0                 
 area_prev (:) = 1.0d0            
@@ -119,14 +112,10 @@ disp_coef_lo (:,:) = 0.5d0
 disp_coef_hi (:,:) = 0.5d0   
 disp_coef_lo_prev(:,:) = 0.5d0 
 disp_coef_hi_prev(:,:) = 0.5d0 
-! to do : we need it evry time step
 diffusive_flux_boundary_lo(nvar) = zero      
 diffusive_flux_boundary_hi (nvar) = zero 
  
- 
- 
-
-
+  
 !---- t initial is t=1 sec 
 ! todo : re write with fill gaussian 
 do iivar = 1, ncell
@@ -140,7 +129,7 @@ call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
 
 timemarch: do jjvar = 1,1000
 
-     call diffuse(conc,             &
+     call diffuse(conc,              &
                   conc_prev,         &
                   area,              &
                   area_prev,         &
@@ -152,7 +141,7 @@ timemarch: do jjvar = 1,1000
                   disp_coef_hi,      &
                   disp_coef_lo_prev, &  
                   disp_coef_hi_prev, &
-                  ncell,             &
+                  ncell,             & 
                   nvar,              &
                   time,              &
                   theta_stm,         &
@@ -165,16 +154,17 @@ timemarch: do jjvar = 1,1000
     
 end do timemarch
 
+
+!call fill_gaussian(vals,nloc,origin,dx,mean,sd)
+!todo : check above works or not it is not exact gaussian 
 do iivar = 1, ncell
- xpos(iivar) = -25.0d0 + dx* (iivar-1)
- conc_exact (iivar, nvar) = sqrt(0.5d0)* exp(-(xpos(iivar)**2.0d0)/4.0d0/disp_coef_lo_prev(iivar,nvar))
- end do
+     xpos(iivar) = -25.0d0 + dx* (iivar-1)
+     conc_exact (iivar, nvar) = sqrt(0.5d0)* exp(-(xpos(iivar)**2.0d0)/4.0d0/disp_coef_lo_prev(iivar,nvar))
+end do
 
 call error_norm(norm_1(kkvar),norm_2(kkvar),norm_inf(kkvar),conc,conc_exact,ncell,dx)
 
-! todo: remove this!
-print *,('L1 = '), norm_1(kkvar), ('L2 = '),norm_2(kkvar),('L_inf = '),norm_inf(kkvar),('N cell = '), ncell-1
-pause
+
 
 deallocate(conc, conc_prev, mass,mass_prev)
 deallocate(area, area_prev, area_lo, area_hi)
