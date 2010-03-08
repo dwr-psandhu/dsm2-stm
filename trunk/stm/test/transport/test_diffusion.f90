@@ -32,29 +32,30 @@ contains
 
 subroutine test_diffusion_calc
 
-integer,parameter :: ncell = 126                              !< Number of cells
-integer,parameter :: nvar = 1                                  !< Number of variables
+integer,parameter :: ncell = 126                    !< Number of cells
+integer,parameter :: nvar = 1                       !< Number of variables
 
-real(stm_real) :: conc(ncell,nvar)              !< Concentration at new time
-real(stm_real) :: mass(ncell,nvar)              !< Mass (A*C) at new time
-real(stm_real) :: mass_prev(ncell,nvar)         !< Mass (A*C) at old time
-real(stm_real) :: conc_prev(ncell,nvar)         !< Concentration at old time
-real(stm_real) :: area (ncell)                  !< Cell-centered area at new time
-real(stm_real) :: area_prev (ncell)             !< Cell-centered area at old time
-real(stm_real) :: area_lo (ncell)               !< Low side area centered in time
-real(stm_real) :: area_hi (ncell)               !< High side area centered in time 
-real(stm_real) :: area_lo_prev (ncell)          !< Low side area centered at old time
-real(stm_real) :: area_hi_prev (ncell)          !< High side area centered at old time 
-real(stm_real) :: disp_coef_lo (ncell,nvar)     !< Low side constituent dispersion coef. at new time
-real(stm_real) :: disp_coef_hi (ncell,nvar)     !< High side constituent dispersion coef. at new time
-real(stm_real) :: disp_coef_lo_prev(ncell,nvar) !< Low side constituent dispersion coef. at old time
-real(stm_real) :: disp_coef_hi_prev(ncell,nvar) !< High side constituent dispersion coef. at old time
-real(stm_real) :: time                          !< Current time
-real(stm_real) :: theta_stm                     !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
-real(stm_real) :: dt                            !< Time step   
-real(stm_real) :: dx                            !< Spacial step 
-real(stm_real) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
-real(stm_real) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side
+real(stm_real) :: conc(ncell,nvar)                  !< Concentration at new time
+real(stm_real) :: mass(ncell,nvar)                  !< Mass (A*C) at new time
+real(stm_real) :: mass_prev(ncell,nvar)             !< Mass (A*C) at old time
+real(stm_real) :: conc_prev(ncell,nvar)             !< Concentration at old time
+real(stm_real) :: area (ncell)                      !< Cell-centered area at new time
+real(stm_real) :: area_prev (ncell)                 !< Cell-centered area at old time
+real(stm_real) :: area_lo (ncell)                   !< Low side area centered in time
+real(stm_real) :: area_hi (ncell)                   !< High side area centered in time 
+real(stm_real) :: area_lo_prev (ncell)              !< Low side area centered at old time
+real(stm_real) :: area_hi_prev (ncell)              !< High side area centered at old time 
+real(stm_real) :: disp_coef_lo (ncell,nvar)         !< Low side constituent dispersion coef. at new time
+real(stm_real) :: disp_coef_hi (ncell,nvar)         !< High side constituent dispersion coef. at new time
+real(stm_real) :: disp_coef_lo_prev(ncell,nvar)     !< Low side constituent dispersion coef. at old time
+real(stm_real) :: disp_coef_hi_prev(ncell,nvar)     !< High side constituent dispersion coef. at old time
+real(stm_real) :: time                              !< Current time
+real(stm_real) :: theta_stm                         !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+real(stm_real) :: dt                                !< Time step   
+real(stm_real) :: dx                                !< Spacial step 
+! todo: must remove 
+!real(stm_real) :: diffusive_flux_boundary_lo(nvar)  !< Neumann BC on low side    
+!real(stm_real) :: diffusive_flux_boundary_hi (nvar) !< Neumann BC on high side
 
 
 !--- locals
@@ -88,24 +89,22 @@ disp_coef_hi_prev(:,:) = 0.1d0
 
 ! add use boundary_diffusion
 ! write neumann_diffusion_bc_flux and neumann_diffusion_bc_matrix
+! todo:
 boundary_diffusion_flux => neumann_no_flow_diffusive_flux
 !boundary_diffusion_matrix=> neumann_diffusion_bc_matrix
 
 
 
 !---- t initial is t=1 sec 
+! todo: what about sd? we can not use it for not constant disp_coef_lo_prev
+! todo: should I multiply it by sqrt(2*pi)*sd?
 
-do iivar = 1, ncell
- xpos(iivar) = -25.0d0 + dx* (iivar-1)
- conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2.0d0)/(4.0d0*disp_coef_lo_prev(iivar,nvar)))
+call fill_gaussian(conc_prev,ncell,-25.0d0,dx,zero,sd)
 
-end do
-
-!open (4,file="IC.txt")
-! todo: eliminate!
-!do ivar=1,ncell
-!    write (4,*) xpos(ivar),conc_prev(ivar,1)
-!end do 
+!do iivar = 1, ncell
+!     xpos(iivar) = -25.0d0 + dx* (iivar-1)
+!    conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2.0d0)/(4.0d0*disp_coef_lo_prev(iivar,nvar)))
+!end do
 
 
 call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
