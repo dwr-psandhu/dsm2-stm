@@ -42,22 +42,22 @@ real(stm_real),allocatable :: conc(:,:)              !< Concentration at new tim
 real(stm_real),allocatable :: mass(:,:)              !< Mass (A*C) at new time
 real(stm_real),allocatable :: mass_prev(:,:)         !< Mass (A*C) at old time
 real(stm_real),allocatable :: conc_prev(:,:)         !< Concentration at old time
-real(stm_real),allocatable :: area (:)                  !< Cell-centered area at new time
-real(stm_real),allocatable :: area_prev (:)             !< Cell-centered area at old time
-real(stm_real),allocatable :: area_lo (:)               !< Low side area centered in time
-real(stm_real),allocatable :: area_hi (:)               !< High side area centered in time 
-real(stm_real),allocatable :: area_lo_prev (:)          !< Low side area centered at old time
-real(stm_real),allocatable :: area_hi_prev (:)          !< High side area centered at old time 
-real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
-real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
-real(stm_real),allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
-real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent dispersion coef. at old time
-real(stm_real) :: time                          !< Current time
-real(stm_real) :: theta_stm                     !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
-real(stm_real) :: dt                            !< Time step   
-real(stm_real) :: dx                            !< Spacial step 
+real(stm_real),allocatable :: area (:)                !< Cell-centered area at new time
+real(stm_real),allocatable :: area_prev (:)           !< Cell-centered area at old time
+real(stm_real),allocatable :: area_lo (:)             !< Low side area centered in time
+real(stm_real),allocatable :: area_hi (:)             !< High side area centered in time 
+real(stm_real),allocatable :: area_lo_prev (:)        !< Low side area centered at old time
+real(stm_real),allocatable :: area_hi_prev (:)        !< High side area centered at old time 
+real(stm_real),allocatable :: disp_coef_lo (:,:)      !< Low side constituent dispersion coef. at new time
+real(stm_real),allocatable :: disp_coef_hi (:,:)      !< High side constituent dispersion coef. at new time
+real(stm_real),allocatable :: disp_coef_lo_prev(:,:)  !< Low side constituent dispersion coef. at old time
+real(stm_real),allocatable :: disp_coef_hi_prev(:,:)  !< High side constituent dispersion coef. at old time
+real(stm_real) :: time                                !< Current time
+real(stm_real) :: theta_stm                           !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+real(stm_real) :: dt                                  !< Time step   
+real(stm_real) :: dx                                  !< Spacial step 
 real(stm_real) :: diffusive_flux_boundary_lo(nvar)    !< Neumann BC on low side    
-real(stm_real) :: diffusive_flux_boundary_hi (nvar)    !< Neumann BC on high side
+real(stm_real) :: diffusive_flux_boundary_hi (nvar)   !< Neumann BC on high side
 
 
 !--- locals
