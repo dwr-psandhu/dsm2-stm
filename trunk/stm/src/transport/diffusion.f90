@@ -144,9 +144,6 @@ call construct_diffusion_matrix( center_diag ,      &
                                   area,             &
                                   area_lo,          &
                                   area_hi,          &
-                                  ! todo: check these 
-!                                  conc,             &
-!                                  conc_prev,        &
                                   disp_coef_lo,     &
                                   disp_coef_hi,     &
                                   theta_stm,        &
