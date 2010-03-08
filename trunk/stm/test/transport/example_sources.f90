@@ -26,17 +26,20 @@ contains
 
 !> Empty source implementation
 subroutine no_source(source,conc,area,flow,a_ncell,a_nvar)
+
  use stm_precision
+ 
  implicit none
  !--- args
- integer,intent(in)  :: a_ncell  !< Number of cells
- integer,intent(in)  :: a_nvar   !< Number of variables
- real(stm_real),intent(out) :: source(a_ncell,a_nvar) !< cell centered source 
- real(stm_real),intent(in) :: conc(a_ncell,a_nvar)    !< Concentration
- real(stm_real),intent(in) :: area(a_ncell,a_nvar)    !< area at source
- !> flow at source location
- real(stm_real),intent(in) :: flow(a_ncell,a_nvar)
+ integer,intent(in)  :: a_ncell                         !< Number of cells
+ integer,intent(in)  :: a_nvar                          !< Number of variables
+ real(stm_real),intent(out) :: source(a_ncell,a_nvar)   !< cell centered source 
+ real(stm_real),intent(in) :: conc(a_ncell,a_nvar)      !< Concentration
+ real(stm_real),intent(in) :: area(a_ncell,a_nvar)      !< area at source
+                                                         ! todo: check here                                                
+ real(stm_real),intent(in) :: flow(a_ncell,a_nvar)      !< flow at source location
  source = zero
+ 
  return
 end subroutine
 
