@@ -23,26 +23,24 @@
 module gradient
 contains
 
-!///////////////////////////////////////////////////////////////////////
-
-
 !> Calculate the undivided lo, hi and centered differences
 subroutine difference(grad_lo,grad_hi,grad_center,vals,ncell,nvar)
+
 use stm_precision
+
 implicit none
 
 !---- args
-integer,intent(in)  :: ncell  !< Number of cells
-integer,intent(in)  :: nvar   !< Number of variables
+integer,intent(in)  :: ncell                          !< Number of cells
+integer,intent(in)  :: nvar                           !< Number of variables
 real(stm_real),intent(in) :: vals(ncell,nvar)         !< data to be differenced
 real(stm_real),intent(out) :: grad_lo(ncell,nvar)     !< difference on lo side, LARGEREAL in first index
 real(stm_real),intent(out) :: grad_hi(ncell,nvar)     !< difference on hi side (n+1) minus (n) LARGEREAL for last index
 real(stm_real),intent(out) :: grad_center(ncell,nvar) !< centered diff, LARGEREAL for undefined boundary cells
 
-!----
+!----local
 integer :: ivar
 
-!----------------------
 
 do ivar = 1, nvar
   grad_center(2:(ncell-1),ivar) = (vals(3:ncell,ivar) - vals(1:(ncell-2),ivar))/two
@@ -53,10 +51,9 @@ do ivar = 1, nvar
   grad_lo(2:ncell,ivar)=grad_hi(1:(ncell-1),ivar)
   grad_lo(1,ivar)=LARGEREAL
 end do
+
 return
 end subroutine
-
-!///////////////////////////////////////////////////////////////////////
 
 
 !> Apply a flux limiter (van Leer) given one-sided and centered differences
@@ -66,20 +63,18 @@ use stm_precision
 implicit none
 
 !--- args
-integer,intent(in)  :: ncell  !< Number of cells
-integer,intent(in)  :: nvar   !< Number of variables
-real(stm_real),intent(in) :: grad_lo(ncell,nvar) !< difference on lo side, LARGEREAL in first index
-real(stm_real),intent(in) :: grad_hi(ncell,nvar) !< difference on hi side (n+1) minus (n) LARGEREAL for last index
+integer,intent(in)  :: ncell                         !< Number of cells
+integer,intent(in)  :: nvar                          !< Number of variables
+real(stm_real),intent(in) :: grad_lo(ncell,nvar)     !< difference on lo side, LARGEREAL in first index
+real(stm_real),intent(in) :: grad_hi(ncell,nvar)     !< difference on hi side (n+1) minus (n) LARGEREAL for last index
 real(stm_real),intent(in) :: grad_center(ncell,nvar) !< centered difference, LARGEREAL for undefined boundary cells 
-real(stm_real),intent(out) :: grad_lim(ncell,nvar) !< limited difference
+real(stm_real),intent(out) :: grad_lim(ncell,nvar)   !< limited difference
 
-!----
+!----locals
 
 real(stm_real) :: delta_limit(ncell,nvar) ! intermediate quantity
 real(stm_real) :: sign
 integer        :: ivar, icell             ! counting variables
-
-!----------------------
 
 do ivar = 1,nvar
     do icell = 1,ncell
@@ -105,11 +100,8 @@ do ivar = 1,nvar
   grad_lim(ncell,ivar)= LARGEREAL   !todo: is this really what we want? 
 end do
 
-
-
 return
 end subroutine
-
 
 end module
 

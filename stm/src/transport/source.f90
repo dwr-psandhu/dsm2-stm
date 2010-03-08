@@ -37,13 +37,13 @@ module source_module
      use stm_precision
      implicit none
      !--- args
-     integer,intent(in)  :: ncell                     !< Number of cells
-     integer,intent(in)  :: nvar                      !< Number of variables
+     integer,intent(in)  :: ncell                       !< Number of cells
+     integer,intent(in)  :: nvar                        !< Number of variables
      real(stm_real),intent(inout) :: source(ncell,nvar) !< cell centered source 
-     real(stm_real),intent(in)  :: conc(ncell,nvar)   !< Concentration
-     real(stm_real),intent(in)  :: area(ncell)        !< area at source     
-     real(stm_real),intent(in)  :: flow(ncell)        !< flow at source location
-     real(stm_real),intent(in)  :: time               !< flow at source location
+     real(stm_real),intent(in)  :: conc(ncell,nvar)     !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)          !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)          !< flow at source location
+     real(stm_real),intent(in)  :: time                 !< flow at source location
      
    end subroutine compute_source_if
  end interface
@@ -51,16 +51,15 @@ module source_module
  !> source term 
  procedure(compute_source_if),pointer :: source => null() !no_source
 
+  contains
  
- contains
- 
- subroutine no_source(source, & 
-                                conc,   &
-                                area,   &
-                                flow,   &
-                                ncell,  &
-                                nvar,   &
-                                time)
+ subroutine no_source(source,   & 
+                        conc,   &
+                        area,   &
+                        flow,   &
+                        ncell,  &
+                        nvar,   &
+                        time)
                                          
      use stm_precision 
      use error_handling
@@ -68,26 +67,26 @@ module source_module
      
          implicit none
      !--- args
-     integer,intent(in)  :: ncell                     !< Number of cells
-     integer,intent(in)  :: nvar                      !< Number of variables
-     real(stm_real),intent(inout) :: source(ncell,nvar) !< cell centered source 
-     real(stm_real),intent(in)  :: conc(ncell,nvar)   !< Concentration
-     real(stm_real),intent(in)  :: area(ncell)        !< area at source     
-     real(stm_real),intent(in)  :: flow(ncell)        !< flow at source location
-     real(stm_real),intent(in)  :: time               !< flow at source location
+     integer,intent(in)  :: ncell                      !< Number of cells
+     integer,intent(in)  :: nvar                       !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+     real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)         !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
+     real(stm_real),intent(in)  :: time                !< flow at source location
      
      call stm_fatal("No Source!")
      
      return
  end subroutine no_source
  
-  subroutine linear_decay_source(source, & 
-                                conc,   &
-                                area,   &
-                                flow,   &
-                                ncell,  &
-                                nvar,   &
-                                time)
+  subroutine linear_decay_source(source,    & 
+                                    conc,   &
+                                    area,   &
+                                    flow,   &
+                                    ncell,  &
+                                    nvar,   &
+                                    time)
                                          
      use stm_precision 
      use error_handling
@@ -95,13 +94,13 @@ module source_module
      
          implicit none
      !--- args
-     integer,intent(in)  :: ncell                     !< Number of cells
-     integer,intent(in)  :: nvar                      !< Number of variables
-     real(stm_real),intent(inout) :: source(ncell,nvar) !< cell centered source 
-     real(stm_real),intent(in)  :: conc(ncell,nvar)   !< Concentration
-     real(stm_real),intent(in)  :: area(ncell)        !< area at source     
-     real(stm_real),intent(in)  :: flow(ncell)        !< flow at source location
-     real(stm_real),intent(in)  :: time               !< flow at source location
+     integer,intent(in):: ncell                        !< Number of cells
+     integer,intent(in):: nvar                         !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+     real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)         !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
+     real(stm_real),intent(in)  :: time                !< flow at source location
      
 
      ! todo: implement and test
@@ -120,13 +119,13 @@ module source_module
     
           implicit none
      !--- args
-     integer,intent(in)  :: ncell                     !< Number of cells
-     integer,intent(in)  :: nvar                      !< Number of variables
-     real(stm_real),intent(inout) :: source(ncell,nvar) !< cell centered source 
-     real(stm_real),intent(in)  :: conc(ncell,nvar)   !< Concentration
-     real(stm_real),intent(in)  :: area(ncell)        !< area at source     
-     real(stm_real),intent(in)  :: flow(ncell)        !< flow at source location
-     real(stm_real),intent(in)  :: time               !< flow at source location
+     integer,intent(in):: ncell                        !< Number of cells
+     integer,intent(in):: nvar                         !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+     real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)         !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
+     real(stm_real),intent(in)  :: time                !< flow at source location
  
      ! todo: implement and test
      ! todo: add other kind of sources
@@ -145,14 +144,13 @@ module source_module
     
           implicit none
      !--- args
-     integer,intent(in)  :: ncell                     !< Number of cells
-     integer,intent(in)  :: nvar                      !< Number of variables
-     real(stm_real),intent(inout) :: source(ncell,nvar) !< cell centered source 
-     real(stm_real),intent(in)  :: conc(ncell,nvar)   !< Concentration
-     real(stm_real),intent(in)  :: area(ncell)        !< area at source     
-     real(stm_real),intent(in)  :: flow(ncell)        !< flow at source location
-     real(stm_real),intent(in)  :: time               !< flow at source location
-     
+     integer,intent(in):: ncell                        !< Number of cells
+     integer,intent(in):: nvar                         !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+     real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)         !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
+     real(stm_real),intent(in)  :: time                !< flow at source location
         
      
      

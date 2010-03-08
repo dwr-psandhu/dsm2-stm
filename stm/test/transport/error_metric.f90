@@ -26,7 +26,9 @@ contains
 
 !> Calculate the L1, L2 and Linf error between calculated values and a reference
 subroutine error_norm(norm_1,norm_2,norm_inf,vals,reference,ncell,dx)
+
 use stm_precision
+
 implicit none
 
 integer, intent(in) :: ncell
@@ -38,7 +40,7 @@ real(stm_real), intent(in) :: vals(ncell)        !< Calculated values
 real(stm_real), intent(in) :: reference(ncell)   !< Reference or 'other' values
 real(stm_real), intent(in) :: dx                 !< Spatial step !todo: do we use this????
 
-! locals
+!------ locals
 integer :: icell
 integer :: which_cell
 real(stm_real) :: err
@@ -61,8 +63,8 @@ do icell=1,ncell
 end do
 norm_1 = norm_1/dble(ncell)
 norm_2 = norm_2/dble(ncell)
+
 return
 end subroutine
-
 
 end module

@@ -26,8 +26,6 @@ module advection
 
 contains
 
-!///////////////////////////////////////////////////////////////////////
-
 !> Integrate advection plus sources for a time step.
 !> The final argument to advect is a callback for computing the source term,
 !> which should conform to the source_if interface
@@ -57,6 +55,7 @@ subroutine advect(mass,     &
                   time,     &
                   dt,       &
                   dx)
+! todo: remove comment
 !use source_if
 use stm_precision
 use primitive_variable_conversion
@@ -64,8 +63,8 @@ use gradient
 implicit none
 
 !--- args
-integer,intent(in)  :: ncell  !< Number of cells
-integer,intent(in)  :: nvar   !< Number of variables
+integer,intent(in)  :: ncell                        !< Number of cells
+integer,intent(in)  :: nvar                         !< Number of variables
 
 real(stm_real),intent(out) :: mass(ncell,nvar)      !< mass at new time
 real(stm_real),intent(in)  :: mass_prev(ncell,nvar) !< mass at old time
@@ -80,9 +79,7 @@ real(stm_real),intent(in)  :: time                  !< current time
 real(stm_real),intent(in)  :: dt                    !< current time step
 real(stm_real),intent(in)  :: dx                    !< spatial step
 
-
 !---------- locals
-
 
 real(stm_real) :: source(ncell,nvar)      !< cell centered source 
 real(stm_real) :: conc(ncell,nvar)        !< cell centered concentration
@@ -93,10 +90,8 @@ real(stm_real) :: grad_hi(ncell,nvar)     !< gradient based on hi side differenc
 real(stm_real) :: grad_center(ncell,nvar) !< cell centered difference
 real(stm_real) :: grad_lim(ncell,nvar)    !< limited cell centered difference
 real(stm_real) :: grad(ncell,nvar)        !< cell centered difference adujsted for boundaries and hydraulic devices
-
 real(stm_real) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
 real(stm_real) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
- 
 real(stm_real) :: div_flux(ncell,nvar)    !< cell centered flux divergence, time centered
 
 
@@ -104,7 +99,6 @@ call cons2prim(conc,mass_prev,area,ncell,nvar)
 
 ! Calculate the (undivided) differences of concentrations
 call difference(grad_lo,grad_hi,grad_center,conc,ncell,nvar)
-
 
 ! call printout(grad_center(:,1),ncell)
 call limiter(grad_lim,grad_lo,grad_hi,grad_center,ncell,nvar)
@@ -154,7 +148,6 @@ call replace_boundary_flux(flux_lo,flux_hi,conc_lo,conc_hi,flow_lo,flow_hi,ncell
 ! todo: commented
 call compute_divergence( div_flux, flux_lo, flux_hi, ncell, nvar)
 
-
 ! conservative update including source. 
 call update_conservative(mass,mass_prev,div_flux,source,area,ncell,nvar,dt,dx)
 
@@ -191,7 +184,7 @@ integer,intent(in)  :: nvar   !< Number of variables
 real(stm_real),intent(out) :: conc_lo(ncell,nvar)
 
 !> estimate from this cell extrapolated to hi face at half time
-real(stm_real),intent(out):: conc_hi(ncell,nvar)
+real(stm_real),intent(out):: conc_hi(ncell,nvar)!todo: why conc_hi? where is lo?
 real(stm_real),intent(in) :: conc(ncell,nvar)   !< cell centered conc at old time
 real(stm_real),intent(in) :: grad(ncell,nvar)   !< cell centered difference of conc at old time, currently assuming these are undivided differences
 real(stm_real),intent(in) :: area(ncell)        !< cell-centered area at old time
@@ -221,7 +214,6 @@ end do
 return
 end subroutine
 
-!///////////////////////////////////////////////////////////////////////
 
 !> Compute the upwinded fluxes 
 !> The calculation here does not include tributaries, boundaries or special objects
@@ -232,20 +224,20 @@ pure subroutine compute_flux(flux_lo,  &
                              flow_lo,  &
                              flow_hi,  &
                              ncell,    &
-                             nvar      &
-                             )
+                             nvar)
+                             
 use stm_precision
 implicit none
 !--- args
-integer,intent(in)  :: ncell  !< Number of cells
-integer,intent(in)  :: nvar   !< Number of variables
+integer,intent(in)  :: ncell                      !< Number of cells
+integer,intent(in)  :: nvar                       !< Number of variables
 
 real(stm_real),intent(out) :: flux_lo(ncell,nvar) !< Flux on lo face at half time
 real(stm_real),intent(out) :: flux_hi(ncell,nvar) !< Flux on hi face at half time
 real(stm_real),intent(in) :: conc_lo(ncell,nvar)  !< upwinded conc at half time at lo face
 real(stm_real),intent(in) :: conc_hi(ncell,nvar)  !< upwinded conc at half time at hi face
-real(stm_real),intent(in) :: flow_lo(ncell)  !< time-centered flow at lo face
-real(stm_real),intent(in) :: flow_hi(ncell)  !< time-centered flow at hi face
+real(stm_real),intent(in) :: flow_lo(ncell)       !< time-centered flow at lo face
+real(stm_real),intent(in) :: flow_hi(ncell)       !< time-centered flow at hi face
 !---- locals
 integer :: ivar
 integer :: icell
@@ -278,7 +270,6 @@ end do
 return
 end subroutine
 
-!//////////////////////////////////////////////////////////////////////
 
 !> Compute the divergence of fluxes.
 !> At present, this is undivided...which may be not what we want.
@@ -301,7 +292,7 @@ end subroutine
 
 
 
-!///////////////////////////////////////////////////////////////////////
+
 
 !> Replace original calculated flux at boundary locations
 !> todo: figure out if the arguments are right and move this routine to the 
@@ -321,8 +312,8 @@ subroutine replace_boundary_flux(flux_lo,  &
 use stm_precision
 implicit none
 !--- args
-integer,intent(in)  :: ncell  !< Number of cells
-integer,intent(in)  :: nvar   !< Number of variables
+integer,intent(in)  :: ncell                        !< Number of cells
+integer,intent(in)  :: nvar                         !< Number of variables
 
 real(stm_real),intent(inout) :: flux_lo(ncell,nvar) !< Flux on lo face at half time
 real(stm_real),intent(inout) :: flux_hi(ncell,nvar) !< Flux on hi face at half time
@@ -332,7 +323,7 @@ real(stm_real),intent(in) :: flow_lo(ncell,nvar)    !< time-centered flow at lo 
 real(stm_real),intent(in) :: flow_hi(ncell,nvar)    !< time-centered flow at hi face
 real(stm_real), intent(in) :: time                  !< time
 real(stm_real), intent(in) :: dt                    !< length of current time step
-real(stm_real), intent(in) :: dx !< spatial step
+real(stm_real), intent(in) :: dx                    !< spatial step
 
 
 !--------------------
@@ -355,14 +346,15 @@ subroutine update_conservative(mass,       &
                                ncell,      &
                                nvar,       &
                                dt,         &
-                               dx          &                   
-                               )
+                               dx)
+                               
 use stm_precision
 use primitive_variable_conversion
+
 implicit none
 !--- args
-integer,intent(in)  :: ncell  !< Number of cells
-integer,intent(in)  :: nvar   !< Number of variables
+integer,intent(in)  :: ncell                         !< Number of cells
+integer,intent(in)  :: nvar                          !< Number of variables
 
 real(stm_real),intent(out) :: mass(ncell,nvar)       !< update of mass
 real(stm_real),intent(in)  :: mass_prev(ncell,nvar)  !< old time mass
@@ -374,8 +366,8 @@ real(stm_real),intent(in)  :: dx                     !< spatial step
 
 !--- locals
 real(stm_real) :: dtbydx
-real(stm_real) :: source(ncell,nvar)             !< new time source term
-real(stm_real) :: conc(ncell,nvar)               !< concentration
+real(stm_real) :: source(ncell,nvar)                 !< new time source term
+real(stm_real) :: conc(ncell,nvar)                   !< concentration
 
 
 !--------------------
@@ -410,8 +402,8 @@ subroutine adjust_differences(grad,grad_lim,grad_lo,grad_hi,ncell,nvar)
 use stm_precision
 implicit none
 !--- args
-integer,intent(in)  :: ncell  !< Number of cells
-integer,intent(in)  :: nvar   !< Number of variables
+integer,intent(in)  :: ncell                       !< Number of cells
+integer,intent(in)  :: nvar                        !< Number of variables
 
 real(stm_real),intent(in)  :: grad_lo(ncell,nvar)  !< difference based on lo side difference
 real(stm_real),intent(in)  :: grad_hi(ncell,nvar)  !< gdifference based on hi side difference
