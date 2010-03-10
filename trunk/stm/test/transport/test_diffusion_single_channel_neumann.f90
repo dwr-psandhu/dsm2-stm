@@ -34,9 +34,9 @@ contains
 
 
 subroutine test_new_diffusion_calc
-
-integer,parameter :: ncell = 1001                              !< Number of cells
-integer,parameter :: nvar = 1                                  !< Number of variables
+implicit none
+integer,parameter :: ncell = 1001               !< Number of cells
+integer,parameter :: nvar = 1                   !< Number of variables
 
 real(stm_real) :: conc(ncell,nvar)              !< Concentration at new time
 real(stm_real) :: mass(ncell,nvar)              !< Mass (A*C) at new time
@@ -59,8 +59,10 @@ real(stm_real) :: dx                            !< Spacial step
 
 
 !--- locals
-integer :: iivar
-integer :: jjvar
+integer :: icell
+integer :: itime
+integer :: ivar
+
 real(stm_real) :: xpos(ncell)
 ! todo: remove this
 real(stm_real) :: dummy_higher
@@ -70,13 +72,13 @@ procedure(boundary_diffusive_flux_if),pointer :: boundary_diffusion_flux
 
 !todo:
 boundary_diffusion_matrix  => single_channel_neumann_matrix
-boundary_diffusion_flux  =>  null()    !channel_neumann_gaussian_diffusive_flux
+boundary_diffusion_flux  =>  channel_neumann_gaussian_diffusive_flux
  
 ! ---- these will remain same in the process
 time = LARGEREAL
 dt = 0.001d0
 dx = 0.05d0 * (1000d0/(ncell-1))
-theta_stam = 0.6d0
+theta_stm = 0.6d0
 
 area (:)= 1.0d0                 
 area_prev (:) = 1.0d0            
@@ -97,9 +99,9 @@ disp_coef_hi_prev(:,:) = 0.1d0
 
 call fill_gaussian(conc_prev,ncell, -25.0d0 ,dx,zero,one)
 !todo remove
-!do iivar = 1, ncell
-! xpos(iivar) = -25.0d0 + dx* (iivar-1)
-! conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2.0d0)/(4.0d0*disp_coef_lo_prev(iivar,nvar)))
+!do icell = 1, ncell
+! xpos(icell) = -25.0d0 + dx* (icell-1)
+! conc_prev (icell, nvar) = exp(-(xpos(icell)**2.0d0)/(4.0d0*disp_coef_lo_prev(icell,nvar)))
 !end do
 
 
@@ -113,7 +115,7 @@ call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
 
   
 
-timemarch: do jjvar = 1,1000
+timemarch: do itime = 1,1000
 
 
      call diffuse(conc,             &
@@ -178,9 +180,9 @@ continue
 !!!  
 !!!  !---- t initial is t=1 sec 
 !!!
-!!!do iivar = 1, ncell
-!!! xpos(iivar) = (iivar -1 - (ncell-1)/2)*dx
-!!! conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2)/4.0d0/disp_coef_lo_prev(iivar,nvar))
+!!!do icell = 1, ncell
+!!! xpos(icell) = (icell -1 - (ncell-1)/2)*dx
+!!! conc_prev (icell, nvar) = exp(-(xpos(icell)**2)/4.0d0/disp_coef_lo_prev(icell,nvar))
 !!!
 !!!end do
 !!!
@@ -194,9 +196,9 @@ continue
 !!!
 !!!!---- march
 !!!
-!!!timemarch1: do jjvar = 1,1000
+!!!timemarch1: do itime = 1,1000
 !!!
-!!!   !xmarch: do iivar = 1,ncell ! do I need this? I dont think so 
+!!!   !xmarch: do icell = 1,ncell ! do I need this? I dont think so 
 !!!
 !!!     call diffuse(conc,             &
 !!!                  conc_prev,         &
@@ -253,9 +255,9 @@ continue
 !!!  
 !!!  !---- t initial is t=1 sec 
 !!!
-!!!do iivar = 1, ncell
-!!! xpos(iivar) = (iivar -1 - (ncell-1)/2)*dx
-!!! conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2)/4.0d0/disp_coef_lo_prev(iivar,nvar))
+!!!do icell = 1, ncell
+!!! xpos(icell) = (icell -1 - (ncell-1)/2)*dx
+!!! conc_prev (icell, nvar) = exp(-(xpos(icell)**2)/4.0d0/disp_coef_lo_prev(icell,nvar))
 !!!
 !!!end do
 !!!
@@ -269,9 +271,9 @@ continue
 !!!
 !!!!---- march
 !!!
-!!!timemarch2: do jjvar = 1,1000
+!!!timemarch2: do itime = 1,1000
 !!!
-!!!   !xmarch: do iivar = 1,ncell ! do I need this? I dont think so 
+!!!   !xmarch: do icell = 1,ncell ! do I need this? I dont think so 
 !!!
 !!!     call diffuse(conc,             &
 !!!                  conc_prev,         &

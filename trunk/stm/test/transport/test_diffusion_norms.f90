@@ -34,7 +34,7 @@ use example_initial_conditions
 contains
 
 subroutine test_diffusion_error_norms
-
+implicit none
 integer :: ncell                                      !< Number of cells
 integer,parameter :: nvar = 1                         !< Number of variables
 
@@ -100,7 +100,7 @@ allocate (disp_coef_hi_prev(ncell,nvar))
 time = LARGEREAL
 dt = 0.001d0
  
-theta_stam = 0.7d0 
+theta_stm = 0.7d0 
 
 area (:)= 1.0d0                 
 area_prev (:) = 1.0d0            

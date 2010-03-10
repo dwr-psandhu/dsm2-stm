@@ -44,7 +44,7 @@ module example_initial_conditions
     !> This routine expects a 1D array, so multi-constituents
     !> have to be initialized separately
     
-    subroutine fill_gaussian(vals,nloc,origin,dx,mean,sd)
+    subroutine fill_gaussian(vals,nloc,origin,dx,mean,sd,scale)
 
         implicit none
         integer, intent(in) :: nloc                !< number of cells (size of array) 
@@ -53,19 +53,27 @@ module example_initial_conditions
         real(stm_real), intent(in)  :: dx          !< dx
         real(stm_real), intent(in)  :: mean        !< center of the gaussian shape
         real(stm_real), intent(in)  :: sd          !< length of gaussian shape
+        real(stm_real), intent(in), optional :: scale !< scale
         !-----locals
         real(stm_real) :: xlo
         real(stm_real) :: xhi
         integer        :: iloc
+        real(stm_real) :: actual_scale
         !-----------
+        if ( present(scale))then
+            actual_scale = scale
+        else
+            actual_scale = one/sqrt(two*pi*sd*sd)
+        end if
+        
         do iloc = 1,nloc
            xlo = origin + dble(iloc - 1)*dx
            xhi = origin + dble(iloc)*dx
           ! need to populate using cell averages
            vals(iloc) =  (gaussian_cdf(xhi,mean,sd) & 
                         - gaussian_cdf(xlo,mean,sd))
-           vals(iloc)=vals(iloc)*sqrt(two*pi*sd*sd)/dx   !todo: move out of loop and make pi a constant instead of acos(zero)
         end do
+        vals = vals*(actual_scale/dx)
         return
     end subroutine
     

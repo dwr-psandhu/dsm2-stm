@@ -27,11 +27,12 @@ use stm_precision
 use primitive_variable_conversion
 use diffusion
 use boundary_diffusion
+use example_initial_conditions
 
 contains
 
 subroutine test_diffusion_calc
-
+implicit none
 integer,parameter :: ncell = 126                    !< Number of cells
 integer,parameter :: nvar = 1                       !< Number of variables
 
@@ -65,6 +66,9 @@ real(stm_real) :: xpos(ncell)
 ! todo: remove this
 real(stm_real) :: dummy_higher
 real(stm_real) :: dummy_lower
+real(stm_real) :: origin = -25.d0
+real(stm_real) :: mean = zero
+real(stm_real) :: sd = one
 
 boundary_diffusion_flux =>neumann_no_flow_diffusive_flux
 
@@ -72,7 +76,7 @@ boundary_diffusion_flux =>neumann_no_flow_diffusive_flux
 time = LARGEREAL
 dt = 0.001d0
 dx = 0.05d0 * (1000d0/(ncell-1))
-theta_stam = 0.6d0
+theta_stm = 0.6d0
 
 area (:)= 1.0d0                 
 area_prev (:) = 1.0d0            
@@ -98,8 +102,7 @@ boundary_diffusion_flux => neumann_no_flow_diffusive_flux
 !---- t initial is t=1 sec 
 ! todo: what about sd? we can not use it for not constant disp_coef_lo_prev
 ! todo: should I multiply it by sqrt(2*pi)*sd?
-
-call fill_gaussian(conc_prev,ncell,-25.0d0,dx,zero,sd)
+call fill_gaussian(conc_prev,ncell,origin,dx,mean,sd)
 
 !do iivar = 1, ncell
 !     xpos(iivar) = -25.0d0 + dx* (iivar-1)
