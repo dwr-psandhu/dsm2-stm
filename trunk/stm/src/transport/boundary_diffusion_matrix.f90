@@ -22,7 +22,7 @@
 !>@ingroup transport
 module boundary_diffusion_matrix_module
  !> Calculate boundary diffusion matrix
-abstract interface
+ interface
        !> Generic interface for calculating BC of matrix that should be fulfilled by
        !> client programs
        subroutine boundary_diffusive_matrix_if( center_diag ,      &
@@ -39,6 +39,8 @@ abstract interface
                                                       nvar,             & 
                                                       dx,               &
                                                       dt)
+                                                      
+                                                      
         
          use stm_precision
          implicit none
