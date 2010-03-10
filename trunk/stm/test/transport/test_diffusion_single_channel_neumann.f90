@@ -68,8 +68,9 @@ real(stm_real) :: dummy_lower
 procedure(boundary_diffusive_matrix_if),pointer :: boundary_diffusion_matrix  
 procedure(boundary_diffusive_flux_if),pointer :: boundary_diffusion_flux  
 
-boundary_diffusion_matrix  => single_channel_neumann_matrix
-boundary_diffusion_flux  => channel_neumann_gaussian_diffusive_flux
+!todo:
+boundary_diffusion_matrix  => null()   ! single_channel_neumann_matrix
+boundary_diffusion_flux  =>  null()    !channel_neumann_gaussian_diffusive_flux
  
 ! ---- these will remain same in the process
 time = LARGEREAL
