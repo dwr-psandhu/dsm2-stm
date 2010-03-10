@@ -35,8 +35,8 @@ subroutine test_interior_dif_flux_sub
 integer,parameter  :: nvar = 1                               !< Number of variables
 
 !todo: remove!
-!real(stm_real) :: diffusive_flux_interior_hi(ncell,nvar)      !< Explicit diffusive flux high side
-!real(stm_real) :: diffusive_flux_interior_lo(ncell,nvar)      !< Explicit diffusive flux low side
+real(stm_real) :: diffusive_flux_hi(ncell,nvar)      !< Explicit diffusive flux high side
+real(stm_real) :: diffusive_flux_lo(ncell,nvar)      !< Explicit diffusive flux low side
 real(stm_real) :: conc_prev(ncell,nvar)                       !< Concentration at old time
 real(stm_real) :: area_lo_prev (ncell)                        !< Low side area at old time
 real(stm_real) :: area_hi_prev (ncell)                        !< High side area at old time 
@@ -53,36 +53,36 @@ disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1d0,1.02d0/)
 dx = 2.0d0 
 time =LARGEREAL ! todo do we need this?
  
-call interior_diffusive_flux (diffusive_flux_interior_lo,     &
-                                 diffusive_flux_interior_hi,  &
-                                            conc_prev,        &
-                                            area_lo_prev,     &
-                                            area_hi_prev,     &
-                                            disp_coef_lo_prev,&  
-                                            disp_coef_hi_prev,&
-                                            ncell,            &
-                                            nvar,             &
-                                            time,             &
-                                            dx)
-                                            
+call interior_diffusive_flux  ( diffusive_flux_lo,       &
+                                 diffusive_flux_hi,       &
+                                        conc_prev,        &
+                                        area_lo_prev,     &
+                                        area_hi_prev,     &
+                                        disp_coef_lo_prev,&  
+                                        disp_coef_hi_prev,&
+                                        ncell,            &
+                                        nvar,             &
+                                        time,             &
+                                        dx)
+                    
                                             
 !----diffusive_flux_interior_lo
 
  
-  call assertEquals (diffusive_flux_interior_lo(2,1),225.4d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 2")
-  call assertEquals (diffusive_flux_interior_lo(3,1),676.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 3")
-  call assertEquals (diffusive_flux_interior_lo(4,1),451.2d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 4")
-  call assertEquals (diffusive_flux_interior_lo(5,1),450.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 5")
-  call assertEquals (diffusive_flux_interior_lo(6,1),450d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 6")
+  call assertEquals (diffusive_flux_lo(2,1),225.4d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 2")
+  call assertEquals (diffusive_flux_lo(3,1),676.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 3")
+  call assertEquals (diffusive_flux_lo(4,1),451.2d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 4")
+  call assertEquals (diffusive_flux_lo(5,1),450.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 5")
+  call assertEquals (diffusive_flux_lo(6,1),450d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 6")
   
 !----diffusive_flux_interior_hi
 
   
-  call assertEquals (diffusive_flux_interior_hi(1,1),225.4d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 1")
-  call assertEquals (diffusive_flux_interior_hi(2,1),676.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 2")
-  call assertEquals (diffusive_flux_interior_hi(3,1),451.2d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 3")
-  call assertEquals (diffusive_flux_interior_hi(4,1),450.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 4")
-  call assertEquals (diffusive_flux_interior_hi(5,1),450d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 5")
+  call assertEquals (diffusive_flux_hi(1,1),225.4d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 1")
+  call assertEquals (diffusive_flux_hi(2,1),676.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 2")
+  call assertEquals (diffusive_flux_hi(3,1),451.2d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 3")
+  call assertEquals (diffusive_flux_hi(4,1),450.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 4")
+  call assertEquals (diffusive_flux_hi(5,1),450d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 5")
   
 
 return
