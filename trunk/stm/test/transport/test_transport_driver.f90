@@ -55,13 +55,13 @@ program test_transport_driver
         call test_uniform_flow_advection
         call test_tridi_solver
         call test_boundary_dif_flux
-!        call test_interior_dif_flux_sub
+        call test_interior_dif_flux_sub
 !        call test_explicit_diffusion_op
 !        call test_interior_coef_matrix_sub
 !        call test_construct_interior_rhs
 !        call test_diffusion_error_norms
 !        call test_diffusion_n_d
-!         call test_new_diffusion_calc
+!        call test_new_diffusion_calc
 
      
     
