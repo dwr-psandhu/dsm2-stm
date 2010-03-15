@@ -82,7 +82,7 @@ call interior_diffusive_flux  ( diffusive_flux_lo,       &
   call assertEquals (diffusive_flux_hi(2,1),676.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 2")
   call assertEquals (diffusive_flux_hi(3,1),451.2d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 3")
   call assertEquals (diffusive_flux_hi(4,1),450.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 4")
-  call assertEquals (diffusive_flux_hi(5,1),450d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 5")
+  call assertEquals (diffusive_flux_hi(5,1),450.0d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 5")
   
 
 return
