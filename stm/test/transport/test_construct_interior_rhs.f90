@@ -107,7 +107,7 @@ call construct_right_hand_side( right_hand_side,         &
                                   
   call assertEquals (right_hand_side(2,1),29675.28d0,1d-8,"Error in r_h_s vector 2 ,theta = 0.6")
   call assertEquals (right_hand_side(5,1),30939.84d0,1d-8,"Error in r_h_s vector 5 ,theta = 0.6")
-  
+ 
   !--theta =0.1 
      theta_stm = 0.1d0 
    

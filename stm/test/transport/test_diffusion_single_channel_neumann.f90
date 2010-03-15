@@ -105,7 +105,7 @@ end do
 !! write neumann_diffusion_bc_flux and neumann_diffusion_bc_matrix
 
  
-do itime = 1,1000
+do itime = 1,1
 
      call diffuse(conc,             &
                   conc_prev,         &

@@ -191,7 +191,7 @@ module boundary_diffusion
         real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
         real(stm_real), intent (in)  :: dx                                          !< Spatial step  
         real(stm_real), intent (in)  :: dt                                          !< Time step     
-                                               !< Time step     
+                                                 
       
      call stm_fatal("boundary not implemented!")
      
