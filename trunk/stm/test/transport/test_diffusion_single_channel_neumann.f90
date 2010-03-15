@@ -22,19 +22,21 @@
 !>@ingroup test
 module test_diffusion_single_channel_neumann
 
-use fruit
-use stm_precision
-use primitive_variable_conversion
-use diffusion
-use boundary_diffusion
-use boundary_diffusion_matrix_module
-use example_initial_conditions
 
 contains
 
 
 subroutine test_new_diffusion_calc
+
+use fruit
+use stm_precision
+use primitive_variable_conversion
+use diffusion
+use boundary_diffusion
+use example_initial_conditions
+
 implicit none
+
 integer,parameter :: ncell = 1001               !< Number of cells
 integer,parameter :: nvar = 1                   !< Number of variables
 
@@ -64,21 +66,15 @@ integer :: itime
 integer :: ivar
 
 real(stm_real) :: xpos(ncell)
-! todo: remove this
-real(stm_real) :: dummy_higher
-real(stm_real) :: dummy_lower
-procedure(boundary_diffusive_matrix_if),pointer :: boundary_diffusion_matrix  
-procedure(boundary_diffusive_flux_if),pointer :: boundary_diffusion_flux  
-
-!todo:
+real(stm_real) :: scale
 boundary_diffusion_matrix  => single_channel_neumann_matrix
-boundary_diffusion_flux  =>  channel_neumann_gaussian_diffusive_flux
+boundary_diffusion_flux    => channel_neumann_gaussian_diffusive_flux
  
 ! ---- these will remain same in the process
 time = LARGEREAL
 dt = 0.001d0
 dx = 0.05d0 * (1000d0/(ncell-1))
-theta_stm = 0.6d0
+theta_stm = 0.5d0
 
 area (:)= 1.0d0                 
 area_prev (:) = 1.0d0            
@@ -92,31 +88,24 @@ disp_coef_lo_prev(:,:) = 0.1d0
 disp_coef_hi_prev(:,:) = 0.1d0 
 
 
-
-
-
 !---- t initial is t=0 sec 
+open (4,file="IC.3.2010.txt")
+!todo: remove this or modify it  
+!call fill_gaussian(conc_prev,ncell,-25.0d0,dx,zero,one,scale)
 
-call fill_gaussian(conc_prev,ncell, -25.0d0 ,dx,zero,one)
-!todo remove
-!do icell = 1, ncell
-! xpos(icell) = -25.0d0 + dx* (icell-1)
-! conc_prev (icell, nvar) = exp(-(xpos(icell)**2.0d0)/(4.0d0*disp_coef_lo_prev(icell,nvar)))
-!end do
-
-
-
-call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
+do icell = 1, ncell
+ xpos(icell) = -25.0d0 + dx* (icell-1)
+ conc_prev (icell, nvar) = exp(-(xpos(icell)**2.0d0)/(4.0d0*disp_coef_lo_prev(icell,nvar)))  ! /(4.0d0*pi*disp_coef_lo_prev(icell,nvar))
+    write (4,*) xpos(icell),conc_prev(icell,1)
+end do
 
 
 
 !! add use boundary_diffusion
 !! write neumann_diffusion_bc_flux and neumann_diffusion_bc_matrix
 
-  
-
-timemarch: do itime = 1,1000
-
+ 
+do itime = 1,1000
 
      call diffuse(conc,             &
                   conc_prev,         &
@@ -137,43 +126,32 @@ timemarch: do itime = 1,1000
                   dt,                &
                   dx)
 
-
     conc_prev(:,nvar) = conc(:,nvar)
-    
-
           
-    call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
-   
-    
-end do timemarch
+     
+end do 
 
-open (3,file="results.txt")
+open (3,file="results10.3.2010.txt")
 
 do ivar=1,ncell
-        if  ((-5.0d0 - 1d-8 < xpos(ivar)) .and. (xpos(ivar) < 5d0 + 1d-8 )) then
+    if  ((-2.0d0 - 1d-8 < xpos(ivar)) .and. (xpos(ivar) < 2.0d0 + 1d-8 )) then
         write (3,*) xpos(ivar),conc(ivar,1)
     end if
 end do
 
 continue
-!!!
-!!!!! todo: remove these
-!!!!print *, xpos(500) ,conc_prev(500,nvar)
-!!!!print *, xpos(501) ,conc_prev(501,nvar)
-!!!!print *, xpos(502) ,conc_prev(502,nvar)
-!!!!print *, epsilon   
-!!!!pause
-!!!   
-!!!  ! ---check symmetry in solutions
-!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 5,nvar),conc_prev((ncell-1)/2 + 1 - 5,nvar),1d-9,"Diffusion solution is not symmetric! theta=0.6")
-!!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 50,nvar),conc_prev((ncell-1)/2 + 1 - 50,nvar),1d-9,"Diffusion solution is not symmetric! theta=0.6")
-!!!!  call assertEquals(conc_prev((ncell-1)/2 +1 + 250,nvar),conc_prev((ncell-1)/2 + 1 - 250,nvar),1d-9,"Diffusion solution is not symmetric!theta=0.6")
-!!!!  
-!!!!    !----- check with exact solution 
-!!!!  call assertEquals(conc_prev(501 ,nvar),0.707106781d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
-!!!!  call assertEquals(conc_prev(551,nvar),0.148217633d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
-!!!!  call assertEquals(conc_prev(601,nvar),0.001365037d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
-!!!  
+
+   
+  ! ---check symmetry in solutions
+  call assertEquals(conc_prev((ncell-1)/2 +1 + 5,nvar),conc_prev((ncell-1)/2 + 1 - 5,nvar),1d-9,"Diffusion solution is not symmetric! theta=0.6")
+  call assertEquals(conc_prev((ncell-1)/2 +1 + 50,nvar),conc_prev((ncell-1)/2 + 1 - 50,nvar),1d-9,"Diffusion solution is not symmetric! theta=0.6")
+  call assertEquals(conc_prev((ncell-1)/2 +1 + 250,nvar),conc_prev((ncell-1)/2 + 1 - 250,nvar),1d-9,"Diffusion solution is not symmetric!theta=0.6")
+  
+    !----- check with exact solution 
+  call assertEquals(conc_prev(501 ,nvar),0.707106781d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
+  call assertEquals(conc_prev(551,nvar),0.148217633d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
+  call assertEquals(conc_prev(601,nvar),0.001365037d0,1d-8,"Diffusion solution is not same as exact! theta=0.6")
+  
 !!!  
 !!!  !--- test for theta = 1
 !!!  theta_stm = 1d0
@@ -350,32 +328,30 @@ subroutine channel_neumann_gaussian_diffusive_flux (diffusive_flux_lo, &
  real(stm_real),intent(in)  :: conc(ncell,nvar)                 !< concentration 
        
                                                      
+ diffusive_flux_lo(1,nvar) = zero
+ diffusive_flux_hi(ncell,nvar) = zero                                                    
                                                      
-                                                     
-                                                     
-                                                     
-                                                     
+                                                      
 ! must follow interface
 return
 end subroutine
 
-
-
  
 subroutine single_channel_neumann_matrix (center_diag ,      &
-                                                      up_diag,          &     
-                                                      down_diag,        &
-                                                      area,             &
-                                                      area_lo,          &
-                                                      area_hi,          &          
-                                                      disp_coef_lo,     &
-                                                      disp_coef_hi,     &
-                                                      theta_stm,        &
-                                                      ncell,            &
-                                                      time,             & 
-                                                      nvar,             & 
-                                                      dx,               &
-                                                      dt)
+                                          up_diag,          &     
+                                          down_diag,        &
+                                          area,             &
+                                          area_lo,          &
+                                          area_hi,          &          
+                                          disp_coef_lo,     &
+                                          disp_coef_hi,     &
+                                          theta_stm,        &
+                                          ncell,            &
+                                          time,             & 
+                                          nvar,             & 
+                                          dx,               &
+                                          dt)
+                                          
                                                       
                                               
  use stm_precision
@@ -399,7 +375,10 @@ subroutine single_channel_neumann_matrix (center_diag ,      &
         real(stm_real), intent (in)  :: dx                                          !< Spatial step  
         real(stm_real), intent (in)  :: dt       
 
-
+!todo fill here
+down_diag=down_diag
+center_diag=center_diag
+up_diag=up_diag
 ! must follow interface
 return
 end subroutine

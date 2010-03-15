@@ -64,6 +64,8 @@ call explicit_diffusion_operator (explicit_diffuse_op,  &
                                             nvar,             &
                                             time,             &
                                             dx)
+                                            
+                                           
                               
   call assertEquals (explicit_diffuse_op(1,nvar),112.7d0,1d-8,"Error in explicit diffusive flux operator 1")
   call assertEquals (explicit_diffuse_op(2,nvar),225.7d0,1d-8,"Error in explicit diffusive flux operator 2")
