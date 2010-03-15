@@ -25,17 +25,18 @@ module test_boundary_difussive_flux
 use diffusion 
 use fruit
 use stm_precision
+use boundary_diffusion
 
 contains
 
 subroutine test_boundary_dif_flux
 
-  use diffusion !
+  use diffusion 
   use boundary_diffusion
   
   implicit none
   
-  integer,parameter :: nvar = 2                        !< Number of variables
+  integer,parameter :: nvar = 1                       !< Number of variables
   integer,parameter :: ncell = 10                      !<Number of cells
   
 real(stm_real) :: diffusive_flux_lo(ncell,nvar)        !< Explicit diffusive boundary flux low side old time
@@ -43,8 +44,8 @@ real(stm_real) :: diffusive_flux_hi(ncell,nvar)        !< Explicit diffusive bou
 real(stm_real) :: conc(ncell,nvar)                     !< Explicit diffusive boundary flux low side new time
 real(stm_real) :: time = zero                          !< time 
 real(stm_real) :: dx = zero                            !< dx
+  
    
-   ! todo:
 boundary_diffusion_flux => neumann_no_flow_diffusive_flux
 
 call boundary_diffusion_flux(diffusive_flux_lo, &

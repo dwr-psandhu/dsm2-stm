@@ -62,7 +62,7 @@ subroutine diffuse(conc,             &
 
 use stm_precision
 use primitive_variable_conversion 
-use boundary_diffusion_matrix_module
+use boundary_diffusion
 
 implicit none
 
@@ -94,9 +94,6 @@ real(stm_real) :: explicit_diffuse_op(ncell,nvar)             !< explicit diffus
 real(stm_real) :: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
 real(stm_real) :: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
 real(stm_real) :: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
-! todo : remove these
-!real(stm_real) :: diffusive_flux_boundary(ncell,nvar)         !< Explicit diffusive boundary flux
-!real(stm_real) :: diffusive_flux_interior(ncell,nvar)         !< Explicit diffusive interior flux
 real(stm_real) :: right_hand_side(ncell,nvar)                 !< Right hand side vector
 
 
@@ -256,7 +253,6 @@ call boundary_diffusion_flux(diffusive_flux_lo, &
       
   
     do ivar = 1,nvar
-    ! todo : 2, ncell-1 before BC 
         do icell = 1,ncell 
          
          explicit_diffuse_op (icell,ivar) = (diffusive_flux_hi (icell,ivar) - diffusive_flux_lo (icell,ivar))/dx
@@ -287,7 +283,6 @@ use stm_precision
 integer, intent (in) :: ncell                                              !< Number of cells
 integer, intent (in) :: nvar                                               !< Number of variables
 
-
 real(stm_real), intent (out) :: diffusive_flux_hi(ncell,nvar)               !< Explicit diffusive flux high side
 real(stm_real), intent (out) :: diffusive_flux_lo(ncell,nvar)               !< Explicit diffusive flux low side
 real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
@@ -308,10 +303,7 @@ do ivar = 1,nvar
     end do
 end do 
 diffusive_flux_hi(1:ncell-1,:) =  diffusive_flux_lo(2:ncell,:)  
-! todo: 
-diffusive_flux_hi(ncell,:)=LARGEREAL
-diffusive_flux_lo(1,:)=LARGEREAL
-                                      
+
 return
 end subroutine interior_diffusive_flux
 
@@ -359,14 +351,11 @@ real(stm_real), intent (in)  :: dt                                          !< T
     do icell = 1, ncell
     
          right_hand_side(icell,ivar) = area_prev(icell)*conc_prev(icell,ivar) &
-                                       + (1-theta_stm)*dt * explicit_diffuse_op (icell,ivar) 
+                                       + (1-theta_stm)*dt* explicit_diffuse_op (icell,ivar) 
        end do      
     end do
     
- ! to do :todo : take care of BC of right hand side
-! right_hand_side(1,ivar) = right_hand_side(1,ivar) - dt*theta_stm* diffusive_flux_boundary_lo(ivar)  /dx 
-! right_hand_side(ncell,ivar) = right_hand_side(ncell,ivar) + dt*theta_stm* diffusive_flux_boundary_hi(ivar)  /dx
-
+ 
 return
 end subroutine construct_right_hand_side
 

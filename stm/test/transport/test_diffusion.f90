@@ -22,6 +22,9 @@
 !>@ingroup test
 module test_diffusion
 
+contains
+
+subroutine test_diffusion_calc
 use fruit
 use stm_precision
 use primitive_variable_conversion
@@ -29,9 +32,6 @@ use diffusion
 use boundary_diffusion
 use example_initial_conditions
 
-contains
-
-subroutine test_diffusion_calc
 implicit none
 integer,parameter :: ncell = 126                    !< Number of cells
 integer,parameter :: nvar = 1                       !< Number of variables
@@ -54,14 +54,12 @@ real(stm_real) :: time                              !< Current time
 real(stm_real) :: theta_stm                         !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real) :: dt                                !< Time step   
 real(stm_real) :: dx                                !< Spacial step 
-! todo: must remove 
-!real(stm_real) :: diffusive_flux_boundary_lo(nvar)  !< Neumann BC on low side    
-!real(stm_real) :: diffusive_flux_boundary_hi (nvar) !< Neumann BC on high side
+
 
 
 !--- locals
-integer :: iivar
-integer :: jjvar
+integer :: icell
+integer :: itime
 real(stm_real) :: xpos(ncell)
 ! todo: remove this
 real(stm_real) :: dummy_higher
@@ -70,6 +68,10 @@ real(stm_real) :: origin = -25.d0
 real(stm_real) :: mean = zero
 real(stm_real) :: sd = one
 
+! add use boundary_diffusion
+! write neumann_diffusion_bc_flux and neumann_diffusion_bc_matrix
+! todo:
+boundary_diffusion_matrix=> neumann_diffusion_matrix
 boundary_diffusion_flux =>neumann_no_flow_diffusive_flux
 
 ! ---- these will remain same in the process
@@ -91,11 +93,7 @@ disp_coef_hi_prev(:,:) = 0.1d0
 
 
 
-! add use boundary_diffusion
-! write neumann_diffusion_bc_flux and neumann_diffusion_bc_matrix
-! todo:
-boundary_diffusion_flux => neumann_no_flow_diffusive_flux
-!boundary_diffusion_matrix=> neumann_diffusion_bc_matrix
+
 
 
 
@@ -104,18 +102,18 @@ boundary_diffusion_flux => neumann_no_flow_diffusive_flux
 ! todo: should I multiply it by sqrt(2*pi)*sd?
 call fill_gaussian(conc_prev,ncell,origin,dx,mean,sd)
 
-!do iivar = 1, ncell
-!     xpos(iivar) = -25.0d0 + dx* (iivar-1)
-!    conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2.0d0)/(4.0d0*disp_coef_lo_prev(iivar,nvar)))
+!do icell = 1, ncell
+!     xpos(icell) = -25.0d0 + dx* (icell-1)
+!    conc_prev (icell, nvar) = exp(-(xpos(icell)**2.0d0)/(4.0d0*disp_coef_lo_prev(icell,nvar)))
 !end do
 
 call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
 
 !---- march
 
-timemarch: do jjvar = 1,1000
+timemarch: do itime = 1,1000
 
-   !xmarch: do iivar = 1,ncell ! do I need this? I dont think so 
+   !xmarch: do icell = 1,ncell ! do I need this? I dont think so 
 
      call diffuse(conc,             &
                   conc_prev,         &
@@ -172,9 +170,9 @@ continue
 !!!  
 !!!  !---- t initial is t=1 sec 
 !!!
-!!!do iivar = 1, ncell
-!!! xpos(iivar) = (iivar -1 - (ncell-1)/2)*dx
-!!! conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2)/4.0d0/disp_coef_lo_prev(iivar,nvar))
+!!!do icell = 1, ncell
+!!! xpos(icell) = (icell -1 - (ncell-1)/2)*dx
+!!! conc_prev (icell, nvar) = exp(-(xpos(icell)**2)/4.0d0/disp_coef_lo_prev(icell,nvar))
 !!!
 !!!end do
 !!!
@@ -188,9 +186,9 @@ continue
 !!!
 !!!!---- march
 !!!
-!!!timemarch1: do jjvar = 1,1000
+!!!timemarch1: do itime = 1,1000
 !!!
-!!!   !xmarch: do iivar = 1,ncell ! do I need this? I dont think so 
+!!!   !xmarch: do icell = 1,ncell ! do I need this? I dont think so 
 !!!
 !!!     call diffuse(conc,             &
 !!!                  conc_prev,         &
@@ -247,9 +245,9 @@ continue
 !!!  
 !!!  !---- t initial is t=1 sec 
 !!!
-!!!do iivar = 1, ncell
-!!! xpos(iivar) = (iivar -1 - (ncell-1)/2)*dx
-!!! conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2)/4.0d0/disp_coef_lo_prev(iivar,nvar))
+!!!do icell = 1, ncell
+!!! xpos(icell) = (icell -1 - (ncell-1)/2)*dx
+!!! conc_prev (icell, nvar) = exp(-(xpos(icell)**2)/4.0d0/disp_coef_lo_prev(icell,nvar))
 !!!
 !!!end do
 !!!
@@ -263,9 +261,9 @@ continue
 !!!
 !!!!---- march
 !!!
-!!!timemarch2: do jjvar = 1,1000
+!!!timemarch2: do itime = 1,1000
 !!!
-!!!   !xmarch: do iivar = 1,ncell ! do I need this? I dont think so 
+!!!   !xmarch: do icell = 1,ncell ! do I need this? I dont think so 
 !!!
 !!!     call diffuse(conc,             &
 !!!                  conc_prev,         &
