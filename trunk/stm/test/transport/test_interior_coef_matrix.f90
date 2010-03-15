@@ -121,7 +121,7 @@ call construct_diffusion_matrix( center_diag ,      &
     call assertEquals (down_diag(2,1),-0.0123456790123457d0,1d-9,"BigK(2,1) theta=0.5 Error!")
     call assertEquals (down_diag(7,1),-0.0123456790123457d0,1d-9,"BigK(7,6) theta=0.5 Error!")
     call assertEquals (down_diag(18,1),-0.0123456790123457d0,1d-9,"BigK(18,17) theta=0.5 Error!") 
-    
+ 
 
 !---check for theta = 0.1
     

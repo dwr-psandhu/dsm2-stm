@@ -46,5 +46,6 @@
 		<File RelativePath="..\..\..\test\transport\test_matrix_solver.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_transport_driver.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_uniform_flow.f90"/></Filter></Files>
+		<File RelativePath="..\..\..\test\transport\test_uniform_flow.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_boundary_dif_matrix.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>
