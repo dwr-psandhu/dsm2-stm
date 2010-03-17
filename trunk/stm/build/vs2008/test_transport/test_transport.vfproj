@@ -31,9 +31,11 @@
 		<File RelativePath="..\..\..\test\transport\example_hydro_data.f90"/>
 		<File RelativePath="..\..\..\example\single_channel_advect\example_initial_conditions.f90"/>
 		<File RelativePath="..\..\..\test\transport\example_sources.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_boundary_dif_matrix.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_boundary_diffusive_flux.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_construct_interior_rhs.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_diffusion_convergence_single_channel.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_neumann_dirichlet.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_norms.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_single_channel_neumann.f90"/>
@@ -46,6 +48,5 @@
 		<File RelativePath="..\..\..\test\transport\test_matrix_solver.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_transport_driver.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_uniform_flow.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_boundary_dif_matrix.f90"/></Filter></Files>
+		<File RelativePath="..\..\..\test\transport\test_uniform_flow.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>

@@ -58,6 +58,14 @@ module state_variables
     !> Face-centered area on hi side of cell (so this is cell-indexed),
     !> dimensions (ncell)
     real(stm_real),save,allocatable :: area_hi(:)
+
+    !> Face area on lo side of cell (so this is cell-indexed),
+    !> dimensions (ncell)
+    real(stm_real),save,allocatable :: area_lo_prev(:)
+    
+    !> Face-centered area on hi side of cell (so this is cell-indexed),
+    !> dimensions (ncell)
+    real(stm_real),save,allocatable :: area_hi_prev(:)
     
     !> face-centered flow on lo side of cell  (so this is cell-indexed),
     !> dimensions (ncell)
@@ -89,11 +97,15 @@ module state_variables
         allocate(mass(ncell,nvar), mass_prev(ncell,nvar))
         mass      = LARGEREAL  ! absurd value helps expose bugs  
         mass_prev = LARGEREAL       
-        allocate(area(ncell), area_prev(ncell), area_lo(ncell), area_hi(ncell))
+        allocate(area(ncell), area_prev(ncell), area_lo(ncell), area_hi(ncell), &
+                 area_lo_prev(ncell), area_hi_prev(ncell))
         area      = LARGEREAL
         area_prev = LARGEREAL
         area_lo   = LARGEREAL
         area_hi   = LARGEREAL
+        area_lo_prev   = LARGEREAL
+        area_hi_prev   = LARGEREAL
+        
         allocate(flow(ncell),flow_lo(ncell), flow_hi(ncell))
         flow      = LARGEREAL
         flow_lo   = LARGEREAL
@@ -109,7 +121,7 @@ module state_variables
         ncell = 0
         nvar  = 0
         deallocate(conc, conc_prev, mass,mass_prev)
-        deallocate(area, area_prev, area_lo, area_hi)
+        deallocate(area, area_prev, area_lo, area_hi, area_lo_prev, area_hi_prev)
         deallocate(flow, flow_lo, flow_hi)
         return
     end subroutine
