@@ -318,7 +318,7 @@ pure subroutine construct_right_hand_side( right_hand_side,  &
                                       disp_coef_lo_prev,     &
                                       disp_coef_hi_prev,     &
                                       conc_prev,             &
-                                      theta_stm,             &
+                                      theta,                 &
                                       ncell,                 &
                                       time,                  &
                                       nvar,                  &  
@@ -338,24 +338,21 @@ real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< H
 real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< Low side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: time                                        !< Current time
-real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+real(stm_real), intent (in)  :: theta                                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in)  :: dx                                          !< Spatial step  
-real(stm_real), intent (in)  :: dt                                          !< Time step                                   
-
+real(stm_real), intent (in)  :: dt                                          !< Time step 
   
-  !---- locals
-   integer :: ivar
-   integer :: icell
-   
- do ivar = 1,nvar 
-    do icell = 1, ncell
-    
+!---- locals
+integer :: ivar
+integer :: icell
+
+do ivar = 1,nvar
+    do icell = 1,ncell
          right_hand_side(icell,ivar) = area_prev(icell)*conc_prev(icell,ivar) &
-                                       + (1-theta_stm)*dt* explicit_diffuse_op (icell,ivar) 
-       end do      
+                                       + (1-theta)*dt* explicit_diffuse_op (icell,ivar) 
     end do
-    
- 
+end do
+
 return
 end subroutine construct_right_hand_side
 
@@ -401,7 +398,8 @@ real(stm_real) :: d_star
 
 integer :: icell
 integer :: ivar
-
+up_diag(ncell,:) = LARGEREAL
+down_diag(1,:) = LARGEREAL
 d_star = dt/dx/dx  
     do ivar = 1,nvar 
        
@@ -438,21 +436,21 @@ use stm_precision
 integer,intent (in) :: ncell                          !< Number of volumes
 integer, intent (in):: nvar                           !< Number of variables 
 
-real(stm_real),intent (in)  :: down_diag(ncell)       !< Values of the coefficients below diagonal in matrix
-real(stm_real),intent (in)  :: center_diag(ncell)     !< Values of the coefficients at the diagonal in matrix
-real(stm_real),intent (in)  :: up_diag(ncell)         !< Values of the coefficients above the diagonal in matrix
-real(stm_real),intent (in)  :: right_hand_side(ncell) !< Values of the right hand side vector
-real(stm_real),intent (out) :: conc(ncell)            !< Values of the computed solution
+real(stm_real),intent (in)  :: down_diag(ncell,nvar)       !< Values of the coefficients below diagonal in matrix
+real(stm_real),intent (in)  :: center_diag(ncell,nvar)     !< Values of the coefficients at the diagonal in matrix
+real(stm_real),intent (in)  :: up_diag(ncell,nvar)         !< Values of the coefficients above the diagonal in matrix
+real(stm_real),intent (in)  :: right_hand_side(ncell,nvar) !< Values of the right hand side vector
+real(stm_real),intent (out) :: conc(ncell,nvar)            !< Values of the computed solution
 
 ! --- local
 integer :: ivar
 do ivar = 1 ,nvar
-    call tridi_solver ( center_diag ,               &
-                              up_diag,              &     
-                              down_diag,            &
-                              right_hand_side,      &
-                              conc,                 &
-                              ncell)
+    call tridi_solver(center_diag(:,ivar),    &
+                      up_diag(:,ivar),        &     
+                      down_diag(:,ivar),      &
+                      right_hand_side(:,ivar),&
+                      conc(:,ivar),           &
+                      ncell)
 end do
 return
 end subroutine solve

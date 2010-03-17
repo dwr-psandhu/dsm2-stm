@@ -67,10 +67,12 @@ module logging
         open(unit = 11, file = filename)
         
         do icell = 1,nx
-          write(11,'(f10.5, f20.10)') x(icell), arr(icell)
+          write(11,'(f12.4, f22.16)') x(icell), arr(icell)
         end do
         close(11)
     end subroutine
+
+
 
     !< Prints an array to file
     subroutine printout_append(arr,x,time,funit)

@@ -61,8 +61,8 @@ real(stm_real) :: diffusive_flux_boundary_hi (nvar)   !< Neumann BC on high side
 
 
 !--- locals
-integer :: iivar
-integer :: jjvar
+integer :: icell
+integer :: itime
 integer :: kkvar
 integer,parameter :: n_err_try = 4
 real(stm_real),allocatable :: xpos(:)
@@ -118,16 +118,16 @@ diffusive_flux_boundary_hi (nvar) = zero
   
 !---- t initial is t=1 sec 
 ! todo : re write with fill gaussian 
-do iivar = 1, ncell
- xpos(iivar) = -25.0d0 + dx* (iivar-1)
- conc_prev (iivar, nvar) = exp(-(xpos(iivar)**2.0d0)/4.0d0/disp_coef_lo_prev(iivar,nvar))
+do icell = 1, ncell
+ xpos(icell) = -25.0d0 + dx* (icell-1)
+ conc_prev (icell, :) = exp(-(xpos(icell)**2.0d0)/4.0d0/disp_coef_lo_prev(icell,nvar))
 end do
 
 call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
 
 !---- march
 
-timemarch: do jjvar = 1,1000
+timemarch: do itime = 1,1000
 
      call diffuse(conc,              &
                   conc_prev,         &
@@ -157,9 +157,9 @@ end do timemarch
 
 !call fill_gaussian(vals,nloc,origin,dx,mean,sd)
 !todo : check above works or not it is not exact gaussian 
-do iivar = 1, ncell
-     xpos(iivar) = -25.0d0 + dx* (iivar-1)
-     conc_exact (iivar, nvar) = sqrt(0.5d0)* exp(-(xpos(iivar)**2.0d0)/4.0d0/disp_coef_lo_prev(iivar,nvar))
+do icell = 1, ncell
+     xpos(icell) = -25.0d0 + dx* (icell-1)
+     conc_exact (icell, nvar) = sqrt(0.5d0)* exp(-(xpos(icell)**2.0d0)/4.0d0/disp_coef_lo_prev(icell,nvar))
 end do
 
 call error_norm(norm_1(kkvar),norm_2(kkvar),norm_inf(kkvar),conc,conc_exact,ncell,dx)
