@@ -49,12 +49,14 @@ integer :: ivar
 
    
  !--- Small numbers on center diag large numbers on up and down diag
-  
+ !> The length of center_diagonal array is N, but up and down diagonal arrays are N-1, but the solver 
+ !> works with the three inputs with the same length (all N) so the first elemenmt of down_diag and the last element of 
+ !> up_diag were substituted by LARGEREAL = 12345689   
  center_diag (:,2) = (/0.17D0,0.18D0,0.19D0,0.2D0,0.21D0,0.22D0,0.23D0,0.24D0,0.25D0,0.26D0,0.27D0/)
  down_diag(:,2)  = (/LARGEREAL,26.D0,31.D0,36.D0,41.D0,46.D0,51.D0,56.D0,61.D0,66.D0,71.D0/)
  up_diag (:,2) = (/36.D0,37.D0,38.D0,39.D0,40.D0,41.D0,42.D0,43.D0,44.D0,45.D0,LARGEREAL/)
  right_hand_side(:,2)  = (/0.01D0,0.02D0,0.03D0,0.04D0,500.0D0,400.0D0,0.07D0,0.08D0,0.09D0,0.1D0,0.11D0/)
-
+ !> two constituents were added to check the solver 
 do ivar = 1,nvar
   call tridi_solver (center_diag(:,ivar),up_diag(:,ivar),down_diag(:,ivar),right_hand_side(:,ivar),conc(:,ivar),ncell)
 end do

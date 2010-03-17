@@ -61,9 +61,9 @@ module example_initial_conditions
         real(stm_real) :: actual_scale
         !-----------
         if ( present(scale))then
-            actual_scale = scale
+            actual_scale = scale*sqrt(two*pi*sd*sd)
         else
-            actual_scale = one/sqrt(two*pi*sd*sd)
+            actual_scale = one*sqrt(two*pi*sd*sd)
         end if
         
         do iloc = 1,nloc
