@@ -34,6 +34,7 @@
 		<File RelativePath="..\..\..\test\transport\test_boundary_dif_matrix.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_boundary_diffusive_flux.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_construct_interior_rhs.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_dif_single_channel_neumann_convergence.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_convergence_single_channel.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_neumann_dirichlet.f90"/>
