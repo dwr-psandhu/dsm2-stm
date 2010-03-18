@@ -91,7 +91,7 @@ real(stm_real) ::  norm_error(3,nrefine)
 character(LEN=64):: filename
 
 boundary_diffusion_matrix  =>     neumann_diffusion_matrix ! todo: is it remain same?
-boundary_diffusion_flux    =>     neumann_mid_gaussian_diffusive_flux_for_test
+boundary_diffusion_flux    =>     neumann_mid_gaussian_dif_flux_for_test
 ! todo : it is just set for this test, otherwise the xposition and tstart must pass into the subroutine
 
 ! coarsening factor in convergence test
@@ -180,7 +180,7 @@ end do
 !    print*,nx,norm_error(1,icoarse),'L-1'
 !end do
 print*,'========'
-print*,norm_error(3,2)/norm_error(3,1),norm_error(3,3)/norm_error(3,2),'L-inf'
+print*,norm_error(3,2)/norm_error(3,1),norm_error(3,3)/norm_error(3,2),'L-inf, N-N'
 print*,'========'
 print*,norm_error(2,2)/norm_error(2,1),norm_error(2,3)/norm_error(2,2),'L-2'
 print*,'========'
@@ -195,6 +195,7 @@ call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order conver
 call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergemce on diffusion")
 call assert_true(norm_error(3,3)/norm_error(3,2) > 3.85d0,"L-inf second order convergemce on diffusion")
 
+call add_fail("Neumann boundary diffusion flux test, domain must change!")
 
 return
 end subroutine

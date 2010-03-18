@@ -152,6 +152,31 @@ module boundary_diffusion
      return
  end subroutine
  
+ subroutine neumann_mid_gaussian_dif_flux_for_test(diffusive_flux_lo, &
+                                             diffusive_flux_hi, &
+                                             conc,              &
+                                             ncell,             &
+                                             nvar,              &
+                                             time)
+     use stm_precision
+     implicit none
+     !--- args
+         integer,intent(in)  :: ncell                                   !< Number of cells
+         integer,intent(in)  :: nvar                                    !< Number of variables
+         real(stm_real),intent(inout) :: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
+         real(stm_real),intent(inout) :: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+         real(stm_real),intent(in)  :: time                             !< time
+         real(stm_real),intent(in)  :: conc(ncell,nvar)                 !< concentration 
+         !------- local
+         ! todo: it must not be here
+         real(stm_real),parameter :: disp_coef=1024.0d0
+         
+   
+     diffusive_flux_lo(1,:) = minus*two*zero*exp(minus*zero**2 / (four*disp_coef*two))/sqrt(time)
+     diffusive_flux_hi(ncell,:) =  minus*two*51200.d0* exp(minus*51200.d0**2 / (four*disp_coef*two))/sqrt(time)  
+
+     return
+ end subroutine
  
  !===========================================
   !> Example matrix that prints an error and bails
