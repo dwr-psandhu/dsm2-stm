@@ -42,6 +42,7 @@ program test_transport_driver
   use test_diffusion_single_channel_neumann
   use test_boundary_diffusion_matrix
   use test_diffusion_single_channel
+  use test_dif_single_channel_neumann
   
   
       call init_fruit
@@ -64,10 +65,10 @@ program test_transport_driver
         call test_interior_coef_matrix_sub
         call test_construct_interior_rhs
         call test_diffusion_convergence_single_channel
+        call test_dif_convergence_single_channel_neumann
 
         ! todo: rename
-!        call sub_boundary_diffusion_matrix
-        
+!        call sub_boundary_diffusion_matrix      
 !        call test_diffusion_error_norms
 !        call test_diffusion_n_d
 !        call test_new_diffusion_calc  
