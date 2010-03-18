@@ -45,7 +45,8 @@ implicit none
 
 integer, parameter  :: nstep_base = 128 ! initial number of time steps
 integer, parameter  :: nx_base = 256    ! initial number of cells
-!todo: we do not use this
+ 
+ !todo: we do not use CFL
 !real(stm_real), parameter :: cfl = 0.8  ! courant number 
 
 integer :: icoarse = 0
@@ -66,11 +67,12 @@ real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent di
 
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
-real(stm_real), parameter :: ic_center      = three*fourth*domain_length
+real(stm_real), parameter :: ic_center      = three*fourth*domain_length ! todo: why not half
 real(stm_real), parameter :: ic_gaussian_sd = domain_length/sixteen
 real(stm_real), parameter :: ic_peak = one
 real(stm_real), parameter :: constant_area = 1.D2
-real(stm_real) :: vel
+! todo: remove
+!real(stm_real) :: vel
 real(stm_real), parameter :: start_time = 256.d0
 real(stm_real), parameter :: end_time = start_time + total_time
 
@@ -85,15 +87,12 @@ integer, parameter :: coarsen_factor = 2      ! coarsening factor used for conve
 integer :: coarsening
 integer, parameter :: nrefine = 3
 real(stm_real),allocatable :: reference(:)
-real(stm_real) norm_error(3,nrefine)
-character(LEN=64) filename
+real(stm_real) ::  norm_error(3,nrefine)
+character(LEN=64):: filename
 
-boundary_diffusion_matrix  => neumann_diffusion_matrix
-boundary_diffusion_flux    => neumann_no_flow_diffusive_flux
-
-
-
-
+boundary_diffusion_matrix  =>     neumann_diffusion_matrix ! todo: is it remain same?
+boundary_diffusion_flux    =>     neumann_mid_gaussian_diffusive_flux_for_test
+! todo : it is just set for this test, otherwise the xposition and tstart must pass into the subroutine
 
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
