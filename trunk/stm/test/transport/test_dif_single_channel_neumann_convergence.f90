@@ -57,7 +57,7 @@ integer, parameter  :: nconc = 2 ! number of constituents
 real(stm_real), parameter :: domain_length = 51200.d0
 real(stm_real), parameter :: origin = zero            !-domain_length/two   ! meters
 real(stm_real), parameter :: total_time    = 2048.d0
-real(stm_real), parameter :: disp_coef     = four*four*1024.d0
+real(stm_real), parameter :: disp_coef     = *1024.d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
