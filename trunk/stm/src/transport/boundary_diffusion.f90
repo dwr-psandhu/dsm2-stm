@@ -169,7 +169,8 @@ module boundary_diffusion
          real(stm_real),intent(in)  :: conc(ncell,nvar)                 !< concentration 
          !------- local
          ! todo: it must not be here
-         real(stm_real),parameter :: disp_coef=1024.0d0
+         !todo it is hadwired 
+         real(stm_real),parameter :: disp_coef=four*four*1024.0d0
          
    
      diffusive_flux_lo(1,:) = minus*two*zero*exp(minus*zero**2 / (four*disp_coef*two))/sqrt(time)
