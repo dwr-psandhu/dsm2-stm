@@ -67,8 +67,8 @@ real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
 real(stm_real), parameter :: ic_center      = half*domain_length ! todo: why not half
 real(stm_real), parameter :: ic_gaussian_sd = domain_length/two
-real(stm_real), parameter :: ic_peak = one
-real(stm_real), parameter :: constant_area = 1.D2
+real(stm_real), parameter :: ic_peak = 1.0d8
+real(stm_real), parameter :: constant_area = 1.0d8
 
 real(stm_real), parameter :: start_time = 256.d0
 real(stm_real), parameter :: end_time = start_time + total_time
@@ -171,31 +171,31 @@ do icoarse = 1,nrefine
     call deallocate_state
 end do
 
-! todo: four?
-!do icoarse = 1, nrefine
-!    coarsening = coarsen_factor**(icoarse - 1)
-!    nx = nx_base/(coarsening)
-!    print*,nx,norm_error(3,icoarse),'L-inf'
-!    print*,nx,norm_error(2,icoarse),'L-2'
-!    print*,nx,norm_error(1,icoarse),'L-1'
-!end do
-!print*,'========'
-!print*,norm_error(3,2)/norm_error(3,1),norm_error(3,3)/norm_error(3,2),'L-inf,03/24/2010'
-!print*,'========'
-!print*,norm_error(2,2)/norm_error(2,1),norm_error(2,3)/norm_error(2,2),'L-2'
-!print*,'========'
-!print*,norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2),'L-1'
-!
-!call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergemce on diffusion")
-!call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergemce on diffusion")
-!!>
-!call assert_true(norm_error(3,2)/norm_error(3,1) > 3.85d0,"L-inf second order convergemce on diffusion")
-!
-!call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergemce on diffusion")
-!call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergemce on diffusion")
-!call assert_true(norm_error(3,3)/norm_error(3,2) > 3.85d0,"L-inf second order convergemce on diffusion")
-!
-!call add_fail("Neumann boundary diffusion flux test, domain must change!")
+
+do icoarse = 1, nrefine
+    coarsening = coarsen_factor**(icoarse - 1)
+    nx = nx_base/(coarsening)
+    print*,nx,norm_error(3,icoarse),'L-inf'
+    print*,nx,norm_error(2,icoarse),'L-2'
+    print*,nx,norm_error(1,icoarse),'L-1'
+end do
+print*,'========'
+print*,norm_error(3,2)/norm_error(3,1),norm_error(3,3)/norm_error(3,2),'L-inf,03/24/2010'
+print*,'========'
+print*,norm_error(2,2)/norm_error(2,1),norm_error(2,3)/norm_error(2,2),'L-2'
+print*,'========'
+print*,norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2),'L-1'
+
+call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergemce on diffusion")
+call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergemce on diffusion")
+!>
+call assert_true(norm_error(3,2)/norm_error(3,1) > 3.85d0,"L-inf second order convergemce on diffusion")
+
+call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergemce on diffusion")
+call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergemce on diffusion")
+call assert_true(norm_error(3,3)/norm_error(3,2) > 3.85d0,"L-inf second order convergemce on diffusion")
+
+call add_fail("Neumann boundary diffusion flux test, domain must change!")
 
 return
 end subroutine
@@ -218,36 +218,38 @@ end subroutine
          integer,intent(in)  :: nvar                                    !< Number of variables
          real(stm_real), intent(inout) :: diffusive_flux_lo(ncell,nvar) !< face flux, lo side
          real(stm_real), intent(inout) :: diffusive_flux_hi(ncell,nvar) !< face flux, hi side
-         real(stm_real), intent (in) :: area_lo         (ncell)         !< Low side area centered at old time
-         real(stm_real), intent (in) :: area_hi         (ncell)         !< High side area centered at old time 
-         real(stm_real), intent (in) :: disp_coef_lo(ncell,nvar)        !< Low side constituent dispersion coef. 
-         real(stm_real), intent (in) :: disp_coef_hi(ncell,nvar)        !< High side constituent dispersion coef.
+         !todo intent was eliminated here
+         real(stm_real) :: area_lo         (ncell)         !< Low side area centered at old time
+         real(stm_real)  :: area_hi         (ncell)         !< High side area centered at old time 
+         real(stm_real)  :: disp_coef_lo(ncell,nvar)        !< Low side constituent dispersion coef. 
+         real(stm_real) :: disp_coef_hi(ncell,nvar)        !< High side constituent dispersion coef.
          real(stm_real), intent(in)  :: time                             !< time
          real(stm_real), intent(in)  :: conc(ncell,nvar)                 !< concentration 
          !------- local
          !todo it is hadwired 
          real(stm_real),parameter :: disp_coef=1024.0d0
-         real(stm_real),parameter :: constant_area = 1.D2
-         real(stm_real)   :: start_time
+         real(stm_real),parameter :: constant_area = 1.0d8
+         real(stm_real)   :: start_time = 256.0d0
          real(stm_real)   :: xbound
          real(stm_real)   :: center
           
-        ! disp_coef_lo(:,:) = disp_coef
-         !disp_coef_hi(:,:) = disp_coef
+        disp_coef_lo(:,:) = disp_coef
+        disp_coef_hi(:,:) = disp_coef
          
-       ! area_lo (:)= constant_area
-       ! area_hi (:)= constant_area
+        area_lo (:)= constant_area
+        area_hi (:)= constant_area
          
-         
-         
+             
      xbound=zero
-      
-     diffusive_flux_lo(1,:) = minus*two*(xbound-center)*exp(minus*(xbound-center)**2 / (four*disp_coef*two))/sqrt(time)
+     center = 25600.0d0 
+     diffusive_flux_lo(1,:) = area_lo(1)*disp_coef_lo(1,:)* minus*two*(xbound-center)* sqrt(start_time)* exp(minus*(xbound-center)**2 / (four*disp_coef*start_time))/sqrt(time)
      xbound=51200.d0
-     diffusive_flux_hi(ncell,:) =  minus*two*(xbound-center)* exp(minus*(xbound-center)**2 / (four*disp_coef*two))/sqrt(time)  
+     diffusive_flux_hi(ncell,:) =  area_hi(ncell)*disp_coef_hi(ncell,:)*minus*two*(xbound-center)*sqrt(start_time)* exp(minus*(xbound-center)**2 / (four*disp_coef*time))/sqrt(time)  
 
-    ! print*,diffusive_flux_lo(1,1)
-    ! print*,diffusive_flux_lo(ncell,1)
+     print*,'====='
+     print*,time
+     print*,diffusive_flux_lo(1,1)
+     print*,diffusive_flux_lo(ncell,1)
 
 
      return
