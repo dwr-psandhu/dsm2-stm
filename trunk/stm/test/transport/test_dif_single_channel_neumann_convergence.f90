@@ -21,7 +21,11 @@
 !> Test of transport diffusion convergence test for a single channel in neumann boundary condition 
 !>@ingroup test
 module test_dif_single_channel_neumann
-
+use stm_precision
+real(stm_real), parameter :: domain_length = 51200.d0
+real(stm_real), parameter :: ic_center      = half*domain_length ! todo: why not half
+real(stm_real), parameter :: ic_gaussian_sd = domain_length/two
+real(stm_real), parameter :: disp_coef     = 1024.d0
 contains
 
 
@@ -52,10 +56,10 @@ integer :: nstep
 integer  :: nx
 
 integer, parameter  :: nconc = 2 ! number of constituents 
-real(stm_real), parameter :: domain_length = 51200.d0
+
 real(stm_real), parameter :: origin = zero            !-domain_length/two   ! meters
 real(stm_real), parameter :: total_time    = 2048.d0
-real(stm_real), parameter :: disp_coef     = 1024.d0
+
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
@@ -65,11 +69,8 @@ real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent di
 
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
-real(stm_real), parameter :: ic_center      = half*domain_length ! todo: why not half
-real(stm_real), parameter :: ic_gaussian_sd = domain_length/two
-real(stm_real), parameter :: ic_peak = 1.0d8
-real(stm_real), parameter :: constant_area = 1.0d8
 
+real(stm_real), parameter :: constant_area = 1.0d1
 real(stm_real), parameter :: start_time = 256.d0
 real(stm_real), parameter :: end_time = start_time + total_time
 
@@ -122,14 +123,13 @@ do icoarse = 1,nrefine
         xposition(icell) = dx*(dble(icell)-half)+origin
     end do      
 
-    call fill_gaussian(conc(:,1),nx,origin,dx,half*domain_length, & 
+    call fill_gaussian(conc(:,1),nx,origin,dx,ic_center, & 
                        sqrt(two*disp_coef*start_time),one)
     conc(:,2) = conc(:,1)
     
     allocate(reference(ncell))  ! reference solution
-    call fill_gaussian(reference,nx,origin,dx,half*domain_length, &
+    call fill_gaussian(reference,nx,origin,dx,ic_center, &
                        sqrt(two*disp_coef*end_time),sqrt(start_time/end_time))
-
     time = zero
     ! forwards
 !---- march
@@ -203,7 +203,6 @@ end subroutine
  subroutine neumann_mid_gaussian_dif_flux_for_test(diffusive_flux_lo, &
                                                      diffusive_flux_hi, &
                                                      conc,              &
-                                                     !todo: area prev or new
                                                      area_lo,           &
                                                      area_hi,           &
                                                      disp_coef_lo,      &  
@@ -231,25 +230,17 @@ end subroutine
          real(stm_real),parameter :: constant_area = 1.0d8
          real(stm_real)   :: start_time = 256.0d0
          real(stm_real)   :: xbound
-         real(stm_real)   :: center
           
-        disp_coef_lo(:,:) = disp_coef
-        disp_coef_hi(:,:) = disp_coef
-         
-        area_lo (:)= constant_area
-        area_hi (:)= constant_area
-         
-             
+        
      xbound=zero
-     center = 25600.0d0 
-     diffusive_flux_lo(1,:) = area_lo(1)*disp_coef_lo(1,:)* minus*two*(xbound-center)* sqrt(start_time)* exp(minus*(xbound-center)**2 / (four*disp_coef*start_time))/sqrt(time)
-     xbound=51200.d0
-     diffusive_flux_hi(ncell,:) =  area_hi(ncell)*disp_coef_hi(ncell,:)*minus*two*(xbound-center)*sqrt(start_time)* exp(minus*(xbound-center)**2 / (four*disp_coef*time))/sqrt(time)  
-
+     diffusive_flux_lo(1,:)    = - area_lo(1)*disp_coef_lo(1,:)* (minus*two*(xbound-ic_center)/(four*disp_coef_lo(1,:)*time)) &
+          * sqrt(start_time/time)*exp(minus*(xbound-ic_center)**2 / (four*disp_coef_lo(1,:)*time))
+     xbound=domain_length
+     diffusive_flux_hi(ncell,:)=  - area_hi(ncell)*disp_coef_hi(ncell,:)*(minus*two*(xbound-ic_center)/(four*disp_coef_hi(ncell,:)*time))*sqrt(start_time/time)* exp(minus*(xbound-ic_center)**2 / (four*disp_coef_hi(ncell,:)*time))
      print*,'====='
      print*,time
      print*,diffusive_flux_lo(1,1)
-     print*,diffusive_flux_lo(ncell,1)
+     print*,diffusive_flux_hi(ncell,1)
 
 
      return

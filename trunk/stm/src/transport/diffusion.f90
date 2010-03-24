@@ -215,13 +215,7 @@ real(stm_real), intent (in)  :: area_lo_prev (ncell)                        !< L
 real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< High side area at old time 
 real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< Low side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
-!todo : check these ???????????????????
-real(stm_real)  :: conc(ncell,nvar)                       !< Concentration at old time
-real(stm_real)  :: area_lo (ncell)                        !< Low side area at old time
-real(stm_real)  :: area_hi (ncell)                        !< High side area at old time 
-real(stm_real)  :: disp_coef_lo (ncell,nvar)              !< Low side constituent dispersion coef. at old time
-real(stm_real)  :: disp_coef_hi (ncell,nvar)              !< High side constituent dis
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 real(stm_real), intent (in)  :: time                                        !< Current time
 real(stm_real), intent (in)  :: dx                                          !< Spacial step  
 
@@ -236,41 +230,37 @@ real(stm_real):: diffusive_flux_hi_prev(ncell,nvar)
 
 
 ! todo : rename the subroutine 
-call interior_diffusive_flux ( diffusive_flux_lo,            &
-                               diffusive_flux_hi,            &
-                                            conc_prev,        &
-                                            area_lo_prev,     &
-                                            area_hi_prev,     &
-                                            disp_coef_lo_prev,&  
-                                            disp_coef_hi_prev,&
-                                            ncell,            &
-                                            nvar,             &
-                                            time,             &
-                                            dx)
+call interior_diffusive_flux ( diffusive_flux_lo,&
+                               diffusive_flux_hi,&
+                               conc_prev,        &
+                               area_lo_prev,     &
+                               area_hi_prev,     &
+                               disp_coef_lo_prev,&  
+                               disp_coef_hi_prev,&
+                               ncell,            &
+                               nvar,             &
+                               time,             &
+                               dx)
    
    
                                     
 call boundary_diffusion_flux(diffusive_flux_lo, &
                              diffusive_flux_hi, &
-                             conc,              &
-                             area_lo,           &
-                             area_hi,           &
-                             disp_coef_lo,      &  
-                             disp_coef_hi,      &
+                             conc_prev,         &
+                             area_lo_prev,      &
+                             area_hi_prev,      &
+                             disp_coef_lo_prev, &  
+                             disp_coef_hi_prev, &
                              ncell,             &
                              nvar,              &
                              time)
       
-  
     do ivar = 1,nvar
         do icell = 1,ncell 
-         
-         explicit_diffuse_op (icell,ivar) = (diffusive_flux_hi (icell,ivar) - diffusive_flux_lo (icell,ivar))/dx
-        
+         explicit_diffuse_op (icell,ivar) = (- diffusive_flux_hi (icell,ivar) + diffusive_flux_lo (icell,ivar))/dx
         end do
     end do
-    
-    
+
 return
 end subroutine explicit_diffusion_operator 
 
@@ -309,7 +299,7 @@ integer :: ivar
 
 do ivar = 1,nvar
     do icell = 2,ncell
-        diffusive_flux_lo(icell,ivar) = (area_lo_prev(icell)*disp_coef_lo_prev(icell,ivar)* (conc_prev(icell,ivar)- conc_prev(icell-1,ivar)))/dx                       
+        diffusive_flux_lo(icell,ivar) = -(area_lo_prev(icell)*disp_coef_lo_prev(icell,ivar)* (conc_prev(icell,ivar)- conc_prev(icell-1,ivar)))/dx                       
     end do
 end do 
 diffusive_flux_hi(1:ncell-1,:) =  diffusive_flux_lo(2:ncell,:)  
