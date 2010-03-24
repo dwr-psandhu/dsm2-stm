@@ -42,8 +42,14 @@ subroutine test_boundary_dif_flux
 real(stm_real) :: diffusive_flux_lo(ncell,nvar)        !< Explicit diffusive boundary flux low side old time
 real(stm_real) :: diffusive_flux_hi(ncell,nvar)        !< Explicit diffusive boundary flux high side old time
 real(stm_real) :: conc(ncell,nvar)                     !< Explicit diffusive boundary flux low side new time
+real(stm_real) :: area_lo         (ncell)         !< Low side area centered at old time
+real(stm_real) :: area_hi         (ncell)         !< High side area centered at old time
+real(stm_real) :: disp_coef_lo (ncell,nvar)       !< Low side constituent dispersion coef.
+real(stm_real) :: disp_coef_hi (ncell,nvar)       !< High side constituent dispersion coef.
+
 real(stm_real) :: time = zero                          !< time 
 real(stm_real) :: dx = zero                            !< dx
+              
   
    
 boundary_diffusion_flux => neumann_no_flow_diffusive_flux
@@ -51,6 +57,10 @@ boundary_diffusion_flux => neumann_no_flow_diffusive_flux
 call boundary_diffusion_flux(diffusive_flux_lo, &
                              diffusive_flux_hi, &
                              conc,              &
+                             area_lo,           &
+                             area_hi,           &
+                             disp_coef_lo,      &  
+                             disp_coef_hi,      &
                              ncell,             &
                              nvar,              &
                              time)
