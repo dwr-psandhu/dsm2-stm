@@ -57,7 +57,7 @@ integer, parameter  :: nconc = 2 ! number of constituents
 real(stm_real), parameter :: domain_length = 51200.d0
 real(stm_real), parameter :: origin = zero            !-domain_length/two   ! meters
 real(stm_real), parameter :: total_time    = 2048.d0
-real(stm_real), parameter :: disp_coef     = *1024.d0
+real(stm_real), parameter :: disp_coef     = 1024.d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
@@ -94,11 +94,14 @@ boundary_diffusion_matrix  =>     neumann_diffusion_matrix ! todo: is it remain 
 boundary_diffusion_flux    =>     neumann_mid_gaussian_dif_flux_for_test
 ! todo : it is just set for this test, otherwise the xposition and tstart must pass into the subroutine
 
+
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
     coarsening = coarsen_factor**(icoarse - 1)
     nx = nx_base/(coarsening)
     nstep = nstep_base/(coarsening)
+    
+    !todo: Can you skip the allocate command in fortran 2003?
     call allocate_state(nx,nconc)
     area = constant_area
     area_prev = constant_area
@@ -199,5 +202,8 @@ call add_fail("Neumann boundary diffusion flux test, domain must change!")
 
 return
 end subroutine
+
+
+
 
 end module
