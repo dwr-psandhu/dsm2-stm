@@ -70,7 +70,7 @@ real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent di
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
 
-real(stm_real), parameter :: constant_area = 1.0d1
+real(stm_real), parameter :: constant_area = two ! it must not be one to appear in the D
 real(stm_real), parameter :: start_time = 256.d0
 real(stm_real), parameter :: end_time = start_time + total_time
 
@@ -211,6 +211,7 @@ end subroutine
                                                      nvar,              &
                                                      time)
      use stm_precision
+     
      implicit none
      !--- args
          integer,intent(in)  :: ncell                                   !< Number of cells
@@ -227,21 +228,22 @@ end subroutine
          !------- local
          !todo it is hadwired 
          real(stm_real),parameter :: disp_coef=1024.0d0
-         real(stm_real),parameter :: constant_area = 1.0d8
+         real(stm_real),parameter :: constant_area = two
          real(stm_real)   :: start_time = 256.0d0
          real(stm_real)   :: xbound
           
         
      xbound=zero
-     diffusive_flux_lo(1,:)    = - area_lo(1)*disp_coef_lo(1,:)* (minus*two*(xbound-ic_center)/(four*disp_coef_lo(1,:)*time)) &
-          * sqrt(start_time/time)*exp(minus*(xbound-ic_center)**2 / (four*disp_coef_lo(1,:)*time))
+     diffusive_flux_lo(1,:)    = - area_lo(1)*disp_coef_lo(1,:)* (minus*two*(xbound-ic_center)/(four*area_lo(1)*disp_coef_lo(1,:)*time)) &
+          * sqrt(start_time/time)*exp(minus*(xbound-ic_center)**2 / (four*area_lo(1)*disp_coef_lo(1,:)*time))
      xbound=domain_length
-     diffusive_flux_hi(ncell,:)=  - area_hi(ncell)*disp_coef_hi(ncell,:)*(minus*two*(xbound-ic_center)/(four*disp_coef_hi(ncell,:)*time))*sqrt(start_time/time)* exp(minus*(xbound-ic_center)**2 / (four*disp_coef_hi(ncell,:)*time))
+     diffusive_flux_hi(ncell,:)=  - area_hi(ncell)*disp_coef_hi(ncell,:)*(minus*two*(xbound-ic_center)/(four*area_hi(ncell)*disp_coef_hi(ncell,:)*time)) &
+             *sqrt(start_time/time)* exp(minus*(xbound-ic_center)**2 / (four*area_hi(ncell) *disp_coef_hi(ncell,:)*time))
      print*,'====='
      print*,time
      print*,diffusive_flux_lo(1,1)
      print*,diffusive_flux_hi(ncell,1)
-
+    ! print*, !  ic_center
 
      return
  end subroutine
