@@ -215,6 +215,13 @@ real(stm_real), intent (in)  :: area_lo_prev (ncell)                        !< L
 real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< High side area at old time 
 real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< Low side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
+!todo : check these ???????????????????
+real(stm_real)  :: conc(ncell,nvar)                       !< Concentration at old time
+real(stm_real)  :: area_lo (ncell)                        !< Low side area at old time
+real(stm_real)  :: area_hi (ncell)                        !< High side area at old time 
+real(stm_real)  :: disp_coef_lo (ncell,nvar)              !< Low side constituent dispersion coef. at old time
+real(stm_real)  :: disp_coef_hi (ncell,nvar)              !< High side constituent dis
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 real(stm_real), intent (in)  :: time                                        !< Current time
 real(stm_real), intent (in)  :: dx                                          !< Spacial step  
 
@@ -242,11 +249,14 @@ call interior_diffusive_flux ( diffusive_flux_lo,            &
                                             dx)
    
    
-    !todo
-                                                      
+                                    
 call boundary_diffusion_flux(diffusive_flux_lo, &
                              diffusive_flux_hi, &
-                             conc_prev,         &
+                             conc,              &
+                             area_lo,           &
+                             area_hi,           &
+                             disp_coef_lo,      &  
+                             disp_coef_hi,      &
                              ncell,             &
                              nvar,              &
                              time)
