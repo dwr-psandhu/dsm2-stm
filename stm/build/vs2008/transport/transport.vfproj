@@ -35,6 +35,7 @@
 		<File RelativePath="..\..\..\src\transport\boundary_advection.f90"/>
 		<File RelativePath="..\..\..\src\transport\boundary_diffusion.f90"/>
 		<File RelativePath="..\..\..\src\transport\diffusion.f90"/>
+		<File RelativePath=".\entrainment_if.f90"/>
 		<File RelativePath="..\..\..\src\transport\error_handling.f90"/>
 		<File RelativePath="..\..\..\test\transport\error_metric.f90"/>
 		<File RelativePath="..\..\..\src\transport\gradient.f90"/>
