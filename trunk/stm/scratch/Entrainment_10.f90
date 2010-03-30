@@ -56,7 +56,7 @@ real(stm_real) :: two   =  2.d0    !< real constant  2. properly typed
 real(stm_real) :: half   =  5.d-1  !< real constant  0.5 properly typed
 real(stm_real) :: fourth =  2.5d-1 !< real constant  0.25 properly typed
 
-real(stm_real),parameter :: g_acl =	9.800d0 ! value for San Francisco latitude and longitude
+real(stm_real),parameter :: g_acl =	9.80d0 ! value for San Francisco latitude and longitude
 real(stm_real) :: spcfc_g  !=2.65d0 !!!!!!!!!!!!!!!!?
 real(stm_real) :: rho_s  !  =2650.0d0 !!!!!!!!!!!!
 
