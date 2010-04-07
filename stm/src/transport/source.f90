@@ -24,10 +24,14 @@ module source_module
  !> Calculate source
  interface compute_source
    !> Generic interface for calculating source that should be fulfilled by
-   !> client programs
+   !> client programs. The source is calculated using concentration,
+   !> and produces a source increment appropriate for primitives.
+   !> If you want to increment a conservative variable with this source,
+   !> call prim_increment_to_cons()
    
    ! todo: check if the source must be inout or just out
-   subroutine compute_source_if(source, & 
+   ! todo: create prim_increment_to_cons()
+   subroutine source_if(source, & 
                                 conc,   &
                                 area,   &
                                 flow,   &
@@ -40,8 +44,8 @@ module source_module
      integer,intent(in)  :: ncell                       !< Number of cells
      integer,intent(in)  :: nvar                        !< Number of variables
      real(stm_real),intent(inout) :: source(ncell,nvar) !< cell centered source 
-     real(stm_real),intent(in)  :: conc(ncell,nvar)     !< Concentration
-     real(stm_real),intent(in)  :: area(ncell)          !< area at source     
+     real(stm_real),intent(in)  :: conc(ncell,nvar)     !< Concentration 
+     real(stm_real),intent(in)  :: area(ncell)          !< Cell centered area at source     
      real(stm_real),intent(in)  :: flow(ncell)          !< flow at source location
      real(stm_real),intent(in)  :: time                 !< flow at source location
      
@@ -49,7 +53,7 @@ module source_module
  end interface
  !> This pointer should be set by the driver or client code to specify the 
  !> source term 
- procedure(compute_source_if),pointer :: source => null() !no_source
+ procedure(source_if),pointer :: source => null() !no_source
 
   contains
  
@@ -107,56 +111,6 @@ module source_module
      return
  end subroutine linear_decay_source
  
- subroutine cohesive_source(source, & 
-                                conc,   &
-                                area,   &
-                                flow,   &
-                                ncell,  &
-                                nvar,   &
-                                time)
-                                
-     use stm_precision
-    
-          implicit none
-     !--- args
-     integer,intent(in):: ncell                        !< Number of cells
-     integer,intent(in):: nvar                         !< Number of variables
-     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
-     real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
-     real(stm_real),intent(in)  :: area(ncell)         !< area at source     
-     real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
-     real(stm_real),intent(in)  :: time                !< flow at source location
- 
-     ! todo: implement and test
-     ! todo: add other kind of sources
-     return
- end subroutine
- 
- subroutine non_cohesive_source(source, & 
-                                conc,   &
-                                area,   &
-                                flow,   &
-                                ncell,  &
-                                nvar,   &
-                                time)
-                                
-     use stm_precision
-    
-          implicit none
-     !--- args
-     integer,intent(in):: ncell                        !< Number of cells
-     integer,intent(in):: nvar                         !< Number of variables
-     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
-     real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
-     real(stm_real),intent(in)  :: area(ncell)         !< area at source     
-     real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
-     real(stm_real),intent(in)  :: time                !< flow at source location
-        
-     
-     
-     ! todo: implement and test
-     return
- end subroutine
- 
+
 end module
  

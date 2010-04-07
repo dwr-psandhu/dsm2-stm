@@ -18,14 +18,14 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Sink/Source interface to be fulfilled by driver or application
+!> Sediment Sink/Source interface to be fulfilled by driver or application
 !>@ingroup transport
-module source_sink
+module sediment_source
  !> Calculate boundary diffusion flux
  abstract interface
        !> Generic interface for calculating entrainment that should be fulfilled by
        !> client programs
-       subroutine entrainment_func(entrainment, &
+       subroutine entrainment_if(entrainment, &
        !todo: check the needed arguments and locals
                                              ncell,   &
                                              nvar,    &
@@ -45,19 +45,19 @@ module source_sink
          real(stm_real),parameter :: g_accel =9.80d0 
 
 
-       end subroutine entrainment_func
+       end subroutine entrainment_if
  end interface
 
  !> This pointer should be set by the driver or client code to specify the 
  !> treatment of entrainment function
- procedure(entrainment_func),pointer :: entrainment_source  => null()
+ procedure(entrainment_if),pointer :: entrainment_source  => null()
 
 !=========================================================
 
  abstract interface
        !> Generic interface for calculating deposition that should be fulfilled by
        !> client programs
-       subroutine deposition_func(deposition, &
+       subroutine deposition_if(deposition, &
        !todo: check the needed arguments and locals
                                              ncell,   &
                                              nvar,    &
@@ -77,13 +77,13 @@ module source_sink
          real(stm_real),parameter :: g_accel =9.80d0 
        
 
-       end subroutine deposition_func
+       end subroutine deposition_if
  end interface
 
  !> This pointer should be set by the driver or client code to specify the 
  !> treatment of deposition
  ! todo: 
- procedure( deposition_func),pointer :: deposition_sink  => null()
+ procedure( deposition_if),pointer :: deposition_sink  => null()
 !===============================================================
 
  contains
@@ -173,8 +173,8 @@ module source_sink
      return
  end subroutine
  !===========================================
-  !> Example diposition function
- subroutine uninitialized_diposition_func( deposition, &
+  !> Example deposition function
+ subroutine uninitialized_deposition_if( deposition, &
        !todo: check the needed arguments and locals
                                              ncell,   &
                                              nvar,    &
@@ -196,11 +196,61 @@ module source_sink
          deposition =LARGEREAL                                     
                                                  
       
-     call stm_fatal("diposition function implemented!")
+     call stm_fatal("deposition function implemented!")
      
      return
  end subroutine 
  
+  subroutine cohesive_source(source, & 
+                                conc,   &
+                                area,   &
+                                flow,   &
+                                ncell,  &
+                                nvar,   &
+                                time)
+                                
+     use stm_precision
+    
+          implicit none
+     !--- args
+     integer,intent(in):: ncell                        !< Number of cells
+     integer,intent(in):: nvar                         !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+     real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)         !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
+     real(stm_real),intent(in)  :: time                !< flow at source location
+ 
+     ! todo: implement and test
+     ! todo: add other kind of sources
+     return
+ end subroutine
+ 
+ subroutine non_cohesive_source(source, & 
+                                conc,   &
+                                area,   &
+                                flow,   &
+                                ncell,  &
+                                nvar,   &
+                                time)
+                                
+     use stm_precision
+    
+          implicit none
+     !--- args
+     integer,intent(in):: ncell                        !< Number of cells
+     integer,intent(in):: nvar                         !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+     real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
+     real(stm_real),intent(in)  :: area(ncell)         !< area at source     
+     real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
+     real(stm_real),intent(in)  :: time                !< flow at source location
+        
+     
+     
+     ! todo: implement and test
+     return
+ end subroutine
  
  
 end module
