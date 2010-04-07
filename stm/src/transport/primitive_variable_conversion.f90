@@ -66,8 +66,11 @@ end do
 return
 end subroutine
 
-!> Converts increment of primitive (concentration) to conservative variable (mass)
-pure subroutine prim_increment2cons(mass,conc,area,nloc,nvar,scale)
+!> Increment a conservative variable using an increment (e.g. source) in primitive terms
+!> Converts increment of primitive (concentration) to conservative variable (mass) and
+!> adds it to the conservative variable. "Scale" will typically involve dt or half*dt.
+!> todo: write test
+pure subroutine prim_increment_to_cons(mass,conc,area,nloc,nvar,scale)
 
 use stm_precision
 
@@ -77,16 +80,13 @@ real(stm_real),intent(in  )  :: conc(nloc,nvar)  !< concentrations to convert
 real(stm_real),intent(in)    :: area(nloc)       !< area at conversion locations
 ! todo: here is a compiler bug and the fortran forums told it would be fixed 
 ! change the scale intent to just (in)
-real(stm_real),intent(inout), optional :: scale     !< scale factor
+real(stm_real),intent(in) :: scale     !< scale factor
 !--- args
 integer,intent(in)  :: nloc                    !< Number of cells or faces
 integer,intent(in)  :: nvar                    !< Number of variables
 !--- locals
 integer :: ivar
 !-------------------
-if (.not. (present(scale))) then 
-        scale = one
-end if
 
 do ivar = 1,nvar
 ! todo: check this line

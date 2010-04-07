@@ -49,7 +49,7 @@ module source_module
      real(stm_real),intent(in)  :: flow(ncell)          !< flow at source location
      real(stm_real),intent(in)  :: time                 !< flow at source location
      
-   end subroutine compute_source_if
+   end subroutine source_if
  end interface
  !> This pointer should be set by the driver or client code to specify the 
  !> source term 
