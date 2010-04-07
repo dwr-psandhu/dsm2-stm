@@ -20,8 +20,11 @@
 
 !> Sediment Sink/Source interface to be fulfilled by driver or application
 !>@ingroup transport
-module sediment_source
- !> Calculate boundary diffusion flux
+module sediment_source_sink
+ 
+ 
+ 
+ 
  abstract interface
        !> Generic interface for calculating entrainment that should be fulfilled by
        !> client programs
@@ -85,123 +88,8 @@ module sediment_source
  ! todo: 
  procedure( deposition_if),pointer :: deposition_sink  => null()
 !===============================================================
-
- contains
- 
- !> Garcia_Parker Entrainment function that prints an error and bails
- subroutine garcia_parker_source(entrainment, &
-       !todo: check the needed arguments and locals
-                                             ncell,   &
-                                             nvar,    &
-                                             time)
-        
-         
-        
-         use stm_precision
-         use error_handling
-         implicit none
-         !--- args
-         real(stm_real), intent (out):: entrainment(ncell,nvar)       !< face flux, lo side
-         real(stm_real), intent (in)  ::  time                             !< time
-         integer, intent(in)  :: ncell                                   !< number of cells
-         integer, intent(in)  :: nvar                                    !< number of variables
-         !-----locals
-         !todo: fill the others
-         real(stm_real),parameter :: g_accel =9.80d0 
-        !todo: fill this
-         entrainment =LARGEREAL
-        
-     call stm_fatal("garcia_parker entrainment was not included")
-     
-     return
- end subroutine 
- 
- !> Smith McLean entrainment function
- subroutine smith_mclean_source(entrainment, &
-       !todo: check the needed arguments and locals
-                                             ncell,   &
-                                             nvar,    &
-                                             time)
-        
-         
-        
-         use stm_precision
-         use error_handling
-         implicit none
-         !--- args
-         real(stm_real), intent (out):: entrainment(ncell,nvar)       !< face flux, lo side
-         real(stm_real), intent (in)  ::  time                             !< time
-         integer, intent(in)  :: ncell                                   !< number of cells
-         integer, intent(in)  :: nvar                                    !< number of variables
-         !-----locals
-         !todo: fill the others
-         real(stm_real),parameter :: g_accel =9.80d0 
-        !todo: fill this
-         entrainment =LARGEREAL
-        
-     call stm_fatal("smith_mclean entrainment was not included")
-     
-     ! todo: implement and test
-     return
- end subroutine
- !> van Rijn entrainment function
- subroutine van_rijn_source(entrainment, &
-       !todo: check the needed arguments and locals
-                                             ncell,   &
-                                             nvar,    &
-                                             time)
-        
-         
-        
-         use stm_precision
-         use error_handling
-         implicit none
-         !--- args
-         real(stm_real), intent (out):: entrainment(ncell,nvar)       !< face flux, lo side
-         real(stm_real), intent (in)  ::  time                             !< time
-         integer, intent(in)  :: ncell                                   !< number of cells
-         integer, intent(in)  :: nvar                                    !< number of variables
-         !-----locals
-         !todo: fill the others
-         real(stm_real),parameter :: g_accel =9.80d0 
-        !todo: fill this
-         entrainment =LARGEREAL
-        
-     call stm_fatal("van Rijn entrainment was not included")
-     
-     ! todo: implement and test
-     return
- end subroutine
- !===========================================
-  !> Example deposition function
- subroutine uninitialized_deposition_if( deposition, &
-       !todo: check the needed arguments and locals
-                                             ncell,   &
-                                             nvar,    &
-                                             time)
-                                         
-                                           
-        use stm_precision
-         use error_handling
-         implicit none
-         !--- args
-         real(stm_real), intent (out):: deposition(ncell,nvar)       !< face flux, lo side
-         real(stm_real), intent (in)  ::  time                             !< time
-         integer, intent(in)  :: ncell                                   !< number of cells
-         integer, intent(in)  :: nvar                                    !< number of variables
-         !-----locals
-         !todo: fill the others
-         real(stm_real),parameter :: g_accel =9.80d0 
-        !todo: fill this
-         deposition =LARGEREAL                                     
-                                                 
-      
-     call stm_fatal("deposition function implemented!")
-     
-     return
- end subroutine 
- 
-  subroutine cohesive_source(source, & 
+abstract interface 
+  subroutine cohesive_source_if(cohesive_source, & 
                                 conc,   &
                                 area,   &
                                 flow,   &
@@ -215,7 +103,7 @@ module sediment_source
      !--- args
      integer,intent(in):: ncell                        !< Number of cells
      integer,intent(in):: nvar                         !< Number of variables
-     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+     real(stm_real),intent(inout) :: cohesive_source(ncell,nvar)!< cell centered source 
      real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
      real(stm_real),intent(in)  :: area(ncell)         !< area at source     
      real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
@@ -223,34 +111,52 @@ module sediment_source
  
      ! todo: implement and test
      ! todo: add other kind of sources
-     return
- end subroutine
- 
- subroutine non_cohesive_source(source, & 
-                                conc,   &
-                                area,   &
-                                flow,   &
-                                ncell,  &
-                                nvar,   &
-                                time)
-                                
-     use stm_precision
     
-          implicit none
-     !--- args
-     integer,intent(in):: ncell                        !< Number of cells
-     integer,intent(in):: nvar                         !< Number of variables
-     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
-     real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
-     real(stm_real),intent(in)  :: area(ncell)         !< area at source     
-     real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
-     real(stm_real),intent(in)  :: time                !< flow at source location
-        
-     
-     
-     ! todo: implement and test
-     return
- end subroutine
+ end subroutine cohesive_source_if
  
+ end interface
+ 
+ procedure(cohesive_source_if),pointer :: cohesive_source  => null()
+!================================================= 
+
+ contains 
+ 
+ !> Compute sediment tranport source
+ !> This subroutine orchestrates the calculation of
+ !> entrainement, deposition and cohesion by calling
+ !> functions for each and adding them up. This is just a
+ !> skeleton of the sediment source...the actual
+ !> choice of entrainment (etc) functions can be set with a pointer
+ subroutine sediment_source(sed_source,conc,ncell,nvar)
+
+ use stm_precision
+ use entrainment
+ use deposition
+          
+ implicit none
+ ! ---arg
+  
+ integer, intent(in)  :: ncell      !< number of cells
+ integer, intent(in)  :: nvar       !< number of constituents  
+ real(stm_real),intent(out) :: sed_source(ncell,nvar) !< source of sediment 
+ 
+ ! todo: this will work, but you probably want to do it elsewhere
+ entrainment => van_rijn_source        
+ deposition_sink => uninitialized_deposition_if      
+ cohesive_source => cohesive_source
+
+ ! method #1 separate data structures 
+ call entrainment(entrain,...)  ! entrain is intent out
+ call deposition_sink(deposit )
+ call cohesive_source(cohere...)
+ sed_source = entrain + deposit + cohere
+ 
+ ! method #2 each function increments rather than sets
+ call entrainment(sed_source,...)  ! sed_source is intent inout
+ call deposition_sink(sed_source,...)
+ call cohesive_source(sed_source,...)
+ 
+ 
+ end subroutine sediment_source
  
 end module
