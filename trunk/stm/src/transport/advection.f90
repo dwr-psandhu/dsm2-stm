@@ -39,7 +39,7 @@ contains
 !>   - compute_flux()
 !>   - replace_boundary_flux()   for boundary and special cases
 !>   - Compute conservative divergence
-!>   - Apply divergence in conservative_update along with Huen's method for sources
+!>   - Apply divergence in conservative_update along with Heun's method for sources
 !>   Note that all these steps are operations on entire arrays of values -- this keeps things efficient
 subroutine advect(mass,     &
                   mass_prev,&
@@ -144,7 +144,7 @@ call replace_boundary_flux(flux_lo,flux_hi,conc_lo,conc_hi,flow_lo,flow_hi,ncell
 
 ! Combine the fluxes into a divergence term at the half time at cell edges.
 ! Computing and storing the divergence separately gives some flexibility with integrating
-! the source term, e.g. Huen's method
+! the source term, e.g. Heun's method
 ! todo: commented
 call compute_divergence( div_flux, flux_lo, flux_hi, ncell, nvar)
 
@@ -337,7 +337,7 @@ end subroutine
 !///////////////////////////////////////////////////////////////////////
 
 !> Update the conservative variables using divergence of fluxes and integrate the
-!> source term using Huen's method
+!> source term using Heun's method
 subroutine update_conservative(mass,       &
                                mass_prev,  &
                                div_flux,   &
@@ -381,7 +381,7 @@ mass = mass_prev - dtbydx*div_flux + dt*source_prev
 call cons2prim(conc,mass,area,ncell,nvar)
 
 ! todo:commented
-!call compute_source(source,conc,ncell,nvar)
+!call source(source,conc,ncell,nvar)
 source = zero
 
 ! now recalculate the update using a source half from the old state and half from the new state guess 
