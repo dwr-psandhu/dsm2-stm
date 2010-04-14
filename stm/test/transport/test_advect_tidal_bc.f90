@@ -51,7 +51,10 @@ implicit none
   real(stm_real) :: flow(ncell)
   real(stm_real) :: flow_hi(ncell)
   real(stm_real) :: flow_lo(ncell)
-  real(stm_real) :: area(ncell)  
+  real(stm_real) :: area_hi(ncell)
+  real(stm_real) :: area_lo(ncell)
+  real(stm_real) :: area(ncell)
+  real(stm_real) :: area_prev(ncell)  
   real(stm_real) :: dx
   real(stm_real) :: dt
   real(stm_real) :: time
@@ -60,23 +63,61 @@ implicit none
   !----- local
   real(stm_real),parameter :: amp = half
   real(stm_real),parameter :: gravity = 9.80d0
-  real(stm_real),parameter :: big_l
-  real(stm_real),parameter ::
-  
-  
+  real(stm_real),parameter :: big_l = 409600.0d0
+  real(stm_real),parameter :: depth =16.0d0
+  real(stm_real),parameter :: omega= 0.506708d0 ! hr
+  real(stm_real),parameter :: big_a = 0.4188704167062d0
+  real(stm_real),parameter :: big_b = 0.040465522644d0
+  real(stm_real),parameter :: k_0 = 10.066637844459d0
+  real(stm_real):: xpos (ncell)
+  real(stm_real),parameter :: start_time = zero 
+  real(stm_real),parameter :: end_time = 124d0 ! 12.4 is one exact M2 cycle of tide in hours
+  integer ,parameter :: ntime = 124
+   
   ! initail mass at t=0
   
   dx = big_l/ncell
   time = zero
   dt = 1  !hr
+  ! depth = 16.0d0
   area(:)= two
+  area_lo(:)= two
+  area_hi(:)= two
+  mass_prev = fill_gaussian(vals,nloc,origin,dx,mean,sd,scale)
   
-   
+  do ivar=1,ntime 
+  
+  ! flow_lo
+  ! flow_hi
+  ! flow
+  
+  call advect(mass,     &
+                  mass_prev,&
+                  flow,     &                  
+                  flow_lo,  &
+                  flow_hi,  &
+                  area,     &
+                  area_prev,&
+                  area_lo,  &
+                  area_hi,  &
+                  ncell,    &
+                  nvar,     &
+                  time,     &
+                  dt,       &
+                  dx)
+  
+  
+  time = time + dt
+  mass_prev = mass
+  
+  end do
+  
+ call assertequal(1,2, 'error here!')  
   
   
  
  
- call fill_gaussian(mass_prev,ncell,origin,dx,mean,sd,scale)
+ 
  
 
 return
