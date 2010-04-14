@@ -43,7 +43,7 @@ program test_transport_driver
   use test_boundary_diffusion_matrix
   use test_diffusion_single_channel
   use test_dif_single_channel_neumann
-  
+  use test_advect_tidal_bc
   
       call init_fruit
       
@@ -56,6 +56,7 @@ program test_transport_driver
         call test_example_initial_conditions
         call test_extrapolation
         call test_uniform_flow_advection
+        call test_tidal_advection
         
         !//////////////// Diffusion
         call test_tridi_solver
