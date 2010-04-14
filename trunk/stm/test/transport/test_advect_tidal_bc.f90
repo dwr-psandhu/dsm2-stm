@@ -69,7 +69,7 @@ implicit none
   real(stm_real),parameter :: big_a = 0.4188704167062d0
   real(stm_real),parameter :: big_b = 0.040465522644d0
   real(stm_real),parameter :: k_0 = 10.066637844459d0
-  real(stm_real):: xpos (ncell)
+  !real(stm_real):: xpos (ncell)
   real(stm_real),parameter :: start_time = zero 
   real(stm_real),parameter :: end_time = 124d0 ! 12.4 is one exact M2 cycle of tide in hours
   integer ,parameter :: ntime = 124
@@ -111,15 +111,14 @@ implicit none
   mass_prev = mass
   
   end do
-  
+ 
+ 
+ fill_gaussian(vals,nloc,origin,dx,mean,sd,scale) 
  call assertequal(1,2, 'error here!')  
   
-  
+  ! replace with test_uniform_flow
  
  
- 
- 
-
 return
 end subroutine
 
