@@ -350,6 +350,7 @@ deallocate(area, area_prev, area_lo, area_hi)
 deallocate(flow, flow_lo, flow_hi)
  
 end do ! on pvar
+! todo : comment out
 print *, '======= var 1========='
  print *, norms(1,1,1)/norms(1,2,1) , norms(1,2,1)/norms(1,3,1),'L-1'
  print *, norms(2,1,1)/norms(2,2,1) , norms(2,2,1)/norms(2,3,1),'L-2'
