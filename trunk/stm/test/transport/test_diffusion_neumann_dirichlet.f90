@@ -135,7 +135,7 @@ call prim2cons(mass_prev,conc_prev,area,ncell,nvar)
    diffusive_flux_boundary_lo(nvar) = two -two*pi*sin(0.05d0*pi)*exp(-0.1d0*time*pi*pi/4) 
    diffusive_flux_boundary_hi (nvar) =  two - two *pi*sin(0.5d0*pi)*exp(-0.1d0*time*pi*pi/4)
 
-print *,diffusive_flux_boundary_lo
+!print *,diffusive_flux_boundary_lo
 
 
 

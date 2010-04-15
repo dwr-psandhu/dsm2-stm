@@ -172,19 +172,19 @@ do icoarse = 1,nrefine
 end do
 
 
-do icoarse = 1, nrefine
-    coarsening = coarsen_factor**(icoarse - 1)
-    nx = nx_base/(coarsening)
-    print*,nx,norm_error(3,icoarse),'L-inf'
-    print*,nx,norm_error(2,icoarse),'L-2'
-    print*,nx,norm_error(1,icoarse),'L-1'
-end do
-print*,'========'
-print*,norm_error(3,2)/norm_error(3,1),norm_error(3,3)/norm_error(3,2),'L-inf,03/24/2010'
-print*,'========'
-print*,norm_error(2,2)/norm_error(2,1),norm_error(2,3)/norm_error(2,2),'L-2'
-print*,'========'
-print*,norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2),'L-1'
+!do icoarse = 1, nrefine
+!    coarsening = coarsen_factor**(icoarse - 1)
+!    nx = nx_base/(coarsening)
+!    print*,nx,norm_error(3,icoarse),'L-inf'
+!    print*,nx,norm_error(2,icoarse),'L-2'
+!    print*,nx,norm_error(1,icoarse),'L-1'
+!end do
+!print*,'========'
+!print*,norm_error(3,2)/norm_error(3,1),norm_error(3,3)/norm_error(3,2),'L-inf,03/24/2010'
+!print*,'========'
+!print*,norm_error(2,2)/norm_error(2,1),norm_error(2,3)/norm_error(2,2),'L-2'
+!print*,'========'
+!print*,norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2),'L-1'
 
 call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergemce on diffusion")
 call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergemce on diffusion")
@@ -239,10 +239,10 @@ end subroutine
      xbound=domain_length
      diffusive_flux_hi(ncell,:)=  - area_hi(ncell)*disp_coef_hi(ncell,:)*(minus*two*(xbound-ic_center)/(four*area_hi(ncell)*disp_coef_hi(ncell,:)*time)) &
              *sqrt(start_time/time)* exp(minus*(xbound-ic_center)**2 / (four*area_hi(ncell) *disp_coef_hi(ncell,:)*time))
-     print*,'====='
-     print*,time
-     print*,diffusive_flux_lo(1,1)
-     print*,diffusive_flux_hi(ncell,1)
+!     print*,'====='
+!     print*,time
+!     print*,diffusive_flux_lo(1,1)
+!     print*,diffusive_flux_hi(ncell,1)
     ! print*, !  ic_center
 
      return
