@@ -22,7 +22,7 @@
 !>@ingroup test
 module test_advect_tidal_bc
 
-use fruit
+
 
 contains
 
@@ -33,10 +33,11 @@ subroutine test_tidal_advection
 use stm_precision
 use advection
 use example_initial_conditions
+use fruit
 
 implicit none 
 
-  integer,parameter :: ncell =  2048       !interior and two ends
+  integer,parameter :: ncell =  512     !interior and two ends
   integer,parameter :: nvar = 2
  
   real(stm_real) :: mass(ncell,nvar)
@@ -58,9 +59,10 @@ implicit none
   real(stm_real) :: dx
   real(stm_real) :: dt
   real(stm_real) :: time
-  integer        :: ivar,jvar
+  integer        :: ivar,jvar,kvar
   
   !----- local
+  real(stm_real),parameter :: origin = zero 
   real(stm_real),parameter :: amp = half
   real(stm_real),parameter :: gravity = 9.80d0
   real(stm_real),parameter :: big_l = 409600.0d0
@@ -72,24 +74,40 @@ implicit none
   !real(stm_real):: xpos (ncell)
   real(stm_real),parameter :: start_time = zero 
   real(stm_real),parameter :: end_time = 124d0 ! 12.4 is one exact M2 cycle of tide in hours
+  real(stm_real):: sd 
+  real(stm_real):: mean
+  real(stm_real):: scale
   integer ,parameter :: ntime = 124
    
   ! initail mass at t=0
   
-  dx = big_l/ncell
+  dx = big_l/dble(ncell)
   time = zero
-  dt = 1  !hr
-  ! depth = 16.0d0
+  dt = one  !hr
+ 
   area(:)= two
   area_lo(:)= two
   area_hi(:)= two
-  mass_prev = fill_gaussian(vals,nloc,origin,dx,mean,sd,scale)
+  scale = one
+  sd = big_l/(two*two*two)
+  mean = big_l/two
+! time?
+do jvar=1,nvar
+ 
+ time=start_time
   
-  do ivar=1,ntime 
+call fill_gaussian(mass_prev(:,jvar),ncell,origin,dx,mean,sd,scale)
   
-  ! flow_lo
-  ! flow_hi
-  ! flow
+ 
+do ivar=1,ntime
+
+ time = time + dt 
+  
+do kvar = 1,ncell
+   flow_lo =area_lo(kvar)*big_a*sin(big_b*(big_l- (kvar*800.0d0-800.0d0)))*sin(omega*time)
+   flow_hi = area_hi(kvar)*big_a*sin(big_b*(big_l- (kvar*800.0d0)))*sin(omega*time)
+   flow = area(kvar)*big_a*sin(big_b*(big_l- (kvar*800.0d0-400.0d0)))*sin(omega*time)
+end do
   
   call advect(mass,     &
                   mass_prev,&
@@ -107,17 +125,27 @@ implicit none
                   dx)
   
   
-  time = time + dt
+
+ 
   mass_prev = mass
   
   end do
+
+ 
+call fill_gaussian(mass,ncell,origin,dx,mean,sd,scale) 
+
+call assertEquals(mass(ncell/2-20,jvar) ,mass_prev(ncell/2-20,jvar),1.0d-4, "error in tidal boundary") 
+call assertEquals(mass(ncell/2-2,jvar) ,mass_prev(ncell/2-2,jvar),1.0d-4, "error in tidal boundary") 
+call assertEquals(mass(ncell/2-1,jvar) ,mass_prev(ncell/2-1,jvar),1.0d-4, "error in tidal boundary") 
+call assertEquals(mass(ncell/2,jvar) ,mass_prev(ncell/2,jvar),1.0d-4, "error in tidal boundary")  
+call assertEquals(mass(ncell/2 +1,jvar) ,mass_prev(ncell/2+1,jvar),1.0d-4, "error in tidal boundary")
+call assertEquals(mass(ncell/2 +2,jvar) ,mass_prev(ncell/2+2,jvar),1.0d-4, "error in tidal boundary")   
+call assertEquals(mass(ncell/2+20,jvar) ,mass_prev(ncell/2+20,jvar),1.0d-4, "error in tidal boundary")       
  
  
- fill_gaussian(vals,nloc,origin,dx,mean,sd,scale) 
- call assertequal(1,2, 'error here!')  
-  
-  ! replace with test_uniform_flow
  
+ 
+end do ! on nvar
  
 return
 end subroutine
