@@ -20,19 +20,29 @@
 
 !> Hydrodynamics interface to be fulfilled by driver or application
 !>@ingroup transport
-module hydro_data_if
+module hydro_data
       !> Generic interface for fetching hydrodynamic data
-      interface hydro_data
+      interface
        !> Fill in hydrodynamic data.
        !> This data might be calculated from a function or provided by another module
        !> Note that continuity must be satisfied between time steps. The implementation
        !> must be provided by the driver or application 
-        subroutine hydro_data_impl(flow,flow_lo,flow_hi,area,area_lo,area_hi,ncell,time,dt)
+        subroutine hydro_data_if(flow,    &
+                                 flow_lo, &
+                                 flow_hi, &
+                                 area,    &
+                                 area_lo, &
+                                 area_hi, &
+                                 ncell,   &
+                                 time,    &
+                                 dx,      &
+                                 dt)
         use stm_precision
         implicit none
         integer, intent(in) :: ncell                   !< number of cells
         real(stm_real), intent(in) :: time             !< time of request "old time"
-        real(stm_real), intent(in) :: dt               !< time step for 
+        real(stm_real), intent(in) :: dx               !< spatial step 
+        real(stm_real), intent(in) :: dt               !< time step 
         real(stm_real), intent(out) :: flow(ncell)     !< cell and time centered flow
         real(stm_real), intent(out) :: flow_lo(ncell)  !< lo face flow, time centered
         real(stm_real), intent(out) :: flow_hi(ncell)  !< hi face flow, time centered
@@ -41,4 +51,11 @@ module hydro_data_if
         real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
         end subroutine
       end interface
+      
+ !> This pointer should be set by the driver or client code to specify the 
+ !> treatment at the boundaries
+ procedure(hydro_data_if),pointer :: fill_hydro_data  => null()
+
+      
+      
 end module
