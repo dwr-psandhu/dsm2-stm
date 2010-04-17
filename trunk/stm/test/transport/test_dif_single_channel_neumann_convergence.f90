@@ -88,8 +88,9 @@ real(stm_real),allocatable :: reference(:)
 real(stm_real) ::  norm_error(3,nrefine)
 character(LEN=64):: filename
 
-boundary_diffusion_matrix  =>     neumann_diffusion_matrix ! todo: is it remain same?
-boundary_diffusion_flux    =>     neumann_mid_gaussian_dif_flux_for_test
+! todo: to compile
+!boundary_diffusion_matrix  =>     neumann_diffusion_matrix ! todo: is it remain same?
+!boundary_diffusion_flux    =>     neumann_mid_gaussian_dif_flux_for_test
 ! todo : it is just set for this test, otherwise the xposition and tstart must pass into the subroutine
 
 

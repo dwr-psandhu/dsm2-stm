@@ -67,8 +67,8 @@ integer :: ivar
 
 real(stm_real) :: xpos(ncell)
 real(stm_real) :: scale
-boundary_diffusion_matrix  => single_channel_neumann_matrix
-boundary_diffusion_flux    => channel_neumann_gaussian_diffusive_flux
+!boundary_diffusion_matrix  => single_channel_neumann_matrix
+!boundary_diffusion_flux    => channel_neumann_gaussian_diffusive_flux
  
 ! ---- these will remain same in the process
 time = LARGEREAL

@@ -29,6 +29,7 @@ program test_transport_driver
   use test_extrapolate
   use test_prim_cons_conversion
   use test_uniform_flow
+
   use test_matrix_solver
   use example_initial_conditions
   use test_boundary_difussive_flux
@@ -44,33 +45,34 @@ program test_transport_driver
   use test_diffusion_single_channel
   use test_dif_single_channel_neumann
   use test_advect_tidal_bc
-  use test_tidal_flow_convergence
+  use test_advection_tidal
   
-      call init_fruit
+  call init_fruit
       
-      !todo: remove comments
+  !todo: remove comments
 
-        !////////////// Advection
-        call test_gradient_calc
-        call test_limiter
-        call test_prim_cons_convert
-        call test_example_initial_conditions
-        call test_extrapolation
-        call test_uniform_flow_advection
-        call test_tidal_advection
-        call test_tidal_flow_advection_convergence()
+  !////////////// Advection
+  call test_gradient_calc
+  call test_limiter
+  call test_prim_cons_convert
+  call test_example_initial_conditions
+  call test_extrapolation
+
+  call test_uniform_flow_advection
+  call test_tidal_advection
+  call test_tidal_advection_convergence
         
-        !//////////////// Diffusion
-        call test_tridi_solver
-        call test_boundary_dif_flux
-        call test_interior_dif_flux_sub
-        call test_explicit_diffusion_op
-        call test_interior_coef_matrix_sub
-        call test_construct_interior_rhs
-        call test_diffusion_convergence_single_channel
-        call test_dif_convergence_single_channel_neumann
+  !//////////////// Diffusion
+  call test_tridi_solver
+  call test_boundary_dif_flux
+  call test_interior_dif_flux_sub
+  call test_explicit_diffusion_op
+  call test_interior_coef_matrix_sub
+  call test_construct_interior_rhs
+  call test_diffusion_convergence_single_channel
+  call test_dif_convergence_single_channel_neumann
 
-        ! todo: rename
+! todo: rename
 !        call sub_boundary_diffusion_matrix      
 !        call test_diffusion_error_norms
 !        call test_diffusion_n_d

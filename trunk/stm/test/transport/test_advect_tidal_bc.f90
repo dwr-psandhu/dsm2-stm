@@ -40,9 +40,10 @@ implicit none
 real(stm_real) :: dx
 real(stm_real) :: dt
 real(stm_real) :: time
-integer        :: ivar,jvar,kvar
+integer        :: itime,ivar,icell
 
 !----- local
+real(stm_real),parameter :: eps = 1.d-4 ! criterion for error 
 real(stm_real),parameter :: origin = zero 
 real(stm_real),parameter :: amp = half
 real(stm_real),parameter :: gravity = 9.80d0
@@ -68,63 +69,61 @@ dx = big_l/dble(ncell)
 time = zero
 dt = one  !hr
 
+! todo: Kaveh, these need to change?
 area(:)= two
 area_lo(:)= two
 area_hi(:)= two
 scale = one
 sd = big_l/(two*two*two)
 mean = big_l/two
-! time?
-do jvar=1,nvar
- time=start_time
-  
-call fill_gaussian(mass_prev(:,jvar),ncell,origin,dx,mean,sd,scale)
-  
- 
-do ivar=1,ntime
 
- time = time + dt 
-  
-do kvar = 1,ncell
-   flow_lo =area_lo(kvar)*big_a*sin(big_b*(big_l- (kvar*800.0d0-800.0d0)))*sin(omega*time)
-   flow_hi = area_hi(kvar)*big_a*sin(big_b*(big_l- (kvar*800.0d0)))*sin(omega*time)
-   flow = area(kvar)*big_a*sin(big_b*(big_l- (kvar*800.0d0-400.0d0)))*sin(omega*time)
+time=start_time
+do ivar=1,nvar
+  call fill_gaussian(mass_prev(:,ivar),ncell,origin,dx,mean,sd,scale)
 end do
+ 
+do itime=1,ntime
+  time = time + dt 
+  
+  do icell = 1,ncell
+    flow_lo =area_lo(icell)*big_a*sin(big_b*(big_l- (icell*800.0d0-800.0d0)))*sin(omega*time)
+    flow_hi = area_hi(icell)*big_a*sin(big_b*(big_l- (icell*800.0d0)))*sin(omega*time)
+    flow = area(icell)*big_a*sin(big_b*(big_l- (icell*800.0d0-400.0d0)))*sin(omega*time)
+  end do
   
   call advect(mass,     &
-                  mass_prev,&
-                  flow,     &                  
-                  flow_lo,  &
-                  flow_hi,  &
-                  area,     &
-                  area_prev,&
-                  area_lo,  &
-                  area_hi,  &
-                  ncell,    &
-                  nvar,     &
-                  time,     &
-                  dt,       &
-                  dx)
-  
-  
-
- 
+              mass_prev,&
+              flow,     &                  
+              flow_lo,  &
+              flow_hi,  &
+              area,     &
+              area_prev,&
+              area_lo,  &
+              area_hi,  &
+              ncell,    &
+              nvar,     &
+              time,     &
+              dt,       &
+              dx)
   mass_prev = mass
   
-  end do
+end do
 
- 
-call fill_gaussian(mass,ncell,origin,dx,mean,sd,scale) 
+do ivar=1,nvar 
+  call fill_gaussian(mass(:,ivar),ncell,origin,dx,mean,sd,scale) 
+end do
 
-call assertEquals(mass(ncell/2-20,jvar) ,mass_prev(ncell/2-20,jvar),1.0d-4, "error in tidal boundary") 
-call assertEquals(mass(ncell/2-2,jvar) ,mass_prev(ncell/2-2,jvar),1.0d-4, "error in tidal boundary") 
-call assertEquals(mass(ncell/2-1,jvar) ,mass_prev(ncell/2-1,jvar),1.0d-4, "error in tidal boundary") 
-call assertEquals(mass(ncell/2,jvar) ,mass_prev(ncell/2,jvar),1.0d-4, "error in tidal boundary")  
-call assertEquals(mass(ncell/2 +1,jvar) ,mass_prev(ncell/2+1,jvar),1.0d-4, "error in tidal boundary")
-call assertEquals(mass(ncell/2 +2,jvar) ,mass_prev(ncell/2+2,jvar),1.0d-4, "error in tidal boundary")   
-call assertEquals(mass(ncell/2+20,jvar) ,mass_prev(ncell/2+20,jvar),1.0d-4, "error in tidal boundary")       
-end do ! on nvar
- 
+do ivar=1,nvar
+  call assertEquals(mass(ncell/2-20,ivar),mass_prev(ncell/2-20,ivar) ,eps, "error in tidal boundary (1)") 
+  call assertEquals(mass(ncell/2-2,ivar) ,mass_prev(ncell/2-2,ivar)  ,eps, "error in tidal boundary (2)") 
+  call assertEquals(mass(ncell/2-1,ivar) ,mass_prev(ncell/2-1,ivar)  ,eps, "error in tidal boundary (3)") 
+  call assertEquals(mass(ncell/2,ivar)   ,mass_prev(ncell/2,ivar)    ,eps, "error in tidal boundary (4)")  
+  call assertEquals(mass(ncell/2 +1,ivar) ,mass_prev(ncell/2+1,ivar) ,eps, "error in tidal boundary (5)")
+  call assertEquals(mass(ncell/2 +2,ivar) ,mass_prev(ncell/2+2,ivar) ,eps, "error in tidal boundary (6)")   
+  call assertEquals(mass(ncell/2+20,ivar) ,mass_prev(ncell/2+20,ivar),eps, "error in tidal boundary (7)")       
+end do
+
+call deallocate_state
 return
 end subroutine
 
