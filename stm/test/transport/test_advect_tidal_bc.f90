@@ -29,7 +29,7 @@ contains
 !> Test the extrapolation part of the predictor step of the advection algorithm
 !> There are three cells and two constituents to test symmetry in space across constituents
 subroutine test_tidal_advection
-
+use state_variables
 use stm_precision
 use advection
 use example_initial_conditions
@@ -37,63 +37,45 @@ use fruit
 
 implicit none 
 
-  integer,parameter :: ncell =  512     !interior and two ends
-  integer,parameter :: nvar = 2
+real(stm_real) :: dx
+real(stm_real) :: dt
+real(stm_real) :: time
+integer        :: ivar,jvar,kvar
+
+!----- local
+real(stm_real),parameter :: origin = zero 
+real(stm_real),parameter :: amp = half
+real(stm_real),parameter :: gravity = 9.80d0
+real(stm_real),parameter :: big_l = 409600.0d0
+real(stm_real),parameter :: depth =16.0d0
+real(stm_real),parameter :: omega= 0.506708d0 ! hr
+real(stm_real),parameter :: big_a = 0.4188704167062d0
+real(stm_real),parameter :: big_b = 0.040465522644d0
+real(stm_real),parameter :: k_0 = 10.066637844459d0
+!real(stm_real):: xpos (ncell)
+real(stm_real),parameter :: start_time = zero 
+real(stm_real),parameter :: end_time = 124d0 ! 12.4 is one exact M2 cycle of tide in hours
+real(stm_real):: sd 
+real(stm_real):: mean
+real(stm_real):: scale
+integer ,parameter :: ntime = 124
+
+call allocate_state(ncell,nvar)
  
-  real(stm_real) :: mass(ncell,nvar)
-  real(stm_real) :: mass_prev(ncell,nvar)
-  !todo: do we need these?
-  real(stm_real) :: conc(ncell,nvar)
-  real(stm_real) :: conc_hi(ncell,nvar)
-  real(stm_real) :: conc_lo(ncell,nvar)
-  !++++++++++++++++++++++++++++++++
-  !todo: is it needed?
-  real(stm_real) :: source(ncell,nvar)
-  real(stm_real) :: flow(ncell)
-  real(stm_real) :: flow_hi(ncell)
-  real(stm_real) :: flow_lo(ncell)
-  real(stm_real) :: area_hi(ncell)
-  real(stm_real) :: area_lo(ncell)
-  real(stm_real) :: area(ncell)
-  real(stm_real) :: area_prev(ncell)  
-  real(stm_real) :: dx
-  real(stm_real) :: dt
-  real(stm_real) :: time
-  integer        :: ivar,jvar,kvar
-  
-  !----- local
-  real(stm_real),parameter :: origin = zero 
-  real(stm_real),parameter :: amp = half
-  real(stm_real),parameter :: gravity = 9.80d0
-  real(stm_real),parameter :: big_l = 409600.0d0
-  real(stm_real),parameter :: depth =16.0d0
-  real(stm_real),parameter :: omega= 0.506708d0 ! hr
-  real(stm_real),parameter :: big_a = 0.4188704167062d0
-  real(stm_real),parameter :: big_b = 0.040465522644d0
-  real(stm_real),parameter :: k_0 = 10.066637844459d0
-  !real(stm_real):: xpos (ncell)
-  real(stm_real),parameter :: start_time = zero 
-  real(stm_real),parameter :: end_time = 124d0 ! 12.4 is one exact M2 cycle of tide in hours
-  real(stm_real):: sd 
-  real(stm_real):: mean
-  real(stm_real):: scale
-  integer ,parameter :: ntime = 124
-   
-  ! initail mass at t=0
-  
-  dx = big_l/dble(ncell)
-  time = zero
-  dt = one  !hr
- 
-  area(:)= two
-  area_lo(:)= two
-  area_hi(:)= two
-  scale = one
-  sd = big_l/(two*two*two)
-  mean = big_l/two
+! initail mass at t=0
+
+dx = big_l/dble(ncell)
+time = zero
+dt = one  !hr
+
+area(:)= two
+area_lo(:)= two
+area_hi(:)= two
+scale = one
+sd = big_l/(two*two*two)
+mean = big_l/two
 ! time?
 do jvar=1,nvar
- 
  time=start_time
   
 call fill_gaussian(mass_prev(:,jvar),ncell,origin,dx,mean,sd,scale)
@@ -141,10 +123,6 @@ call assertEquals(mass(ncell/2,jvar) ,mass_prev(ncell/2,jvar),1.0d-4, "error in 
 call assertEquals(mass(ncell/2 +1,jvar) ,mass_prev(ncell/2+1,jvar),1.0d-4, "error in tidal boundary")
 call assertEquals(mass(ncell/2 +2,jvar) ,mass_prev(ncell/2+2,jvar),1.0d-4, "error in tidal boundary")   
 call assertEquals(mass(ncell/2+20,jvar) ,mass_prev(ncell/2+20,jvar),1.0d-4, "error in tidal boundary")       
- 
- 
- 
- 
 end do ! on nvar
  
 return

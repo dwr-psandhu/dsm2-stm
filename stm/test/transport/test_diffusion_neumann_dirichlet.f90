@@ -91,11 +91,8 @@ disp_coef_hi_prev(:,:) = 0.1d0
 ! 
  !---initial condition
   do ivar=1,ncell
-  
     xpos = 0.1d0+ (ivar-half)*dx
     conc_prev(ivar,nvar) = two*xpos +two*two*cos(pi*xpos/two) 
-!    print* ,"IC-----",ivar,xpos,conc_prev(ivar,nvar)
-  
   end do
   
 !  print *, "C at B lo", two*0.05d0 +two*two*cos(pi*0.05d0/two)
