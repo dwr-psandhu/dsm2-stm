@@ -86,19 +86,35 @@ module state_variables
     !> including concentration and hydrodynamics.
     !> Initial value is LARGEREAL
     subroutine allocate_state(a_ncell, a_nvar)
+        use error_handling
         implicit none
+        character(LEN=128) :: message
+        integer :: istat = 0
         integer, intent(in) :: a_ncell !< Number of requested cells
         integer, intent(in) :: a_nvar  !< Number of constituents
         ncell = a_ncell
         nvar  = a_nvar
-        allocate(conc(ncell,nvar), conc_prev(ncell,nvar))
+        write(message,*)"Could not allocate state variable. " //&
+         "This could be due to allocating several times in " // &
+         "a row without deallocating (memory leak)"
+        
+        allocate(conc(ncell,nvar), conc_prev(ncell,nvar), stat = istat)
+        if (istat .ne. 0 )then
+           call stm_fatal(message)
+        end if
         conc      = LARGEREAL  ! absurd value helps expose bugs  
         conc_prev = LARGEREAL
-        allocate(mass(ncell,nvar), mass_prev(ncell,nvar))
+        allocate(mass(ncell,nvar), mass_prev(ncell,nvar),stat = istat)
+        if (istat .ne. 0 )then
+           call stm_fatal(message)
+        end if
         mass      = LARGEREAL  ! absurd value helps expose bugs  
         mass_prev = LARGEREAL       
         allocate(area(ncell), area_prev(ncell), area_lo(ncell), area_hi(ncell), &
-                 area_lo_prev(ncell), area_hi_prev(ncell))
+                 area_lo_prev(ncell), area_hi_prev(ncell),stat = istat)
+        if (istat .ne. 0 )then
+           call stm_fatal(message)
+        end if
         area      = LARGEREAL
         area_prev = LARGEREAL
         area_lo   = LARGEREAL
@@ -106,7 +122,10 @@ module state_variables
         area_lo_prev   = LARGEREAL
         area_hi_prev   = LARGEREAL
         
-        allocate(flow(ncell),flow_lo(ncell), flow_hi(ncell))
+        allocate(flow(ncell),flow_lo(ncell), flow_hi(ncell),stat = istat)
+        if (istat .ne. 0 )then
+           call stm_fatal(message)
+        end if
         flow      = LARGEREAL
         flow_lo   = LARGEREAL
         flow_hi   = LARGEREAL
