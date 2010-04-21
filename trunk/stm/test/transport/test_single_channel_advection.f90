@@ -181,6 +181,9 @@ call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order conver
 ! would be a 4
 call assert_true(norm_error(3,2)/norm_error(3,1) > 2.D5,"L-inf second order convergence on " // trim(label))
 
+!todo:
+!print *,norm_error(3,2)/norm_error(3,1),norm_error(2,2)/norm_error(2,1),norm_error(1,2)/norm_error(1,1)
+
 return
 end subroutine
 

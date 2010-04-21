@@ -25,16 +25,17 @@ use stm_precision
 !----- module variables
 ! todo: make the names more meaningful
 real(stm_real),parameter :: origin = zero 
-real(stm_real),parameter :: domain_length = 409600.0d0
-real(stm_real),parameter :: amp = half
-real(stm_real),parameter :: gravity = 9.80d0
-real(stm_real),parameter :: depth =16.0d0
-real(stm_real),parameter :: omega= 0.506708d0 ! hr
-real(stm_real),parameter :: big_a = 0.4188704167062d0
-real(stm_real),parameter :: big_b = 0.040465522644d0
-real(stm_real),parameter :: k_0 = 10.066637844459d0
+real(stm_real),parameter :: domain_length = 40960.0d0  ! meter
+real(stm_real),parameter :: amplitude = half ! meter
+real(stm_real),parameter :: gravity = 9.80d0 ! m/s^2
+real(stm_real),parameter :: depth =16.0d0    ! meter
+
 real(stm_real),parameter :: start_time = zero 
-real(stm_real),parameter :: end_time = 124d0 ! 12.4 is one exact M2 cycle of tide in hours
+real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0 
+real(stm_real),parameter :: m2_period = 12.4d0*sec_per_hr
+real(stm_real),parameter :: end_time = ten*m2_period
+real(stm_real),parameter :: freq=two*pi/m2_period
+
 
 contains
 
@@ -48,7 +49,9 @@ subroutine tidal_flow(flow,    &
                       time,    &
                       dx,      &
                       dt)
+                      
     use stm_precision
+   
     implicit none
     integer, intent(in) :: ncell                   !< number of cells
     real(stm_real), intent(in) :: time             !< time of request "old time"
@@ -60,34 +63,49 @@ subroutine tidal_flow(flow,    &
     real(stm_real), intent(out) :: area(ncell)     !< cell center area, old time
     real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face, time centered
     real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
-    
+   
     !> local
-    real(stm_real), parameter :: constant_flow = 1.D2
-    real(stm_real), parameter :: constant_area = 1.D2 
+    real(stm_real) :: big_b 
+    real(stm_real) :: big_a 
     integer :: icell
 
-    do icell = 1,ncell
-      flow_lo =  area_lo(icell)*big_a*sin(big_b*(domain_length - (dble(icell)*dx-dx)))*sin(omega*time)
-      flow_hi = area_hi(icell)*big_a*sin(big_b*(domain_length - (dble(icell)*dx)))*sin(omega*time)
-      flow = area(icell)*big_a*sin(big_b*(domain_length - (dble(icell)*dx-dx/two)))*sin(omega*time)
-    end do
 
-    area = constant_area
-    area_lo = constant_area
-    area_hi = constant_area
+
+big_b = freq/sqrt(gravity*depth)
+big_a = amplitude* sqrt(gravity*depth)/depth/cos(big_b*domain_length)
+
+
+
+
+    do icell = 1,ncell  ! width is equal to  1 meter 
+      area(icell)    = depth + amplitude * cos(big_b*(domain_length-(dble(icell)-half)*dx))/cos(big_b*domain_length)*cos(freq*time)  
+      area_lo(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell-1)*dx)))    /cos(big_b*domain_length)*cos(freq*time)  
+      area_hi(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell)*dx)))      /cos(big_b*domain_length)*cos(freq*time)  
+    
+      flow(icell)    = area(icell)   *big_a*sin(big_b*(domain_length - (dble(icell)*dx-dx/two)))*sin(freq*time)
+      flow_lo(icell) = area_lo(icell)*big_a*sin(big_b*(domain_length - (dble(icell)*dx-dx    )))*sin(freq*time)
+      flow_hi(icell) = area_hi(icell)*big_a*sin(big_b*(domain_length - (dble(icell)*dx       )))*sin(freq*time)
+    end do  ! icell
+
+
+    
     return
-end subroutine
+end subroutine tidal_flow
 
 subroutine test_tidal_advection_convergence
-use test_single_channel_advection
-use hydro_data
+    use test_single_channel_advection
+    use hydro_data
 procedure(hydro_data_if),pointer :: tidal_hydro
 integer, parameter  :: nstep_base = 40 
 integer, parameter  :: nx_base    = 256
-real(stm_real), parameter :: total_time = 124.D0
-real(stm_real), parameter :: domain_length = 124.D0
+real(stm_real), parameter :: total_time = ten*m2_period
+real(stm_real), parameter :: domain_length = 40960.0d0
+
+
 character(LEN=10),parameter :: label = "tidal flow"
 tidal_hydro=> tidal_flow
+
+
 call test_round_trip(label,         &
                      tidal_hydro,   &
                      domain_length, &
@@ -95,6 +113,7 @@ call test_round_trip(label,         &
                      nstep_base,    &
                      nx_base)
 
+return
 end subroutine
 
 end module
