@@ -96,8 +96,8 @@ subroutine test_tidal_advection_convergence
     use test_single_channel_advection
     use hydro_data
 procedure(hydro_data_if),pointer :: tidal_hydro
-integer, parameter  :: nstep_base = 40 
-integer, parameter  :: nx_base    = 256
+integer, parameter  :: nstep_base = 5120 !todo: CFL was around 70 with 40 points
+integer, parameter  :: nx_base    = 256  !todo:
 real(stm_real), parameter :: total_time = ten*m2_period
 real(stm_real), parameter :: domain_length = 40960.0d0
 
