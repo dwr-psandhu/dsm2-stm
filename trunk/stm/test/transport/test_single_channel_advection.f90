@@ -25,54 +25,49 @@ module test_single_channel_advection
 
 contains
 
-!> Coarsen a solution at a fine level of resolution
-subroutine coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
 
+
+
+subroutine initial_fine_solution(fine_initial_condition, &
+                                 fine_solution,          &
+                                 nx_base,                &
+                                 nconc                   &
+                                    )
+
+
+
+
+use example_initial_conditions
 use stm_precision
-use error_handling
 
 implicit none
-!---arg
-integer,intent(in) :: ncell_coarse
-integer,intent(in) :: ncell_fine
-integer,intent(in) :: nvar
-real(stm_real), intent(in) :: fine_data(ncell_fine,nvar)
-real(stm_real), intent(out):: coarse_data(ncell_coarse,nvar)
 
-!---locals
-real(stm_real) :: coarsen_factor
-integer :: ivar
-integer :: icell
-integer :: icoarse
+integer :: nconc
+integer :: nx_base
+real(stm_real) :: fine_initial_condition(nx_base,nconc)!< initial condition at finest resolution
+real(stm_real) :: fine_solution(nx_base,nconc)         !< reference solution at finest resolution
+real(stm_real) :: ic_center
+real(stm_real) :: ic_gaussian_sd
+real(stm_real),parameter :: origin = zero
+real(stm_real) :: doamin_length  
 
-if ( mod(ncell_fine , ncell_coarse) /= 0) then
 
-    call stm_fatal("Coarsening factor is not an integer!")
-   
-else
 
-coarsen_factor = ncell_fine/ncell_coarse
+!call fill_gaussian(conc(:,1),nx,origin,dx, &
+!                   three*fourth*domain_length,ic_gaussian_sd)
+!call fill_gaussian(conc(:,2),nx,origin,dx, &
+!                   one*fourth*domain_length,ic_gaussian_sd)
+!call prim2cons( mass_prev,conc,area,nx,nconc)
+!mass = mass_prev
+!allocate(reference(ncell))  ! reference copy of initial state
+!
+!! todo: Here you coarsen the provided fine reference solution    
+!reference = conc(:,2)
 
-    do ivar=1,nvar
-        do icell=1,ncell_coarse
-            coarse_data(icell,ivar) = zero
-            icoarse = 0
-            do while (icoarse < coarsen_factor) 
-              coarse_data(icell,ivar) = coarse_data(icell,ivar)+ fine_data(icell*coarsen_factor-icoarse,ivar)
-              icoarse= icoarse + 1   
-            end do
-            coarse_data(icell,ivar)= coarse_data(icell,ivar)/dble(coarsen_factor)
-        end do
-    end do
-    
-end if
-
-!< test that coarsen_factor is correct multiple if not call stm_fatal
-!< coarsen using averaging
-!< don't forget a unit test. should cover cases where coarsen_factor does not
-!< work, should test that first, middle last value are good in ivar = 1 and ivar =nvar
 return
 end subroutine
+
+
 
 
 !> Subroutine that tests advection convergence of flow that 
@@ -125,7 +120,7 @@ integer :: itime = 0
 integer :: icell ! debug only -- remove later
 integer :: icoarse = 0
 integer :: nstep
-integer  :: nx
+integer :: nx
 integer :: coarsening
 
 character(LEN=64) filename
@@ -175,7 +170,7 @@ do icoarse = 1,nrefine
                dt)
     area_prev = area
     
-        ! Here you coarsen the provided ic, move fill gaussian to calling routine
+        ! todo: Here you coarsen the provided ic, move fill gaussian to calling routine
     call fill_gaussian(conc(:,1),nx,origin,dx, &
                        three*fourth*domain_length,ic_gaussian_sd)
     call fill_gaussian(conc(:,2),nx,origin,dx, &
@@ -184,7 +179,7 @@ do icoarse = 1,nrefine
     mass = mass_prev
     allocate(reference(ncell))  ! reference copy of initial state
     
-    ! Here you coarsen the provided fine reference solution    
+    ! todo: Here you coarsen the provided fine reference solution    
     reference = conc(:,2)
     
     ! forwards
@@ -250,5 +245,59 @@ call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order conv
 !print *, '========'
 return
 end subroutine
+!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+!> Coarsen a solution at a fine level of resolution
+subroutine coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
+
+use stm_precision
+use error_handling
+
+implicit none
+!---arg
+integer,intent(in) :: ncell_coarse
+integer,intent(in) :: ncell_fine
+integer,intent(in) :: nvar
+real(stm_real), intent(in) :: fine_data(ncell_fine,nvar)
+real(stm_real), intent(out):: coarse_data(ncell_coarse,nvar)
+
+!---locals
+real(stm_real) :: coarsen_factor
+integer :: ivar
+integer :: icell
+integer :: icoarse
+
+if ( mod(ncell_fine , ncell_coarse) /= 0) then
+
+    call stm_fatal("Coarsening factor is not an integer!")
+   
+else
+
+coarsen_factor = ncell_fine/ncell_coarse
+
+    do ivar=1,nvar
+        do icell=1,ncell_coarse
+            coarse_data(icell,ivar) = zero
+            icoarse = 0
+            do while (icoarse < coarsen_factor) 
+              coarse_data(icell,ivar) = coarse_data(icell,ivar)+ fine_data(icell*coarsen_factor-icoarse,ivar)
+              icoarse= icoarse + 1   
+            end do
+            coarse_data(icell,ivar)= coarse_data(icell,ivar)/dble(coarsen_factor)
+        end do
+    end do
+    
+end if
+
+!< test that coarsen_factor is correct multiple if not call stm_fatal
+!< coarsen using averaging
+!< don't forget a unit test. should cover cases where coarsen_factor does not
+!< work, should test that first, middle last value are good in ivar = 1 and ivar =nvar
+return
+end subroutine
+
+
+
+
+
 
 end module

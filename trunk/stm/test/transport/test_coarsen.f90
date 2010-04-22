@@ -40,17 +40,17 @@ real(stm_real), allocatable :: coarse_data(:,:)
 !---- local
 real(stm_real), parameter :: tol = 1.d-15
 
-ncell_coarse = 6
-allocate (coarse_data(ncell_coarse,nvar))
 fine_data(:,1) = (/1:6/)
 fine_data(:,2) = (/11:16/)
 
+ncell_coarse = 6
+allocate (coarse_data(ncell_coarse,nvar))
 call coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
 call assertEquals(coarse_data(1,1),one,tol,"error in coarsening, no refinement (1,1)")
 call assertEquals(coarse_data(6,2),16.d0,tol,"error in coarsening, no refinement (6,2)")
 deallocate(coarse_data)
 
-ncell_coarse=3
+ncell_coarse = 3
 allocate (coarse_data(ncell_coarse,nvar))
 call coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
 call assertEquals (coarse_data(1,1),1.5d0,tol,"error in coarsening (1,1)")
