@@ -54,7 +54,8 @@ subroutine advect(mass,     &
                   nvar,     &
                   time,     &
                   dt,       &
-                  dx)
+                  dx,       &
+                  use_limiter)
 ! todo: remove comment
 !use source_if
 use stm_precision
@@ -78,6 +79,7 @@ real(stm_real),intent(in)  :: area_hi(ncell,nvar)   !< hi side area centered in 
 real(stm_real),intent(in)  :: time                  !< current time
 real(stm_real),intent(in)  :: dt                    !< current time step
 real(stm_real),intent(in)  :: dx                    !< spatial step
+logical,intent(in),optional :: use_limiter           !< whether to use slope limiter
 
 !---------- locals
 
@@ -93,15 +95,24 @@ real(stm_real) :: grad(ncell,nvar)        !< cell centered difference adujsted f
 real(stm_real) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
 real(stm_real) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
 real(stm_real) :: div_flux(ncell,nvar)    !< cell centered flux divergence, time centered
+logical        :: limit_slope             !< whether slope limiter is used
 
+if (present(use_limiter))then
+    limit_slope = use_limiter
+else
+    limit_slope = .true.
+end if
 
 call cons2prim(conc,mass_prev,area,ncell,nvar)
 
 ! Calculate the (undivided) differences of concentrations
 call difference(grad_lo,grad_hi,grad_center,conc,ncell,nvar)
 
-! call printout(grad_center(:,1),ncell)
-call limiter(grad_lim,grad_lo,grad_hi,grad_center,ncell,nvar)
+if (limit_slope)then
+    call limiter(grad_lim,grad_lo,grad_hi,grad_center,ncell,nvar)
+else
+    grad_lim = grad_center
+end if
 
 ! Adjust differences to account for places (boundaries, gates, etc) where one-sided
 ! or other differencing is required
