@@ -74,9 +74,6 @@ subroutine tidal_flow(flow,    &
 big_b = freq/sqrt(gravity*depth)
 big_a = amplitude* sqrt(gravity*depth)/depth/cos(big_b*domain_length)
 
-
-
-
     do icell = 1,ncell  ! width is equal to  1 meter 
       area(icell)    = depth + amplitude * cos(big_b*(domain_length-(dble(icell)-half)*dx))/cos(big_b*domain_length)*cos(freq*time)  
       area_lo(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell-1)*dx)))    /cos(big_b*domain_length)*cos(freq*time)  
@@ -86,9 +83,7 @@ big_a = amplitude* sqrt(gravity*depth)/depth/cos(big_b*domain_length)
       flow_lo(icell) = area_lo(icell)*big_a*sin(big_b*(domain_length - (dble(icell)*dx-dx    )))*sin(freq*time)
       flow_hi(icell) = area_hi(icell)*big_a*sin(big_b*(domain_length - (dble(icell)*dx       )))*sin(freq*time)
     end do  ! icell
-
-
-    
+   
     return
 end subroutine tidal_flow
 
@@ -96,10 +91,13 @@ subroutine test_tidal_advection_convergence
     use test_single_channel_advection
     use hydro_data
 procedure(hydro_data_if),pointer :: tidal_hydro
+integer, parameter  :: nvar = 2
 integer, parameter  :: nstep_base = 5120 !todo: CFL was around 70 with 40 points
 integer, parameter  :: nx_base    = 256  !todo:
 real(stm_real), parameter :: total_time = ten*m2_period
 real(stm_real), parameter :: domain_length = 40960.0d0
+real(stm_real) :: fine_initial_condition(nx_base,nvar)  !< initial condition at finest resolution
+real(stm_real) :: fine_solution(nx_base,nvar)           !< reference solution at finest resolution
 
 
 character(LEN=10),parameter :: label = "tidal flow"
@@ -110,10 +108,11 @@ call test_round_trip(label,         &
                      tidal_hydro,   &
                      domain_length, &
                      total_time,    &
-!                     fine_initial_condition, &
-!                     fine_solution, &
+                     fine_initial_condition, &
+                     fine_solution, &
                      nstep_base,    &
-                     nx_base)
+                     nx_base,       &
+                     nvar)
 
 return
 end subroutine

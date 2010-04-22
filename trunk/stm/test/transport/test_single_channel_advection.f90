@@ -80,12 +80,13 @@ end subroutine
 !> and ends up in the same spot. 
 subroutine test_round_trip(label,        &
                            hydro,        &
-                           domain_length,&
-                           fine_initial_condition, &
-                           fine_solution, &                           
+                           domain_length,&                          
                            total_time,   &
+                           fine_initial_condition, &
+                           fine_solution, &                            
                            nstep_base,   &
-                           nx_base)
+                           nx_base,      &
+                           nconc)
     use hydro_data
     use boundary_advection_module
     use stm_precision
@@ -103,17 +104,16 @@ implicit none
 
 !--- Problem variables
 procedure(hydro_data_if), pointer :: hydro
-
+integer, intent(in) :: nconc
 character(LEN=*) :: label
 integer, intent(in) :: nstep_base
 integer, intent(in) :: nx_base
-real(stm_real), intent(in) :: fine_initial_condition(nx_base,nvar)  !< initial condition at finest resolution
-real(stm_real), intent(in) :: fine_solution(nx_base,nvar)  !< reference solution at finest resolution
+real(stm_real), intent(in) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
+real(stm_real), intent(in) :: fine_solution(nx_base,nconc)  !< reference solution at finest resolution
 real(stm_real), intent(in) :: total_time
 real(stm_real), intent(in) :: domain_length 
 
 !----local
-integer, parameter  :: nconc = 2
 integer, parameter :: nrefine = 3
 integer, parameter :: coarsen_factor = 2      ! coarsening factor used for convergence test
 real(stm_real), parameter :: cfl = 0.8 
@@ -152,10 +152,11 @@ do icoarse = 1,nrefine
     coarsening = coarsen_factor**(icoarse-1)
     nx = nx_base/(coarsening)
     nstep = nstep_base/(coarsening)
-    call allocate_state(nx,nconc)
+    call allocate_state(nx,nvar)
     allocate(x_center(nx))
     dx = origin + domain_length/dble(nx)
     dt = total_time/dble(nstep)
+
 
     do icell = 1,nx
         x_center(icell) = (dble(icell)-half)*dx
@@ -173,6 +174,8 @@ do icoarse = 1,nrefine
                dx,      &               
                dt)
     area_prev = area
+    
+        ! Here you coarsen the provided ic, move fill gaussian to calling routine
     call fill_gaussian(conc(:,1),nx,origin,dx, &
                        three*fourth*domain_length,ic_gaussian_sd)
     call fill_gaussian(conc(:,2),nx,origin,dx, &
@@ -180,6 +183,8 @@ do icoarse = 1,nrefine
     call prim2cons( mass_prev,conc,area,nx,nconc)
     mass = mass_prev
     allocate(reference(ncell))  ! reference copy of initial state
+    
+    ! Here you coarsen the provided fine reference solution    
     reference = conc(:,2)
     
     ! forwards

@@ -56,8 +56,6 @@ subroutine uniform_flow(flow,    &
     !> local
     real(stm_real), parameter :: constant_flow = 1.D2
     real(stm_real), parameter :: constant_area = 1.D2 
-    real(stm_real) :: fine_initial_condition(nx_base,nvar)  !< initial condition at finest resolution
-    real(stm_real) :: fine_solution(nx_base,nvar)           !< reference solution at finest resolution
 
 
     if (time <= total_time/two) then
@@ -74,14 +72,19 @@ subroutine uniform_flow(flow,    &
 end subroutine
 
 !> Subroutine that runs a small advective simulation
-subroutine test_uniform_flow_advection()
+subroutine test_uniform_advection_convergence()
 use test_single_channel_advection
 use hydro_data
 procedure(hydro_data_if),pointer :: uniform_hydro
 integer, parameter  :: nstep_base = 40 
 integer, parameter  :: nx_base = 256
+integer, parameter  :: nvar = 2
 real(stm_real) :: domain_length = 51200.d0
 character(LEN=12),parameter :: label = "uniform flow"
+real(stm_real) :: fine_initial_condition(nx_base,nvar)  !< initial condition at finest resolution
+real(stm_real) :: fine_solution(nx_base,nvar)           !< reference solution at finest resolution
+
+
 
 !!!!!!!!!!!!!!!!!!!call fill_gaussian(fine_initial_condition,...)
 
@@ -93,7 +96,8 @@ call test_round_trip(label,         &
                      fine_initial_condition, &
                      fine_solution, &                     
                      nstep_base,    &
-                     nx_base)
+                     nx_base,       &
+                     nvar)
 
 end subroutine
 
