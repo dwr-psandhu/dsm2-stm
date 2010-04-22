@@ -81,6 +81,7 @@ integer, parameter :: nrefine = 3
 real(stm_real),allocatable :: reference(:)
 real(stm_real) norm_error(3,nrefine)
 character(LEN=64) filename
+logical, parameter :: limit_slope = .false.
 
 !todo: this is really "no flux"
 boundary_advection=>neumann_advective_flux
@@ -149,7 +150,8 @@ do icoarse = 1,nrefine
                   nvar,     &
                   time,     &
                   dt,       &
-                  dx)
+                  dx,       &
+                  limit_slope)
 
       mass_prev = mass
       area_prev = area
@@ -174,18 +176,14 @@ end do
 ! todo: four?
 call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on " // trim(label))
 call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on " // trim(label))
-! This is known not to pass for second order convergence
-
-! todo: why 2.0d5 why not 4 ? Because the L-inf norm often fails locally with a limiter,
-! causing lower L-inf convergence than L-1 or L-2. If you get rid of the limiter, this 
-! would be a 4
-call assert_true(norm_error(3,2)/norm_error(3,1) > 2.D5,"L-inf second order convergence on " // trim(label))
+! This is known not to pass for second order convergence if limiter is on
+call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
 
 !todo:
-print *,label
-print *, 'L-inf = ', norm_error(3,2)/norm_error(3,1), 'L-2 = ',norm_error(2,2)/norm_error(2,1),'L-1 = ',norm_error(1,2)/norm_error(1,1)
-print *, 'dt',dt,'dx',dx, ' CFL = ' , dt/dx
-print *, '========'
+!print *,label
+!print *, 'L-inf = ', norm_error(3,2)/norm_error(3,1), 'L-2 = ',norm_error(2,2)/norm_error(2,1),'L-1 = ',norm_error(1,2)/norm_error(1,1)
+!print *, 'dt',dt,'dx',dx, ' CFL = ' , dt/dx
+!print *, '========'
 return
 end subroutine
 
