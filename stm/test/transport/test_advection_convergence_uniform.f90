@@ -51,10 +51,14 @@ subroutine uniform_flow(flow,    &
     real(stm_real), intent(out) :: area(ncell)     !< cell center area, old time
     real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face, time centered
     real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
+
     
     !> local
     real(stm_real), parameter :: constant_flow = 1.D2
     real(stm_real), parameter :: constant_area = 1.D2 
+    real(stm_real) :: fine_initial_condition(nx_base,nvar)  !< initial condition at finest resolution
+    real(stm_real) :: fine_solution(nx_base,nvar)           !< reference solution at finest resolution
+
 
     if (time <= total_time/two) then
       flow = constant_flow
@@ -79,11 +83,15 @@ integer, parameter  :: nx_base = 256
 real(stm_real) :: domain_length = 51200.d0
 character(LEN=12),parameter :: label = "uniform flow"
 
+call fill_gaussian(fine_initial_condition,...)
+
 uniform_hydro=> uniform_flow
 call test_round_trip(label,         &
                      uniform_hydro, &
                      domain_length, &
                      total_time,    &
+                     fine_initial_condition, &
+                     fine_solution, &                     
                      nstep_base,    &
                      nx_base)
 

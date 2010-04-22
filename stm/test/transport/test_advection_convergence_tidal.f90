@@ -109,7 +109,9 @@ tidal_hydro=> tidal_flow
 call test_round_trip(label,         &
                      tidal_hydro,   &
                      domain_length, &
-                     total_time,    &                   
+                     total_time,    &
+                     fine_initial_condition, &
+                     fine_solution, &
                      nstep_base,    &
                      nx_base)
 
