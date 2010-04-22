@@ -110,8 +110,8 @@ call test_round_trip(label,         &
                      tidal_hydro,   &
                      domain_length, &
                      total_time,    &
-                     fine_initial_condition, &
-                     fine_solution, &
+!                     fine_initial_condition, &
+!                     fine_solution, &
                      nstep_base,    &
                      nx_base)
 

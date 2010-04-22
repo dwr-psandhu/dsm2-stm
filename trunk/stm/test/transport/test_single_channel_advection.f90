@@ -26,19 +26,53 @@ module test_single_channel_advection
 contains
 
 !> Coarsen a solution at a fine level of resolution
-!!subroutine coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
-!use stm_precision
-!implicit none
-!
-!! locals
-!real(stm_real) :: coarsen_factor
-!
-!!< test that coarsen_factor is correct multiple if not call stm_fatal
-!!< coarsen using averaging
-!!< don't forget a unit test. should cover cases where coarsen_factor does not
-!!< work, should test that first, middle last value are good in ivar = 1 and ivar =nvar
-!return
-!end subroutine
+subroutine coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
+
+use stm_precision
+use error_handling
+
+implicit none
+!---arg
+integer,intent(in) :: ncell_coarse
+integer,intent(in) :: ncell_fine
+integer,intent(in) :: nvar
+real(stm_real), intent(in) :: fine_data(ncell_fine,nvar)
+real(stm_real), intent(out):: coarse_data(ncell_coarse,nvar)
+
+!---locals
+real(stm_real) :: coarsen_factor
+integer :: ivar
+integer :: icell
+integer :: icoarse
+
+if ( mod(ncell_fine , ncell_coarse) /= 0) then
+
+    call stm_fatal("Coarsening factor is not an integer!")
+   
+else
+
+coarsen_factor = ncell_fine/ncell_coarse
+
+    do ivar=1,nvar
+        do icell=1,ncell_coarse
+            coarse_data(icell,ivar) = zero
+            icoarse = 0
+            do while (icoarse < coarsen_factor) 
+              coarse_data(icell,ivar) = coarse_data(icell,ivar)+ fine_data(icell*coarsen_factor-icoarse,ivar)
+              icoarse= icoarse + 1   
+            end do
+            coarse_data(icell,ivar)= coarse_data(icell,ivar)/dble(coarsen_factor)
+        end do
+    end do
+    
+end if
+
+!< test that coarsen_factor is correct multiple if not call stm_fatal
+!< coarsen using averaging
+!< don't forget a unit test. should cover cases where coarsen_factor does not
+!< work, should test that first, middle last value are good in ivar = 1 and ivar =nvar
+return
+end subroutine
 
 
 !> Subroutine that tests advection convergence of flow that 
@@ -70,6 +104,7 @@ implicit none
 !--- Problem variables
 procedure(hydro_data_if), pointer :: hydro
 
+character(LEN=*) :: label
 integer, intent(in) :: nstep_base
 integer, intent(in) :: nx_base
 real(stm_real), intent(in) :: fine_initial_condition(nx_base,nvar)  !< initial condition at finest resolution
@@ -77,6 +112,7 @@ real(stm_real), intent(in) :: fine_solution(nx_base,nvar)  !< reference solution
 real(stm_real), intent(in) :: total_time
 real(stm_real), intent(in) :: domain_length 
 
+!----local
 integer, parameter  :: nconc = 2
 integer, parameter :: nrefine = 3
 integer, parameter :: coarsen_factor = 2      ! coarsening factor used for convergence test
@@ -92,7 +128,6 @@ integer :: nstep
 integer  :: nx
 integer :: coarsening
 
-character(LEN=*) :: label
 character(LEN=64) filename
 
 logical, parameter :: limit_slope = .false.
@@ -106,7 +141,6 @@ real(stm_real) :: ic_gaussian_sd
 real(stm_real) :: vel
 real(stm_real) :: time
 real(stm_real) :: norm_error(3,nrefine)
-!------
 
 !todo: this is really "no flux"
 boundary_advection=>neumann_advective_flux
