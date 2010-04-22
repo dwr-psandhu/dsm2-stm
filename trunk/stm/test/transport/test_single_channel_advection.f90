@@ -25,63 +25,88 @@ module test_single_channel_advection
 
 contains
 
+!> Coarsen a solution at a fine level of resolution
+!!subroutine coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
+!use stm_precision
+!implicit none
+!
+!! locals
+!real(stm_real) :: coarsen_factor
+!
+!!< test that coarsen_factor is correct multiple if not call stm_fatal
+!!< coarsen using averaging
+!!< don't forget a unit test. should cover cases where coarsen_factor does not
+!!< work, should test that first, middle last value are good in ivar = 1 and ivar =nvar
+!return
+!end subroutine
+
+
 !> Subroutine that tests advection convergence of flow that 
 !> makes a "round trip". In other words, it sloshes back and forth
 !> and ends up in the same spot. 
 subroutine test_round_trip(label,        &
                            hydro,        &
                            domain_length,&
+                           fine_initial_condition, &
+                           fine_solution, &                           
                            total_time,   &
                            nstep_base,   &
                            nx_base)
-use hydro_data
-use boundary_advection_module
-use stm_precision
-use state_variables
-use primitive_variable_conversion
-use advection
-use example_initial_conditions
-use example_hydro_data
-use example_sources
-use error_metric
-use fruit
-use logging
+    use hydro_data
+    use boundary_advection_module
+    use stm_precision
+    use state_variables
+    use primitive_variable_conversion
+    use advection
+    use example_initial_conditions
+    use example_hydro_data
+    use example_sources
+    use error_metric
+    use fruit
+    use logging
 
 implicit none
 
 !--- Problem variables
 procedure(hydro_data_if), pointer :: hydro
+
 integer, intent(in) :: nstep_base
 integer, intent(in) :: nx_base
-real(stm_real), parameter :: cfl = 0.8 
+real(stm_real), intent(in) :: fine_initial_condition(nx_base,nvar)  !< initial condition at finest resolution
+real(stm_real), intent(in) :: fine_solution(nx_base,nvar)  !< reference solution at finest resolution
+real(stm_real), intent(in) :: total_time
+real(stm_real), intent(in) :: domain_length 
 
+integer, parameter  :: nconc = 2
+integer, parameter :: nrefine = 3
+integer, parameter :: coarsen_factor = 2      ! coarsening factor used for convergence test
+real(stm_real), parameter :: cfl = 0.8 
+real(stm_real), parameter :: origin = zero   ! meters
+real(stm_real), parameter :: constant_flow = 1.D2
+real(stm_real), parameter :: constant_area = 1.D2
+
+integer :: itime = 0
+integer :: icell ! debug only -- remove later
 integer :: icoarse = 0
 integer :: nstep
 integer  :: nx
+integer :: coarsening
+
 character(LEN=*) :: label
-integer, parameter  :: nconc = 2
-real(stm_real), parameter :: origin = zero   ! meters
-real(stm_real) :: domain_length 
-real(stm_real)  :: total_time
+character(LEN=64) filename
+
+logical, parameter :: limit_slope = .false.
+
+real(stm_real), allocatable :: reference(:)
+real(stm_real), allocatable :: x_center(:)
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
-real(stm_real), allocatable :: x_center(:)
-real(stm_real)  :: ic_center
-real(stm_real)  :: ic_gaussian_sd
-real(stm_real), parameter :: constant_flow = 1.D2
-real(stm_real), parameter :: constant_area = 1.D2
+real(stm_real) :: ic_center
+real(stm_real) :: ic_gaussian_sd
 real(stm_real) :: vel
 real(stm_real) :: time
-integer :: itime = 0
-integer :: icell ! debug only -- remove later
+real(stm_real) :: norm_error(3,nrefine)
 !------
-integer, parameter :: coarsen_factor = 2      ! coarsening factor used for convergence test
-integer :: coarsening
-integer, parameter :: nrefine = 3
-real(stm_real),allocatable :: reference(:)
-real(stm_real) norm_error(3,nrefine)
-character(LEN=64) filename
-logical, parameter :: limit_slope = .false.
 
 !todo: this is really "no flux"
 boundary_advection=>neumann_advective_flux
