@@ -83,7 +83,7 @@ integer, parameter  :: nx_base = 256
 real(stm_real) :: domain_length = 51200.d0
 character(LEN=12),parameter :: label = "uniform flow"
 
-call fill_gaussian(fine_initial_condition,...)
+!!!!!!!!!!!!!!!!!!!call fill_gaussian(fine_initial_condition,...)
 
 uniform_hydro=> uniform_flow
 call test_round_trip(label,         &

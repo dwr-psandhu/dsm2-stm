@@ -46,6 +46,7 @@ program test_transport_driver
   use test_dif_single_channel_neumann
   use test_advect_tidal_bc
   use test_advection_tidal
+  use test_coarsen
   
   call init_fruit
       
@@ -71,6 +72,8 @@ program test_transport_driver
   call test_construct_interior_rhs
   call test_diffusion_convergence_single_channel
   call test_dif_convergence_single_channel_neumann
+  
+  call test_coarsen_sub
 
 ! todo: rename
 !        call sub_boundary_diffusion_matrix      
