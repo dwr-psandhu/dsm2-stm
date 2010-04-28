@@ -36,6 +36,7 @@ use example_initial_conditions
 use example_hydro_data
 use example_sources
 use error_metric
+use error_handling
 use fruit
 use logging
 
@@ -157,9 +158,9 @@ do icoarse = 1,nrefine
                      dx                 ) 
     end do timemarch
     write(filename, "(a\i3\'.txt')"), "diffuse_gaussian_reference_", ncell 
-    call printout(reference,xposition,filename)
+!    call printout(reference,xposition,filename)
     write(filename, "(a\i3\'.txt')"), "diffuse_gaussian_solution_", ncell 
-    call printout(conc(:,2),xposition,filename)
+ !todo:   call printout(conc(:,2),xposition,filename)
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &

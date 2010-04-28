@@ -98,10 +98,25 @@ real(stm_real), parameter :: total_time = ten*m2_period
 real(stm_real), parameter :: domain_length = 40960.0d0
 real(stm_real) :: fine_initial_condition(nx_base,nvar)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nvar)           !< reference solution at finest resolution
-
+real(stm_real) :: ic_center
+real(stm_real) :: solution_center
+real(stm_real) :: ic_gaussian_sd
+real(stm_real) :: solution_gaussin_sd
 
 character(LEN=10),parameter :: label = "tidal flow"
 tidal_hydro=> tidal_flow
+
+call initial_fine_solution_tidal(fine_initial_condition,         &
+                                         fine_solution,          &
+                                         nx_base,                &
+                                         nconc,                  &
+                                         origin,                 &
+                                         domain_length,          &
+                                         ic_gaussian_sd,         &
+                                         solution_gaussin_sd,    &
+                                         ic_center,              &
+                                         solution_center   )
+
 
 
 call test_round_trip(label,         &
@@ -116,6 +131,55 @@ call test_round_trip(label,         &
 
 return
 end subroutine
+!-------------------------------------------
+subroutine initial_fine_solution_tidal(fine_initial_condition, &
+                                         fine_solution,          &
+                                         nx_base,                &
+                                         nconc,                  &
+                                         origin,                 &
+                                         domain_length,          &
+                                         ic_gaussian_sd,         &
+                                         solution_gaussin_sd,    &
+                                         ic_center,              &
+                                         solution_center   )
+
+
+
+
+use example_initial_conditions
+use stm_precision
+
+implicit none
+
+integer,intent(in) :: nconc 
+integer,intent(in) :: nx_base 
+real(stm_real),intent(out) :: fine_initial_condition(nx_base,nconc)!< initial condition at finest resolution
+real(stm_real),intent(out) :: fine_solution(nx_base,nconc)         !< reference solution at finest resolution
+real(stm_real),intent(in)  :: ic_center
+real(stm_real),intent(in)  :: solution_center
+real(stm_real),intent(in)  :: ic_gaussian_sd
+real(stm_real),intent(in)  :: solution_gaussin_sd
+real(stm_real),intent(in)  :: origin 
+real(stm_real),intent(in)  :: domain_length  
+!----local
+real(stm_real):: dx
+
+dx = domain_length/nx_base
+
+
+call fill_gaussian(fine_initial_condition(:,1),nx_base,origin,dx, &
+                   ic_center,ic_gaussian_sd)
+call fill_gaussian(fine_initial_condition(:,2),nx_base,origin,dx, &
+                   ic_center,ic_gaussian_sd)
+
+call fill_gaussian(fine_solution(:,1),nx_base,origin,dx, &
+                   solution_center,solution_gaussin_sd)
+call fill_gaussian(fine_solution(:,2),nx_base,origin,dx, &
+                   solution_center,solution_gaussin_sd)
+
+return
+end subroutine
+
 
 end module
 

@@ -31,6 +31,7 @@
 		<File RelativePath="..\..\..\test\transport\example_hydro_data.f90"/>
 		<File RelativePath="..\..\..\example\single_channel_advect\example_initial_conditions.f90"/>
 		<File RelativePath="..\..\..\test\transport\example_sources.f90"/>
+		<File RelativePath="..\..\..\test\transport\coarsen.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_tidal.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_uniform.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_boundary_diffusion_matrix.f90"/>

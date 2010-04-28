@@ -57,7 +57,7 @@ program test_transport_driver
   call test_prim_cons_convert
   call test_example_initial_conditions
   call test_extrapolation
-  call test_tidal_advection_convergence
+!  call test_tidal_advection_convergence
   call test_uniform_advection_convergence
 
         

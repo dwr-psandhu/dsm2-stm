@@ -25,51 +25,6 @@ module test_single_channel_advection
 
 contains
 
-
-
-
-subroutine initial_fine_solution(fine_initial_condition, &
-                                 fine_solution,          &
-                                 nx_base,                &
-                                 nconc                   &
-                                    )
-
-
-
-
-use example_initial_conditions
-use stm_precision
-
-implicit none
-
-integer :: nconc
-integer :: nx_base
-real(stm_real) :: fine_initial_condition(nx_base,nconc)!< initial condition at finest resolution
-real(stm_real) :: fine_solution(nx_base,nconc)         !< reference solution at finest resolution
-real(stm_real) :: ic_center
-real(stm_real) :: ic_gaussian_sd
-real(stm_real),parameter :: origin = zero
-real(stm_real) :: doamin_length  
-
-
-
-!call fill_gaussian(conc(:,1),nx,origin,dx, &
-!                   three*fourth*domain_length,ic_gaussian_sd)
-!call fill_gaussian(conc(:,2),nx,origin,dx, &
-!                   one*fourth*domain_length,ic_gaussian_sd)
-!call prim2cons( mass_prev,conc,area,nx,nconc)
-!mass = mass_prev
-!allocate(reference(ncell))  ! reference copy of initial state
-!
-!! todo: Here you coarsen the provided fine reference solution    
-!reference = conc(:,2)
-
-return
-end subroutine
-
-
-
-
 !> Subroutine that tests advection convergence of flow that 
 !> makes a "round trip". In other words, it sloshes back and forth
 !> and ends up in the same spot. 
@@ -82,19 +37,19 @@ subroutine test_round_trip(label,        &
                            nstep_base,   &
                            nx_base,      &
                            nconc)
-    use hydro_data
-    use boundary_advection_module
-    use stm_precision
-    use state_variables
-    use primitive_variable_conversion
-    use advection
-    use example_initial_conditions
-    use example_hydro_data
-    use example_sources
-    use error_metric
-    use fruit
+use hydro_data
+use boundary_advection_module
+use stm_precision
+use state_variables
+use primitive_variable_conversion
+use advection
+use example_initial_conditions
+use example_hydro_data
+use example_sources
+use error_metric
+use fruit
     use logging
-
+use grid_refinement
 implicit none
 
 !--- Problem variables
@@ -127,7 +82,8 @@ character(LEN=64) filename
 
 logical, parameter :: limit_slope = .false.
 
-real(stm_real), allocatable :: reference(:)
+real(stm_real), allocatable :: reference(:,:)! todo
+
 real(stm_real), allocatable :: x_center(:)
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
@@ -149,7 +105,8 @@ do icoarse = 1,nrefine
     nstep = nstep_base/(coarsening)
     call allocate_state(nx,nvar)
     allocate(x_center(nx))
-    dx = origin + domain_length/dble(nx)
+    allocate(reference (nx,nvar))
+    dx = domain_length/dble(nx)  ! todo: it was  origin + domain_length/dble(nx)
     dt = total_time/dble(nstep)
 
 
@@ -171,16 +128,20 @@ do icoarse = 1,nrefine
     area_prev = area
     
         ! todo: Here you coarsen the provided ic, move fill gaussian to calling routine
-    call fill_gaussian(conc(:,1),nx,origin,dx, &
-                       three*fourth*domain_length,ic_gaussian_sd)
-    call fill_gaussian(conc(:,2),nx,origin,dx, &
-                       one*fourth*domain_length,ic_gaussian_sd)
-    call prim2cons( mass_prev,conc,area,nx,nconc)
-    mass = mass_prev
-    allocate(reference(ncell))  ! reference copy of initial state
-    
-    ! todo: Here you coarsen the provided fine reference solution    
-    reference = conc(:,2)
+!    call fill_gaussian(conc(:,1),nx,origin,dx, &
+!                       three*fourth*domain_length,ic_gaussian_sd)
+!    call fill_gaussian(conc(:,2),nx,origin,dx, &
+!                       one*fourth*domain_length,ic_gaussian_sd)
+!    call prim2cons( mass_prev,conc,area,nx,nconc)
+!    mass = mass_prev
+!    allocate(reference(ncell))  ! reference copy of initial state
+!    
+!    ! todo: Here you coarsen the provided fine reference solution    
+!    reference = conc(:,2)
+
+
+call coarsen(mass_prev,fine_initial_condition,nx_base,nx, nconc)
+call coarsen(reference,fine_solution,nx_base,nx, nconc)
     
     ! forwards
     do itime = 1,nstep
@@ -218,14 +179,14 @@ do icoarse = 1,nrefine
     end do
     
     write(filename, "(a\i3\'.txt')"), "uniform_gaussian_start_", ncell 
-    call printout(reference,x_center,filename)
+    call printout(reference(:,2),x_center,filename)
     write(filename, "(a\i3\'.txt')"), "uniform_gaussian_end_", ncell 
-    call printout(conc(:,2),x_center,filename)
+    call printout(mass(:,2),x_center,filename)
     ! test error norm over part of domain
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
-                    conc(:,2),reference,ncell,dx)
+                    conc(:,2),reference(:,2),ncell,dx)
 
     deallocate(reference)
     deallocate(x_center)
@@ -245,59 +206,5 @@ call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order conv
 !print *, '========'
 return
 end subroutine
-!+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-!> Coarsen a solution at a fine level of resolution
-subroutine coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
-
-use stm_precision
-use error_handling
-
-implicit none
-!---arg
-integer,intent(in) :: ncell_coarse
-integer,intent(in) :: ncell_fine
-integer,intent(in) :: nvar
-real(stm_real), intent(in) :: fine_data(ncell_fine,nvar)
-real(stm_real), intent(out):: coarse_data(ncell_coarse,nvar)
-
-!---locals
-real(stm_real) :: coarsen_factor
-integer :: ivar
-integer :: icell
-integer :: icoarse
-
-if ( mod(ncell_fine , ncell_coarse) /= 0) then
-
-    call stm_fatal("Coarsening factor is not an integer!")
-   
-else
-
-coarsen_factor = ncell_fine/ncell_coarse
-
-    do ivar=1,nvar
-        do icell=1,ncell_coarse
-            coarse_data(icell,ivar) = zero
-            icoarse = 0
-            do while (icoarse < coarsen_factor) 
-              coarse_data(icell,ivar) = coarse_data(icell,ivar)+ fine_data(icell*coarsen_factor-icoarse,ivar)
-              icoarse= icoarse + 1   
-            end do
-            coarse_data(icell,ivar)= coarse_data(icell,ivar)/dble(coarsen_factor)
-        end do
-    end do
-    
-end if
-
-!< test that coarsen_factor is correct multiple if not call stm_fatal
-!< coarsen using averaging
-!< don't forget a unit test. should cover cases where coarsen_factor does not
-!< work, should test that first, middle last value are good in ivar = 1 and ivar =nvar
-return
-end subroutine
-
-
-
-
-
 
 end module
