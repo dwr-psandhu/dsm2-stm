@@ -44,8 +44,7 @@ program test_transport_driver
   use test_boundary_diffusion_matrix
   use test_diffusion_single_channel
   use test_dif_single_channel_neumann
-  !use test_advect_tidal_bc
-  !use test_advection_tidal
+  use test_advection_tidal
   use test_coarsening
   
   call init_fruit
@@ -58,13 +57,11 @@ program test_transport_driver
   call test_prim_cons_convert
   call test_example_initial_conditions
   call test_extrapolation
-
-  !call test_tidal_advection
-  !call test_tidal_advection_convergence
-  !call test_uniform_advection_convergence
+  call test_tidal_advection_convergence
+  call test_uniform_advection_convergence
 
         
-  !//////////////// Diffusion
+  !///////// Diffusion
   call test_tridi_solver
   call test_boundary_dif_flux
   call test_interior_dif_flux_sub
