@@ -28,15 +28,15 @@ contains
 !> Subroutine that tests advection convergence of flow that 
 !> makes a "round trip". In other words, it sloshes back and forth
 !> and ends up in the same spot. 
-subroutine test_round_trip(label,        &
-                           hydro,        &
-                           domain_length,&                          
-                           total_time,   &
-                           fine_initial_condition, &
-                           fine_solution, &                            
-                           nstep_base,   &
-                           nx_base,      &
-                           nconc)
+subroutine test_round_trip(  label,                  &
+                             hydro,                  &
+                             domain_length,          &
+                             total_time,             &
+                             fine_initial_conc, &
+                             fine_solution,          &           
+                             nstep_base,             &
+                             nx_base,                &
+                             nconc)
 use hydro_data
 use boundary_advection_module
 use stm_precision
@@ -48,17 +48,18 @@ use example_hydro_data
 use example_sources
 use error_metric
 use fruit
-    use logging
+use logging
 use grid_refinement
+
 implicit none
 
 !--- Problem variables
-procedure(hydro_data_if), pointer :: hydro
+procedure(hydro_data_if), pointer :: hydro !todo: or uniform-hydro?
+character(LEN=*),intent(in) :: label
 integer, intent(in) :: nconc
-character(LEN=*) :: label
 integer, intent(in) :: nstep_base
 integer, intent(in) :: nx_base
-real(stm_real), intent(in) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
+real(stm_real), intent(in) :: fine_initial_conc(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real), intent(in) :: fine_solution(nx_base,nconc)  !< reference solution at finest resolution
 real(stm_real), intent(in) :: total_time
 real(stm_real), intent(in) :: domain_length 
@@ -66,36 +67,30 @@ real(stm_real), intent(in) :: domain_length
 !----local
 integer, parameter :: nrefine = 3
 integer, parameter :: coarsen_factor = 2                 ! coarsening factor used for convergence test
-real(stm_real), parameter :: cfl = 0.8 
-real(stm_real), parameter :: origin = zero               !< origin in meters
-real(stm_real)            :: fine_initial_area(nx_base)  !< initial area at finest resolution
-real(stm_real)            :: fine_final_area(nx_base)    !< final area at finest resolution
-integer :: itime = 0
+integer :: itime
 integer :: icell ! debug only -- remove later
-integer :: icoarse = 0
+integer :: icoarse 
 integer :: nstep
 integer :: nx
 integer :: coarsening
-
-character(LEN=64) filename
-
+character(LEN=64)  ::  filename = "test_uniform_convergence" 
 logical, parameter :: limit_slope = .false.
-
-real(stm_real), allocatable :: reference(:,:)! todo
-
+real(stm_real), allocatable :: solution_mass(:,:)
+real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
+real(stm_real) :: fine_initial_mass(nx_base,nconc)  !< initial condition at finest resolution
+real(stm_real) :: fine_solution_mass(nx_base,nconc)  !< reference solution at finest resolution
+
+
+
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
-real(stm_real) :: ic_center
-real(stm_real) :: ic_gaussian_sd
-real(stm_real) :: vel
 real(stm_real) :: time
 real(stm_real) :: norm_error(3,nrefine)
 
+
 !todo: this is really "no flux"
 boundary_advection=>neumann_advective_flux
-ic_center = three*fourth*domain_length
-ic_gaussian_sd = domain_length/sixteen
 
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
@@ -104,10 +99,11 @@ do icoarse = 1,nrefine
     nstep = nstep_base/(coarsening)
     call allocate_state(nx,nconc)
     allocate(x_center(nx))
-    allocate(reference(nx,nvar))
+    allocate(reference(nx,nconc))
+    allocate(solution_mass(nx,nconc))
+
     dx = domain_length/dble(nx)  ! todo: it was  origin + domain_length/dble(nx)
     dt = total_time/dble(nstep)
-
 
     do icell = 1,nx
         x_center(icell) = (dble(icell)-half)*dx
@@ -122,29 +118,18 @@ do icoarse = 1,nrefine
                area_hi, &
                nx,      &
                time,    &
-               dx,      &               
+               dx,      &                  
                dt)
     area_prev = area
+    if (icoarse == 1)then
+        call prim2cons(fine_initial_mass,fine_initial_conc,area,nx,nconc)
+    end if
+        
+    call coarsen(mass,fine_initial_mass,nx_base,nx, nconc)
+    mass_prev = mass
+    call cons2prim(conc,mass,area,nx,nconc)
+    conc_prev = conc
     
-    ! first time through, save area as fine_initial_area
-    ! convert fine_initial_condition from conc to fine_initial_mass
-    !call prim2cons(mass,conc,area,nloc,nconc)
-    
-    
-    ! convert fine_solution to fine_solution_mass
-    ! coarsen fine_initial_mass to this resolution mass then set mass_prev = mass
-    ! convert mass conc using the area at this resolution and set conc_prev = conc (needed?)
-    ! after final time step, coarsen fine_solution_mass with final area
-    ! coarsen fine_solution_mass to solution_mass
-    ! convert solution_mass to reference
-    
-!    call coarsen(mass_prev,fine_initial_condition,nx_base,nx, nconc)
-!    call coarsen(reference,fine_solution,nx_base,nx, nconc)
-     mass_prev = 7.0d0
-     reference = mass_prev
-
-    
-    ! forwards
     do itime = 1,nstep
        time = time + dt
        call hydro(flow,    &
@@ -168,7 +153,7 @@ do icoarse = 1,nrefine
                   area_lo,  &
                   area_hi,  &
                   nx,       &
-                  nvar,     &
+                  nconc,     &
                   time,     &
                   dt,       &
                   dx,       &
@@ -178,17 +163,27 @@ do icoarse = 1,nrefine
       area_prev = area
       call cons2prim(conc,mass,area,nx,nconc) 
     end do
+
+    ! Now take fine solution (provided in concentration) and coarsen it to
+    ! a reference solution at the current level of refinement. This needs to 
+    ! be done by converting it to mass, coarsening, then converting back to
+    ! a reference concentration
+    if (icoarse == 1) then
+        call prim2cons(fine_solution_mass,fine_solution,area,nx,nvar)
+    end if
+    call coarsen(solution_mass,fine_solution_mass,nx_base,nx, nvar)
+    call cons2prim(reference,solution_mass,area,nx,nconc)
     
-    write(filename, "(a\i3\'.txt')"), "uniform_gaussian_start_", ncell 
+    write(filename, "(a\i3\'.txt')"), "uniform_gaussian_start_", nx 
     call printout(reference(:,2),x_center,filename)
-    write(filename, "(a\i3\'.txt')"), "uniform_gaussian_end_", ncell 
-    call printout(mass(:,2),x_center,filename)
+    write(filename, "(a\i3\'.txt')"), "uniform_gaussian_end_", nx 
+    call printout(conc(:,2),x_center,filename)
     ! test error norm over part of domain
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
-                    conc(:,2),reference(:,2),ncell,dx)
-
+                    conc(:,2),reference(:,2),nx,dx) !todo: nx or ncell
+    deallocate(solution_mass)
     deallocate(reference)
     deallocate(x_center)
     call deallocate_state
