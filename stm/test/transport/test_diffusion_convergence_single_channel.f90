@@ -92,9 +92,6 @@ boundary_diffusion_matrix  => neumann_diffusion_matrix
 boundary_diffusion_flux    => neumann_no_flow_diffusive_flux
 
 
-
-
-
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
     coarsening = coarsen_factor**(icoarse - 1)
