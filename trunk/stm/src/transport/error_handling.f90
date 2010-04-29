@@ -25,13 +25,14 @@ module error_handling
  use stm_precision
 
     contains
+        
     
+    !> Logs the input message as an error and stops execution with error code
     subroutine stm_fatal(message)
    
-    use logging, only: stm_log,ERROR
+    use logging, only: stm_log, ERROR
     implicit none
-    character(LEN=*), intent(in) :: message
-    
+    character(LEN=*), intent(in)  :: message  !< Message concerning error
     call stm_log(ERROR,message)
     stop 1
     return

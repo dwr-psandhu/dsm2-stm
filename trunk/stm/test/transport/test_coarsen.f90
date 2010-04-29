@@ -35,29 +35,24 @@ implicit none
 
 !---arg
 integer :: ncell_coarse
-integer,parameter :: ncell_fine = 256
+integer,parameter :: ncell_fine = 6
 integer,parameter :: nvar = 2
 real(stm_real) :: fine_data(ncell_fine,nvar)
 real(stm_real), allocatable :: coarse_data(:,:)
 !---- local
 real(stm_real), parameter :: tol = 1.d-15
 
-fine_data(:,1) = (/1:256/)
-fine_data(:,2) = (/1001:1256/)
+fine_data(:,1) = (/1:6/)
+fine_data(:,2) = (/11:16/)
 
-ncell_coarse = 256
+
+
+ncell_coarse = 6
 allocate (coarse_data(ncell_coarse,nvar))
 call coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
 call assertEquals(coarse_data(1,1),one,tol,"error in coarsening, no refinement (1,1)")
-call assertEquals(coarse_data(6,2),1006.d0,tol,"error in coarsening, no refinement (6,2)")
+call assertEquals(coarse_data(6,2),16.d0,tol,"error in coarsening, no refinement (6,2)")
 deallocate(coarse_data)
-
-!ncell_coarse = 6
-!allocate (coarse_data(ncell_coarse,nvar))
-!call coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
-!call assertEquals(coarse_data(1,1),one,tol,"error in coarsening, no refinement (1,1)")
-!call assertEquals(coarse_data(6,2),16.d0,tol,"error in coarsening, no refinement (6,2)")
-!deallocate(coarse_data)
 
 ncell_coarse = 3
 allocate (coarse_data(ncell_coarse,nvar))
