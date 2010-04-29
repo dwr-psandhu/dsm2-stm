@@ -41,7 +41,7 @@ use hydro_data
 use boundary_advection_module
 use stm_precision
 use state_variables
-use primitive_variable_conversion
+use primitive_variable_conversion 
 use advection
 use example_initial_conditions
 use example_hydro_data
@@ -120,7 +120,7 @@ do icoarse = 1,nrefine
                area,    &
                area_lo, &
                area_hi, &
-               ncell,   &
+               nx,      &
                time,    &
                dx,      &               
                dt)
@@ -128,6 +128,9 @@ do icoarse = 1,nrefine
     
     ! first time through, save area as fine_initial_area
     ! convert fine_initial_condition from conc to fine_initial_mass
+    !call prim2cons(mass,conc,area,nloc,nconc)
+    
+    
     ! convert fine_solution to fine_solution_mass
     ! coarsen fine_initial_mass to this resolution mass then set mass_prev = mass
     ! convert mass conc using the area at this resolution and set conc_prev = conc (needed?)
@@ -135,8 +138,11 @@ do icoarse = 1,nrefine
     ! coarsen fine_solution_mass to solution_mass
     ! convert solution_mass to reference
     
-    call coarsen(mass_prev,fine_initial_condition,nx_base,nx, nconc)
-    call coarsen(reference,fine_solution,nx_base,nx, nconc)
+!    call coarsen(mass_prev,fine_initial_condition,nx_base,nx, nconc)
+!    call coarsen(reference,fine_solution,nx_base,nx, nconc)
+     mass_prev = 7.0d0
+     reference = mass_prev
+
     
     ! forwards
     do itime = 1,nstep
@@ -147,7 +153,7 @@ do icoarse = 1,nrefine
                   area,    &
                   area_lo, &
                   area_hi, &
-                  ncell,   &
+                  nx,      &
                   time,    &
                   dx,      &                  
                   dt)
@@ -161,7 +167,7 @@ do icoarse = 1,nrefine
                   area_prev,&
                   area_lo,  &
                   area_hi,  &
-                  ncell,    &
+                  nx,       &
                   nvar,     &
                   time,     &
                   dt,       &
@@ -188,17 +194,20 @@ do icoarse = 1,nrefine
     call deallocate_state
 end do
 
-! todo: four?
+
+
 call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on " // trim(label))
 call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on " // trim(label))
-! This is known not to pass for second order convergence if limiter is on
 call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
 
 !todo:
-!print *,label
-!print *, 'L-inf = ', norm_error(3,2)/norm_error(3,1), 'L-2 = ',norm_error(2,2)/norm_error(2,1),'L-1 = ',norm_error(1,2)/norm_error(1,1)
-!print *, 'dt',dt,'dx',dx, ' CFL = ' , dt/dx
-!print *, '========'
+print *,label
+print *, 'L-inf = ', norm_error(3,2)/norm_error(3,1), 'L-2 = ',norm_error(2,2)/norm_error(2,1),'L-1 = ',norm_error(1,2)/norm_error(1,1)
+print *, 'dt',dt,'dx',dx, ' CFL = ' , dt/dx
+print *, '========'
+print *, norm_error
+
+
 return
 end subroutine
 

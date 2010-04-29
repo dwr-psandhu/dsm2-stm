@@ -23,11 +23,59 @@
 module test_uniform_flow
 use stm_precision
 integer :: istep = 0
-integer, parameter  :: nstep_base = 80
+integer, parameter  :: nstep_base = 40
 integer, parameter  :: nx_base = 256
 real(stm_real), parameter :: total_time = 6400.D0
 
 contains
+
+
+!> Subroutine that runs a small advective simulation
+subroutine test_uniform_advection_convergence()
+
+use test_single_channel_advection
+use hydro_data
+
+procedure(hydro_data_if),pointer :: uniform_hydro
+integer, parameter  :: nstep_base = 40 
+integer, parameter  :: nx_base = 256
+integer, parameter  :: nconc = 2
+real(stm_real),parameter :: domain_length = 51200.d0
+character(LEN=12),parameter :: label = "uniform flow"
+real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
+real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
+real(stm_real),parameter :: origin =zero
+real(stm_real) :: ic_center = domain_length/two
+real(stm_real) :: solution_center = domain_length/two
+real(stm_real) :: ic_gaussian_sd = domain_length/sixteen
+real(stm_real) :: solution_gaussian_sd = domain_length/sixteen
+
+uniform_hydro=> uniform_flow
+
+call initial_fine_solution_uniform(fine_initial_condition, &
+                                   fine_solution,          &
+                                   nx_base,                &
+                                   nconc,                  &
+                                   origin,                 &
+                                   domain_length,          &
+                                   ic_gaussian_sd,         &
+                                   solution_gaussian_sd,   &
+                                   ic_center,              &
+                                   solution_center   )
+
+
+call test_round_trip(label,         &
+                     uniform_hydro, &
+                     domain_length, &
+                     total_time,    &
+                     fine_initial_condition, &
+                     fine_solution, &                     
+                     nstep_base,    &
+                     nx_base,       &
+                     nvar)
+
+end subroutine
+!=========================
 !>generat constant area and constant flow foreward and backward
 subroutine uniform_flow(flow,    &
                         flow_lo, &
@@ -54,8 +102,8 @@ subroutine uniform_flow(flow,    &
 
     
     !> local
-    real(stm_real), parameter :: constant_flow = 1.D2
-    real(stm_real), parameter :: constant_area = 1.D2 
+    real(stm_real), parameter :: constant_flow = 3.D2
+    real(stm_real), parameter :: constant_area = 27.D0 
 
 
     if (time <= total_time/two) then
@@ -70,7 +118,7 @@ subroutine uniform_flow(flow,    &
     area_hi = constant_area
     return
 end subroutine
-
+! todo: ic_center and solution center must be have dimension of NCOC
 subroutine initial_fine_solution_uniform(fine_initial_condition, &
                                          fine_solution,          &
                                          nx_base,                &
@@ -104,59 +152,16 @@ dx = domain_length/nx_base
 
 
 call fill_gaussian(fine_initial_condition(:,1),nx_base,origin,dx, &
-                   three*fourth*domain_length,ic_gaussian_sd)
+                   ic_center,ic_gaussian_sd)
 call fill_gaussian(fine_initial_condition(:,2),nx_base,origin,dx, &
-                   three*fourth*domain_length,ic_gaussian_sd)
+                   ic_center,ic_gaussian_sd)
 
 call fill_gaussian(fine_solution(:,1),nx_base,origin,dx, &
-                   three*fourth*domain_length,solution_gaussin_sd)
+                   solution_center,solution_gaussin_sd)
 call fill_gaussian(fine_solution(:,2),nx_base,origin,dx, &
-                   three*fourth*domain_length,solution_gaussin_sd)
+                   solution_center,solution_gaussin_sd)
 
 return
-end subroutine
-
-
-!> Subroutine that runs a small advective simulation
-subroutine test_uniform_advection_convergence()
-use test_single_channel_advection
-use hydro_data
-procedure(hydro_data_if),pointer :: uniform_hydro
-integer, parameter  :: nstep_base = 40 
-integer, parameter  :: nx_base = 256
-integer, parameter  :: nvar = 2
-real(stm_real),parameter :: domain_length = 51200.d0
-character(LEN=12),parameter :: label = "uniform flow"
-real(stm_real) :: fine_initial_condition(nx_base,nvar)  !< initial condition at finest resolution
-real(stm_real) :: fine_solution(nx_base,nvar)           !< reference solution at finest resolution
-real(stm_real) :: origin =zero
-real(stm_real) :: ic_center = domain_length/two
-real(stm_real) :: solution_center = domain_length/two
-real(stm_real) :: ic_gaussian_sd = domain_length/sixteen
-real(stm_real) :: solution_gaussian_sd = domain_length/sixteen
-
-call initial_fine_solution_uniform(fine_initial_condition, &
-                                   fine_solution,          &
-                                   nx_base,                &
-                                   nvar,                   &
-                                   origin,                 &
-                                   domain_length,          &
-                                   ic_gaussian_sd,         &
-                                   solution_gaussian_sd,   &
-                                   ic_center,              &
-                                   solution_center   )
-
-uniform_hydro=> uniform_flow
-call test_round_trip(label,         &
-                     uniform_hydro, &
-                     domain_length, &
-                     total_time,    &
-                     fine_initial_condition, &
-                     fine_solution, &                     
-                     nstep_base,    &
-                     nx_base,       &
-                     nvar)
-
 end subroutine
 
 end module
