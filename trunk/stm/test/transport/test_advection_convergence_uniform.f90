@@ -103,7 +103,7 @@ subroutine uniform_flow(flow,    &
     
     !> local
     real(stm_real), parameter :: constant_flow = 3.D2
-    real(stm_real), parameter :: constant_area = 27.D0 
+    real(stm_real), parameter :: constant_area = 27.D1 
 
 
     if (time <= total_time/two) then
@@ -118,7 +118,7 @@ subroutine uniform_flow(flow,    &
     area_hi = constant_area
     return
 end subroutine
-! todo: ic_center and solution center must be have dimension of NCOC
+! todo: ic_center and solution center must have dimension of NCONC
 subroutine initial_fine_solution_uniform(fine_initial_condition, &
                                          fine_solution,          &
                                          nx_base,                &
