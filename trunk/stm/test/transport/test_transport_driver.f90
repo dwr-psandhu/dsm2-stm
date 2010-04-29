@@ -55,27 +55,27 @@ program test_transport_driver
   !todo: remove comments
 
   !////////////// Advection
-!  call test_gradient_calc
-!  call test_limiter
-!  call test_prim_cons_convert
-!  call test_example_initial_conditions
-!  call test_extrapolation
+  call test_gradient_calc
+  call test_limiter
+  call test_prim_cons_convert
+  call test_example_initial_conditions
+  call test_extrapolation
 !  call test_tidal_advection_convergence
   call test_uniform_advection_convergence
   
 
         
   !///////// Diffusion
-!  call test_tridi_solver
-!  call test_boundary_dif_flux
-!  call test_interior_dif_flux_sub
-!  call test_explicit_diffusion_op
-!  call test_interior_coef_matrix_sub
-!  call test_construct_interior_rhs
-!  call test_diffusion_convergence_single_channel
-!  call test_dif_convergence_single_channel_neumann
-!  
-!  call test_coarsen
+  call test_tridi_solver
+  call test_boundary_dif_flux
+  call test_interior_dif_flux_sub
+  call test_explicit_diffusion_op
+  call test_interior_coef_matrix_sub
+  call test_construct_interior_rhs
+  call test_diffusion_convergence_single_channel
+  call test_dif_convergence_single_channel_neumann
+  
+  call test_coarsen
 
 ! todo: rename
 !        call sub_boundary_diffusion_matrix      
