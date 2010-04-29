@@ -54,7 +54,7 @@ use grid_refinement
 implicit none
 
 !--- Problem variables
-procedure(hydro_data_if), pointer :: hydro !todo: or uniform-hydro?
+procedure(hydro_data_if), pointer :: hydro 
 character(LEN=*),intent(in) :: label
 integer, intent(in) :: nconc
 integer, intent(in) :: nstep_base
