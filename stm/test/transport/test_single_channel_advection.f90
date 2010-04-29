@@ -65,12 +65,11 @@ real(stm_real), intent(in) :: domain_length
 
 !----local
 integer, parameter :: nrefine = 3
-integer, parameter :: coarsen_factor = 2      ! coarsening factor used for convergence test
+integer, parameter :: coarsen_factor = 2                 ! coarsening factor used for convergence test
 real(stm_real), parameter :: cfl = 0.8 
-real(stm_real), parameter :: origin = zero   ! meters
-real(stm_real), parameter :: constant_flow = 1.D2
-real(stm_real), parameter :: constant_area = 1.D2
-
+real(stm_real), parameter :: origin = zero               !< origin in meters
+real(stm_real)            :: fine_initial_area(nx_base)  !< initial area at finest resolution
+real(stm_real)            :: fine_final_area(nx_base)    !< final area at finest resolution
 integer :: itime = 0
 integer :: icell ! debug only -- remove later
 integer :: icoarse = 0
@@ -103,9 +102,9 @@ do icoarse = 1,nrefine
     coarsening = coarsen_factor**(icoarse-1)
     nx = nx_base/(coarsening)
     nstep = nstep_base/(coarsening)
-    call allocate_state(nx,nvar)
+    call allocate_state(nx,nconc)
     allocate(x_center(nx))
-    allocate(reference (nx,nvar))
+    allocate(reference(nx,nvar))
     dx = domain_length/dble(nx)  ! todo: it was  origin + domain_length/dble(nx)
     dt = total_time/dble(nstep)
 
@@ -127,21 +126,17 @@ do icoarse = 1,nrefine
                dt)
     area_prev = area
     
-        ! todo: Here you coarsen the provided ic, move fill gaussian to calling routine
-!    call fill_gaussian(conc(:,1),nx,origin,dx, &
-!                       three*fourth*domain_length,ic_gaussian_sd)
-!    call fill_gaussian(conc(:,2),nx,origin,dx, &
-!                       one*fourth*domain_length,ic_gaussian_sd)
-!    call prim2cons( mass_prev,conc,area,nx,nconc)
-!    mass = mass_prev
-!    allocate(reference(ncell))  ! reference copy of initial state
-!    
-!    ! todo: Here you coarsen the provided fine reference solution    
-!    reference = conc(:,2)
-
-
-call coarsen(mass_prev,fine_initial_condition,nx_base,nx, nconc)
-call coarsen(reference,fine_solution,nx_base,nx, nconc)
+    ! first time through, save area as fine_initial_area
+    ! convert fine_initial_condition from conc to fine_initial_mass
+    ! convert fine_solution to fine_solution_mass
+    ! coarsen fine_initial_mass to this resolution mass then set mass_prev = mass
+    ! convert mass conc using the area at this resolution and set conc_prev = conc (needed?)
+    ! after final time step, coarsen fine_solution_mass with final area
+    ! coarsen fine_solution_mass to solution_mass
+    ! convert solution_mass to reference
+    
+    call coarsen(mass_prev,fine_initial_condition,nx_base,nx, nconc)
+    call coarsen(reference,fine_solution,nx_base,nx, nconc)
     
     ! forwards
     do itime = 1,nstep

@@ -43,6 +43,7 @@ integer :: ivar
 integer :: icell
 integer :: i_coarse
 
+
 if ( mod(ncell_fine , ncell_coarse) /= 0) then
     call stm_fatal("Coarsening factor is not an integer!")  
 else
