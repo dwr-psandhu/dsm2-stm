@@ -47,6 +47,8 @@ program test_transport_driver
   use test_advection_tidal
   use test_coarsening
   use test_uniform_flow
+  implicit none
+  logical :: verbose = .false.
   
   call init_fruit
       
@@ -60,6 +62,7 @@ program test_transport_driver
 !  call test_extrapolation
 !  call test_tidal_advection_convergence
   call test_uniform_advection_convergence
+  
 
         
   !///////// Diffusion

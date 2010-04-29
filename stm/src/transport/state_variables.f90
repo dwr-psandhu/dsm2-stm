@@ -139,8 +139,11 @@ module state_variables
         implicit none
         ncell = 0
         nvar  = 0
-        deallocate(conc, conc_prev, mass,mass_prev)
-        deallocate(area, area_prev, area_lo, area_hi, area_lo_prev, area_hi_prev)
+        deallocate(conc, conc_prev, mass, mass_prev)
+        deallocate(area)
+        deallocate(area_prev)
+        deallocate(area_lo,area_hi)
+        deallocate(area_lo_prev, area_hi_prev)
         deallocate(flow, flow_lo, flow_hi)
         return
     end subroutine

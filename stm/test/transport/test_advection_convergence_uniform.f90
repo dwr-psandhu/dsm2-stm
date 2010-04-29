@@ -37,14 +37,17 @@ use test_single_channel_advection
 use hydro_data
 
 procedure(hydro_data_if),pointer :: uniform_hydro
+
 integer, parameter  :: nstep_base = 40 
 integer, parameter  :: nx_base = 256
 integer, parameter  :: nconc = 2
-real(stm_real),parameter :: domain_length = 51200.d0
 character(LEN=12),parameter :: label = "uniform flow"
+real(stm_real)   ,parameter :: domain_length = 51200.d0
+real(stm_real)   ,parameter :: origin =zero
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
-real(stm_real),parameter :: origin =zero
+real(stm_real) :: fine_initial_area(nx_base)  !< initial area at finest resolution
+real(stm_real) :: fine_final_area(nx_base)    !< final area at finest resolution
 real(stm_real) :: ic_center = domain_length/two
 real(stm_real) :: solution_center = domain_length/two
 real(stm_real) :: ic_gaussian_sd = domain_length/sixteen
@@ -64,15 +67,15 @@ call initial_fine_solution_uniform(fine_initial_condition, &
                                    solution_center   )
 
 
-call test_round_trip(label,         &
-                     uniform_hydro, &
-                     domain_length, &
-                     total_time,    &
+call test_round_trip(label,                  &
+                     uniform_hydro,          &
+                     domain_length,          &
+                     total_time,             &
                      fine_initial_condition, &
-                     fine_solution, &                     
-                     nstep_base,    &
-                     nx_base,       &
-                     nvar)
+                     fine_solution,          &            
+                     nstep_base,             &
+                     nx_base,                &
+                     nconc)
 
 end subroutine
 !=========================
@@ -119,17 +122,17 @@ subroutine uniform_flow(flow,    &
     return
 end subroutine
 ! todo: ic_center and solution center must have dimension of NCONC
-subroutine initial_fine_solution_uniform(fine_initial_condition, &
-                                         fine_solution,          &
-                                         nx_base,                &
-                                         nconc,                  &
-                                         origin,                 &
-                                         domain_length,          &
-                                         ic_gaussian_sd,         &
-                                         solution_gaussin_sd,    &
-                                         ic_center,              &
-                                         solution_center   )
-
+subroutine initial_fine_solution_uniform(fine_initial_condition,   &
+                                           fine_solution,          &
+                                           nx_base,                &
+                                           nconc,                  &
+                                           origin,                 &
+                                           domain_length,          &
+                                           ic_gaussian_sd,         &
+                                           solution_gaussian_sd,   &
+                                           ic_center,              &
+                                           solution_center   )
+                                   
 use example_initial_conditions
 use stm_precision
 use grid_refinement
@@ -137,29 +140,31 @@ implicit none
 
 integer,intent(in) :: nconc 
 integer,intent(in) :: nx_base 
+
 real(stm_real),intent(out) :: fine_initial_condition(nx_base,nconc)!< initial condition at finest resolution
 real(stm_real),intent(out) :: fine_solution(nx_base,nconc)         !< reference solution at finest resolution
+
 real(stm_real),intent(in)  :: ic_center
 real(stm_real),intent(in)  :: solution_center
 real(stm_real),intent(in)  :: ic_gaussian_sd
-real(stm_real),intent(in)  :: solution_gaussin_sd
+real(stm_real),intent(in)  :: solution_gaussian_sd
 real(stm_real),intent(in)  :: origin 
 real(stm_real),intent(in)  :: domain_length  
 !----local
 real(stm_real):: dx
-
+real(stm_real):: area_const 
 dx = domain_length/nx_base
-
-
+!---initial condition
 call fill_gaussian(fine_initial_condition(:,1),nx_base,origin,dx, &
                    ic_center,ic_gaussian_sd)
 call fill_gaussian(fine_initial_condition(:,2),nx_base,origin,dx, &
-                   ic_center,ic_gaussian_sd)
+                   ic_center,ic_gaussian_sd)                  
 
+!---final solution
 call fill_gaussian(fine_solution(:,1),nx_base,origin,dx, &
-                   solution_center,solution_gaussin_sd)
+                   solution_center,solution_gaussian_sd)
 call fill_gaussian(fine_solution(:,2),nx_base,origin,dx, &
-                   solution_center,solution_gaussin_sd)
+                   solution_center,solution_gaussian_sd)                 
 
 return
 end subroutine
