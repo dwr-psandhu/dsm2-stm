@@ -48,13 +48,14 @@ program test_transport_driver
   use test_coarsening
   use test_uniform_flow
   implicit none
+  
   logical :: verbose = .false.
   
   call init_fruit
       
   !todo: remove comments
 
-  !////////////// Advection
+  !////////// Advection
   call test_gradient_calc
   call test_limiter
   call test_prim_cons_convert
