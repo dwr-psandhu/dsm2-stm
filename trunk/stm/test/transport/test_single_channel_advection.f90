@@ -32,11 +32,12 @@ subroutine test_round_trip(  label,                  &
                              hydro,                  &
                              domain_length,          &
                              total_time,             &
-                             fine_initial_conc, &
+                             fine_initial_conc,      &
                              fine_solution,          &           
                              nstep_base,             &
                              nx_base,                &
-                             nconc)
+                             nconc,                  &
+                             verbose)
 use hydro_data
 use boundary_advection_module
 use stm_precision
@@ -56,6 +57,7 @@ implicit none
 !--- Problem variables
 procedure(hydro_data_if), pointer :: hydro 
 character(LEN=*),intent(in) :: label
+logical,optional :: verbose
 integer, intent(in) :: nconc
 integer, intent(in) :: nstep_base
 integer, intent(in) :: nx_base
@@ -196,12 +198,17 @@ call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order conver
 call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
 
 !todo:
-print *,label
-print *, 'L-inf = ', norm_error(3,2)/norm_error(3,1), 'L-2 = ',norm_error(2,2)/norm_error(2,1),'L-1 = ',norm_error(1,2)/norm_error(1,1)
-print *, 'dt',dt,'dx',dx, ' CFL = ' , dt/dx
-print *, '========'
-print *, norm_error
-
+if (present(verbose))then 
+    if (verbose == .true.) then
+        print *,label
+        print *, 'L-inf = ', norm_error(3,2)/norm_error(3,1), 'L-2 = ',norm_error(2,2)/norm_error(2,1),'L-1 = ',norm_error(1,2)/norm_error(1,1)
+        print *, 'dt',dt,'dx',dx, ' CFL = ' , dt/dx
+        print *, 'L-1 : ',norm_error (1,:)
+        print *, 'L-2 : ' ,norm_error (2,:)
+        print *, 'L-inf : ',norm_error (3,:)
+        print *, '========'
+    end if
+end if
 
 return
 end subroutine

@@ -31,7 +31,7 @@ contains
 
 
 !> Subroutine that runs a small advective simulation
-subroutine test_uniform_advection_convergence()
+subroutine test_uniform_advection_convergence(verbose)
 
 use test_single_channel_advection
 use hydro_data
@@ -41,6 +41,7 @@ procedure(hydro_data_if),pointer :: uniform_hydro
 integer, parameter  :: nstep_base = 40 
 integer, parameter  :: nx_base = 256
 integer, parameter  :: nconc = 2
+logical  :: verbose
 character(LEN=12),parameter :: label = "uniform flow"
 real(stm_real)   ,parameter :: domain_length = 51200.d0
 real(stm_real)   ,parameter :: origin =zero
@@ -75,7 +76,8 @@ call test_round_trip(label,                  &
                      fine_solution,          &            
                      nstep_base,             &
                      nx_base,                &
-                     nconc)
+                     nconc,                  &
+                     verbose)
 
 end subroutine
 !=========================
