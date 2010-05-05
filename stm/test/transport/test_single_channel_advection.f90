@@ -51,13 +51,14 @@ use error_metric
 use fruit
 use logging
 use grid_refinement
+use log_convergence
 
 implicit none
 
 !--- Problem variables
 procedure(hydro_data_if), pointer :: hydro 
 character(LEN=*),intent(in) :: label
-logical,optional :: verbose
+logical,intent(in) :: verbose
 integer, intent(in) :: nconc
 integer, intent(in) :: nstep_base
 integer, intent(in) :: nx_base
@@ -198,16 +199,9 @@ call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order conver
 call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
 
 !todo:
-if (present(verbose))then 
-    if (verbose == .true.) then
-        print *,'The summary of'// trim(label)
-        print *, 'L-inf = ', norm_error(3,2)/norm_error(3,1), 'L-2 = ',norm_error(2,2)/norm_error(2,1),'L-1 = ',norm_error(1,2)/norm_error(1,1)
-        print *, 'dt',dt,'dx',dx, ' CFL = ' , dt/dx
-        print *, 'L-1 : ',norm_error (1,:)
-        print *, 'L-2 : ' ,norm_error (2,:)
-        print *, 'L-inf : ',norm_error (3,:)
-        print *, '========'
-    end if
+
+if (verbose == .true.) then
+   call log_convergence_results(norm_error,nrefine,dx,dt,filename)
 end if
 
 return
