@@ -49,7 +49,7 @@ program test_transport_driver
   use test_uniform_flow
   implicit none
   
-  logical :: verbose = .false.
+  logical :: verbose = .true.
   
   call init_fruit
       
@@ -61,7 +61,7 @@ program test_transport_driver
   call test_prim_cons_convert
   call test_example_initial_conditions
   call test_extrapolation
-!  call test_tidal_advection_convergence
+  call test_tidal_advection_convergence(verbose)
   call test_uniform_advection_convergence(verbose)
   
 
@@ -74,7 +74,8 @@ program test_transport_driver
   call test_interior_coef_matrix_sub
   call test_construct_interior_rhs
   call test_diffusion_convergence_single_channel
-  call test_dif_convergence_single_channel_neumann
+ !todo:
+ ! call test_dif_convergence_single_channel_neumann
   
   call test_coarsen
 

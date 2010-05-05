@@ -21,28 +21,28 @@
 !> Test of transport in uniform flow
 !>@ingroup test
 module test_uniform_flow
+
 use stm_precision
+
 integer :: istep = 0
 integer, parameter  :: nstep_base = 40
 integer, parameter  :: nx_base = 256
 real(stm_real), parameter :: total_time = 6400.D0
 
 contains
-
-
 !> Subroutine that runs a small advective simulation
 subroutine test_uniform_advection_convergence(verbose)
 
 use test_single_channel_advection
 use hydro_data
-
+implicit none
 procedure(hydro_data_if),pointer :: uniform_hydro
 
 integer, parameter  :: nstep_base = 40 
 integer, parameter  :: nx_base = 256
 integer, parameter  :: nconc = 2
 logical  :: verbose
-character(LEN=12),parameter :: label = "uniform flow"
+
 real(stm_real)   ,parameter :: domain_length = 51200.d0
 real(stm_real)   ,parameter :: origin =zero
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
@@ -53,7 +53,7 @@ real(stm_real) :: ic_center = domain_length/two
 real(stm_real) :: solution_center = domain_length/two
 real(stm_real) :: ic_gaussian_sd = domain_length/sixteen
 real(stm_real) :: solution_gaussian_sd = domain_length/sixteen
-
+character(LEN=*),parameter :: label = "uniform flow"
 uniform_hydro=> uniform_flow
 
 call initial_fine_solution_uniform(fine_initial_condition, &
@@ -111,7 +111,7 @@ subroutine uniform_flow(flow,    &
     real(stm_real), parameter :: constant_area = 27.D1 
 
 
-    if (time <= total_time/two) then
+    if (time <= (total_time/two)) then
       flow = constant_flow
     else
       flow = minus * constant_flow
