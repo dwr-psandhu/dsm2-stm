@@ -41,7 +41,7 @@ module log_convergence
         print *,'L-1 convergence ratio : ',norm_error(1,2)/norm_error(1,1)
         print *, 'dt',dt,'dx',dx, ' CFL = ' , dt/dx
         print *, '========'
-        print *, 'Error norms : ',norm_error
+        print *, 'Error norms '//label//' : ',norm_error
 
 !        open (unit=4, file='convergence_log.txt',status = 'unknown')
 !        write(filename, "(a\i3\'.txt')"), "uniform_gaussian_end_", nx 
