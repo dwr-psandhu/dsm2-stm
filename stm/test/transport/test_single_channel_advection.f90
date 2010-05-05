@@ -38,6 +38,7 @@ subroutine test_round_trip(  label,                  &
                              nx_base,                &
                              nconc,                  &
                              verbose)
+                             
 use hydro_data
 use boundary_advection_module
 use stm_precision
@@ -58,6 +59,7 @@ implicit none
 !--- Problem variables
 procedure(hydro_data_if), pointer :: hydro 
 character(LEN=*),intent(in) :: label
+!character(LEN=*),intent(in) :: label
 logical,intent(in) :: verbose
 integer, intent(in) :: nconc
 integer, intent(in) :: nstep_base
@@ -83,8 +85,6 @@ real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
 real(stm_real) :: fine_initial_mass(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution_mass(nx_base,nconc)  !< reference solution at finest resolution
-
-
 
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters

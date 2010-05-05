@@ -86,7 +86,7 @@ integer :: coarsening
 integer, parameter :: nrefine = 3
 real(stm_real),allocatable :: reference(:)
 real(stm_real) ::  norm_error(3,nrefine)
-character(LEN=64):: filename
+character(LEN=12):: filename
 
 ! todo: to compile
 !boundary_diffusion_matrix  =>     neumann_diffusion_matrix ! todo: is it remain same?

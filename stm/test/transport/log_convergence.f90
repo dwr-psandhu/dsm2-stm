@@ -32,7 +32,7 @@ module log_convergence
         real(stm_real), intent(in) :: norm_error(3,nrefine)
         real(stm_real), intent(in) :: dx
         real(stm_real), intent(in) :: dt
-        character(LEN=64),intent(in):: label
+        character(LEN=*),intent(in):: label
 
         print *, '========'
         print *, label
