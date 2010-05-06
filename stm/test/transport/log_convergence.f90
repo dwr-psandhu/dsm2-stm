@@ -24,25 +24,26 @@ module log_convergence
 
     use stm_precision
     contains
-    subroutine log_convergence_results(norm_error,nrefine,dx,dt,label)
+    subroutine log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label)
 
         implicit none
 
         integer, intent(in) :: nrefine
-        real(stm_real), intent(in) :: norm_error(3,nrefine)
-        real(stm_real), intent(in) :: dx
-        real(stm_real), intent(in) :: dt
-        character(LEN=*),intent(in):: label
+        real(stm_real),  intent(in) :: norm_error(3,nrefine)
+        real(stm_real),  intent(in) :: dx
+        real(stm_real),  intent(in) :: dt
+        real(stm_real),  intent(in) :: max_velocity
+        character(LEN=*),intent(in) :: label
 
         print *, '========'
         print *, label
         print *,'L-inf convergence ratio : ', norm_error(3,2)/norm_error(3,1)
         print *,'L-2 convergence ratio : ',norm_error(2,2)/norm_error(2,1)
         print *,'L-1 convergence ratio : ',norm_error(1,2)/norm_error(1,1)
-        print *, 'dt',dt,'dx',dx, ' CFL = ' , dt/dx
-        print *, '========'
+        print *, 'dt:',dt,'dx:',dx
+        print *, ' CFL = ', max_velocity*dt/dx, 'Max_Velocity', max_velocity 
         print *, 'Error norms '//label//' : ',norm_error
-
+        print *, '========'
 !        open (unit=4, file='convergence_log.txt',status = 'unknown')
 !        write(filename, "(a\i3\'.txt')"), "uniform_gaussian_end_", nx 
 

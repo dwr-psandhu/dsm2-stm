@@ -25,19 +25,19 @@ module test_single_channel_advection
 
 contains
 
-!> Subroutine that tests advection convergence of flow that 
-!> makes a "round trip". In other words, it sloshes back and forth
-!> and ends up in the same spot. 
-subroutine test_round_trip(  label,                  &
-                             hydro,                  &
-                             domain_length,          &
-                             total_time,             &
-                             fine_initial_conc,      &
-                             fine_solution,          &           
-                             nstep_base,             &
-                             nx_base,                &
-                             nconc,                  &
-                             verbose)
+!> Subroutine that tests advection convergence
+!> A fine grid initial condition and solution at time total_time
+!> must be provided. 
+subroutine test_advection_convergence( label,               &
+                                     hydro,                  &
+                                     domain_length,          &
+                                     total_time,             &
+                                     fine_initial_conc,      &
+                                     fine_solution,          &           
+                                     nstep_base,             &
+                                     nx_base,                &
+                                     nconc,                  &
+                                     verbose)
                              
 use hydro_data
 use boundary_advection_module
@@ -58,16 +58,15 @@ implicit none
 
 !--- Problem variables
 procedure(hydro_data_if), pointer :: hydro 
-character(LEN=*),intent(in) :: label
-!character(LEN=*),intent(in) :: label
-logical,intent(in) :: verbose
-integer, intent(in) :: nconc
-integer, intent(in) :: nstep_base
-integer, intent(in) :: nx_base
+character(LEN=*),intent(in) :: label                            !< unique label for test
+logical,intent(in) :: verbose                                   !< whether to output convergence results
+integer, intent(in) :: nconc                                    !< number of constituents
+integer, intent(in) :: nstep_base                               !< number of steps at finest resolution
+integer, intent(in) :: nx_base                                  !< number of cells at finest resolution
 real(stm_real), intent(in) :: fine_initial_conc(nx_base,nconc)  !< initial condition at finest resolution
-real(stm_real), intent(in) :: fine_solution(nx_base,nconc)  !< reference solution at finest resolution
-real(stm_real), intent(in) :: total_time
-real(stm_real), intent(in) :: domain_length 
+real(stm_real), intent(in) :: fine_solution(nx_base,nconc)      !< reference solution at finest resolution
+real(stm_real), intent(in) :: total_time                        !< total time of simulation
+real(stm_real), intent(in) :: domain_length                     !< length of domain
 
 !----local
 integer, parameter :: nrefine = 3
@@ -83,6 +82,9 @@ logical, parameter :: limit_slope = .false.
 real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
+real(stm_real), allocatable :: velocity (:)
+real(stm_real) :: max_velocity 
+
 real(stm_real) :: fine_initial_mass(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution_mass(nx_base,nconc)  !< reference solution at finest resolution
 
@@ -104,7 +106,8 @@ do icoarse = 1,nrefine
     allocate(x_center(nx))
     allocate(reference(nx,nconc))
     allocate(solution_mass(nx,nconc))
-
+    allocate(velocity (nx))
+    
     dx = domain_length/dble(nx)  ! todo: it was  origin + domain_length/dble(nx)
     dt = total_time/dble(nstep)
 
@@ -124,6 +127,7 @@ do icoarse = 1,nrefine
                dx,      &                  
                dt)
     area_prev = area
+            
     if (icoarse == 1)then
         call prim2cons(fine_initial_mass,fine_initial_conc,area,nx,nconc)
     end if
@@ -133,6 +137,7 @@ do icoarse = 1,nrefine
     call cons2prim(conc,mass,area,nx,nconc)
     conc_prev = conc
     
+    max_velocity =zero
     do itime = 1,nstep
        time = time + dt
        call hydro(flow,    &
@@ -145,6 +150,14 @@ do icoarse = 1,nrefine
                   time,    &
                   dx,      &                  
                   dt)
+        
+                  
+      
+    if (maxval(abs(flow)/area) >=  max_velocity) then
+          max_velocity = maxval(abs(flow)/area)
+    end if
+       
+
       ! call transport using no_source as the callback 
       call advect(mass,     &
                   mass_prev,&  
@@ -189,6 +202,7 @@ do icoarse = 1,nrefine
     deallocate(solution_mass)
     deallocate(reference)
     deallocate(x_center)
+    deallocate(velocity)
     call deallocate_state
 end do
 
@@ -201,7 +215,7 @@ call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order conv
 !todo:
 
 if (verbose == .true.) then
-   call log_convergence_results(norm_error,nrefine,dx,dt,label)
+   call log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label)
 end if
 
 return

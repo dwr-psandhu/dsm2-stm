@@ -25,15 +25,13 @@ use stm_precision
 !----- module variables
 ! todo: make the names more meaningful
 real(stm_real),parameter :: origin = zero 
-real(stm_real),parameter :: domain_length = 40960.0d0  ! meter
-real(stm_real),parameter :: amplitude = half ! meter
+real(stm_real),parameter :: domain_length = 102400.0d0  ! meter
+real(stm_real),parameter :: amplitude = fourth ! meter
 real(stm_real),parameter :: gravity = 9.80d0 ! m/s^2
-real(stm_real),parameter :: depth =16.0d0    ! meter
+real(stm_real),parameter :: depth =12.0d0    ! meter
 
-real(stm_real),parameter :: start_time = zero 
 real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0 
 real(stm_real),parameter :: m2_period = 12.4d0*sec_per_hr
-real(stm_real),parameter :: end_time = ten*m2_period
 real(stm_real),parameter :: freq=two*pi/m2_period
 
 
@@ -46,11 +44,10 @@ subroutine test_tidal_advection_convergence(verbose)
 implicit none
 procedure(hydro_data_if),pointer :: tidal_hydro
 integer, parameter  :: nconc = 2
-integer, parameter  :: nstep_base = 5120 !todo: CFL was around 70 with 40 points
+integer, parameter  :: nstep_base = 3*256
 integer, parameter  :: nx_base    = 256  
 logical :: verbose
-real(stm_real), parameter :: total_time = two*four*m2_period
-real(stm_real), parameter :: domain_length = 40960.0d0
+real(stm_real), parameter :: total_time = m2_period
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
 real(stm_real) :: ic_center = domain_length/two
@@ -69,21 +66,21 @@ call initial_fine_solution_tidal(fine_initial_condition,     &
                                      origin,                 &
                                      domain_length,          &
                                      ic_gaussian_sd,         &
-                                     solution_gaussian_sd,    &
+                                     solution_gaussian_sd,   &
                                      ic_center,              &
                                      solution_center   )
 
 
-call test_round_trip(label,                  &
-                     tidal_hydro,            &
-                     domain_length,          &
-                     total_time,             &
-                     fine_initial_condition, &
-                     fine_solution,          &            
-                     nstep_base,             &
-                     nx_base,                &
-                     nconc,                  &
-                     verbose)
+call test_advection_convergence(label,                   &
+                                 tidal_hydro,            &
+                                 domain_length,          &
+                                 total_time,             &
+                                 fine_initial_condition, &
+                                 fine_solution,          &            
+                                 nstep_base,             &
+                                 nx_base,                &
+                                 nconc,                  &
+                                 verbose)
 
 return
 end subroutine
@@ -148,9 +145,9 @@ subroutine tidal_flow(flow,    &
    
     implicit none
     integer, intent(in) :: ncell                   !< number of cells
-    real(stm_real), intent(in) :: time             !< time of request "old time"
-    real(stm_real), intent(in) :: dx               !< spatial step 
-    real(stm_real), intent(in) :: dt               !< time step 
+    real(stm_real), intent(in)  :: time            !< time of request "old time"
+    real(stm_real), intent(in)  :: dx              !< spatial step 
+    real(stm_real), intent(in)  :: dt              !< time step 
     real(stm_real), intent(out) :: flow(ncell)     !< cell and time centered flow
     real(stm_real), intent(out) :: flow_lo(ncell)  !< lo face flow, time centered
     real(stm_real), intent(out) :: flow_hi(ncell)  !< hi face flow, time centered
