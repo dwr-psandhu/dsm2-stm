@@ -28,7 +28,7 @@ real(stm_real),parameter :: origin = zero
 real(stm_real),parameter :: domain_length = 102400.0d0  ! meter
 real(stm_real),parameter :: amplitude = fourth ! meter
 real(stm_real),parameter :: gravity = 9.80d0 ! m/s^2
-real(stm_real),parameter :: depth =12.0d0    ! meter
+real(stm_real),parameter :: depth =16.0d0    ! meter
 
 real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0 
 real(stm_real),parameter :: m2_period = 12.4d0*sec_per_hr
@@ -44,7 +44,7 @@ subroutine test_tidal_advection_convergence(verbose)
 implicit none
 procedure(hydro_data_if),pointer :: tidal_hydro
 integer, parameter  :: nconc = 2
-integer, parameter  :: nstep_base = 3*256
+integer, parameter  :: nstep_base = 256
 integer, parameter  :: nx_base    = 256  
 logical :: verbose
 real(stm_real), parameter :: total_time = m2_period
@@ -163,12 +163,12 @@ subroutine tidal_flow(flow,    &
 
 
 big_b = freq/sqrt(gravity*depth)
-big_a = amplitude* sqrt(gravity*depth)/depth/cos(big_b*domain_length)
+big_a = amplitude* sqrt(gravity*depth)/(depth*cos(big_b*domain_length))
 
     do icell = 1,ncell  ! width is equal to  1 meter 
       area(icell)    = depth + amplitude * cos(big_b*(domain_length-(dble(icell)-half)*dx))/cos(big_b*domain_length)*cos(freq*time)  
-      area_lo(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell-1)*dx)))    /cos(big_b*domain_length)*cos(freq*time)  
-      area_hi(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell)*dx)))      /cos(big_b*domain_length)*cos(freq*time)  
+      area_lo(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell-1)*dx)))   /cos(big_b*domain_length)*cos(freq*time)  
+      area_hi(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell)*dx)))     /cos(big_b*domain_length)*cos(freq*time)  
     
       flow(icell)    = area(icell)   *big_a*sin(big_b*(domain_length - (dble(icell)*dx-dx/two)))*sin(freq*time)
       flow_lo(icell) = area_lo(icell)*big_a*sin(big_b*(domain_length - (dble(icell)*dx-dx    )))*sin(freq*time)
