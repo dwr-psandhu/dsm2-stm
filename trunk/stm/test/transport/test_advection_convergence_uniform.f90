@@ -68,7 +68,7 @@ call initial_fine_solution_uniform(fine_initial_condition, &
                                    solution_center   )
 
 
-call test_round_trip(label,                  &
+call test_advection_convergence(label,                  &
                      uniform_hydro,          &
                      domain_length,          &
                      total_time,             &
