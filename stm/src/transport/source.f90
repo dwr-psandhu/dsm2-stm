@@ -19,6 +19,8 @@
 !</license>
 
 !> Source interface to be fulfilled by driver or application
+!> Specifically, the user must set the "source" pointer (a variable in this module)
+!> to a subroutine that meets the compute_source interface.
 !>@ingroup transport
 module source_module
  !> Calculate source
@@ -32,12 +34,12 @@ module source_module
    ! todo: check if the source must be inout or just out
    ! todo: create prim_increment_to_cons()
    subroutine source_if(source, & 
-                                conc,   &
-                                area,   &
-                                flow,   &
-                                ncell,  &
-                                nvar,   &
-                                time)
+                        conc,   &
+                        area,   &
+                        flow,   &
+                        ncell,  &
+                        nvar,   &
+                        time)
      use stm_precision
      implicit none
      !--- args
@@ -51,12 +53,17 @@ module source_module
      
    end subroutine source_if
  end interface
- !> This pointer should be set by the driver or client code to specify the 
- !> source term 
- procedure(source_if),pointer :: source => null() !no_source
+ 
+ !>\file
+ !>\var source_module::source 
+ !>\brief Pointer to source term
+ !>This pointer should be set by the driver or client code
+ procedure(source_if),pointer :: source => null() 
 
   contains
  
+ !> Zero source implementation.
+ !> This source term adds nothing (e.g., for conservative constituents)
  subroutine no_source(source,   & 
                         conc,   &
                         area,   &

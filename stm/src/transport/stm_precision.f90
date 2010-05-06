@@ -22,7 +22,7 @@
 !>@ingroup transport
 module stm_precision
 
-!> Precision of REAL
+!> Precision of REAL number
 integer, parameter :: stm_real = 8
 
 real(stm_real), parameter :: minus = -1.D0      !< Real constant -1. properly typed
