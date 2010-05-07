@@ -26,28 +26,30 @@ module error_handling
 
     contains
         
-    
     !> Logs the input message as an error and stops execution with error code
     subroutine stm_fatal(message)
    
     use logging, only: stm_log, ERROR
+    
     implicit none
     character(LEN=*), intent(in)  :: message  !< Message concerning error
+    
     call stm_log(ERROR,message)
     stop 1
+    
     return
     end subroutine
     
-    !< Prints an array to file
+    !> Prints an array to file
     subroutine printout(arr,x,filename)
 
         implicit none
         real(stm_real),intent(in) :: arr(:)         !< array values
         real(stm_real),intent(in) :: x(:)           !< x values
         character(LEN=*)          :: filename       !< name of file to write
-        integer                   :: icell
         
         !--local
+        integer                   :: icell
         integer                   :: nx
         
         nx = size(arr)
@@ -60,7 +62,7 @@ module error_handling
         close(11)
     end subroutine
 
-    !< Prints an array to file
+    !> Prints an array to file
     subroutine printout_append(arr,x,time,funit)
 
         implicit none
