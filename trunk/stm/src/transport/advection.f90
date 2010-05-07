@@ -56,7 +56,7 @@ subroutine advect(mass,     &
                   dt,       &
                   dx,       &
                   use_limiter)
-! todo: remove comment
+
 !use source_if
 use stm_precision
 use primitive_variable_conversion
@@ -79,7 +79,7 @@ real(stm_real),intent(in)  :: area_hi(ncell,nvar)   !< hi side area centered in 
 real(stm_real),intent(in)  :: time                  !< current time
 real(stm_real),intent(in)  :: dt                    !< current time step
 real(stm_real),intent(in)  :: dx                    !< spatial step
-logical,intent(in),optional :: use_limiter           !< whether to use slope limiter
+logical,intent(in),optional :: use_limiter          !< whether to use slope limiter
 
 !---------- locals
 
@@ -102,13 +102,14 @@ if (present(use_limiter))then
 else
     limit_slope = .true.
 end if
-
+! converts the conservative variable (mass) to the primitive variable (concentration)
 call cons2prim(conc,mass_prev,area,ncell,nvar)
 
 ! Calculate the (undivided) differences of concentrations
 call difference(grad_lo,grad_hi,grad_center,conc,ncell,nvar)
 
 if (limit_slope)then
+! applies flux-limeter on high resolution gradient 
     call limiter(grad_lim,grad_lo,grad_hi,grad_center,ncell,nvar)
 else
     grad_lim = grad_center
@@ -116,7 +117,6 @@ end if
 
 ! Adjust differences to account for places (boundaries, gates, etc) where one-sided
 ! or other differencing is required
-! todo: for debugging
 call adjust_differences(grad,grad_lim,grad_lo,grad_hi,ncell,nvar)
 
 ! todo: commented
@@ -150,7 +150,7 @@ call compute_flux(flux_lo,  &
                   )
 
 ! Replace fluxes for special cases having to do with boundaries, network and structures
-! Keeps the dirty stuff in one place. For now this is an empty call
+! todo : Keeps the dirty stuff in one place. For now this is an empty call
 call replace_boundary_flux(flux_lo,flux_hi,conc_lo,conc_hi,flow_lo,flow_hi,ncell,nvar,time,dt,dx)
 
 ! Combine the fluxes into a divergence term at the half time at cell edges.
@@ -159,7 +159,7 @@ call replace_boundary_flux(flux_lo,flux_hi,conc_lo,conc_hi,flow_lo,flow_hi,ncell
 ! todo: commented
 call compute_divergence( div_flux, flux_lo, flux_hi, ncell, nvar)
 
-! conservative update including source. 
+!conservative update including source. 
 call update_conservative(mass,mass_prev,div_flux,source,area,ncell,nvar,dt,dx)
 
 return
@@ -190,23 +190,19 @@ implicit none
 !--- args
 integer,intent(in)  :: ncell  !< Number of cells
 integer,intent(in)  :: nvar   !< Number of variables
-
-!> estimate from this cell extrapolated to lo face at half time
-real(stm_real),intent(out) :: conc_lo(ncell,nvar)
-
-!> estimate from this cell extrapolated to hi face at half time
-real(stm_real),intent(out):: conc_hi(ncell,nvar)!todo: why conc_hi? where is lo?
-real(stm_real),intent(in) :: conc(ncell,nvar)   !< cell centered conc at old time
-real(stm_real),intent(in) :: grad(ncell,nvar)   !< cell centered difference of conc at old time, currently assuming these are undivided differences
-real(stm_real),intent(in) :: area(ncell)        !< cell-centered area at old time
-real(stm_real),intent(in) :: flow(ncell)        !< cell-centered flow at old time
-real(stm_real),intent(in) :: source(ncell,nvar) !< source terms at old time
-real(stm_real),intent(in) :: time               !< time
-real(stm_real),intent(in) :: dt                 !< length of current time step being advanced
-real(stm_real),intent(in) :: dx                 !< spatial step
+real(stm_real),intent(out):: conc_lo(ncell,nvar) !< estimate from this cell extrapolated to lo face at half time
+real(stm_real),intent(out):: conc_hi(ncell,nvar) !< estimate from this cell extrapolated to hi face at half time
+real(stm_real),intent(in) :: conc(ncell,nvar)    !< cell centered conc at old time
+real(stm_real),intent(in) :: grad(ncell,nvar)    !< cell centered difference of conc at old time, currently assuming these are undivided differences
+real(stm_real),intent(in) :: area(ncell)         !< cell-centered area at old time
+real(stm_real),intent(in) :: flow(ncell)         !< cell-centered flow at old time
+real(stm_real),intent(in) :: source(ncell,nvar)  !< source terms at old time
+real(stm_real),intent(in) :: time                !< time
+real(stm_real),intent(in) :: dt                  !< length of current time step being advanced
+real(stm_real),intent(in) :: dx                  !< spatial step
 !----- locals
-real(stm_real) :: vel(ncell) !< cell-centered flow at old time
 integer        :: ivar
+real(stm_real) :: vel(ncell)                !< cell-centered flow at old time
 real(stm_real) :: dtbydx
 !--------------------
 vel=flow/area
@@ -283,7 +279,7 @@ end subroutine
 
 
 !> Compute the divergence of fluxes.
-!> At present, this is undivided...which may be not what we want.
+! todo: At present, this is undivided...which may be not what we want.
 subroutine compute_divergence(div_flux, flux_lo, flux_hi, ncell, nvar)
 
 use stm_precision
@@ -292,9 +288,9 @@ implicit none
 !--- args
 integer,intent(in)  :: ncell  !< Number of cells
 integer,intent(in)  :: nvar   !< Number of variables
-real(stm_real),intent(out) :: div_flux(ncell,nvar)!< cell centered flux divergence, time centered
-real(stm_real),intent(in)  :: flux_lo(ncell,nvar) !< flux on lo side of cell, time centered
-real(stm_real),intent(in)  :: flux_hi(ncell,nvar) !< flux on hi side of cell, time centered 
+real(stm_real),intent(out) :: div_flux(ncell,nvar)!< Cell centered flux divergence, time centered
+real(stm_real),intent(in)  :: flux_lo(ncell,nvar) !< Flux on lo side of cell, time centered
+real(stm_real),intent(in)  :: flux_hi(ncell,nvar) !< Flux on hi side of cell, time centered 
 !-----------
 
 div_flux = (flux_hi - flux_lo)
@@ -306,9 +302,9 @@ end subroutine
 
 
 !> Replace original calculated flux at boundary locations
-!> todo: figure out if the arguments are right and move this routine to the 
-!>       application -- it should just be an interface like sources and hydro_data
-!>       Also, eventually have to think out channel network
+! todo: figure out if the arguments are right and move this routine to the 
+!       application -- it should just be an interface like sources and hydro_data
+!       Also, eventually have to think out channel network
 subroutine replace_boundary_flux(flux_lo,  &
                                  flux_hi,  &
                                  conc_lo,  &
@@ -326,18 +322,16 @@ implicit none
 integer,intent(in)  :: ncell                        !< Number of cells
 integer,intent(in)  :: nvar                         !< Number of variables
 
-real(stm_real),intent(inout) :: flux_lo(ncell,nvar) !< Flux on lo face at half time
-real(stm_real),intent(inout) :: flux_hi(ncell,nvar) !< Flux on hi face at half time
-real(stm_real),intent(in) :: conc_lo(ncell,nvar)    !< upwinded concentration at half time at lo face
-real(stm_real),intent(in) :: conc_hi(ncell,nvar)    !< upwinded concentration at half time at hi face
-real(stm_real),intent(in) :: flow_lo(ncell,nvar)    !< time-centered flow at lo face
-real(stm_real),intent(in) :: flow_hi(ncell,nvar)    !< time-centered flow at hi face
-real(stm_real), intent(in) :: time                  !< time
-real(stm_real), intent(in) :: dt                    !< length of current time step
-real(stm_real), intent(in) :: dx                    !< spatial step
+real(stm_real), intent(inout) :: flux_lo(ncell,nvar) !< Flux on lo face at half time
+real(stm_real), intent(inout) :: flux_hi(ncell,nvar) !< Flux on hi face at half time
+real(stm_real), intent(in) :: conc_lo(ncell,nvar)    !< Upwinded concentration at half time at lo face
+real(stm_real), intent(in) :: conc_hi(ncell,nvar)    !< Upwinded concentration at half time at hi face
+real(stm_real), intent(in) :: flow_lo(ncell,nvar)    !< Time-centered flow at lo face
+real(stm_real), intent(in) :: flow_hi(ncell,nvar)    !< Time-centered flow at hi face
+real(stm_real), intent(in) :: time                   !< Time
+real(stm_real), intent(in) :: dt                     !< Length of current time step
+real(stm_real), intent(in) :: dx                     !< Spatial step
 
-
-!--------------------
 
 flux_lo(1,:)= zero
 flux_hi(ncell,:)=zero
@@ -367,24 +361,23 @@ implicit none
 integer,intent(in)  :: ncell                         !< Number of cells
 integer,intent(in)  :: nvar                          !< Number of variables
 
-real(stm_real),intent(out) :: mass(ncell,nvar)       !< update of mass
-real(stm_real),intent(in)  :: mass_prev(ncell,nvar)  !< old time mass
-real(stm_real),intent(in)  :: area(ncell)            !< area of cells
-real(stm_real),intent(in)  :: source_prev(ncell,nvar)!< old time source term
-real(stm_real),intent(in)  :: div_flux(ncell,nvar)   !< flux divergence, time centered
-real(stm_real),intent(in)  :: dt                     !< length of current time step
-real(stm_real),intent(in)  :: dx                     !< spatial step
+real(stm_real),intent(out) :: mass(ncell,nvar)       !< Update of mass
+real(stm_real),intent(in)  :: mass_prev(ncell,nvar)  !< Old time mass
+real(stm_real),intent(in)  :: area(ncell)            !< Area of cells
+real(stm_real),intent(in)  :: source_prev(ncell,nvar)!< Old time source term
+real(stm_real),intent(in)  :: div_flux(ncell,nvar)   !< Flux divergence, time centered
+real(stm_real),intent(in)  :: dt                     !< Length of current time step
+real(stm_real),intent(in)  :: dx                     !< Spatial step
 
 !--- locals
 real(stm_real) :: dtbydx
-real(stm_real) :: source(ncell,nvar)                 !< new time source term
-real(stm_real) :: conc(ncell,nvar)                   !< concentration
-
+real(stm_real) :: source(ncell,nvar)                 !< New time source term
+real(stm_real) :: conc(ncell,nvar)                   !< Concentration
 
 !--------------------
 dtbydx = dt/dx
 
-! obtain a guess at the new state (predictor part of huen) using the flux divergence and source evaluated at the
+! obtain a guess at the new state (predictor part of Huen) using the flux divergence and source evaluated at the
 ! old time step
 mass = mass_prev - dtbydx*div_flux + dt*source_prev
 
@@ -416,10 +409,10 @@ implicit none
 integer,intent(in)  :: ncell                       !< Number of cells
 integer,intent(in)  :: nvar                        !< Number of variables
 
-real(stm_real),intent(in)  :: grad_lo(ncell,nvar)  !< difference based on lo side difference
-real(stm_real),intent(in)  :: grad_hi(ncell,nvar)  !< gdifference based on hi side difference
-real(stm_real),intent(in)  :: grad_lim(ncell,nvar) !< limited cell centered difference
-real(stm_real),intent(out) :: grad(ncell,nvar)     !< cell centered difference adjusted for boundaries and hydraulic devices
+real(stm_real),intent(in)  :: grad_lo(ncell,nvar)  !< Difference based on lo side difference
+real(stm_real),intent(in)  :: grad_hi(ncell,nvar)  !< Gdifference based on hi side difference
+real(stm_real),intent(in)  :: grad_lim(ncell,nvar) !< Limited cell centered difference
+real(stm_real),intent(out) :: grad(ncell,nvar)     !< Cell centered difference adjusted for boundaries and hydraulic devices
 !---------
 grad          = grad_lim
 grad(1,:)     = grad_hi(1,:)
