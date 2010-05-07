@@ -41,16 +41,16 @@ module boundary_diffusion
          use stm_precision
          implicit none
          !--- args
-         integer, intent(in)  :: ncell                                   !< number of cells
-         integer, intent(in)  :: nvar                                    !< number of variables
-         real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
-         real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-         real(stm_real), intent (in) :: area_lo         (ncell)         !< Low side area centered at old time
-         real(stm_real), intent (in) :: area_hi         (ncell)         !< High side area centered at old time
-         real(stm_real), intent (in)  ::  time                             !< time
-         real(stm_real), intent (in)  ::  conc(ncell,nvar)                 !< concentration 
-         real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)       !< Low side constituent dispersion coef.
-         real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)       !< High side constituent dispersion coef.
+         integer, intent(in)  :: ncell                                    !< Number of cells
+         integer, intent(in)  :: nvar                                     !< Number of variables
+         real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)   !< Face flux, lo side
+         real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)   !< Face flux, hi side
+         real(stm_real), intent (in)   :: area_lo         (ncell)         !< Low side area centered at old time
+         real(stm_real), intent (in)   :: area_hi         (ncell)         !< High side area centered at old time
+         real(stm_real), intent (in)   ::  time                           !< Time
+         real(stm_real), intent (in)   ::  conc(ncell,nvar)               !< Concentration 
+         real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)       !< Low side constituent dispersion coef.
+         real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)       !< High side constituent dispersion coef.
        
        end subroutine boundary_diffusive_flux_if
  end interface
@@ -63,8 +63,8 @@ module boundary_diffusion
 
  abstract interface
        !> Generic interface for calculating BC of matrix that should be fulfilled by
-       !> client programs
-       subroutine boundary_diffusive_matrix_if( center_diag ,      &
+       !> the driver or the client programs
+       subroutine boundary_diffusive_matrix_if( center_diag ,           &
                                                       up_diag,          &     
                                                       down_diag,        &
                                                       area,             &
@@ -132,12 +132,12 @@ module boundary_diffusion
          integer, intent(in)  :: nvar                                    !< number of variables
          real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
          real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-         real(stm_real), intent (in) :: area_lo         (ncell)         !< Low side area centered at old time
-         real(stm_real), intent (in) :: area_hi         (ncell)         !< High side area centered at old time
-         real(stm_real), intent (in)  ::  time                             !< time
-         real(stm_real), intent (in)  ::  conc(ncell,nvar)                 !< concentration 
-         real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)       !< Low side constituent dispersion coef.
-         real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)       !< High side constituent dispersion coef.
+         real(stm_real), intent (in)   :: area_lo         (ncell)        !< Low side area centered at old time
+         real(stm_real), intent (in)   :: area_hi         (ncell)        !< High side area centered at old time
+         real(stm_real), intent (in)   ::  time                          !< time
+         real(stm_real), intent (in)   ::  conc(ncell,nvar)              !< concentration 
+         real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
+         real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
     
      call stm_fatal("boundary not implemented")
      
@@ -146,7 +146,7 @@ module boundary_diffusion
  
  !> Example diffusive flux that imposes Neumann boundaries with zero flux at
  !> both ends of the channel.
- subroutine neumann_no_flow_diffusive_flux(diffusive_flux_lo, &
+ subroutine neumann_no_flow_diffusive_flux(diffusive_flux_lo,   &
                                              diffusive_flux_hi, &
                                              conc,              &
                                              area_lo,           &
@@ -163,19 +163,19 @@ module boundary_diffusion
          integer, intent(in)  :: nvar                                    !< number of variables
          real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
          real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-         real(stm_real), intent (in) :: area_lo         (ncell)         !< Low side area centered at old time
-         real(stm_real), intent (in) :: area_hi         (ncell)         !< High side area centered at old time
-         real(stm_real), intent (in)  ::  time                             !< time
-         real(stm_real), intent (in)  ::  conc(ncell,nvar)                 !< concentration 
-         real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)       !< Low side constituent dispersion coef.
-         real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)       !< High side constituent dispersion coef.
-       
+         real(stm_real), intent (in)   :: area_lo         (ncell)        !< Low side area centered at old time
+         real(stm_real), intent (in)   :: area_hi         (ncell)        !< High side area centered at old time
+         real(stm_real), intent (in)   ::  time                          !< time
+         real(stm_real), intent (in)   ::  conc(ncell,nvar)              !< concentration 
+         real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
+         real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
+    
      ! todo: add other BC 
      ! neumann default
      diffusive_flux_lo(1,:) = zero
      diffusive_flux_hi(ncell,:) =zero
      
-     ! todo: implement and test
+   
      return
  end subroutine
  
