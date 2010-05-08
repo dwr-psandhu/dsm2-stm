@@ -25,21 +25,21 @@ contains
 !> Convert conservative variables (ie mass) to primitive (concentration)
 pure subroutine cons2prim(conc,mass,area,nloc,nvar)
 
-use stm_precision
+    use stm_precision
 
-implicit none
-real(stm_real),intent(out) :: conc(nloc,nvar)   !< concentration (converted from mass per unit length )
-real(stm_real),intent(in)  :: mass(nloc,nvar)   !< mass per unit length 
-real(stm_real),intent(in)  :: area(nloc)        !< area at conversion locations
-!--- args
-integer,intent(in)  :: nloc                     !< Number of cells or faces
-integer,intent(in)  :: nvar                     !< Number of variables
-!--- locals
-integer :: ivar
-!-------------------
-do ivar = 1,nvar
-    conc(:,ivar) = mass(:,ivar)/area
-end do
+    implicit none
+    !--- args
+    real(stm_real),intent(out) :: conc(nloc,nvar)   !< Concentration (converted from mass per unit length )
+    real(stm_real),intent(in)  :: mass(nloc,nvar)   !< Mass per unit length 
+    real(stm_real),intent(in)  :: area(nloc)        !< Area at conversion locations
+    integer,intent(in)  :: nloc                     !< Number of cells or faces
+    integer,intent(in)  :: nvar                     !< Number of variables
+    !--- locals
+    integer :: ivar
+
+    do ivar = 1,nvar
+        conc(:,ivar) = mass(:,ivar)/area
+    end do
 
 return
 end subroutine
@@ -49,49 +49,51 @@ pure subroutine prim2cons(mass,conc,area,nloc,nvar)
 
 use stm_precision
 
-implicit none
-real(stm_real),intent(out) :: mass(nloc,nvar)  !< mass per unit length (converted from concentration)
-real(stm_real),intent(in)  :: conc(nloc,nvar)  !< concentrations to convert
-real(stm_real),intent(in)  :: area(nloc)       !< area at conversion locations
-!--- args
-integer,intent(in)  :: nloc                    !< Number of cells or faces
-integer,intent(in)  :: nvar                    !< Number of variables
-!--- locals
-integer :: ivar
-!-------------------
-
-do ivar = 1,nvar
-    mass(:,ivar) = conc(:,ivar)*area
-end do
+    implicit none
+    !--- args
+    real(stm_real),intent(out) :: mass(nloc,nvar)  !< Mass per unit length (converted from concentration)
+    real(stm_real),intent(in)  :: conc(nloc,nvar)  !< Concentrations to convert
+    real(stm_real),intent(in)  :: area(nloc)       !< Area at conversion locations
+    integer,intent(in)  :: nloc                    !< Number of cells or faces
+    integer,intent(in)  :: nvar                    !< Number of variables
+    !--- locals
+    integer :: ivar
+   
+    do ivar = 1,nvar
+        mass(:,ivar) = conc(:,ivar)*area
+    end do
+    
 return
 end subroutine
 
 !> Increment a conservative variable using an increment (e.g. source) in primitive terms
 !> Converts increment of primitive (concentration) to conservative variable (mass) and
 !> adds it to the conservative variable. "Scale" will typically involve dt or half*dt.
-!> todo: write test
+
 pure subroutine prim_increment_to_cons(mass,conc,area,nloc,nvar,scale)
 
-use stm_precision
+    use stm_precision
 
-implicit none
-real(stm_real),intent(inout) :: mass(nloc,nvar)  !< mass per unit length (converted from concentration)
-real(stm_real),intent(in  )  :: conc(nloc,nvar)  !< concentrations to convert
-real(stm_real),intent(in)    :: area(nloc)       !< area at conversion locations
-! todo: here is a compiler bug and the fortran forums told it would be fixed 
-! change the scale intent to just (in)
-real(stm_real),intent(in) :: scale     !< scale factor
-!--- args
-integer,intent(in)  :: nloc                    !< Number of cells or faces
-integer,intent(in)  :: nvar                    !< Number of variables
-!--- locals
-integer :: ivar
-!-------------------
+    implicit none
+    !--- args
+    real(stm_real),intent(inout) :: mass(nloc,nvar)  !< Mass per unit length (converted from concentration)
+    real(stm_real),intent(in)    :: conc(nloc,nvar)  !< Concentrations to convert
+    real(stm_real),intent(in)    :: area(nloc)       !< Area at conversion locations
+    ! todo: here is a compiler bug and the fortran forums told it would be fixed 
+    ! change the scale intent to just (in)
+    ! todo: should we change scale to scale(nvar)?
+    real(stm_real),intent(in)    :: scale          !< Scale factor
+    integer,intent(in)  :: nloc                    !< Number of cells or faces
+    integer,intent(in)  :: nvar                    !< Number of variables
+    !--- locals
+    integer :: ivar
 
-do ivar = 1,nvar
-! todo: check this line
-    mass(:,ivar) =  mass(:,ivar) + scale*conc(:,ivar)*area
-end do
+
+    do ivar = 1,nvar
+    ! todo: check this line
+        mass(:,ivar) =  mass(:,ivar) + scale*conc(:,ivar)*area
+    end do
+
 return
 end subroutine
 

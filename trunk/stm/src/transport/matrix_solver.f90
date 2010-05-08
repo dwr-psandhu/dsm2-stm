@@ -20,8 +20,8 @@
 
 !> Matrix solver module for the system of linear equations.
 !> The solvers include:
-!>   - Tri-diagonal solver using ? algorithm
-!>   - Penta-diagonal solver using ? algorithm
+!>   - Tri-diagonal solver using todo:? algorithm
+!>   - Penta-diagonal solver using todo:? algorithm
 !>   - Sparse matrix solver 
 !>@ingroup matrix_solver
 module matrix_solver
@@ -47,25 +47,24 @@ contains
 !> C(i): Values of the coefficients above diagonal in matrix
 !> D(i): Values of the right hand side vector 
 !> X(i): Values of the computed solution
-pure subroutine tridi_solver ( center_diag ,                &
-                                      up_diag,              &     
-                                      down_diag,            &
-                                      right_hand_side,      &
-                                      conc,                 &
-                                      ncell)
+pure subroutine tridi_solver ( center_diag ,        &
+                              up_diag,              &     
+                              down_diag,            &
+                              right_hand_side,      &
+                              conc,                 &
+                              ncell)
 
-    ! ----- args
+    ! --- args
 
     integer,intent (in) :: ncell                          !< Number of volumes 
-    
+    real(stm_real),intent (out) :: conc(ncell)            !< Values of the computed solution
     real(stm_real),intent (in)  :: down_diag(ncell)       !< Values of the coefficients below diagonal in matrix
     real(stm_real),intent (in)  :: center_diag(ncell)     !< Values of the coefficients at the diagonal in matrix
     real(stm_real),intent (in)  :: up_diag(ncell)         !< Values of the coefficients above the diagonal in matrix
     real(stm_real),intent (in)  :: right_hand_side(ncell) !< Values of the right hand side vector
-    real(stm_real),intent (out) :: conc(ncell)            !< Values of the computed solution
+    
 
-    !---- Local 
-
+    !--- Local 
     integer :: ivar
     real(stm_real) :: gam(ncell)
     real(stm_real) :: bet
