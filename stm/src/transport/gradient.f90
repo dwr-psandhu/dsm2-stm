@@ -23,7 +23,7 @@
 module gradient
 contains
 
-!> Calculate the undivided lo, hi and centered differences
+!> Calculate the undivided lo, hi, and centered differences
 subroutine difference(grad_lo,grad_hi,grad_center,vals,ncell,nvar)
 
 use stm_precision
@@ -33,10 +33,10 @@ implicit none
 !---- args
 integer,intent(in)  :: ncell                          !< Number of cells
 integer,intent(in)  :: nvar                           !< Number of variables
-real(stm_real),intent(in) :: vals(ncell,nvar)         !< data to be differenced
-real(stm_real),intent(out) :: grad_lo(ncell,nvar)     !< difference on lo side, LARGEREAL in first index
-real(stm_real),intent(out) :: grad_hi(ncell,nvar)     !< difference on hi side (n+1) minus (n) LARGEREAL for last index
-real(stm_real),intent(out) :: grad_center(ncell,nvar) !< centered diff, LARGEREAL for undefined boundary cells
+real(stm_real),intent(in) :: vals(ncell,nvar)         !< Data to be differenced
+real(stm_real),intent(out) :: grad_lo(ncell,nvar)     !< Difference on lo side, LARGEREAL in first index
+real(stm_real),intent(out) :: grad_hi(ncell,nvar)     !< Difference on hi side (n+1) minus (n) LARGEREAL for last index
+real(stm_real),intent(out) :: grad_center(ncell,nvar) !< Dentered diff, LARGEREAL for undefined boundary cells
 
 !----local
 integer :: ivar
@@ -70,7 +70,7 @@ real(stm_real),intent(in) :: grad_hi(ncell,nvar)     !< difference on hi side (n
 real(stm_real),intent(in) :: grad_center(ncell,nvar) !< centered difference, LARGEREAL for undefined boundary cells 
 real(stm_real),intent(out) :: grad_lim(ncell,nvar)   !< limited difference
 
-!----locals
+!---locals
 
 real(stm_real) :: delta_limit(ncell,nvar) ! intermediate quantity
 real(stm_real) :: sign
@@ -79,8 +79,8 @@ integer        :: ivar, icell             ! counting variables
 do ivar = 1,nvar
     do icell = 1,ncell
         delta_limit(icell,ivar) = two*min(abs(grad_lo(icell,ivar)), &
-                                          abs(grad_hi(icell,ivar))  &
-                                          )
+                                          abs(grad_hi(icell,ivar)) )
+                                          
         if (grad_center(icell,ivar) < zero)then
             sign = minus
         else

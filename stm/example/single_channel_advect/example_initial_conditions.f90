@@ -22,6 +22,7 @@
 !>@ingroup example
 
 module example_initial_conditions
+    
     use stm_precision
     private gaussian_cdf
     
@@ -32,9 +33,9 @@ module example_initial_conditions
         use stm_precision
         implicit none
         
-        real(stm_real), intent(in) :: x0   !< end of integration
-        real(stm_real), intent(in) :: mean !< mean
-        real(stm_real), intent(in) :: sd   !< sigma/standard deviation
+        real(stm_real), intent(in) :: x0   !< End of integration
+        real(stm_real), intent(in) :: mean !< Mean
+        real(stm_real), intent(in) :: sd   !< Sigma (standard deviation)
         gaussian_cdf = half + half*erf((x0-mean)/(sqrt(two)*sd))
         return
     end function
@@ -43,16 +44,15 @@ module example_initial_conditions
     !> Fill array with 1D gaussian shape
     !> This routine expects a 1D array, so multi-constituents
     !> have to be initialized separately
-    
-    subroutine fill_gaussian(vals,nloc,origin,dx,mean,sd,scale)
+        subroutine fill_gaussian(vals,nloc,origin,dx,mean,sd,scale)
 
         implicit none
-        integer, intent(in) :: nloc                !< number of cells (size of array) 
-        real(stm_real), intent(out) :: vals(nloc)  !< values to be filled
-        real(stm_real), intent(in)  :: origin      !< origin (lo side of channel)
-        real(stm_real), intent(in)  :: dx          !< dx
-        real(stm_real), intent(in)  :: mean        !< center of the gaussian shape
-        real(stm_real), intent(in)  :: sd          !< length of gaussian shape
+        integer, intent(in) :: nloc                   !< Number of cells (size of array) 
+        real(stm_real), intent(out) :: vals(nloc)     !< Values to be filled
+        real(stm_real), intent(in)  :: origin         !< Origin (lo side of channel)
+        real(stm_real), intent(in)  :: dx             !< dx
+        real(stm_real), intent(in)  :: mean           !< Center of the gaussian shape
+        real(stm_real), intent(in)  :: sd             !< Standard deviation (Sigma)
         real(stm_real), intent(in), optional :: scale !< scale
         !-----locals
         real(stm_real) :: xlo
@@ -84,13 +84,13 @@ module example_initial_conditions
     subroutine fill_rectangular(array,x,nloc,xlo,xhi,fill,fill_else)
 
         implicit none
-        real(stm_real), intent(out) :: array(nloc)  !< array to be filled
-        real(stm_real), intent(in)  :: x(nloc)      !< cell-centered x coordinate
-        integer,        intent(in)  :: nloc         !< size of array
-        real(stm_real), intent(in)  :: xlo          !< lo side boundary of fill
-        real(stm_real), intent(in)  :: xhi          !< hi side boundary of fill
-        real(stm_real), intent(in)  :: fill         !< filled value between xlo and xhi
-        real(stm_real), intent(in)  :: fill_else    !< filled value if not between xlo and xhi
+        integer,        intent(in)  :: nloc         !< Size of array
+        real(stm_real), intent(out) :: array(nloc)  !< Array to be filled
+        real(stm_real), intent(in)  :: x(nloc)      !< Cell-centered x coordinate
+        real(stm_real), intent(in)  :: xlo          !< Lo side boundary of fill
+        real(stm_real), intent(in)  :: xhi          !< Hi side boundary of fill
+        real(stm_real), intent(in)  :: fill         !< Filled value between xlo and xhi
+        real(stm_real), intent(in)  :: fill_else    !< Filled value if not between xlo and xhi
                 
         array = fill_else
         
@@ -99,24 +99,36 @@ module example_initial_conditions
         end where
         
         return
-    end subroutine    
-
-    subroutine fill_triangular(array,x,nloc,xlo,xhi,fill,fill_else)
+    end subroutine
+    
+        
+    !> Fill array with symetric triangular shape (isosceles triangle)
+    !> This routine expects a 1D array, so multi-constituents
+    !> have to be initialized separately
+    subroutine fill_triangular(array,xpos,nloc,xlo,xhi,vertex_hight,fill_else)
 
         implicit none
-        real(stm_real), intent(out) :: array(nloc)  !< array to be filled
-        real(stm_real), intent(in)  :: x(nloc)      !< cell-centered x coordinate
-        integer,        intent(in)  :: nloc         !< size of array
-        real(stm_real), intent(in)  :: xlo          !< lo side boundary of fill
-        real(stm_real), intent(in)  :: xhi          !< hi side boundary of fill
-        real(stm_real), intent(in)  :: fill         !< filled value between xlo and xhi
-        real(stm_real), intent(in)  :: fill_else    !< filled value if not between xlo and xhi
+        integer,        intent(in)  :: nloc         !< Size of array
+        real(stm_real), intent(out) :: array(nloc)  !< Array to be filled
+        real(stm_real), intent(in)  :: xpos(nloc)   !< Cell-centered x coordinate
+        real(stm_real), intent(in)  :: xlo          !< Lo side boundary of fill
+        real(stm_real), intent(in)  :: xhi          !< Hi side boundary of fill
+        real(stm_real), intent(in)  :: vertex_hight !< Filled value of the toppest point
+        real(stm_real), intent(in)  :: fill_else    !< Filled value if not between xlo and xhi
+        !---loc
+        real(stm_real) :: xcenter 
+        real(stm_real) :: lenght
+        xcenter = half*(xhi-xlo)+xlo
+        length = xhi-xlo
                 
         array = fill_else
-        
-        where (x > xlo .and. x< xhi)
-            array = fill
+        !todo: check if you want this or something else
+        where (xpos > xlo .and. (xpos < (half*length)))
+            array = array + (xpos - xlo)*vertex_hight/(half*length)
+        elsewhere (xpos < xhi .and. (xpos > (half*length)))
+            array = array + vertex_hight - (xpos - xcenter)*vertex_hight/(half*length)
         end where
+        
         
         return
     end subroutine     
@@ -125,16 +137,16 @@ module example_initial_conditions
     subroutine fill_discontinuity(vals,nloc,origin,dx,x0,value_lo,value_hi)
 
     implicit none
-    integer, intent(in) ::  nloc                !< size of array
-    real(stm_real), intent(out) :: vals(nloc)   !< values to be filled
-    real(stm_real), intent(in)  :: origin       !< low side of channel 
+    integer, intent(in) ::  nloc                !< Size of array
+    real(stm_real), intent(out) :: vals(nloc)   !< Values to be filled
+    real(stm_real), intent(in)  :: origin       !< Low side of channel 
     real(stm_real), intent(in)  :: dx           !< dx
-    real(stm_real), intent(in)  :: x0           !< location of discontinuity todo: ??
-    real(stm_real), intent(in)  :: value_lo     !< value in the low side of discontinuity todo: ??
-    real(stm_real), intent(in)  :: value_hi     !< value in the high side of discontinuity todo: ??
+    real(stm_real), intent(in)  :: x0           !< Location of discontinuity todo: ??
+    real(stm_real), intent(in)  :: value_lo     !< Value in the low side of discontinuity todo: ??
+    real(stm_real), intent(in)  :: value_hi     !< Value in the high side of discontinuity todo: ??
     !---locals
-    real(stm_real) :: fraction_lo
-    real(stm_real) :: fraction_hi
+    real(stm_real) :: fraction_lo               !discountinuity distance percent from lo side
+    real(stm_real) :: fraction_hi               !discountinuity distance percent from hi side
     real(stm_real) :: xlo
     real(stm_real) :: xhi
     integer :: iloc

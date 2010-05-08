@@ -91,6 +91,8 @@ module source_module
      return
  end subroutine no_source
  
+ !> linear source (decay) implementation.
+ !> dC/dt = K
   subroutine linear_decay_source(source,    & 
                                     conc,   &
                                     area,   &

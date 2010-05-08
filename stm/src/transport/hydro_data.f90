@@ -39,23 +39,23 @@ module hydro_data
                                  dt)
         use stm_precision
         implicit none
-        integer, intent(in) :: ncell                   !< number of cells
-        real(stm_real), intent(in) :: time             !< time of request "old time"
-        real(stm_real), intent(in) :: dx               !< spatial step 
-        real(stm_real), intent(in) :: dt               !< time step 
-        real(stm_real), intent(out) :: flow(ncell)     !< cell and time centered flow
-        real(stm_real), intent(out) :: flow_lo(ncell)  !< lo face flow, time centered
-        real(stm_real), intent(out) :: flow_hi(ncell)  !< hi face flow, time centered
-        real(stm_real), intent(out) :: area(ncell)     !< cell center area, old time
-        real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face, time centered
-        real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
+        integer, intent(in) :: ncell                   !< Number of cells
+        real(stm_real), intent(in)  :: time            !< Time of request "old time"
+        real(stm_real), intent(in)  :: dx              !< Spatial step 
+        real(stm_real), intent(in)  :: dt              !< Time step 
+        real(stm_real), intent(out) :: flow(ncell)     !< Cell and time centered flow
+        real(stm_real), intent(out) :: flow_lo(ncell)  !< Lo face flow, time centered
+        real(stm_real), intent(out) :: flow_hi(ncell)  !< Hi face flow, time centered
+        real(stm_real), intent(out) :: area(ncell)     !< Cell center area, old time
+        real(stm_real), intent(out) :: area_lo(ncell)  !< Area lo face, time centered
+        real(stm_real), intent(out) :: area_hi(ncell)  !< Area hi face, time centered
+        
         end subroutine
       end interface
       
  !> This pointer should be set by the driver or client code to specify the 
  !> treatment at the boundaries
  procedure(hydro_data_if),pointer :: fill_hydro_data  => null()
-
       
       
 end module

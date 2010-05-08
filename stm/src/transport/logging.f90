@@ -39,27 +39,28 @@ module logging
     
     contains
     
+    !> Prints the error message and the level of occured error
     subroutine stm_log(level,message)
-    implicit none
-    ! todo: This name does not have a type, and must have an explicit type
-    ! I added something just to compile
-    integer :: level
-    character(LEN=*) :: message
-    !todo: do real logging
-    print*,message
+        implicit none
+        ! todo: This name does not have a type, and must have an explicit type
+        ! I added something just to compile
+        integer :: level                !< Level of error
+        character(LEN=*) :: message     !< Message triggered by the error 
+        !todo: do real logging
+        print*,message
     return
     end subroutine
     
-    !< Prints an array to file
+    !> Prints an array to file
     subroutine printout(arr,x,filename)
 
         implicit none
-        real(stm_real),intent(in) :: arr(:)         !< array values
-        real(stm_real),intent(in) :: x(:)           !< x values
-        character(LEN=*)          :: filename       !< name of file to write
-        integer                   :: icell
+        real(stm_real),intent(in) :: arr(:)         !< Array values
+        real(stm_real),intent(in) :: x(:)           !< X values
+        character(LEN=*)          :: filename       !< Name of file to write
         
         !--local
+        integer                   :: icell
         integer                   :: nx
         
         nx = size(arr)
@@ -74,16 +75,16 @@ module logging
 
 
 
-    !< Prints an array to file
+    !> Prints an array to file
     subroutine printout_append(arr,x,time,funit)
 
         implicit none
-        real(stm_real),   intent(in)   :: arr(:)         !< array values
-        real(stm_real),   intent(in)   :: x(:)           !< x coordinate
-        real(stm_real),   intent(in)   :: time           !< time
-        integer,          intent(in)   :: funit          !< file unit
+        real(stm_real),   intent(in)   :: arr(:)         !< Array values
+        real(stm_real),   intent(in)   :: x(:)           !< X coordinate
+        real(stm_real),   intent(in)   :: time           !< Time
+        integer,          intent(in)   :: funit          !< File unit
                 
-        !--local
+        !---local
         integer           :: nx
         integer           :: icell       
         

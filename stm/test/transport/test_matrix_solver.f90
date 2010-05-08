@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> todo: write tests for matrix solver
+!> Tests for matrix solver
 !>@ingroup test
 module test_matrix_solver
 

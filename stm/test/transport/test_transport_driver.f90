@@ -47,6 +47,7 @@ program test_transport_driver
   use test_advection_tidal
   use test_coarsening
   use test_uniform_flow
+  use test_prim_increment_to_cons
   implicit none
   
   logical :: verbose = .true.
@@ -59,6 +60,7 @@ program test_transport_driver
   call test_gradient_calc
   call test_limiter
   call test_prim_cons_convert
+  call test_prim_increment2cons
   call test_example_initial_conditions
   call test_extrapolation
   call test_tidal_advection_convergence(verbose)

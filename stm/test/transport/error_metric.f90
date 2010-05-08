@@ -24,7 +24,7 @@ module error_metric
 
 contains
 
-!> Calculate the L1, L2 and Linf error between calculated values and a reference
+!> Calculate the L-1, L-2 and L-inf error norms between calculated values and a reference
 subroutine error_norm(norm_1,norm_2,norm_inf,vals,reference,ncell,dx)
 
 use stm_precision
@@ -32,9 +32,9 @@ use stm_precision
 implicit none
 
 integer, intent(in) :: ncell
-real(stm_real), intent(out) :: norm_1            !< L-1   error
-real(stm_real), intent(out) :: norm_2            !< L-2   error
-real(stm_real), intent(out) :: norm_inf          !< L-inf error
+real(stm_real), intent(out) :: norm_1            !< L-1   error norm
+real(stm_real), intent(out) :: norm_2            !< L-2   error norm
+real(stm_real), intent(out) :: norm_inf          !< L-inf error norm
 
 real(stm_real), intent(in) :: vals(ncell)        !< Calculated values
 real(stm_real), intent(in) :: reference(ncell)   !< Reference or 'other' values
@@ -42,7 +42,8 @@ real(stm_real), intent(in) :: dx                 !< Spatial step !todo: do we us
 
 !------ locals
 integer :: icell
-integer :: which_cell
+! todo: should we also report which_cell ?
+integer :: which_cell   ! the cell in which L-inf occurs
 real(stm_real) :: err
 real(stm_real) :: sq_error
 real(stm_real) :: abs_error
@@ -50,6 +51,7 @@ real(stm_real) :: abs_error
 norm_1=zero
 norm_2=zero
 norm_inf=zero
+
 do icell=1,ncell
    err = vals(icell) - reference(icell)
    abs_error = abs(err)

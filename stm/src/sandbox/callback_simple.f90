@@ -18,6 +18,8 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
+
+!todo: it needs doxygen documenting
 module Multiply
 
 contains
