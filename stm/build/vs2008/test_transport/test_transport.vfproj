@@ -53,7 +53,7 @@
 		<File RelativePath="..\..\..\test\transport\test_interior_diffusive_flux.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_matrix_solver.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>
-		<File RelativePath=".\test_prim_increment_to_cons.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_prim_increment_to_cons.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_single_channel_advection.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_transport_driver.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>

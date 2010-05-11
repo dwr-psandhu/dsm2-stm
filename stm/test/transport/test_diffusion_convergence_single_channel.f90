@@ -169,19 +169,6 @@ do icoarse = 1,nrefine
     call deallocate_state
 end do
 
-! todo: four?
-!do icoarse = 1, nrefine
-!    coarsening = coarsen_factor**(icoarse - 1)
-!    nx = nx_base/(coarsening)
-!    print*,nx,norm_error(3,icoarse),'L-inf'
-!    print*,nx,norm_error(2,icoarse),'L-2'
-!    print*,nx,norm_error(1,icoarse),'L-1'
-!end do
-!print*,'========'
-!print*,norm_error(3,2)/norm_error(3,1),norm_error(3,3)/norm_error(3,2),'L-inf, Case 0-0'
-!print*,'========'
-!print*,norm_error(2,2)/norm_error(2,1),norm_error(2,3)/norm_error(2,2),'L-2, Case 0-0'
-!print*,'========'
 !print*,norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2),'L-1, Case 0-0'
 
 call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergemce on diffusion")

@@ -36,8 +36,8 @@ use stm_precision
      implicit none
          !--- args
                                        
-        integer, parameter :: ncell =10                                               !< Number of cells
-        integer, parameter :: nvar = 2                                               !< Number of variables
+        integer, parameter :: ncell =10                               !< Number of cells
+        integer, parameter :: nvar = 2                                !< Number of variables
 
         real(stm_real) :: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
         real(stm_real) :: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
