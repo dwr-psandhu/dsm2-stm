@@ -36,16 +36,16 @@ subroutine test_boundary_dif_flux
   
   implicit none
   
-  integer,parameter :: nvar = 1                       !< Number of variables
+  integer,parameter :: nvar = 1                        !< Number of variables
   integer,parameter :: ncell = 10                      !<Number of cells
   
 real(stm_real) :: diffusive_flux_lo(ncell,nvar)        !< Explicit diffusive boundary flux low side old time
 real(stm_real) :: diffusive_flux_hi(ncell,nvar)        !< Explicit diffusive boundary flux high side old time
 real(stm_real) :: conc(ncell,nvar)                     !< Explicit diffusive boundary flux low side new time
-real(stm_real) :: area_lo         (ncell)         !< Low side area centered at old time
-real(stm_real) :: area_hi         (ncell)         !< High side area centered at old time
-real(stm_real) :: disp_coef_lo (ncell,nvar)       !< Low side constituent dispersion coef.
-real(stm_real) :: disp_coef_hi (ncell,nvar)       !< High side constituent dispersion coef.
+real(stm_real) :: area_lo         (ncell)              !< Low side area centered at old time
+real(stm_real) :: area_hi         (ncell)              !< High side area centered at old time
+real(stm_real) :: disp_coef_lo (ncell,nvar)            !< Low side constituent dispersion coef.
+real(stm_real) :: disp_coef_hi (ncell,nvar)            !< High side constituent dispersion coef.
 
 real(stm_real) :: time = zero                          !< time 
 real(stm_real) :: dx = zero                            !< dx
