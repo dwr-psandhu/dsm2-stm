@@ -27,7 +27,7 @@ use fruit
 use stm_precision
 
 contains
-
+!> Tests the tri_diagonal matrix solver subroutine versus pre-calculated values
 subroutine test_tridi_solver
 
 use matrix_solver

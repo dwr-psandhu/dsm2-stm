@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> todo: write tests for explicit diffusion operator subroutine
+!> Tests for explicit diffusion operator subroutine
 !>@ingroup test
 module test_explicit_diffusion_operator
 
@@ -27,7 +27,7 @@ use fruit
 use stm_precision
 
 contains
-
+!> Test explicit diffusion operator versus pre calculated values 
 subroutine test_explicit_diffusion_op
   use diffusion 
   implicit none

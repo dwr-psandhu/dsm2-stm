@@ -18,13 +18,14 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> test coarsening subroutine
+!> tests the coarsening subroutine
 !>@ingroup test
 module test_coarsening
 
 
 contains
 
+!> tests the coarsening subroutine
 subroutine test_coarsen
 use fruit
 use grid_refinement

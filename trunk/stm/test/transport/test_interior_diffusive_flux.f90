@@ -18,32 +18,33 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> todo: write tests for interior diffusive flux sobroutine
+!> Write tests for interior diffusive flux sobroutine
 !>@ingroup test
 module test_make_diffusive_flux
+
 use diffusion
 use fruit
 use stm_precision
 
 contains
-
+!> Tests the diffusion flux subroutine inside the diffusion routine
 subroutine test_make_dif_flux_sub
-  use diffusion ! todo do we need it here?
+  
   implicit none
   
-integer,parameter :: ncell = 6                              !< Number of cells
-integer,parameter  :: nvar = 1                               !< Number of variables
+integer,parameter :: ncell = 6                       !< Number of cells
+integer,parameter  :: nvar = 1                       !< Number of variables
 
-!todo: remove!
+
 real(stm_real) :: diffusive_flux_hi(ncell,nvar)      !< Explicit diffusive flux high side
 real(stm_real) :: diffusive_flux_lo(ncell,nvar)      !< Explicit diffusive flux low side
-real(stm_real) :: conc_prev(ncell,nvar)                       !< Concentration at old time
-real(stm_real) :: area_lo_prev (ncell)                        !< Low side area at old time
-real(stm_real) :: area_hi_prev (ncell)                        !< High side area at old time 
-real(stm_real) :: disp_coef_lo_prev (ncell,nvar)              !< Low side constituent dispersion coef. at old time
-real(stm_real) :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
-real(stm_real) :: time                                        !< Current time
-real(stm_real) :: dx                                          !< Spatial step   
+real(stm_real) :: conc_prev(ncell,nvar)              !< Concentration at old time
+real(stm_real) :: area_lo_prev (ncell)               !< Low side area at old time
+real(stm_real) :: area_hi_prev (ncell)               !< High side area at old time 
+real(stm_real) :: disp_coef_lo_prev (ncell,nvar)     !< Low side constituent dispersion coef. at old time
+real(stm_real) :: disp_coef_hi_prev (ncell,nvar)     !< High side constituent dispersion coef. at old time
+real(stm_real) :: time                               !< Current time
+real(stm_real) :: dx                                 !< Spatial step   
 
 conc_prev(:,1)  = (/300d0,305d0,320d0,330d0,340d0,350d0/)
 area_lo_prev(:) = (/100d0,98d0,96d0,94d0,92d0,90d0/)

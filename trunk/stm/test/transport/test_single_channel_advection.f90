@@ -66,7 +66,7 @@ real(stm_real), intent(in) :: fine_solution(nx_base,nconc)      !< reference sol
 real(stm_real), intent(in) :: total_time                        !< total time of simulation
 real(stm_real), intent(in) :: domain_length                     !< length of domain
 
-!----local
+!---local
 integer, parameter :: nrefine = 3
 integer, parameter :: coarsen_factor = 2                 ! coarsening factor used for convergence test
 integer :: itime
@@ -210,7 +210,7 @@ call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order conver
 call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on " // trim(label))
 call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
 
-!todo:
+
 
 if (verbose == .true.) then
    call log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label)

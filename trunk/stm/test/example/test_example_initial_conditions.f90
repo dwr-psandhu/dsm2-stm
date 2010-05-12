@@ -18,9 +18,8 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Sample initial conditions for tests!>@ingroup test
-
-
+!> Sample initial conditions for tests
+!>@ingroup test
 subroutine test_example_initial_conditions
 
 use stm_precision
