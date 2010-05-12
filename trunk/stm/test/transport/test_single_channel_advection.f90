@@ -151,9 +151,9 @@ do icoarse = 1,nrefine
         
                   
       
-    if (maxval(abs(flow)/area) >=  max_velocity) then
+      if (maxval(abs(flow)/area) >=  max_velocity) then
           max_velocity = maxval(abs(flow)/area)
-    end if
+      end if
        
 
       ! call transport using no_source as the callback 
