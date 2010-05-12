@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> test coarsenig subroutine subroutine
+!> test coarsening subroutine
 !>@ingroup test
 module test_coarsening
 
