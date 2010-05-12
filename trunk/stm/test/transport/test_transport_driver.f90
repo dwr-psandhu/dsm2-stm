@@ -38,7 +38,6 @@ program test_transport_driver
   use source_module
   use test_boundary_diffusion_matrix
   use test_diffusion_single_channel
-  use test_dif_single_channel_neumann
   use test_advection_tidal
   use test_coarsening
   use test_uniform_flow
@@ -69,17 +68,12 @@ program test_transport_driver
   call test_interior_coef_matrix_sub
   call test_construct_interior_rhs
   call test_diffusion_convergence_single_channel
- !todo:
- ! call test_dif_convergence_single_channel_neumann
-  
   call test_coarsen
 
-! todo: rename
-!        call sub_boundary_diffusion_matrix      
-!        call test_diffusion_error_norms
+! todo: rename  
 !        call test_diffusion_n_d
-!        call test_new_diffusion_calc  
-!        call test_diffusion_calc
+ 
+
      
     
   call fruit_summary
