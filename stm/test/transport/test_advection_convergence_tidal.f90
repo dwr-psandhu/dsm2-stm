@@ -24,41 +24,40 @@ module test_advection_tidal
 use stm_precision
 !----- module variables
 ! todo: make the names more meaningful
-real(stm_real),parameter :: origin = zero 
-real(stm_real),parameter :: domain_length = 102400.0d0  ! meter
-real(stm_real),parameter :: amplitude = fourth ! meter
-real(stm_real),parameter :: gravity = 9.80d0 ! m/s^2
-real(stm_real),parameter :: depth =16.0d0    ! meter
-
-real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0 
-real(stm_real),parameter :: m2_period = 12.4d0*sec_per_hr
-real(stm_real),parameter :: freq=two*pi/m2_period
+real(stm_real),parameter :: origin = zero                  !< Left hand side of the channel
+real(stm_real),parameter :: domain_length = 102400.0d0     !< Domain Length in meter
+real(stm_real),parameter :: amplitude = fourth             !< Tidal amplitude in meter    
+real(stm_real),parameter :: gravity = 9.80d0               !< Gravitational acceleration in m/s^2
+real(stm_real),parameter :: depth =16.0d0                  !< Channel depth in meter
+real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0       !< Convert factor of hour to second 
+real(stm_real),parameter :: m2_period = 12.4d0*sec_per_hr  !< M2 tidal period 
+real(stm_real),parameter :: freq=two*pi/m2_period          !< Frequency of tidal oscillation
 
 
 contains
 
+!> Tests the convergence of error rate in advection of mass which is exposed a tidal boundary 
 subroutine test_tidal_advection_convergence(verbose)
     use test_single_channel_advection
     use hydro_data
     
 implicit none
-procedure(hydro_data_if),pointer :: tidal_hydro
-integer, parameter  :: nconc = 2
-integer, parameter  :: nstep_base = 256
-integer, parameter  :: nx_base    = 256  
+procedure(hydro_data_if),pointer :: tidal_hydro          !< The pointer points to tidal flow data
+integer, parameter  :: nconc = 2                         !< Number of constituents
+integer, parameter  :: nstep_base = 256                  !< Number of time steps in finer discritization
+integer, parameter  :: nx_base    = 256                  !< Number of spatial discritization in finer mesh 
 logical :: verbose
-real(stm_real), parameter :: total_time = m2_period
+real(stm_real), parameter :: total_time = m2_period      !< total time of the test
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
-real(stm_real) :: ic_center = domain_length/two
-real(stm_real) :: solution_center = domain_length/two
-real(stm_real) :: ic_gaussian_sd = domain_length/sixteen
-real(stm_real) :: solution_gaussian_sd = domain_length/sixteen
+real(stm_real) :: ic_center = domain_length/two          !< Center of initial condition
+real(stm_real) :: solution_center = domain_length/two    !< Center of final solution 
+real(stm_real) :: ic_gaussian_sd = domain_length/sixteen !< Standard deviation of initial values 
+real(stm_real) :: solution_gaussian_sd = domain_length/sixteen !< Standard deviation of final values
 
-
-character(LEN=*),parameter :: label = "tidal flow"
+character(LEN=*),parameter :: label = "tidal flow"      
 tidal_hydro=> tidal_flow
-
+!> load the initial values and reference final values to feed the test routine
 call initial_fine_solution_tidal(fine_initial_condition,     &
                                      fine_solution,          &
                                      nx_base,                &
@@ -70,7 +69,9 @@ call initial_fine_solution_tidal(fine_initial_condition,     &
                                      ic_center,              &
                                      solution_center   )
 
-
+!> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
+!> compute the norms, after each step coarsen the values and repeat computation.
+!> at the end  calculates the ratio of the norms and prints a log 
 call test_advection_convergence(label,                   &
                                  tidal_hydro,            &
                                  domain_length,          &
@@ -85,6 +86,7 @@ call test_advection_convergence(label,                   &
 return
 end subroutine
 !-------------------------------------------
+!> Genrates a fine initial and final solution of mass
 subroutine initial_fine_solution_tidal(fine_initial_condition, &
                                          fine_solution,          &
                                          nx_base,                &
@@ -104,14 +106,14 @@ implicit none
 
 integer,intent(in) :: nconc 
 integer,intent(in) :: nx_base 
-real(stm_real),intent(out) :: fine_initial_condition(nx_base,nconc)!< initial condition at finest resolution
-real(stm_real),intent(out) :: fine_solution(nx_base,nconc)         !< reference solution at finest resolution
-real(stm_real),intent(in)  :: ic_center
-real(stm_real),intent(in)  :: solution_center
-real(stm_real),intent(in)  :: ic_gaussian_sd
-real(stm_real),intent(in)  :: solution_gaussin_sd
-real(stm_real),intent(in)  :: origin 
-real(stm_real),intent(in)  :: domain_length  
+real(stm_real),intent(out) :: fine_initial_condition(nx_base,nconc) !< initial condition at finest resolution
+real(stm_real),intent(out) :: fine_solution(nx_base,nconc)          !< reference solution at finest resolution
+real(stm_real),intent(in)  :: ic_center                             !< Center of fine initial value
+real(stm_real),intent(in)  :: solution_center                       !< Center of solution
+real(stm_real),intent(in)  :: ic_gaussian_sd                        !< Standard deviation of initial value
+real(stm_real),intent(in)  :: solution_gaussin_sd                   !< Standard deviation of solution 
+real(stm_real),intent(in)  :: origin                                !< Left hand side of the channel
+real(stm_real),intent(in)  :: domain_length                         !< Domain length
 !----local
 real(stm_real):: dx
 
@@ -130,6 +132,7 @@ call fill_gaussian(fine_solution(:,2),nx_base,origin,dx, &
 return
 end subroutine
 !///////////////////////////////////
+!> generates a tidal flow to feed a pointer
 subroutine tidal_flow(flow,    &
                       flow_lo, &
                       flow_hi, &
@@ -155,7 +158,7 @@ subroutine tidal_flow(flow,    &
     real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face, time centered
     real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
    
-    !> local
+    !--- local
     real(stm_real) :: big_b 
     real(stm_real) :: big_a 
     integer :: icell
@@ -165,7 +168,7 @@ subroutine tidal_flow(flow,    &
 big_b = freq/sqrt(gravity*depth)
 big_a = amplitude* sqrt(gravity*depth)/(depth*cos(big_b*domain_length))
 
-    do icell = 1,ncell  ! width is equal to  1 meter 
+    do icell = 1,ncell  ! width is assumed to be equal to 1 meter 
       area(icell)    = depth + amplitude * cos(big_b*(domain_length-(dble(icell)-half)*dx))/cos(big_b*domain_length)*cos(freq*time)  
       area_lo(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell-1)*dx)))   /cos(big_b*domain_length)*cos(freq*time)  
       area_hi(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell)*dx)))     /cos(big_b*domain_length)*cos(freq*time)  

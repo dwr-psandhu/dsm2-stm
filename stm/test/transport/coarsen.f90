@@ -19,6 +19,7 @@
 !</license>
 
 !> Routines for grid refinement/coarsening operations.
+!>@ingroup test
 module grid_refinement
 
 contains
@@ -31,24 +32,24 @@ use error_handling
 
 implicit none
 !---arg
-integer,intent(in) :: ncell_coarse
-integer,intent(in) :: ncell_fine
-integer,intent(in) :: nvar
-real(stm_real), intent(in) :: fine_data(ncell_fine,nvar)
-real(stm_real), intent(out):: coarse_data(ncell_coarse,nvar)
+integer,intent(in) :: ncell_coarse                              !< Number of coarsened array cells 
+integer,intent(in) :: ncell_fine                                !< Number of fine initial array cells
+integer,intent(in) :: nvar                                      !< Number of constituents
+real(stm_real), intent(in) :: fine_data(ncell_fine,nvar)        !< Fine initial data  (input)
+real(stm_real), intent(out):: coarse_data(ncell_coarse,nvar)    !< Coarsened finial data (output)
 
 !---locals
-real(stm_real) :: coarsen_factor
-integer :: ivar
-integer :: icell
-integer :: i_coarse
+real(stm_real) :: coarsen_factor                                !< Coarsening factor (must be an integer)
+integer :: ivar                                                 !< Counter on constituents
+integer :: icell                                                !< Counter
+integer :: i_coarse                                             !< Counter
 
-
+!> Check if the coarsening factor is an integer and if not it bails.
 if ( mod(ncell_fine , ncell_coarse) /= 0) then
     call stm_fatal("Coarsening factor is not an integer!")  
 else
-
-coarsen_factor = ncell_fine/ncell_coarse
+    coarsen_factor = ncell_fine/ncell_coarse
+!> Computes coarsened array base on the coarsening factor from fine array
     do ivar=1,nvar
         do icell=1,ncell_coarse
             coarse_data(icell,ivar) = zero
@@ -63,8 +64,7 @@ coarsen_factor = ncell_fine/ncell_coarse
     
 end if
 
-
 return
 end subroutine coarsen
 
-end module grid_refinement
+end module 

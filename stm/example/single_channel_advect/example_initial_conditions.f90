@@ -19,8 +19,9 @@
 !</license>
 
 !> Initial conditions for examples
+!> It can fill an array with 1D Gaussin function, rectangular, and triangular,
+!> and also it can fill discontinuities. In case of multi-constituents tehy have to initialize separately     
 !>@ingroup example
-
 module example_initial_conditions
     
     use stm_precision
