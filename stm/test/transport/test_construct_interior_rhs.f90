@@ -19,6 +19,7 @@
 !</license>
 
 !> todo: write tests for construct right hand side subroutine before imposing Boundary Conditions
+!> Tests the interior elemets of right hand side F (KU=F)
 !>@ingroup test
 module test_construct_interior_r_h_s
 
@@ -28,6 +29,7 @@ use stm_precision
 
 contains
 
+!> Tests the interior elemets of right hand side
 subroutine test_construct_interior_rhs
   use diffusion 
   implicit none

@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Main program unit for testing advection
+!> Main program unit for testing teransport
 !>@ingroup test
 program test_transport_driver
 
@@ -36,7 +36,6 @@ program test_transport_driver
   use test_construct_interior_r_h_s
   use test_diffusion_neumann_dirichlet
   use source_module
-  use test_boundary_diffusion_matrix
   use test_diffusion_single_channel
   use test_advection_tidal
   use test_coarsening

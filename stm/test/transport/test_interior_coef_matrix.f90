@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> todo: write tests for interior lines of diffusion coefficient matrix
+!> Write tests for interior lines of diffusion coefficient matrix
 !>@ingroup test
 module test_interior_coef_matrix
 use diffusion
@@ -26,9 +26,9 @@ use fruit
 use stm_precision
 
 contains
-
+!> Tests the interior lines of coefficient matrix K (KU=F) 
 subroutine test_interior_coef_matrix_sub
-  use diffusion ! todo do we need it here?
+
   implicit none
   
 integer, parameter:: ncell = 21                                !< Number of cells
@@ -46,8 +46,6 @@ real(stm_real)  :: time                                        !< Current time
 real(stm_real)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real)  :: dx                                          !< Spatial step  
 real(stm_real)  :: dt                                          !< Time step                                   
-               
-        
                
 area (:) = 1d0
 area_hi(:) = 1d0

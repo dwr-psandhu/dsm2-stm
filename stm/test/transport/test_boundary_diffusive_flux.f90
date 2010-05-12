@@ -19,6 +19,7 @@
 !</license>
 
 !> todo: write tests for boundary diffusive flux subroutine
+!> Tests boundary diffusive flux pointer 
 !>@ingroup test
 module test_boundary_difussive_flux
 
@@ -28,7 +29,7 @@ use stm_precision
 use boundary_diffusion
 
 contains
-
+!> Tests boundary diffusive flux pointer
 subroutine test_boundary_dif_flux
 
   use diffusion 

@@ -18,24 +18,24 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> todo: write tests for matrix solver
+!> Test for subroutine primitive increment to conservative 
 !>@ingroup test
 module test_prim_increment_to_cons
+
+
+
+contains
+!>Test for subroutine primitive increment to conservative 
+subroutine test_prim_increment2cons()
 
 use primitive_variable_conversion
 use fruit
 use stm_precision
 
-contains
-
-subroutine test_prim_increment2cons()
-
-     use stm_precision
-
     implicit none
     !--- args
-    integer,parameter:: nloc = 3         !< Number of cells or faces
-    integer,parameter:: nvar = 2         !< Number of variables
+    integer,parameter:: nloc = 3       !< Number of cells or faces
+    integer,parameter:: nvar = 2       !< Number of variables
     real(stm_real) :: mass(nloc,nvar)  !< Mass per unit length (converted from concentration)
     real(stm_real) :: conc(nloc,nvar)  !< Concentrations to convert
     real(stm_real) :: area(nloc)       !< Area at conversion locations

@@ -24,7 +24,7 @@ module test_diffusion_single_channel
 
 contains
 
-!> Subroutine that runs a small advective simulation
+!> Subroutine that checks the error convergence ratio for diffusion routine 
 subroutine test_diffusion_convergence_single_channel
 
 use stm_precision
