@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Test of transport in uniform flow
+!> Test of mass transport convergence in uniform flow
 !>@ingroup test
 module test_uniform_flow
 
@@ -55,7 +55,8 @@ real(stm_real) :: ic_gaussian_sd = domain_length/sixteen
 real(stm_real) :: solution_gaussian_sd = domain_length/sixteen
 character(LEN=*),parameter :: label = "uniform flow"
 uniform_hydro=> uniform_flow
-
+!> Subroutine which generates fine initial values and reference values to compare with 
+!> and feed the covvergence test subroutine.
 call initial_fine_solution_uniform(fine_initial_condition, &
                                    fine_solution,          &
                                    nx_base,                &
@@ -124,6 +125,7 @@ subroutine uniform_flow(flow,    &
     return
 end subroutine
 ! todo: ic_center and solution center must have dimension of NCONC
+!> Generates fine solution of initial condition and final values to compare for uniform flow advection 
 subroutine initial_fine_solution_uniform(fine_initial_condition,   &
                                            fine_solution,          &
                                            nx_base,                &
