@@ -251,16 +251,16 @@ end subroutine explicit_diffusion_operator
 
 
 subroutine make_diffusive_flux ( diffusive_flux_lo,       &
-                                     diffusive_flux_hi,       &
-                                            conc_prev,        &
-                                            area_lo_prev,     &
-                                            area_hi_prev,     &
-                                            disp_coef_lo_prev,&  
-                                            disp_coef_hi_prev,&
-                                            ncell,            &
-                                            nvar,             &
-                                            time,             &
-                                            dx)
+                                 diffusive_flux_hi,       &
+                                        conc_prev,        &
+                                        area_lo_prev,     &
+                                        area_hi_prev,     &
+                                        disp_coef_lo_prev,&  
+                                        disp_coef_hi_prev,&
+                                        ncell,            &
+                                        nvar,             &
+                                        time,             &
+                                        dx)
 
 use stm_precision
 ! --- args

@@ -20,18 +20,18 @@
 
 !> todo: write tests for interior diffusive flux sobroutine
 !>@ingroup test
-module test_interior_diffusive_flux
+module test_make_diffusive_flux
 use diffusion
 use fruit
 use stm_precision
 
 contains
 
-subroutine test_interior_dif_flux_sub
+subroutine test_make_dif_flux_sub
   use diffusion ! todo do we need it here?
   implicit none
   
- integer,parameter :: ncell = 6                              !< Number of cells
+integer,parameter :: ncell = 6                              !< Number of cells
 integer,parameter  :: nvar = 1                               !< Number of variables
 
 !todo: remove!
@@ -53,17 +53,17 @@ disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1d0,1.02d0/)
 dx = 2.0d0 
 time =LARGEREAL ! todo do we need this?
  
-call interior_diffusive_flux  ( diffusive_flux_lo,       &
-                                 diffusive_flux_hi,       &
-                                        conc_prev,        &
-                                        area_lo_prev,     &
-                                        area_hi_prev,     &
-                                        disp_coef_lo_prev,&  
-                                        disp_coef_hi_prev,&
-                                        ncell,            &
-                                        nvar,             &
-                                        time,             &
-                                        dx)
+call make_diffusive_flux ( diffusive_flux_lo, &
+                           diffusive_flux_hi, &
+                            conc_prev,        &
+                            area_lo_prev,     &
+                            area_hi_prev,     &
+                            disp_coef_lo_prev,&  
+                            disp_coef_hi_prev,&
+                            ncell,            &
+                            nvar,             &
+                            time,             &
+                            dx)
                     
                                             
 !----diffusive_flux_interior_lo
@@ -86,6 +86,6 @@ call interior_diffusive_flux  ( diffusive_flux_lo,       &
   
 
 return
-end subroutine test_interior_dif_flux_sub
+end subroutine test_make_dif_flux_sub
 
 end module

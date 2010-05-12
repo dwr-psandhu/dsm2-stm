@@ -46,8 +46,6 @@ use state_variables
 use primitive_variable_conversion 
 use advection
 use example_initial_conditions
-use example_hydro_data
-use example_sources
 use error_metric
 use fruit
 use logging
