@@ -117,7 +117,7 @@ module example_initial_conditions
         real(stm_real), intent(in)  :: fill_else    !< Filled value if not between xlo and xhi
         !---loc
         real(stm_real) :: xcenter 
-        real(stm_real) :: lenght
+        real(stm_real) :: length
         xcenter = half*(xhi-xlo)+xlo
         length = xhi-xlo
                 

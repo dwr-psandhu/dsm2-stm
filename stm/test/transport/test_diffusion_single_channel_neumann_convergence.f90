@@ -38,8 +38,6 @@ use primitive_variable_conversion
 use boundary_diffusion
 use diffusion
 use example_initial_conditions
-use example_hydro_data
-use example_sources
 use error_metric
 use fruit
 use logging
