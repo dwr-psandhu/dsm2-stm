@@ -31,7 +31,7 @@ use stm_precision
 
 implicit none
 
-integer, intent(in) :: ncell
+integer, intent(in) :: ncell                     !< Number of cells
 real(stm_real), intent(out) :: norm_1            !< L-1   error norm
 real(stm_real), intent(out) :: norm_2            !< L-2   error norm
 real(stm_real), intent(out) :: norm_inf          !< L-inf error norm
@@ -40,18 +40,18 @@ real(stm_real), intent(in) :: vals(ncell)        !< Calculated values
 real(stm_real), intent(in) :: reference(ncell)   !< Reference or 'other' values
 real(stm_real), intent(in) :: dx                 !< Spatial step !todo: do we use this????
 
-!------ locals
-integer :: icell
+!------ locals                                    
+integer :: icell                                
 ! todo: should we also report which_cell ?
-integer :: which_cell   ! the cell in which L-inf occurs
+integer :: which_cell                           !< The cell in which L-inf occurs
 real(stm_real) :: err
 real(stm_real) :: sq_error
 real(stm_real) :: abs_error
-
+!> initial value of all norms is zero
 norm_1=zero
 norm_2=zero
 norm_inf=zero
-
+!> sum up the L-1 and L-2, and fid the largest error in the domain (L-inf) 
 do icell=1,ncell
    err = vals(icell) - reference(icell)
    abs_error = abs(err)

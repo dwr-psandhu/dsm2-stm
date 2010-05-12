@@ -55,7 +55,7 @@ use log_convergence
 implicit none
 
 !--- Problem variables
-procedure(hydro_data_if), pointer :: hydro 
+procedure(hydro_data_if), pointer :: hydro                      !< This pointer, points to uniform flow data
 character(LEN=*),intent(in) :: label                            !< unique label for test
 logical,intent(in) :: verbose                                   !< whether to output convergence results
 integer, intent(in) :: nconc                                    !< number of constituents

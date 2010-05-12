@@ -18,12 +18,15 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> write the log of a convergence test 
+!> write the log of a convergence test in additio to fruit's output
 !>@ingroup tes
 module log_convergence
 
     use stm_precision
     contains
+    
+    !> Gets the norms, maximum velocity, time step size and spacial step size and 
+    !> Compute CFL. Then the subroutine print all of the above 
     subroutine log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label)
 
         implicit none
