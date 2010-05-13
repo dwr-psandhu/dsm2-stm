@@ -38,7 +38,7 @@ subroutine test_boundary_dif_flux
   implicit none
   
   integer,parameter :: nvar = 1                        !< Number of variables
-  integer,parameter :: ncell = 10                      !<Number of cells
+  integer,parameter :: ncell = 10                      !< Number of cells
   
 real(stm_real) :: diffusive_flux_lo(ncell,nvar)        !< Explicit diffusive boundary flux low side old time
 real(stm_real) :: diffusive_flux_hi(ncell,nvar)        !< Explicit diffusive boundary flux high side old time

@@ -49,7 +49,7 @@ if ( mod(ncell_fine , ncell_coarse) /= 0) then
     call stm_fatal("Coarsening factor is not an integer!")  
 else
     coarsen_factor = ncell_fine/ncell_coarse
-!> Computes coarsened array base on the coarsening factor from fine array
+!> Computes coarsened array base on the coarsening factor from fine input array.
     do ivar=1,nvar
         do icell=1,ncell_coarse
             coarse_data(icell,ivar) = zero

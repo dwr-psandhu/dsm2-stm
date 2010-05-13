@@ -21,37 +21,52 @@
 !> write the log of a convergence test in additio to fruit's output
 !>@ingroup tes
 module log_convergence
+ contains
+ 
+ !> Get the norms, maximum velocity, time step and spacial step sizes and 
+ !> Compute CFL, then the subroutine prints all of them. 
+ subroutine log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label)
+ use stm_precision
+ implicit none
 
-    use stm_precision
-    contains
+ integer, intent(in) :: nrefine
+ real(stm_real),  intent(in) :: norm_error(3,nrefine)
+ real(stm_real),  intent(in) :: dx
+ real(stm_real),  intent(in) :: dt
+ real(stm_real),  intent(in) :: max_velocity
+ character(LEN=*),intent(in) :: label
+
+ print *, '========'
+ print *, label
+ print *,'L-inf convergence ratio : ', norm_error(3,2)/norm_error(3,1)
+ print *,'L-2 convergence ratio : ',norm_error(2,2)/norm_error(2,1)
+ print *,'L-1 convergence ratio : ',norm_error(1,2)/norm_error(1,1)
+ print *, 'dt:',dt,'dx:',dx
+ print *, ' CFL = ', max_velocity*dt/dx, 'Max_Velocity', max_velocity 
+ print *, 'Error norms '//label//' : '
+ print *, norm_error
+ print *, '========'
+
+ open (unit = 3, file= label//'_error_log.txt', status='unknown')
+     
+ write (3,*)"Log of connvergence test "// label,':' 
+ write (3,*)
+ write (3,*)'L-inf convergence ratio : ',norm_error(3,2)/norm_error(3,1),norm_error(3,3)/norm_error(3,2)
+ write (3,*)'L-2 convergence ratio : ',norm_error(2,2)/norm_error(2,1),norm_error(2,3)/norm_error(2,2)
+ write (3,*)'L-1 convergence ratio : ',norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2)
+ write (3,*)'dt:',dt,'dx:',dx
+ write (3,*)' CFL = ', max_velocity*dt/dx, 'Max_Velocity', max_velocity 
+ write (3,*)'Error L-1 '//label//' : '
+ write (3,*) norm_error (1,:)
+ write (3,*)'Error L-2 '//label//' : '
+ write (3,*) norm_error (2,:)
+ write (3,*)'Error L-inf '//label//' : '
+ write (3,*) norm_error (3,:)
+ 
+ close (3)
     
-    !> Gets the norms, maximum velocity, time step size and spacial step size and 
-    !> Compute CFL. Then the subroutine print all of the above 
-    subroutine log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label)
-
-        implicit none
-
-        integer, intent(in) :: nrefine
-        real(stm_real),  intent(in) :: norm_error(3,nrefine)
-        real(stm_real),  intent(in) :: dx
-        real(stm_real),  intent(in) :: dt
-        real(stm_real),  intent(in) :: max_velocity
-        character(LEN=*),intent(in) :: label
-
-        print *, '========'
-        print *, label
-        print *,'L-inf convergence ratio : ', norm_error(3,2)/norm_error(3,1)
-        print *,'L-2 convergence ratio : ',norm_error(2,2)/norm_error(2,1)
-        print *,'L-1 convergence ratio : ',norm_error(1,2)/norm_error(1,1)
-        print *, 'dt:',dt,'dx:',dx
-        print *, ' CFL = ', max_velocity*dt/dx, 'Max_Velocity', max_velocity 
-        print *, 'Error norms '//label//' : ',norm_error
-        print *, '========'
-!        open (unit=4, file='convergence_log.txt',status = 'unknown')
-!        write(filename, "(a\i3\'.txt')"), "uniform_gaussian_end_", nx 
-
-    return
-    end subroutine
+ return
+ end subroutine
 
 
 end module

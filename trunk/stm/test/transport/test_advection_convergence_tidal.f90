@@ -166,22 +166,21 @@ real(stm_real) :: vel_hi
 real(stm_real) :: vel
 integer :: icell
 
-
-
 big_b = freq/sqrt(gravity*depth)
 big_a = amplitude* sqrt(gravity*depth)/(depth*cos(big_b*domain_length))
 
-do icell = 1,ncell  ! width is assumed to be equal to 1 meter 
+! width is assumed to be equal to 1 meter 
+do icell = 1,ncell  
   area(icell)    = depth + amplitude * cos(big_b*(domain_length-(dble(icell)-half)*dx))/cos(big_b*domain_length)*cos(freq*time)  
   area_lo(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell-1)*dx)))   /cos(big_b*domain_length)*cos(freq*time)  
   area_hi(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell)*dx)))     /cos(big_b*domain_length)*cos(freq*time)  
-  vel_lo = big_a*sin(big_b*(domain_length - (dble(icell-1)*dx))    )*sin(freq*time)
+  vel_lo = big_a*sin(big_b*(domain_length - (dble(icell-1)*dx))     )*sin(freq*time)
   vel_hi = big_a*sin(big_b*(domain_length - (dble(icell)*dx  ))     )*sin(freq*time)
   vel    = big_a*sin(big_b*(domain_length - ((dble(icell)-half)*dx)))*sin(freq*time)
   flow(icell)    = area(icell)*vel
   flow_lo(icell) = area_lo(icell)*vel_lo
   flow_hi(icell) = area_hi(icell)*vel_hi
-end do  ! icell
+end do  
 
 return
 end subroutine tidal_flow

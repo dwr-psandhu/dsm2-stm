@@ -24,7 +24,7 @@ module error_metric
 
 contains
 
-!> Calculate the L-1, L-2 and L-inf error norms between calculated values and a reference
+!> Calculate the L-1, L-2 and L-inf error norms for calculated values and reference solution
 subroutine error_norm(norm_1,norm_2,norm_inf,vals,reference,ncell,dx)
 
 use stm_precision
