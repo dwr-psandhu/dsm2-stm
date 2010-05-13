@@ -22,13 +22,14 @@
 !>@ingroup test
 module test_make_diffusive_flux
 
+contains
+
+!> Tests the diffusion flux subroutine inside the diffusion routine
+subroutine test_make_dif_flux_sub
+  
 use diffusion
 use fruit
 use stm_precision
-
-contains
-!> Tests the diffusion flux subroutine inside the diffusion routine
-subroutine test_make_dif_flux_sub
   
   implicit none
   

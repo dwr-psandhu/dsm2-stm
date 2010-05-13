@@ -23,6 +23,8 @@ module primitive_variable_conversion
 
 contains
 !> Convert conservative variables (ie mass) to primitive (concentration)
+!> There is no precaution against divide by zero, so if you put in zero for area
+!> you will get NaN
 pure subroutine cons2prim(conc,mass,area,nloc,nvar)
 
     use stm_precision

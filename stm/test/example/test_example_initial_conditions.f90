@@ -34,7 +34,7 @@ real(stm_real), parameter  :: dx = ten
 real(stm_real), parameter  :: origin = zero
 real(stm_real), parameter  :: center1 = 405
 real(stm_real), parameter  :: center2 = 605.  ! middle of cell 61
-real(stm_real), parameter  :: sd = dx*4
+real(stm_real), parameter  :: sd = dx*4.0d0
 real(stm_real) :: offline_calc
 real(stm_real) :: cell_calc41
 real(stm_real) :: cell_calc61
@@ -50,7 +50,9 @@ call fill_gaussian(vals(:,2),nloc,origin,dx,center2,sd,one)
 ! test the center cell for each plume. 
 ! The cell edges lo/hi are half a dx = 1/8 of sd from center
 ! so use tabulated values of the cdf at the mean +/- 1/8*sigma
-offline_calc = 0.09947645
+!offline_calc = 0.9947645
+offline_calc = half + half*erf((410.d0-center1)/(sqrt(two)*sd)) - (half + half*erf((400.0d0-center1)/(sqrt(two)*sd)))
+offline_calc = offline_calc*sqrt(two*pi*sd*sd)/dx ! cell average
 
 cell_calc41 = vals(41,1)
 

@@ -34,12 +34,13 @@ use primitive_variable_conversion
 implicit none
   integer,parameter :: nx = 3       !interior and two ends
   integer,parameter :: nconst = 2
-  character(LEN=32) :: message
+  character(LEN=64) :: message
   real(stm_real) :: mass(nx,nconst)
   real(stm_real) :: conc(nx,nconst)
   real(stm_real) :: conc2(nx,nconst)
   real(stm_real) :: area(nx)
   integer :: ic, ix
+  logical :: nan_result
   
   conc(1,1) = sixteen
   conc(2,1) = zero
@@ -62,8 +63,14 @@ implicit none
 
   do ic=1,2
       do ix = 1,3
-          write(message,"('Prim-cons round trip: (',i1,',',i1,')')")ix,ic
-          call assertEquals(conc2(ix,ic),conc(ix,ic),trim(message))
+          if (ix .ne. 2) then
+              write(message,"('Prim-cons round trip: (',i1,',',i1,')')")ix,ic
+              call assertEquals(conc2(ix,ic),conc(ix,ic),trim(message))
+          else
+              nan_result = isnan(conc2(ix,ic))
+              write(message,"('Prim-cons round trip should be NaN for zero area: (',i2,',',i2,')')")ix,ic
+              call assert_true(nan_result,trim(message))          
+          end if
       end do
   end do
   

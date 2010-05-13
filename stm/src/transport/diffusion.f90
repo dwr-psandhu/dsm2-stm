@@ -221,7 +221,7 @@ real(stm_real):: diffusive_flux_lo(ncell,nvar)
 real(stm_real):: diffusive_flux_hi(ncell,nvar)
 real(stm_real):: diffusive_flux_lo_prev(ncell,nvar)
 real(stm_real):: diffusive_flux_hi_prev(ncell,nvar)
-
+explicit_diffuse_op = LARGEREAL
 
      ! todo : rename the subroutine 
         call make_diffusive_flux ( diffusive_flux_lo,&
@@ -288,6 +288,8 @@ do ivar = 1,nvar
     end do
 end do 
 diffusive_flux_hi(1:ncell-1,:) =  diffusive_flux_lo(2:ncell,:)  
+diffusive_flux_hi(ncell,:) = LARGEREAL
+diffusive_flux_lo(1,:) = LARGEREAL
 
 return
 end subroutine make_diffusive_flux
