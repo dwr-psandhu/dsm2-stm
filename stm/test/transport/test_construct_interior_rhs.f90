@@ -108,7 +108,7 @@ call construct_right_hand_side( right_hand_side,         &
                                   
                                   
   call assertEquals (right_hand_side(2,1),29675.28d0,weak_eps,"Error in r_h_s vector 2 ,theta = 0.6")
-  call assertEquals (right_hand_side(5,1),30939.84d0,weak_eps,"Error in r_h_s vector 5 ,theta = 0.6")
+  call assertEquals (right_hand_side(6,1),31060.d0,weak_eps, "Error in r_h_s vector 6 ,theta = 0.6")
  
   !--theta =0.1 
      theta_stm = 0.1d0 
@@ -129,7 +129,7 @@ call construct_right_hand_side( right_hand_side,         &
                                   dt)
                                   
                                   
-  call assertEquals (right_hand_side(2,1),29788.13d0,weak_eps,"Error in r_h_s vector 2 ,theta = 0.1")
+  call assertEquals (right_hand_side(1,1),29801.43d0,weak_eps,"Error in r_h_s vector 1,theta = 0.1")
   call assertEquals (right_hand_side(5,1),30939.64d0,weak_eps,"Error in r_h_s vector 5 ,theta = 0.1")
 
 
