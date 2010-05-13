@@ -75,17 +75,17 @@ call construct_diffusion_matrix( center_diag ,      &
                                   dt)
                                             
       !--- centeral                                       
-    call assertEquals (center_diag(2,1),1.044444444d0,1d-9,"BigK(2,2) theta=0.9 Error!")
-    call assertEquals (center_diag(7,1),1.044444444d0,1d-9,"BigK(7,7) theta=0.9 Error!")
-    call assertEquals (center_diag(18,1),1.044444444d0,1d-9,"BigK(18,18) theta=0.9 Error!")
+    call assertEquals (center_diag(2,1),1.044444444d0,weak_eps,"BigK(2,2) theta=0.9 Error!")
+    call assertEquals (center_diag(7,1),1.044444444d0,weak_eps,"BigK(7,7) theta=0.9 Error!")
+    call assertEquals (center_diag(18,1),1.044444444d0,weak_eps,"BigK(18,18) theta=0.9 Error!")
       !----up
-    call assertEquals (up_diag(2,1),-0.022222222d0,1d-9,"BigK(2,3) theta=0.9 Error!")
-    call assertEquals (up_diag(7,1),-0.022222222d0,1d-9,"BigK(7,8) theta=0.9 Error!")
-    call assertEquals (up_diag(18,1),-0.022222222d0,1d-9,"BigK(18,19) theta=0.9 Error!")  
+    call assertEquals (up_diag(2,1),-0.022222222d0,weak_eps,"BigK(2,3) theta=0.9 Error!")
+    call assertEquals (up_diag(7,1),-0.022222222d0,weak_eps,"BigK(7,8) theta=0.9 Error!")
+    call assertEquals (up_diag(18,1),-0.022222222d0,weak_eps,"BigK(18,19) theta=0.9 Error!")  
       !----down
-    call assertEquals (down_diag(2,1),-0.022222222d0,1d-9,"BigK(2,1) theta=0.9 Error!")
-    call assertEquals (down_diag(7,1),-0.022222222d0,1d-9,"BigK(7,6) theta=0.9 Error!")
-    call assertEquals (down_diag(18,1),-0.022222222d0,1d-9,"BigK(18,17) theta=0.9 Error!") 
+    call assertEquals (down_diag(2,1),-0.022222222d0,weak_eps,"BigK(2,1) theta=0.9 Error!")
+    call assertEquals (down_diag(7,1),-0.022222222d0,weak_eps,"BigK(7,6) theta=0.9 Error!")
+    call assertEquals (down_diag(18,1),-0.022222222d0,weak_eps,"BigK(18,17) theta=0.9 Error!") 
     
   
   !---check for theta = 0.5
@@ -108,17 +108,17 @@ call construct_diffusion_matrix( center_diag ,      &
                                   dt)
                                             
       !--- centeral                                       
-    call assertEquals (center_diag(2,1),1.02469135802469d0,1d-9,"BigK(2,2) theta=0.5 Error!")
-    call assertEquals (center_diag(7,1),1.02469135802469d0,1d-9,"BigK(7,7) theta=0.5 Error!")
-    call assertEquals (center_diag(18,1),1.02469135802469d0,1d-9,"BigK(18,18) theta=0.5 Error!")
+    call assertEquals (center_diag(2,1),1.02469135802469d0,weak_eps,"BigK(2,2) theta=0.5 Error!")
+    call assertEquals (center_diag(7,1),1.02469135802469d0,weak_eps,"BigK(7,7) theta=0.5 Error!")
+    call assertEquals (center_diag(18,1),1.02469135802469d0,weak_eps,"BigK(18,18) theta=0.5 Error!")
       !----up
-    call assertEquals (up_diag(2,1),-0.0123456790123457d0,1d-9,"BigK(2,3) theta=0.5 Error!")
-    call assertEquals (up_diag(7,1),-0.0123456790123457d0,1d-9,"BigK(7,8) theta=0.5 Error!")
-    call assertEquals (up_diag(18,1),-0.0123456790123457d0,1d-9,"BigK(18,19) theta=0.5 Error!")  
+    call assertEquals (up_diag(2,1),-0.0123456790123457d0,weak_eps,"BigK(2,3) theta=0.5 Error!")
+    call assertEquals (up_diag(7,1),-0.0123456790123457d0,weak_eps,"BigK(7,8) theta=0.5 Error!")
+    call assertEquals (up_diag(18,1),-0.0123456790123457d0,weak_eps,"BigK(18,19) theta=0.5 Error!")  
       !----down
-    call assertEquals (down_diag(2,1),-0.0123456790123457d0,1d-9,"BigK(2,1) theta=0.5 Error!")
-    call assertEquals (down_diag(7,1),-0.0123456790123457d0,1d-9,"BigK(7,6) theta=0.5 Error!")
-    call assertEquals (down_diag(18,1),-0.0123456790123457d0,1d-9,"BigK(18,17) theta=0.5 Error!") 
+    call assertEquals (down_diag(2,1),-0.0123456790123457d0,weak_eps,"BigK(2,1) theta=0.5 Error!")
+    call assertEquals (down_diag(7,1),-0.0123456790123457d0,weak_eps,"BigK(7,6) theta=0.5 Error!")
+    call assertEquals (down_diag(18,1),-0.0123456790123457d0,weak_eps,"BigK(18,17) theta=0.5 Error!") 
  
 
 !---check for theta = 0.1
@@ -141,17 +141,17 @@ call construct_diffusion_matrix( center_diag ,      &
                                   dt)
                                             
       !--- centeral                                       
-    call assertEquals (center_diag(2,1),1.004938272d0,1d-9,"BigK(2,2) theta=0.1 Error!")
-    call assertEquals (center_diag(7,1),1.004938272d0,1d-9,"BigK(7,7) theta=0.1 Error!")
-    call assertEquals (center_diag(18,1),1.004938272d0,1d-9,"BigK(18,18) theta=0.1 Error!")
+    call assertEquals (center_diag(2,1),1.004938272d0,weak_eps,"BigK(2,2) theta=0.1 Error!")
+    call assertEquals (center_diag(7,1),1.004938272d0,weak_eps,"BigK(7,7) theta=0.1 Error!")
+    call assertEquals (center_diag(18,1),1.004938272d0,weak_eps,"BigK(18,18) theta=0.1 Error!")
       !----up
-    call assertEquals (up_diag(2,1),-0.00246913580246914d0,1d-9,"BigK(2,3) theta=0.1 Error!")
-    call assertEquals (up_diag(7,1),-0.00246913580246914d0,1d-9,"BigK(7,8) theta=0.1 Error!")
-    call assertEquals (up_diag(18,1),-0.00246913580246914d0,1d-9,"BigK(18,19) theta=0.1 Error!")  
+    call assertEquals (up_diag(2,1),-0.00246913580246914d0,weak_eps,"BigK(2,3) theta=0.1 Error!")
+    call assertEquals (up_diag(7,1),-0.00246913580246914d0,weak_eps,"BigK(7,8) theta=0.1 Error!")
+    call assertEquals (up_diag(18,1),-0.00246913580246914d0,weak_eps,"BigK(18,19) theta=0.1 Error!")  
       !----down
-    call assertEquals (down_diag(2,1),-0.00246913580246914d0,1d-9,"BigK(2,1) theta=0.1 Error!")
-    call assertEquals (down_diag(7,1),-0.00246913580246914d0,1d-9,"BigK(7,6) theta=0.1 Error!")
-    call assertEquals (down_diag(18,1),-0.00246913580246914d0,1d-9,"BigK(18,17) theta=0.1 Error!") 
+    call assertEquals (down_diag(2,1),-0.00246913580246914d0,weak_eps,"BigK(2,1) theta=0.1 Error!")
+    call assertEquals (down_diag(7,1),-0.00246913580246914d0,weak_eps,"BigK(7,6) theta=0.1 Error!")
+    call assertEquals (down_diag(18,1),-0.00246913580246914d0,weak_eps,"BigK(18,17) theta=0.1 Error!") 
     
 
 return

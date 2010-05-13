@@ -23,17 +23,15 @@
 !>@ingroup test
 module test_boundary_difussive_flux
 
-use diffusion 
-use fruit
-use stm_precision
-use boundary_diffusion
-
 contains
 !> Tests boundary diffusive flux pointer
+!> Test for trivial nuemann no flux and also a time dependent boundary condition 
 subroutine test_boundary_dif_flux
 
+  use fruit
   use diffusion 
   use boundary_diffusion
+  use stm_precision
   
   implicit none
   
@@ -48,9 +46,16 @@ real(stm_real) :: area_hi         (ncell)              !< High side area centere
 real(stm_real) :: disp_coef_lo (ncell,nvar)            !< Low side constituent dispersion coef.
 real(stm_real) :: disp_coef_hi (ncell,nvar)            !< High side constituent dispersion coef.
 
-real(stm_real) :: time = zero                          !< time 
+real(stm_real) :: time = zero                          !< Time 
 real(stm_real) :: dx = zero                            !< dx
-              
+!---local
+integer        :: tvar                                 !< Counter on time
+integer, parameter :: num_t_step  = 10            
+real(stm_real) :: reference_lo
+real(stm_real) :: reference_hi
+real(stm_real) :: delta_t = 0.25d0
+  
+  
   
    
 boundary_diffusion_flux => neumann_no_flow_diffusive_flux
@@ -66,10 +71,33 @@ call boundary_diffusion_flux(diffusive_flux_lo, &
                              nvar,              &
                              time)
                                                            
-  call assertEquals (diffusive_flux_lo(1,nvar),zero,1d-8,"Error in diffusive boundary flux low at new time")
-  call assertEquals (diffusive_flux_hi(ncell,nvar),zero,1d-8,"Error in diffusive boundary flux high at new time")
-  call add_fail("Boundary diffusion flux not really tested in non-trivial way.")
+  call assertEquals (diffusive_flux_lo(1,nvar),zero,eps,"Error in diffusive boundary flux low at new time")
+  call assertEquals (diffusive_flux_hi(ncell,nvar),zero,eps,"Error in diffusive boundary flux high at new time")
+  
 
+boundary_diffusion_flux => neumann_sin_diffusive_flux
+
+do tvar =1,num_t_step
+
+    call boundary_diffusion_flux(diffusive_flux_lo, &
+                                 diffusive_flux_hi, &
+                                 conc,              &
+                                 area_lo,           &
+                                 area_hi,           &
+                                 disp_coef_lo,      &  
+                                 disp_coef_hi,      &
+                                 ncell,             &
+                                 nvar,              &
+                                 time)
+            
+    reference_lo = two * cos( pi* time / three)               !Just for test 
+    reference_hi = five * sin ( pi * time / seven)                         
+    
+    time = time + delta_t 
+    
+    call assertEquals (diffusive_flux_lo(1,nvar),reference_lo,eps,"Error in diffusive boundary flux high at new time")                                                         
+    call assertEquals (diffusive_flux_hi(ncell,nvar),reference_hi,eps,"Error in diffusive boundary flux high at new time")
+end do
 
 return
 end subroutine test_boundary_dif_flux

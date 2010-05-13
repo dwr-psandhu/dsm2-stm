@@ -45,7 +45,13 @@ real(stm_real), parameter :: pi = acos(-one)    !< Pi
 
 !> Absurd high value, for initialization and for marking undefined
 !> data in calculations. This makes bugs easier to spot.
-real(stm_real), parameter :: LARGEREAL = 1.23456789D8 
+real(stm_real), parameter :: LARGEREAL = 1.23456789D8
+
+!> Default epsilon for testing closeness 
+real(stm_real), parameter :: eps = 1.d-15
+
+!> Weaker epsilon for testing approximate equality or algorithms
+real(stm_real), parameter :: weak_eps = 1.d-9
 
 end module
 
