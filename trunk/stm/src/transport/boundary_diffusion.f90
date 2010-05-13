@@ -170,8 +170,7 @@ module boundary_diffusion
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
     
-     ! todo: add other BC 
-     ! neumann default
+     
      diffusive_flux_lo(1,:) = zero
      diffusive_flux_hi(ncell,:) =zero
      
@@ -179,7 +178,38 @@ module boundary_diffusion
      return
  end subroutine
  
-
+!> Example diffusive flux that imposes sinusoidal time dependent Neumann boundary flux at
+!> both ends of the channel.
+ subroutine neumann_sin_diffusive_flux(diffusive_flux_lo,   &
+                                             diffusive_flux_hi, &
+                                             conc,              &
+                                             area_lo,           &
+                                             area_hi,           &
+                                             disp_coef_lo,      &  
+                                             disp_coef_hi,      &
+                                             ncell,             &
+                                             nvar,              &
+                                             time)
+    use stm_precision
+         implicit none
+         !--- args
+         integer, intent(in)  :: ncell                                   !< number of cells
+         integer, intent(in)  :: nvar                                    !< number of variables
+         real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
+         real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+         real(stm_real), intent (in)   :: area_lo         (ncell)        !< Low side area centered at old time
+         real(stm_real), intent (in)   :: area_hi         (ncell)        !< High side area centered at old time
+         real(stm_real), intent (in)   ::  time                          !< time
+         real(stm_real), intent (in)   ::  conc(ncell,nvar)              !< concentration 
+         real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
+         real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
+    
+     diffusive_flux_lo(1,:) = two * cos( pi* time / three)               !Just for test 
+     diffusive_flux_hi(ncell,:) = five * sin (pi*time / seven)
+        
+     return
+ end subroutine
+ 
  
  !===========================================
   !> Example matrix that prints an error and bails

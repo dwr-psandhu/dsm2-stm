@@ -32,10 +32,9 @@ integer, parameter :: nloc = 100
 real(stm_real) :: vals(nloc,2)
 real(stm_real), parameter  :: dx = ten
 real(stm_real), parameter  :: origin = zero
-real(stm_real), parameter  :: center1 = 405.  ! middle of cell 41
+real(stm_real), parameter  :: center1 = 405
 real(stm_real), parameter  :: center2 = 605.  ! middle of cell 61
 real(stm_real), parameter  :: sd = dx*4
-real(stm_real), parameter  :: epsilon = 1.D-08 ! mediocre precision for a double because using tabulated values
 real(stm_real) :: offline_calc
 real(stm_real) :: cell_calc41
 real(stm_real) :: cell_calc61
@@ -44,22 +43,22 @@ character(LEN=32) :: message
 integer :: icell
 
 ! Check symmetry and two constituents
-call fill_gaussian(vals(:,1),nloc,origin,dx,center1,sd)
+call fill_gaussian(vals(:,1),nloc,origin,dx,center1,sd,one)
 
-call fill_gaussian(vals(:,2),nloc,origin,dx,center2,sd)
+call fill_gaussian(vals(:,2),nloc,origin,dx,center2,sd,one)
 
 ! test the center cell for each plume. 
 ! The cell edges lo/hi are half a dx = 1/8 of sd from center
 ! so use tabulated values of the cdf at the mean +/- 1/8*sigma
 offline_calc = 0.09947645
 
-cell_calc41 = vals(41,1)*sqrt(two*pi*sd*sd)  
+cell_calc41 = vals(41,1)
 
-call assertEquals(cell_calc41,offline_calc,epsilon,"Integral gaussian in cell 41")
+call assertEquals(cell_calc41,offline_calc,weak_eps,"Integral gaussian in cell 41")
 
 cell_calc61 = vals(61,2)
 
-call assertEquals(cell_calc41,cell_calc61,"Symmetry of integral gaussian in cells 41, 61")
+call assertEquals(cell_calc41,cell_calc61,eps,"Symmetry of integral gaussian in cells 41, 61")
 
 call fill_gaussian(vals(:,1),nloc,origin,dx/two,center1,sd)
 

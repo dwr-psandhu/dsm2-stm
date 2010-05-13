@@ -44,7 +44,7 @@ program test_transport_driver
   use test_gradient
   
   implicit none
-  logical :: verbose = .true.
+  logical :: verbose = .false.
   
   call init_fruit
      

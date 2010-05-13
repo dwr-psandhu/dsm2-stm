@@ -23,15 +23,15 @@
 !>@ingroup test
 module test_construct_interior_r_h_s
 
-use diffusion 
-use fruit
-use stm_precision
-
 contains
 
 !> Tests the interior elemets of right hand side
 subroutine test_construct_interior_rhs
-  use diffusion 
+  
+use diffusion 
+use fruit
+use stm_precision
+ 
   implicit none
   
 integer,parameter :: ncell = 6                                !< Number of cells
@@ -85,8 +85,8 @@ call construct_right_hand_side( right_hand_side,         &
                                   dt)
                                   
                                   
-  call assertEquals (right_hand_side(2,1),29585d0,1d-8,"Error in r_h_s vector 2 ,theta=1")
-  call assertEquals (right_hand_side(5,1),30940d0,1d-8,"Error in r_h_s vector 5 ,theta=1")
+  call assertEquals (right_hand_side(2,1),29585d0,weak_eps,"Error in r_h_s vector 2 ,theta=1")
+  call assertEquals (right_hand_side(5,1),30940d0,weak_eps,"Error in r_h_s vector 5 ,theta=1")
    
      !--theta =0.6 
      theta_stm = 0.6d0 
@@ -107,8 +107,8 @@ call construct_right_hand_side( right_hand_side,         &
                                   dt)
                                   
                                   
-  call assertEquals (right_hand_side(2,1),29675.28d0,1d-8,"Error in r_h_s vector 2 ,theta = 0.6")
-  call assertEquals (right_hand_side(5,1),30939.84d0,1d-8,"Error in r_h_s vector 5 ,theta = 0.6")
+  call assertEquals (right_hand_side(2,1),29675.28d0,weak_eps,"Error in r_h_s vector 2 ,theta = 0.6")
+  call assertEquals (right_hand_side(5,1),30939.84d0,weak_eps,"Error in r_h_s vector 5 ,theta = 0.6")
  
   !--theta =0.1 
      theta_stm = 0.1d0 
@@ -129,8 +129,8 @@ call construct_right_hand_side( right_hand_side,         &
                                   dt)
                                   
                                   
-  call assertEquals (right_hand_side(2,1),29788.13d0,1d-8,"Error in r_h_s vector 2 ,theta = 0.1")
-  call assertEquals (right_hand_side(5,1),30939.64d0,1d-8,"Error in r_h_s vector 5 ,theta = 0.1")
+  call assertEquals (right_hand_side(2,1),29788.13d0,weak_eps,"Error in r_h_s vector 2 ,theta = 0.1")
+  call assertEquals (right_hand_side(5,1),30939.64d0,weak_eps,"Error in r_h_s vector 5 ,theta = 0.1")
 
 
 return

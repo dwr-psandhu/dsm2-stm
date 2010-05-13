@@ -61,9 +61,9 @@ do ivar = 1,nvar
   call tridi_solver (center_diag(:,ivar),up_diag(:,ivar),down_diag(:,ivar),right_hand_side(:,ivar),conc(:,ivar),ncell)
 end do
 
-  call assertEquals (conc(1,2),613.689083199382D0,1d-9,"problem in solving cell num.1")
-  call assertEquals (conc(4,2),4.520833065491D0,1d-9,"problem in solving cell num.4")
-  call assertEquals (conc(11,2),-834.471026100105D0,1d-9,"problem in solving cell num.11")
+  call assertEquals (conc(1,2),613.689083199382D0,weak_eps,"problem in solving cell num.1")
+  call assertEquals (conc(4,2),4.520833065491D0,weak_eps,"problem in solving cell num.4")
+  call assertEquals (conc(11,2),-834.471026100105D0,weak_eps,"problem in solving cell num.11")
   
 !--- Large numbers on center diag small numbers on up and down diag
 
@@ -75,9 +75,9 @@ end do
 call tridi_solver (center_diag(:,2),up_diag(:,2),down_diag(:,2),right_hand_side(:,2),conc(:,2),ncell)
 
 
-  call assertEquals (conc(1,2),0.000581809672D0,1d-9,"problem in solving cell num.1")
-  call assertEquals (conc(4,2),0.001942430407D0,1d-9,"problem in solving cell num.4")
-  call assertEquals (conc(11,2),0.004006798484D0,1d-9,"problem in solving cell num.11")
+  call assertEquals (conc(1,2),0.000581809672D0,weak_eps,"problem in solving cell num.1")
+  call assertEquals (conc(4,2),0.001942430407D0,weak_eps,"problem in solving cell num.4")
+  call assertEquals (conc(11,2),0.004006798484D0,weak_eps,"problem in solving cell num.11")
 
    
 

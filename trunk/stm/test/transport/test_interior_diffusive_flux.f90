@@ -70,20 +70,20 @@ call make_diffusive_flux ( diffusive_flux_lo, &
 !----diffusive_flux_interior_lo
 
  
-  call assertEquals (diffusive_flux_lo(2,1),-225.4d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 2")
-  call assertEquals (diffusive_flux_lo(3,1),-676.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 3")
-  call assertEquals (diffusive_flux_lo(4,1),-451.2d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 4")
-  call assertEquals (diffusive_flux_lo(5,1),-450.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 5")
-  call assertEquals (diffusive_flux_lo(6,1),-450d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 6")
+  call assertEquals (diffusive_flux_lo(2,1),-225.4d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 2")
+  call assertEquals (diffusive_flux_lo(3,1),-676.8d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 3")
+  call assertEquals (diffusive_flux_lo(4,1),-451.2d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 4")
+  call assertEquals (diffusive_flux_lo(5,1),-450.8d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 5")
+  call assertEquals (diffusive_flux_lo(6,1),-450d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 6")
   
 !----diffusive_flux_interior_hi
 
   
-  call assertEquals (diffusive_flux_hi(1,1),-225.4d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 1")
-  call assertEquals (diffusive_flux_hi(2,1),-676.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 2")
-  call assertEquals (diffusive_flux_hi(3,1),-451.2d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 3")
-  call assertEquals (diffusive_flux_hi(4,1),-450.8d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 4")
-  call assertEquals (diffusive_flux_hi(5,1),-450.0d0 ,1d-9,"Error in diffusive_flux_interior_lo cell 5")
+  call assertEquals (diffusive_flux_hi(1,1),-225.4d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 1")
+  call assertEquals (diffusive_flux_hi(2,1),-676.8d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 2")
+  call assertEquals (diffusive_flux_hi(3,1),-451.2d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 3")
+  call assertEquals (diffusive_flux_hi(4,1),-450.8d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 4")
+  call assertEquals (diffusive_flux_hi(5,1),-450.0d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 5")
   
 
 return
