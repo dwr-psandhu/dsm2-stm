@@ -167,16 +167,13 @@ do icoarse = 1,nrefine
     call deallocate_state
 end do
 
-!print*,norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2),'L-1, Case 0-0'
+call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on diffusion")
+call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on diffusion")
+call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on diffusion")
 
-call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergemce on diffusion")
-call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergemce on diffusion")
-!>
-call assert_true(norm_error(3,2)/norm_error(3,1) > 3.85d0,"L-inf second order convergemce on diffusion")
-
-call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergemce on diffusion")
-call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergemce on diffusion")
-call assert_true(norm_error(3,3)/norm_error(3,2) > 3.85d0,"L-inf second order convergemce on diffusion")
+call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergence on diffusion")
+call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on diffusion")
+call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion")
 
 
 return

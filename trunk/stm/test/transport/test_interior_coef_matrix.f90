@@ -21,13 +21,13 @@
 !> Write tests for interior lines of diffusion coefficient matrix
 !>@ingroup test
 module test_interior_coef_matrix
-use diffusion
-use fruit
-use stm_precision
-
 contains
 !> Tests the interior lines of coefficient matrix K (KU=F) 
 subroutine test_interior_coef_matrix_sub
+
+use diffusion
+use fruit
+use stm_precision
 
   implicit none
   

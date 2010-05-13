@@ -33,7 +33,7 @@ program test_transport_driver
   use test_make_diffusive_flux
   use test_explicit_diffusion_operator
   use test_interior_coef_matrix
-  use test_construct_interior_r_h_s
+  use test_construct_r_h_s
   use test_diffusion_neumann_dirichlet
   use source_module
   use test_diffusion_single_channel
@@ -65,7 +65,7 @@ program test_transport_driver
   call test_make_dif_flux_sub
   call test_explicit_diffusion_op
   call test_interior_coef_matrix_sub
-  call test_construct_interior_rhs
+  call test_construct_elemnts_rhs 
   call test_diffusion_convergence_single_channel
   call test_coarsen
 
