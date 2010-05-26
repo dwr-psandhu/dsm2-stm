@@ -44,7 +44,6 @@ implicit none
 
 integer, parameter  :: nstep_base = 128
 integer, parameter  :: nx_base = 256
-real(stm_real), parameter :: cfl = 0.8
 
 integer :: icoarse = 0
 integer :: nstep

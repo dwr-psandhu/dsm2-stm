@@ -93,8 +93,6 @@ real(stm_real) :: center_diag(ncell,nvar)                     !< Values of the c
 real(stm_real) :: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
 real(stm_real) :: right_hand_side(ncell,nvar)                 !< Right hand side vector
 
-
-
 ! This routine gives the effects of diffusion fluxes on each cell
 ! for a single time step (ie, explicit). This is needed for the advection step.
 ! It is also part of the right hand side of the implicit diffusion solver 
@@ -236,10 +234,7 @@ explicit_diffuse_op = LARGEREAL
                                        time,             &
                                        dx)
    
-   
-                                 
-       
-      
+         
 do ivar = 1,nvar
     do icell = 1,ncell 
      explicit_diffuse_op (icell,ivar) = (- diffusive_flux_hi (icell,ivar) + diffusive_flux_lo (icell,ivar))/dx
@@ -288,8 +283,9 @@ do ivar = 1,nvar
     end do
 end do 
 diffusive_flux_hi(1:ncell-1,:) =  diffusive_flux_lo(2:ncell,:)  
-diffusive_flux_hi(ncell,:) = LARGEREAL
-diffusive_flux_lo(1,:) = LARGEREAL
+!todo: problem is here
+!diffusive_flux_hi(ncell,:) = LARGEREAL
+!diffusive_flux_lo(1,:) = LARGEREAL
 
 return
 end subroutine make_diffusive_flux

@@ -25,7 +25,7 @@ module boundary_advection_module
  interface
        !> Generic interface for calculating BC advection routine that should be fulfilled by
        !> client programs
-       subroutine boundary_advective_flux(flux_lo,    &
+       subroutine boundary_advective_flux(flux_lo,  &
                                         flux_hi,    &
                                         conc_lo,    &
                                         conc_hi,    &
