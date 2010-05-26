@@ -210,6 +210,38 @@ module boundary_diffusion
      return
  end subroutine
  
+subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
+                                     diffusive_flux_hi, &
+                                     conc,              &
+                                     area_lo,           &
+                                     area_hi,           &
+                                     disp_coef_lo,      &  
+                                     disp_coef_hi,      &
+                                     ncell,             &
+                                     nvar,              &
+                                     time)
+    use stm_precision
+         implicit none
+         !--- args
+         integer, intent(in)  :: ncell                                   !< number of cells
+         integer, intent(in)  :: nvar                                    !< number of variables
+         real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
+         real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+         real(stm_real), intent (in)   :: area_lo         (ncell)        !< Low side area centered at old time
+         real(stm_real), intent (in)   :: area_hi         (ncell)        !< High side area centered at old time
+         real(stm_real), intent (in)   ::  time                          !< time
+         real(stm_real), intent (in)   ::  conc(ncell,nvar)              !< concentration 
+         real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
+         real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
+    
+     diffusive_flux_lo(1,:) = 100.0d0*seven*(two-two*pi*sin(0.05d0*pi)*exp(-seven*time*pi*pi/four))
+     diffusive_flux_hi(ncell,:) = 100.0d0*seven * zero
+        ! todo : A nad Ks are hard wired here (100.0 and seven)
+     return
+ end subroutine
+ 
+ 
+ 
  
  !===========================================
   !> Example matrix that prints an error and bails
@@ -306,5 +338,51 @@ module boundary_diffusion
      return
  end subroutine
  
+  subroutine n_d_test_diffusion_matrix(center_diag ,     &
+                                       up_diag,          &     
+                                       down_diag,        &
+                                       area,             &
+                                       area_lo,          &
+                                       area_hi,          &          
+                                       disp_coef_lo,     &
+                                       disp_coef_hi,     &
+                                       theta_stm,        &
+                                       ncell,            &
+                                       time,             & 
+                                       nvar,             & 
+                                       dx,               &
+                                       dt)
+     use stm_precision
+     implicit none
+         !--- args
+                                       
+        integer, intent (in) :: ncell                                               !< Number of cells
+        integer, intent (in) :: nvar                                                !< Number of variables
+
+        real(stm_real),intent (inout):: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
+        real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
+        real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
+        real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
+        real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
+        real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
+        real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
+        real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
+        real(stm_real), intent (in)  :: time                                        !< Current time
+        real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+        real(stm_real), intent (in)  :: dx                                          !< Spatial step  
+        real(stm_real), intent (in)  :: dt                                          !< Time step     
+      
+        !---local
+        real(stm_real) :: d_star 
+        d_star = dt/(dx*dx)  
+      
+     ! todo: add types of other BC 
+          
+     center_diag(1,nvar)=area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar) + two*area_lo(1)*disp_coef_lo(1,nvar))
+     center_diag(ncell,nvar)= area(ncell) + theta_stm*d_star*(two*area_hi(ncell)*disp_coef_hi(ncell,nvar) + area_lo(ncell)*disp_coef_lo(ncell,nvar))
+     
+     ! todo: implement and test
+     return
+ end subroutine
  
 end module
