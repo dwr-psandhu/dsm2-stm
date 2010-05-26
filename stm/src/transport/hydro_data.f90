@@ -56,6 +56,6 @@ module hydro_data
  !> This pointer should be set by the driver or client code to specify the 
  !> treatment at the boundaries
  procedure(hydro_data_if),pointer :: fill_hydro_data  => null()
-      
+  !todo: some variables need to be centered in time     
       
 end module
