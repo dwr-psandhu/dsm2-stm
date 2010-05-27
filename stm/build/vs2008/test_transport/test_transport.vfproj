@@ -42,7 +42,6 @@
 		<File RelativePath="..\..\..\test\transport\test_explicit_diffusion_operator.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_extrapolate.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_gradient.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_interior_coef_matrix.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_interior_diffusive_flux.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_matrix_solver.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>
