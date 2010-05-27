@@ -41,19 +41,18 @@ implicit none
 
 !--- Problem variables
 
-integer, parameter  :: nstep_base = 200
+integer, parameter  :: nstep_base = 1024
 integer, parameter  :: nx_base = 32
-
 
 integer :: icoarse = 0
 integer :: nstep
-integer  :: nx
+integer :: nx
 
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 0.9d0
 real(stm_real), parameter :: origin = 0.1d0      
 real(stm_real), parameter :: total_time    = 10.0d0
-real(stm_real), parameter :: disp_coef     = seven
+real(stm_real), parameter :: disp_coef     = three
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
@@ -118,7 +117,7 @@ do icell = 1,nx
     conc_prev(icell,:) = two*xposition(icell) + four*cos(pi*xposition(icell)/two)*exp(-disp_coef*time*pi*pi/four)
 end do      
       
-    ! forwards
+
 !---- march
 
 do itime = 1,nstep

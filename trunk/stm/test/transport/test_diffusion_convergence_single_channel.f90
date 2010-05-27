@@ -47,13 +47,13 @@ integer, parameter  :: nx_base = 256
 
 integer :: icoarse = 0
 integer :: nstep
-integer  :: nx
+integer :: nx
 
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 51200.d0
-real(stm_real), parameter :: origin = zero   !-domain_length/two   ! meters
+real(stm_real), parameter :: origin = zero   
 real(stm_real), parameter :: total_time    = 2048.d0
-real(stm_real), parameter :: disp_coef     = 1024.d0
+real(stm_real), parameter :: disp_coef     = 512.d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
@@ -66,7 +66,7 @@ real(stm_real) :: dx              ! meters
 real(stm_real), parameter :: ic_center      = three*fourth*domain_length
 real(stm_real), parameter :: ic_gaussian_sd = domain_length/sixteen
 real(stm_real), parameter :: ic_peak = one
-real(stm_real), parameter :: constant_area = 1.D2
+real(stm_real), parameter :: constant_area = 110.0d0
 real(stm_real) :: vel
 real(stm_real), parameter :: start_time = 256.d0
 real(stm_real), parameter :: end_time = start_time + total_time
@@ -87,7 +87,6 @@ character(LEN=64) filename
 
 boundary_diffusion_matrix  => neumann_diffusion_matrix
 boundary_diffusion_flux    => neumann_no_flow_diffusive_flux
-
 
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
@@ -127,7 +126,6 @@ do icoarse = 1,nrefine
 
     time = zero
     ! forwards
-!---- march
 
     timemarch: do itime = 1,nstep
         conc_prev=conc
@@ -173,6 +171,18 @@ call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order conv
 call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergence on diffusion")
 call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on diffusion")
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion")
+
+!todo: remove priints
+print *,norm_error(1,3)/norm_error(1,2)
+print *,norm_error(2,3)/norm_error(2,2)
+print *,norm_error(3,3)/norm_error(3,2)
+
+print *,norm_error(1,2)/norm_error(1,1)
+print *,norm_error(2,2)/norm_error(2,1)
+print *,norm_error(3,2)/norm_error(3,1)
+
+print *, norm_error
+pause
 
 
 return
