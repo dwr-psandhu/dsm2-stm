@@ -115,7 +115,7 @@ call explicit_diffusion_operator(explicit_diffuse_op, &
 
 ! todo: need to change this to use just diffusive_flux_hi/lo
 
-call construct_right_hand_side( right_hand_side,         & 
+call construct_right_hand_side(   right_hand_side,       & 
                                   explicit_diffuse_op,   & 
                                   area_prev,             &
                                   area_lo_prev,          &
@@ -284,8 +284,8 @@ do ivar = 1,nvar
 end do 
 diffusive_flux_hi(1:ncell-1,:) =  diffusive_flux_lo(2:ncell,:)  
 !todo: problem is here
-!diffusive_flux_hi(ncell,:) = LARGEREAL
-!diffusive_flux_lo(1,:) = LARGEREAL
+diffusive_flux_hi(ncell,:) = LARGEREAL
+diffusive_flux_lo(1,:) = LARGEREAL
 
 return
 end subroutine make_diffusive_flux

@@ -172,10 +172,9 @@ module boundary_diffusion
     
      
      diffusive_flux_lo(1,:) = zero
-     diffusive_flux_hi(ncell,:) =zero
+     diffusive_flux_hi(ncell,:) = zero
      
-   
-     return
+    return
  end subroutine
  
 !> Example diffusive flux that imposes sinusoidal time dependent Neumann boundary flux at
@@ -234,9 +233,9 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
     
-     diffusive_flux_lo(1,:) = 100.0d0*seven*(two-two*pi*sin(0.05d0*pi)*exp(-seven*time*pi*pi/four))
-     diffusive_flux_hi(ncell,:) = 100.0d0*seven * zero
-        ! todo : A nad Ks are hard wired here (100.0 and seven)
+     diffusive_flux_lo(1,:) = 100.0d0*three*(two-two*pi*sin(0.05d0*pi)*exp(-three*time*pi*pi/four))
+     diffusive_flux_hi(ncell,:) = 100.0d0*three * (two-two*pi*sin(pi/two)*(-three*pi*pi*time/four))
+        ! todo : A nad Ks are hard wired here (100.0 and three)
      return
  end subroutine
  
@@ -245,20 +244,20 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
  
  !===========================================
   !> Example matrix that prints an error and bails
- subroutine uninitialized_diffusive_bc_matrix( center_diag ,      &
-                                                      up_diag,          &     
-                                                      down_diag,        &
-                                                      area,             &
-                                                      area_lo,          &
-                                                      area_hi,          &          
-                                                      disp_coef_lo,     &
-                                                      disp_coef_hi,     &
-                                                      theta_stm,        &
-                                                      ncell,            &
-                                                      time,             & 
-                                                      nvar,             & 
-                                                      dx,               &
-                                                      dt)
+ subroutine uninitialized_diffusive_bc_matrix( center_diag ,    &
+                                              up_diag,          &     
+                                              down_diag,        &
+                                              area,             &
+                                              area_lo,          &
+                                              area_hi,          &          
+                                              disp_coef_lo,     &
+                                              disp_coef_hi,     &
+                                              theta_stm,        &
+                                              ncell,            &
+                                              time,             & 
+                                              nvar,             & 
+                                              dx,               &
+                                              dt)
                                          
      use stm_precision 
      use error_handling
@@ -291,7 +290,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
  !> Example diffusive flux that imposes Neumann boundaries with zero flux at
  !> both ends of the channel.
  !todo: make sure this is generic for all neumann bc
- subroutine neumann_diffusion_matrix(center_diag ,      &
+ subroutine neumann_diffusion_matrix(center_diag ,   &
                                    up_diag,          &     
                                    down_diag,        &
                                    area,             &
