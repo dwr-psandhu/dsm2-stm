@@ -129,6 +129,7 @@ call construct_right_hand_side(   right_hand_side,       &
                                   nvar,                  &  
                                   dx,                    &
                                   dt)
+call boundary_diffusive_flux()
                                         
 ! Construct the matrix for the diffusion solver
 ! without boundary condition modification or structure on interior of domain
