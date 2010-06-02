@@ -111,8 +111,9 @@ call explicit_diffusion_operator(explicit_diffuse_op, &
                                     nvar,             &
                                     time,             &
                                     dx)
-                                                                  
+  
 
+  
 ! todo: need to change this to use just diffusive_flux_hi/lo
 
 call construct_right_hand_side(   right_hand_side,       & 
@@ -129,7 +130,7 @@ call construct_right_hand_side(   right_hand_side,       &
                                   nvar,                  &  
                                   dx,                    &
                                   dt)
-call boundary_diffusive_flux()
+
                                         
 ! Construct the matrix for the diffusion solver
 ! without boundary condition modification or structure on interior of domain
@@ -148,11 +149,12 @@ call construct_diffusion_matrix( center_diag ,      &
                                   dx,               &
                                   dt)
 
-
+ 
                                   
-call boundary_diffusion_matrix( center_diag ,       &
+call boundary_diffusion_impose( center_diag ,       &
                                   up_diag,          &     
                                   down_diag,        &
+                                  right_hand_side,  & 
                                   area,             &
                                   area_lo,          &
                                   area_hi,          &          
@@ -259,6 +261,8 @@ subroutine make_diffusive_flux ( diffusive_flux_lo,       &
                                         dx)
 
 use stm_precision
+use boundary_diffusion
+
 ! --- args
                                              
 integer, intent (in) :: ncell                                               !< Number of cells
@@ -274,9 +278,17 @@ real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< H
 real(stm_real), intent (in)  :: time                                        !< Current time
 real(stm_real), intent (in)  :: dx                                          !< Spatial step   
 
+
 !--- local
 integer :: icell 
 integer :: ivar 
+! todo: check this
+real(stm_real):: conc(ncell,nvar)
+real(stm_real):: area(ncell)
+real(stm_real):: area_lo(ncell)
+real(stm_real):: area_hi(ncell)
+real(stm_real):: disp_coef_lo(ncell,nvar)
+real(stm_real):: disp_coef_hi(ncell,nvar)
 
 do ivar = 1,nvar
     do icell = 2,ncell
@@ -288,8 +300,22 @@ diffusive_flux_hi(1:ncell-1,:) =  diffusive_flux_lo(2:ncell,:)
 diffusive_flux_hi(ncell,:) = LARGEREAL
 diffusive_flux_lo(1,:) = LARGEREAL
 
+call boundary_diffusion_flux(diffusive_flux_lo,  &
+                             diffusive_flux_hi, &
+                             conc,              &
+                             area_lo,           &
+                             area_hi,           &
+                             disp_coef_lo,      &  
+                             disp_coef_hi,      &
+                             ncell,             &
+                             nvar,              &
+                             time)
+
+
+
+
 return
-end subroutine make_diffusive_flux
+end subroutine 
 
 
 !> Construct the right hand side vector from previous step,

@@ -155,6 +155,6 @@ call construct_diffusion_matrix( center_diag ,      &
     
 
 return
-end subroutine test_interior_coef_matrix_sub
+end subroutine
 
 end module

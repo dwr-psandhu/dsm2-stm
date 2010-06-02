@@ -85,7 +85,7 @@ real(stm_real),allocatable :: reference(:)
 real(stm_real) norm_error(3,nrefine)
 character(LEN=64) filename
 
-boundary_diffusion_matrix  => neumann_diffusion_matrix
+boundary_diffusion_impose  => neumann_diffusion_matrix
 boundary_diffusion_flux    => neumann_no_flow_diffusive_flux
 
 ! coarsening factor in convergence test
@@ -173,16 +173,16 @@ call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order conver
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion")
 
 !todo: remove priints
-print *,norm_error(1,3)/norm_error(1,2)
-print *,norm_error(2,3)/norm_error(2,2)
-print *,norm_error(3,3)/norm_error(3,2)
-
-print *,norm_error(1,2)/norm_error(1,1)
-print *,norm_error(2,2)/norm_error(2,1)
-print *,norm_error(3,2)/norm_error(3,1)
-
-print *, norm_error
-pause
+!print *,norm_error(1,3)/norm_error(1,2)
+!print *,norm_error(2,3)/norm_error(2,2)
+!print *,norm_error(3,3)/norm_error(3,2)
+!
+!print *,norm_error(1,2)/norm_error(1,1)
+!print *,norm_error(2,2)/norm_error(2,1)
+!print *,norm_error(3,2)/norm_error(3,1)
+!
+!print *, norm_error
+!pause
 
 
 return

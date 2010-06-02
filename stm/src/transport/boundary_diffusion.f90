@@ -67,6 +67,7 @@ module boundary_diffusion
        subroutine boundary_diffusive_matrix_if( center_diag ,           &
                                                       up_diag,          &     
                                                       down_diag,        &
+                                                      right_hand_side,  &
                                                       area,             &
                                                       area_lo,          &
                                                       area_hi,          &          
@@ -91,6 +92,7 @@ module boundary_diffusion
         real(stm_real),intent (inout):: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
         real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
         real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
+        real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right  hand side vector
         real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
         real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
         real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
@@ -106,8 +108,8 @@ module boundary_diffusion
 
  !> This pointer should be set by the driver or client code to specify the 
  !> treatment at the first and last row of coefficient matrix
- ! todo: check the "boundary_diffusion_matrix"
- procedure(boundary_diffusive_matrix_if),pointer :: boundary_diffusion_matrix  => null()
+ ! todo: check the "boundary_diffusion_impose"
+ procedure(boundary_diffusive_matrix_if),pointer :: boundary_diffusion_impose  => null()
 
  contains
  
@@ -233,8 +235,12 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
     
-     diffusive_flux_lo(1,:) = 100.0d0*three*(two-two*pi*sin(0.05d0*pi)*exp(-three*time*pi*pi/four))
-     diffusive_flux_hi(ncell,:) = 100.0d0*three * (two-two*pi*sin(pi/two)*(-three*pi*pi*time/four))
+    !--local
+    real(stm_real)::xstart = 0.1d0
+    real(stm_real)::xend = one
+    
+     diffusive_flux_lo(1,:) = 100.0d0*three*(two-two*pi*sin(xstart*pi/two)*exp(-three*time*pi*pi/four))
+     diffusive_flux_hi(ncell,:) = 100.0d0*three * (two-two*pi*sin(xend*pi/two)*(-three*pi*pi*time/four))
         ! todo : A nad Ks are hard wired here (100.0 and three)
      return
  end subroutine
@@ -293,6 +299,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
  subroutine neumann_diffusion_matrix(center_diag ,   &
                                    up_diag,          &     
                                    down_diag,        &
+                                   right_hand_side,  &
                                    area,             &
                                    area_lo,          &
                                    area_hi,          &          
@@ -314,6 +321,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
         real(stm_real),intent (inout):: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
         real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
         real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
+        real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of the right hand side
         real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
         real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
         real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
@@ -340,6 +348,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
   subroutine n_d_test_diffusion_matrix(center_diag ,     &
                                        up_diag,          &     
                                        down_diag,        &
+                                       right_hand_side,  &
                                        area,             &
                                        area_lo,          &
                                        area_hi,          &          
@@ -361,6 +370,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
         real(stm_real),intent (inout):: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
         real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
         real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
+        real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right hand side vector
         real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
         real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
         real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
@@ -379,8 +389,9 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
           
      center_diag(1,nvar)=area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar) + two*area_lo(1)*disp_coef_lo(1,nvar))
      center_diag(ncell,nvar)= area(ncell) + theta_stm*d_star*(two*area_hi(ncell)*disp_coef_hi(ncell,nvar) + area_lo(ncell)*disp_coef_lo(ncell,nvar))
+     right_hand_side(1,nvar) = right_hand_side(1,nvar)
+     right_hand_side(ncell,nvar) = right_hand_side(ncell,nvar)+ two*d_star*area_hi(ncell)*disp_coef_hi (ncell,nvar)* two !todo: the last two is from analytical solution C* =2
      
-     ! todo: implement and test
      return
  end subroutine
  

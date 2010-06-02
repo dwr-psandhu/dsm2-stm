@@ -83,7 +83,7 @@ character(LEN=64) filename
 
 ! todo : area and dispersion coef are hardwired 
 !area=100 and dispersion coef = 7
-boundary_diffusion_matrix  => n_d_test_diffusion_matrix
+boundary_diffusion_impose  => n_d_test_diffusion_matrix
 boundary_diffusion_flux    => n_d_test_diffusive_flux
 
 ! coarsening factor in convergence test
