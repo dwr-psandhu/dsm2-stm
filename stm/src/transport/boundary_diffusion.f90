@@ -338,7 +338,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
       
      ! todo: add types of other BC 
           
-     center_diag(1,nvar)=area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar) + two*area_lo(1)*disp_coef_lo(1,nvar))
+     center_diag(1,nvar)=area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar) + two* area_lo(1)*disp_coef_lo(1,nvar))
      center_diag(ncell,nvar)= area(ncell) + theta_stm*d_star*(two*area_hi(ncell)*disp_coef_hi(ncell,nvar) + area_lo(ncell)*disp_coef_lo(ncell,nvar))
      
      ! todo: implement and test
@@ -385,13 +385,13 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
         real(stm_real) :: d_star 
         d_star = dt/(dx*dx)  
       
-     ! todo: add types of other BC 
+     ! todo: error is here
           
      center_diag(1,nvar)=area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar) + two*area_lo(1)*disp_coef_lo(1,nvar))
-     center_diag(ncell,nvar)= area(ncell) + theta_stm*d_star*(two*area_hi(ncell)*disp_coef_hi(ncell,nvar) + area_lo(ncell)*disp_coef_lo(ncell,nvar))
-     right_hand_side(1,nvar) = right_hand_side(1,nvar)
-     right_hand_side(ncell,nvar) = right_hand_side(ncell,nvar)+ two*d_star*area_hi(ncell)*disp_coef_hi (ncell,nvar)* two !todo: the last two is from analytical solution C* =2
-     
+    down_diag = 
+    
+    
+    
      return
  end subroutine
  
