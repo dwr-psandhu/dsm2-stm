@@ -69,7 +69,7 @@ program test_transport_driver
   call test_diffusion_convergence_single_channel
   call test_coarsen
   ! todo: 
-  !call test_diffusion_n_d
+  call test_diffusion_n_d
  
   
   call fruit_summary

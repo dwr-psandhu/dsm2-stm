@@ -55,9 +55,6 @@ real(stm_real) :: reference_lo
 real(stm_real) :: reference_hi
 real(stm_real) :: delta_t = 0.25d0
   
-  
-  
-   
 boundary_diffusion_flux => neumann_no_flow_diffusive_flux
 
 call boundary_diffusion_flux(diffusive_flux_lo, &
