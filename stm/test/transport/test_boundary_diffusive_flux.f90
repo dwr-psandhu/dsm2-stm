@@ -45,7 +45,7 @@ real(stm_real) :: area_lo         (ncell)              !< Low side area centered
 real(stm_real) :: area_hi         (ncell)              !< High side area centered at old time
 real(stm_real) :: disp_coef_lo (ncell,nvar)            !< Low side constituent dispersion coef.
 real(stm_real) :: disp_coef_hi (ncell,nvar)            !< High side constituent dispersion coef.
-
+real(stm_real) :: dt
 real(stm_real) :: time = zero                          !< Time 
 real(stm_real) :: dx = zero                            !< dx
 !---local
@@ -66,7 +66,8 @@ call boundary_diffusion_flux(diffusive_flux_lo, &
                              disp_coef_hi,      &
                              ncell,             &
                              nvar,              &
-                             time)
+                             time,              &
+                             dt)
                                                            
   call assertEquals (diffusive_flux_lo(1,nvar),zero,eps,"Error in diffusive boundary flux low at new time")
   call assertEquals (diffusive_flux_hi(ncell,nvar),zero,eps,"Error in diffusive boundary flux high at new time")
@@ -85,7 +86,8 @@ do tvar =1,num_t_step
                                  disp_coef_hi,      &
                                  ncell,             &
                                  nvar,              &
-                                 time)
+                                 time,              &
+                                 dt)
             
     reference_lo = two * cos( pi* time / three)               !Just for test 
     reference_hi = five * sin ( pi * time / seven)                         

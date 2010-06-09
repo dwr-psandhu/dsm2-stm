@@ -34,7 +34,8 @@ module boundary_diffusion
                                              disp_coef_hi,      &
                                              ncell,             &
                                              nvar,              &
-                                             time)
+                                             time,              &
+                                             dt)
         
          
         
@@ -51,7 +52,8 @@ module boundary_diffusion
          real(stm_real), intent (in)   ::  conc(ncell,nvar)               !< Concentration 
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)       !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)       !< High side constituent dispersion coef.
-       
+         real(stm_real), intent (in)   :: dt
+         
        end subroutine boundary_diffusive_flux_if
  end interface
 
@@ -68,6 +70,7 @@ module boundary_diffusion
                                                       up_diag,          &     
                                                       down_diag,        &
                                                       right_hand_side,  &
+                                                      explicit_diffuse_op, &
                                                       area,             &
                                                       area_lo,          &
                                                       area_hi,          &          
@@ -93,6 +96,7 @@ module boundary_diffusion
         real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
         real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
         real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right  hand side vector
+        real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar)              
         real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
         real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
         real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
@@ -148,7 +152,7 @@ module boundary_diffusion
  
  !> Example diffusive flux that imposes Neumann boundaries with zero flux at
  !> both ends of the channel.
- subroutine neumann_no_flow_diffusive_flux(diffusive_flux_lo,   &
+ subroutine neumann_no_flow_diffusive_flux(diffusive_flux_lo,  &
                                              diffusive_flux_hi, &
                                              conc,              &
                                              area_lo,           &
@@ -157,7 +161,8 @@ module boundary_diffusion
                                              disp_coef_hi,      &
                                              ncell,             &
                                              nvar,              &
-                                             time)
+                                             time,              &
+                                             dt)
     use stm_precision
          implicit none
          !--- args
@@ -171,7 +176,7 @@ module boundary_diffusion
          real(stm_real), intent (in)   ::  conc(ncell,nvar)              !< concentration 
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
-    
+         real(stm_real), intent (in)   :: dt
      
      diffusive_flux_lo(1,:) = zero
      diffusive_flux_hi(ncell,:) = zero
@@ -190,7 +195,8 @@ module boundary_diffusion
                                              disp_coef_hi,      &
                                              ncell,             &
                                              nvar,              &
-                                             time)
+                                             time,              &
+                                             dt)
     use stm_precision
          implicit none
          !--- args
@@ -204,7 +210,8 @@ module boundary_diffusion
          real(stm_real), intent (in)   ::  conc(ncell,nvar)              !< concentration 
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
-    
+         real(stm_real), intent (in)   :: dt
+          
      diffusive_flux_lo(1,:) = two * cos( pi* time / three)               !Just for test 
      diffusive_flux_hi(ncell,:) = five * sin (pi*time / seven)
         
@@ -220,7 +227,8 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
                                      disp_coef_hi,      &
                                      ncell,             &
                                      nvar,              &
-                                     time)
+                                     time,              &
+                                     dt)
     use stm_precision
          implicit none
          !--- args
@@ -234,14 +242,19 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
          real(stm_real), intent (in)   ::  conc(ncell,nvar)              !< concentration 
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
-    
+         real(stm_real), intent (in)   :: dt
     !--local
     real(stm_real)::xstart = 0.1d0
     real(stm_real)::xend = one
+    real(stm_real) :: dx
+    dx = (xend-xstart)/ncell
     
-     diffusive_flux_lo(1,:) = 100.0d0*three*(two-two*pi*sin(xstart*pi/two)*exp(-three*time*pi*pi/four))
-     diffusive_flux_hi(ncell,:) = 100.0d0*three * (two-two*pi*sin(xend*pi/two)*(-three*pi*pi*time/four))
-        ! todo : A nad Ks are hard wired here (100.0 and three)
+    ! todo : time /time -dt
+    ! dt is hard wired 
+    !two do what about negative???
+    diffusive_flux_lo(1,:) = -100.0d0*three *(two-two*pi *sin(pi*xstart/two)*exp(-three*pi*pi*(time-dt)/four))
+    diffusive_flux_hi(ncell,:) = -two*100.0d0*three *(two-two*(xend-dx/two)-four*cos(pi*(xend-dx/two)/two)*exp(-three*pi*pi*(time-dt)/four))/dx
+        ! todo : A and Ks are hard wired here (A=100.0 and Ks=three)
      return
  end subroutine
  
@@ -296,21 +309,22 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
  !> Example diffusive flux that imposes Neumann boundaries with zero flux at
  !> both ends of the channel.
  !todo: make sure this is generic for all neumann bc
- subroutine neumann_diffusion_matrix(center_diag ,   &
-                                   up_diag,          &     
-                                   down_diag,        &
-                                   right_hand_side,  &
-                                   area,             &
-                                   area_lo,          &
-                                   area_hi,          &          
-                                   disp_coef_lo,     &
-                                   disp_coef_hi,     &
-                                   theta_stm,        &
-                                   ncell,            &
-                                   time,             & 
-                                   nvar,             & 
-                                   dx,               &
-                                   dt)
+ subroutine neumann_diffusion_matrix( center_diag ,       &
+                                      up_diag,            &     
+                                      down_diag,          &
+                                      right_hand_side,    & 
+                                      explicit_diffuse_op,&
+                                      area,               &
+                                      area_lo,            &
+                                      area_hi,            &          
+                                      disp_coef_lo,       &
+                                      disp_coef_hi,       &
+                                      theta_stm,          &
+                                      ncell,              &
+                                      time,               & 
+                                      nvar,               & 
+                                      dx,                 &
+                                      dt)
      use stm_precision
      implicit none
          !--- args
@@ -322,6 +336,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
         real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
         real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
         real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of the right hand side
+        real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar)
         real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
         real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
         real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
@@ -345,21 +360,22 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
      return
  end subroutine
  
-  subroutine n_d_test_diffusion_matrix(center_diag ,     &
-                                       up_diag,          &     
-                                       down_diag,        &
-                                       right_hand_side,  &
-                                       area,             &
-                                       area_lo,          &
-                                       area_hi,          &          
-                                       disp_coef_lo,     &
-                                       disp_coef_hi,     &
-                                       theta_stm,        &
-                                       ncell,            &
-                                       time,             & 
-                                       nvar,             & 
-                                       dx,               &
-                                       dt)
+  subroutine n_d_test_diffusion_matrix( center_diag ,         &
+                                          up_diag,            &     
+                                          down_diag,          &
+                                          right_hand_side,    & 
+                                          explicit_diffuse_op,&
+                                          area,               &
+                                          area_lo,            &
+                                          area_hi,            &          
+                                          disp_coef_lo,       &
+                                          disp_coef_hi,       &
+                                          theta_stm,          &
+                                          ncell,              &
+                                          time,               & 
+                                          nvar,               & 
+                                          dx,                 &
+                                          dt)
      use stm_precision
      implicit none
          !--- args
@@ -371,6 +387,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
         real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
         real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
         real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right hand side vector
+        real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar) 
         real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
         real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
         real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
@@ -386,10 +403,20 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
         d_star = dt/(dx*dx)  
       
      ! todo: error is here
-          
-     center_diag(1,nvar)=area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar) + two*area_lo(1)*disp_coef_lo(1,nvar))
-    down_diag = 
-    
+          ! todo : KS=3 hard wired
+     center_diag(1,nvar)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar)) 
+     up_diag(1,nvar) = - theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar))
+     right_hand_side(1,nvar) = right_hand_side(1,nvar)&
+                                - theta_stm*(dt/dx)*area_hi(1)*disp_coef_hi(1,nvar)*(two-two*pi*sin(0.05d0*pi)*exp(three*pi*pi*time/four) )
+     
+     
+     
+     center_diag(ncell,nvar)=  center_diag(ncell,nvar)+ theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,nvar))
+     right_hand_side(ncell,nvar) = right_hand_side(ncell,nvar)&
+                                + two*theta_stm*d_star*area_hi(ncell)*disp_coef_hi(ncell,nvar)*two! two is c on the boundary
+     
+     ! todo: time or time +dt
+     ! todo: conc_prev and area prev
     
     
      return

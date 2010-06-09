@@ -63,7 +63,7 @@ real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent di
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
 
-real(stm_real), parameter :: constant_area = 1.D2
+real(stm_real), parameter :: constant_area = 100.0D0
 real(stm_real), parameter :: start_time = zero
 real(stm_real), parameter :: end_time = start_time + total_time
 
@@ -82,9 +82,8 @@ character(LEN=64) filename
 
 
 ! todo : area and dispersion coef are hardwired 
-!area=100 and dispersion coef = 7
-boundary_diffusion_impose  => n_d_test_diffusion_matrix
-boundary_diffusion_flux    => n_d_test_diffusive_flux
+!area=100 and dispersion coef = 3
+
 
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
@@ -109,6 +108,9 @@ do icoarse = 1,nrefine
     dx = domain_length/dble(nx)
     dt = total_time/dble(nstep)
     
+boundary_diffusion_impose  => n_d_test_diffusion_matrix
+boundary_diffusion_flux    => n_d_test_diffusive_flux
+    
     allocate(xposition(nx))
     allocate(reference(nx))
       time = zero
@@ -120,7 +122,7 @@ end do
 
 !---- march
 
-do itime = 1,nstep
+do itime = 1 , nstep
 
 time = start_time + itime*dt
 

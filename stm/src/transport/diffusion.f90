@@ -110,9 +110,9 @@ call explicit_diffusion_operator(explicit_diffuse_op, &
                                     ncell,            &
                                     nvar,             &
                                     time,             &
-                                    dx)
+                                    dx,               &
+                                    dt)
   
-
   
 ! todo: need to change this to use just diffusive_flux_hi/lo
 
@@ -151,20 +151,21 @@ call construct_diffusion_matrix( center_diag ,      &
 
  
                                   
-call boundary_diffusion_impose( center_diag ,       &
-                                  up_diag,          &     
-                                  down_diag,        &
-                                  right_hand_side,  & 
-                                  area,             &
-                                  area_lo,          &
-                                  area_hi,          &          
-                                  disp_coef_lo,     &
-                                  disp_coef_hi,     &
-                                  theta_stm,        &
-                                  ncell,            &
-                                  time,             & 
-                                  nvar,             & 
-                                  dx,               &
+call boundary_diffusion_impose( center_diag ,         &
+                                  up_diag,            &     
+                                  down_diag,          &
+                                  right_hand_side,    & 
+                                  explicit_diffuse_op,&
+                                  area,               &
+                                  area_lo,            &
+                                  area_hi,            &          
+                                  disp_coef_lo,       &
+                                  disp_coef_hi,       &
+                                  theta_stm,          &
+                                  ncell,              &
+                                  time,               & 
+                                  nvar,               & 
+                                  dx,                 &
                                   dt)
 
 
@@ -195,7 +196,8 @@ subroutine explicit_diffusion_operator (explicit_diffuse_op,  &
                                             ncell,            &
                                             nvar,             &
                                             time,             &
-                                            dx)
+                                            dx,               &
+                                            dt)
                                                                                           
 use stm_precision
 use boundary_diffusion
@@ -214,7 +216,7 @@ real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< L
 real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: time                                        !< Current time
 real(stm_real), intent (in)  :: dx                                          !< Spacial step  
-
+real(stm_real), intent (in)  :: dt
 !--- locals
 integer :: ivar
 integer :: icell
@@ -235,7 +237,8 @@ explicit_diffuse_op = LARGEREAL
                                        ncell,            &
                                        nvar,             &
                                        time,             &
-                                       dx)
+                                       dx,               &
+                                       dt)
    
          
 do ivar = 1,nvar
@@ -258,7 +261,8 @@ subroutine make_diffusive_flux ( diffusive_flux_lo,       &
                                         ncell,            &
                                         nvar,             &
                                         time,             &
-                                        dx)
+                                        dx,               &
+                                        dt)
 
 use stm_precision
 use boundary_diffusion
@@ -277,7 +281,7 @@ real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< L
 real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: time                                        !< Current time
 real(stm_real), intent (in)  :: dx                                          !< Spatial step   
-
+real(stm_real), intent (in)  :: dt
 
 !--- local
 integer :: icell 
@@ -302,14 +306,15 @@ diffusive_flux_lo(1,:) = LARGEREAL
 
 call boundary_diffusion_flux(diffusive_flux_lo,  &
                              diffusive_flux_hi, &
-                             conc,              &
+                             conc_prev,              & !todo
                              area_lo,           &
                              area_hi,           &
                              disp_coef_lo,      &  
                              disp_coef_hi,      &
                              ncell,             &
                              nvar,              &
-                             time)
+                             time,              &
+                             dt)
 
 
 

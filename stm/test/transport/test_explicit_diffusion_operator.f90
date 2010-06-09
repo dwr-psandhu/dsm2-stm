@@ -43,7 +43,7 @@ real(stm_real) :: disp_coef_lo_prev (ncell,nvar)              !< Low side consti
 real(stm_real) :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
 real(stm_real) :: time                                        !< Current time
 real(stm_real) :: dx                                          !< Spacial step  
-
+real(stm_real) :: dt
 conc_prev(:,1)  = (/300d0,305d0,320d0,330d0,340d0,350d0/)
 area_lo_prev(:) = (/100d0,98d0,96d0,94d0,92d0,90d0/)
 area_hi_prev(:) = (/98d0,96d0,94d0,92d0,90d0,88d0/)
@@ -63,7 +63,8 @@ call explicit_diffusion_operator (explicit_diffuse_op,  &
                                             ncell,            &
                                             nvar,             &
                                             time,             &
-                                            dx)
+                                            dx,               &
+                                            dt)
                                             
                                            
                               
