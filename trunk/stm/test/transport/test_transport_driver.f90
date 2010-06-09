@@ -60,13 +60,14 @@ program test_transport_driver
   call test_uniform_advection_convergence(verbose)
         
   !///////// Diffusion
-  call test_tridi_solver
-  call test_boundary_dif_flux
-  call test_make_dif_flux_sub
-  call test_explicit_diffusion_op
-  call test_interior_coef_matrix_sub
-  call test_construct_elemnts_rhs 
-  call test_diffusion_convergence_single_channel
+!  call test_tridi_solver
+!  call test_boundary_dif_flux
+!  call test_make_dif_flux_sub
+!  call test_explicit_diffusion_op
+!  call test_interior_coef_matrix_sub
+!  call test_construct_elemnts_rhs 
+!todo: comment
+  !call test_diffusion_convergence_single_channel
   call test_coarsen
   ! todo: 
   call test_diffusion_n_d
