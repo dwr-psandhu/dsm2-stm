@@ -237,8 +237,8 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
          real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
          real(stm_real), intent (in)   :: area_lo         (ncell)        !< Low side area centered at old time
          real(stm_real), intent (in)   :: area_hi         (ncell)        !< High side area centered at old time
-         real(stm_real), intent (in)   ::  time                          !< time
-         real(stm_real), intent (in)   ::  conc(ncell,nvar)              !< concentration 
+         real(stm_real), intent (in)   :: time                           !< time
+         real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
          real(stm_real), intent (in)   :: dt
@@ -251,18 +251,16 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
     ! todo : time /time -dt
     ! dt is hard wired 
     !two do what about negative???
-    diffusive_flux_lo(1,:) = -100.0d0*three *(two-two*pi *sin(pi*xstart/two)*exp(-three*pi*pi*(time-dt)/four))
-    diffusive_flux_hi(ncell,:) = -two*100.0d0*three *(two-two*(xend-dx/two)-four*cos(pi*(xend-dx/two)/two)*exp(-three*pi*pi*(time-dt)/four))/dx
+    diffusive_flux_lo(1,:) = -100.0d0*half *(two-two*pi *sin(pi*xstart/two)*exp(-half*pi*pi*(time-dt)/four))
+    diffusive_flux_hi(ncell,:) = -two*100.0d0*half*(two-conc(ncell,:))/dx
         ! todo : A and Ks are hard wired here (A=100.0 and Ks=three)
      return
  end subroutine
  
  
- 
- 
  !===========================================
   !> Example matrix that prints an error and bails
- subroutine uninitialized_diffusive_bc_matrix( center_diag ,    &
+ subroutine uninitialized_diffusive_bc_matrix(center_diag,      &
                                               up_diag,          &     
                                               down_diag,        &
                                               area,             &
@@ -359,22 +357,22 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
      return
  end subroutine
  
-  subroutine n_d_test_diffusion_matrix( center_diag ,         &
-                                          up_diag,            &     
-                                          down_diag,          &
-                                          right_hand_side,    & 
-                                          explicit_diffuse_op,&
-                                          area,               &
-                                          area_lo,            &
-                                          area_hi,            &          
-                                          disp_coef_lo,       &
-                                          disp_coef_hi,       &
-                                          theta_stm,          &
-                                          ncell,              &
-                                          time,               & 
-                                          nvar,               & 
-                                          dx,                 &
-                                          dt)
+  subroutine n_d_test_diffusion_matrix(center_diag ,       &
+                                       up_diag,            &     
+                                       down_diag,          &
+                                       right_hand_side,    & 
+                                       explicit_diffuse_op,&
+                                       area,               &
+                                       area_lo,            &
+                                       area_hi,            &          
+                                       disp_coef_lo,       &
+                                       disp_coef_hi,       &
+                                       theta_stm,          &
+                                       ncell,              &
+                                       time,               & 
+                                       nvar,               & 
+                                       dx,                 &
+                                       dt)
      use stm_precision
      implicit none
          !--- args
@@ -403,21 +401,18 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
       
      ! todo: error is here
           ! todo : KS=3 hard wired
-     center_diag(1,nvar)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar)) 
-     up_diag(1,nvar) = - theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar))
-     right_hand_side(1,nvar) = right_hand_side(1,nvar)&
-                                - theta_stm*(dt/dx)*area_hi(1)*disp_coef_hi(1,nvar)*(two-two*pi*sin(0.05d0*pi)*exp(three*pi*pi*time/four) )
+     center_diag(1,:)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,:)) 
+     up_diag(1,:) = - theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,:))
+     right_hand_side(1,:) = right_hand_side(1,:)&
+                                - (- theta_stm*(dt/dx)*area_hi(1)*disp_coef_hi(1,:)*(two-two*pi*sin(0.05d0*pi)*exp(-half*pi*pi*time/four) ))
      
      
      
-     center_diag(ncell,nvar)=  center_diag(ncell,nvar)+ theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,nvar))
-     right_hand_side(ncell,nvar) = right_hand_side(ncell,nvar)&
-                                + two*theta_stm*d_star*area_hi(ncell)*disp_coef_hi(ncell,nvar)*two! two is c on the boundary
+     center_diag(ncell,:)=  area(ncell) + theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,:)+two*area_lo(ncell)*disp_coef_lo(ncell,:))
+     down_diag(ncell,:) = - theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,:))
+     right_hand_side(ncell,:) = right_hand_side(ncell,:)&
+                                 - two*theta_stm*d_star*area_hi(:)*disp_coef_hi(ncell,:)*two ! two is c on the boundary
      
-     ! todo: time or time +dt
-     ! todo: conc_prev and area prev
-    
-    
      return
  end subroutine
  

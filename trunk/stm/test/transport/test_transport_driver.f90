@@ -67,11 +67,10 @@ call test_explicit_interior_diffusion_op
 call test_interior_coef_matrix_sub
 call test_construct_elemnts_rhs 
 call test_coarsen
-call test_diffusion_convergence_single_channel
 !call test_diffusion_n_d
+call test_diffusion_convergence_single_channel
   
 call fruit_summary
-
 pause
 
-end program test_transport_driver
+end program 

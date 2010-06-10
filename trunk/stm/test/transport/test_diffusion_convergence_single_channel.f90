@@ -43,7 +43,7 @@ implicit none
 !--- Problem variables
 
 integer, parameter  :: nstep_base = 128
-integer, parameter  :: nx_base = 256
+integer, parameter  :: nx_base = 512
 
 integer :: icoarse = 0
 integer :: nstep
@@ -52,9 +52,10 @@ integer :: nx
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 51200.d0
 real(stm_real), parameter :: origin = zero   
-real(stm_real), parameter :: total_time    = 2048.d0
-real(stm_real), parameter :: disp_coef     = 512.d0
-real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+real(stm_real), parameter :: total_time    = 1024.d0
+real(stm_real), parameter :: disp_coef     = 1024.d0
+real(stm_real) :: theta = half
+                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
@@ -63,11 +64,10 @@ real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent di
 
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
-real(stm_real), parameter :: ic_center      = three*fourth*domain_length
-real(stm_real), parameter :: ic_gaussian_sd = domain_length/sixteen
-real(stm_real), parameter :: ic_peak = one
-real(stm_real), parameter :: constant_area = 110.0d0
-real(stm_real) :: vel
+real(stm_real), parameter :: ic_center      = two*fourth*domain_length
+real(stm_real), parameter :: ic_gaussian_sd = domain_length/eight
+real(stm_real), parameter :: ic_peak = two
+real(stm_real), parameter :: constant_area = 100.0d0
 real(stm_real), parameter :: start_time = 256.d0
 real(stm_real), parameter :: end_time = start_time + total_time
 
@@ -111,6 +111,8 @@ do icoarse = 1,nrefine
     dx = domain_length/dble(nx)
     dt = total_time/dble(nstep)
     
+    print *,'D*dt/dx^2 = ', disp_coef*dt/dx/dx
+    
     allocate(xposition(nx))
     do icell = 1,nx
         xposition(icell) = dx*(dble(icell)-half)+origin
@@ -125,7 +127,7 @@ do icoarse = 1,nrefine
                        sqrt(two*disp_coef*end_time),sqrt(start_time/end_time))
 
     time = zero
-    
+     
     do itime = 1,nstep
             conc_prev = conc
             time = start_time + itime*dt
@@ -172,15 +174,16 @@ call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order conver
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion")
 
 !todo: remove priints
-!print *,norm_error(1,3)/norm_error(1,2)
-!print *,norm_error(2,3)/norm_error(2,2)
-!print *,norm_error(3,3)/norm_error(3,2)
-!
-!print *,norm_error(1,2)/norm_error(1,1)
-!print *,norm_error(2,2)/norm_error(2,1)
-!print *,norm_error(3,2)/norm_error(3,1)
-!
-!print *, norm_error
+
+print *,norm_error(1,3)/norm_error(1,2)
+print *,norm_error(2,3)/norm_error(2,2)
+print *,norm_error(3,3)/norm_error(3,2)
+
+print *,norm_error(1,2)/norm_error(1,1)
+print *,norm_error(2,2)/norm_error(2,1)
+print *,norm_error(3,2)/norm_error(3,1)
+
+print *, norm_error
 !pause
 
 

@@ -24,7 +24,7 @@ module test_diffusion_neumann_dirichlet
 
 contains
 
-subroutine test_diffusion_n_d()
+subroutine test_diffusion_n_d
 
 use stm_precision
 use state_variables
@@ -42,7 +42,7 @@ implicit none
 !--- Problem variables
 
 integer, parameter  :: nstep_base = 1024
-integer, parameter  :: nx_base = 32
+integer, parameter  :: nx_base = 24
 
 integer :: icoarse = 0
 integer :: nstep
@@ -51,14 +51,13 @@ integer :: nx
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 0.9d0
 real(stm_real), parameter :: origin = 0.1d0      
-real(stm_real), parameter :: total_time    = 10.0d0
-real(stm_real), parameter :: disp_coef     = three
+real(stm_real), parameter :: total_time    = 1.0d0
+real(stm_real), parameter :: disp_coef     = half
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
 real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent dispersion coef. at old time
-
 
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
@@ -71,14 +70,17 @@ real(stm_real) :: time
 real(stm_real), allocatable :: xposition(:)
 
 integer :: itime
-integer :: icell ! debug only -- remove later
+integer :: icell 
 !------
 integer, parameter :: coarsen_factor = 2      ! coarsening factor used for convergence test
 integer :: coarsening
 integer, parameter :: nrefine = 3
 real(stm_real),allocatable :: reference(:)
-real(stm_real) norm_error(3,nrefine)
+real(stm_real):: norm_error(3,nrefine)
 character(LEN=64) filename
+
+boundary_diffusion_impose  => n_d_test_diffusion_matrix
+boundary_diffusion_flux    => n_d_test_diffusive_flux
 
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
@@ -103,23 +105,27 @@ do icoarse = 1,nrefine
     dx = domain_length/dble(nx)
     dt = total_time/dble(nstep)
     
-boundary_diffusion_impose  => n_d_test_diffusion_matrix
-boundary_diffusion_flux    => n_d_test_diffusive_flux
+    if (disp_coef*dt/dx/dx > half) then
+    print *,"instable",disp_coef*dt/dx/dx
+    pause
+    end if
     
     allocate(xposition(nx))
     allocate(reference(nx))
       time = zero
 do icell = 1,nx
     xposition(icell) = origin + (dble(icell)-half)*dx 
-    conc_prev(icell,:) = two*xposition(icell) + four*cos(pi*xposition(icell)/two)*exp(-disp_coef*time*pi*pi/four)
+    conc(icell,:) = two*xposition(icell) + four*cos(pi*xposition(icell)/two)*exp(-disp_coef*time*pi*pi/four)
 end do      
       
 
 !---- march
+! todo: this number must be less than half disp_coef*dt/dx/dx
 
 do itime = 1 , nstep
 
 time = start_time + itime*dt
+conc_prev = conc
 
 call diffuse(conc,              &
              conc_prev,         &
@@ -139,7 +145,6 @@ call diffuse(conc,              &
              theta,             &
              dt,                &
              dx                 ) 
-conc_prev = conc
 
 end do 
     
@@ -148,9 +153,9 @@ end do
 !    call printout(reference,xposition,filename)
    ! write(filename, "(a\i3\'.txt')"), "diffuse_gaussian_solution_", ncell 
  !todo:   call printout(conc(:,2),xposition,filename)
- do icell = 1,nx
-    reference(icell) = two*xposition(icell) + four*cos(pi*xposition(icell)/two)*exp(-disp_coef*time*pi*pi/four)
- end do  
+
+  reference(:) = two*xposition(:) + four*cos(pi*xposition(:)/two)*exp(-disp_coef*end_time*pi*pi/four)
+
  
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
@@ -171,17 +176,17 @@ call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 2nd order convergen
 call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 2nd order convergence on N_D diffusion")
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf 2nd order convergence on N_D diffusion")
 
-!!todo: remove priints
-!print *,norm_error(1,3)/norm_error(1,2)
-!print *,norm_error(2,3)/norm_error(2,2)
-!print *,norm_error(3,3)/norm_error(3,2)
-!
-!print *,norm_error(1,2)/norm_error(1,1)
-!print *,norm_error(2,2)/norm_error(2,1)
-!print *,norm_error(3,2)/norm_error(3,1)
-!
-!print *, norm_error
-!pause
+!todo: remove prints
+print *,norm_error(1,3)/norm_error(1,2)
+print *,norm_error(2,3)/norm_error(2,2)
+print *,norm_error(3,3)/norm_error(3,2)
+
+print *,norm_error(1,2)/norm_error(1,1)
+print *,norm_error(2,2)/norm_error(2,1)
+print *,norm_error(3,2)/norm_error(3,1)
+
+print *, norm_error
+pause
 
 return
 end subroutine
