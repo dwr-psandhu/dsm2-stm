@@ -101,81 +101,81 @@ real(stm_real) :: right_hand_side(ncell,nvar)                 !< Right hand side
 ! Explicit diffusion operator construction. This creates the diffusive fluxes
 ! sends them for modification for boundaries and then differences the fluxes
 ! to get the operator d/dx(Ad/dx). 
-call explicit_diffusion_operator(explicit_diffuse_op, &
-                                    conc_prev,        &
-                                    area_lo_prev,     &
-                                    area_hi_prev,     &
-                                    disp_coef_lo_prev,&  
-                                    disp_coef_hi_prev,&
-                                    ncell,            &
-                                    nvar,             &
-                                    time,             &
-                                    dx,               &
-                                    dt)
+call explicit_diffusion_operator(explicit_diffuse_op,&
+                                 conc_prev,          &
+                                 area_lo_prev,       &
+                                 area_hi_prev,       &
+                                 disp_coef_lo_prev,  &  
+                                 disp_coef_hi_prev,  &
+                                 ncell,              &
+                                 nvar,               &
+                                 time,               &
+                                 dx,                 &
+                                 dt)
   
   
 ! todo: need to change this to use just diffusive_flux_hi/lo
 
-call construct_right_hand_side(   right_hand_side,       & 
-                                  explicit_diffuse_op,   & 
-                                  area_prev,             &
-                                  area_lo_prev,          &
-                                  area_hi_prev,          &
-                                  disp_coef_lo_prev,     &
-                                  disp_coef_hi_prev,     &
-                                  conc_prev,             &
-                                  theta_stm,             &
-                                  ncell,                 &
-                                  time,                  &
-                                  nvar,                  &  
-                                  dx,                    &
-                                  dt)
+call construct_right_hand_side(right_hand_side,       & 
+                               explicit_diffuse_op,   & 
+                               area_prev,             &
+                               area_lo_prev,          &
+                               area_hi_prev,          &
+                               disp_coef_lo_prev,     &
+                               disp_coef_hi_prev,     &
+                               conc_prev,             &
+                               theta_stm,             &
+                               ncell,                 &
+                               time,                  &
+                               nvar,                  &  
+                               dx,                    &
+                               dt)
 
                                         
 ! Construct the matrix for the diffusion solver
 ! without boundary condition modification or structure on interior of domain
-call construct_diffusion_matrix( center_diag ,      &
-                                  up_diag,          &     
-                                  down_diag,        &
-                                  area,             &
-                                  area_lo,          &
-                                  area_hi,          &
-                                  disp_coef_lo,     &
-                                  disp_coef_hi,     &
-                                  theta_stm,        &
-                                  ncell,            &
-                                  time,             & 
-                                  nvar,             & 
-                                  dx,               &
-                                  dt)
+call construct_diffusion_matrix(center_diag ,     &
+                                up_diag,          &     
+                                down_diag,        &
+                                area,             &
+                                area_lo,          &
+                                area_hi,          &
+                                disp_coef_lo,     &
+                                disp_coef_hi,     &
+                                theta_stm,        &
+                                ncell,            &
+                                time,             & 
+                                nvar,             & 
+                                dx,               &
+                                dt)
 
  
                                   
-call boundary_diffusion_impose( center_diag ,         &
-                                  up_diag,            &     
-                                  down_diag,          &
-                                  right_hand_side,    & 
-                                  explicit_diffuse_op,&
-                                  area,               &
-                                  area_lo,            &
-                                  area_hi,            &          
-                                  disp_coef_lo,       &
-                                  disp_coef_hi,       &
-                                  theta_stm,          &
-                                  ncell,              &
-                                  time,               & 
-                                  nvar,               & 
-                                  dx,                 &
-                                  dt)
+call boundary_diffusion_impose(center_diag ,         &
+                                 up_diag,            &     
+                                 down_diag,          &
+                                 right_hand_side,    & 
+                                 explicit_diffuse_op,&
+                                 area,               &
+                                 area_lo,            &
+                                 area_hi,            &          
+                                 disp_coef_lo,       &
+                                 disp_coef_hi,       &
+                                 theta_stm,          &
+                                 ncell,              &
+                                 time,               & 
+                                 nvar,               & 
+                                 dx,                 &
+                                 dt)
 
 
-call solve (center_diag ,           &
-                  up_diag,          &     
-                  down_diag,        &
-                  right_hand_side,  &
-                  conc,             &
-                  ncell,            &
-                  nvar)
+call solve(center_diag ,     &
+           up_diag,          &     
+           down_diag,        &
+           right_hand_side,  &
+           conc,             &
+           ncell,            &
+           nvar)
 
 
 
@@ -227,42 +227,38 @@ real(stm_real):: diffusive_flux_hi_prev(ncell,nvar)
 explicit_diffuse_op = LARGEREAL
 
      ! todo : rename the subroutine 
-        call make_diffusive_flux ( diffusive_flux_lo,&
-                                       diffusive_flux_hi,&
-                                       conc_prev,        &
-                                       area_lo_prev,     &
-                                       area_hi_prev,     &
-                                       disp_coef_lo_prev,&  
-                                       disp_coef_hi_prev,&
-                                       ncell,            &
-                                       nvar,             &
-                                       time,             &
-                                       dx,               &
-                                       dt)
-   
-         
+call make_diffusive_flux(diffusive_flux_lo,&
+                         diffusive_flux_hi,&
+                         conc_prev,        &
+                         area_lo_prev,     &
+                         area_hi_prev,     &
+                         disp_coef_lo_prev,&  
+                         disp_coef_hi_prev,&
+                         ncell,            &
+                         nvar,             &
+                         time,             &
+                         dx,               &
+                         dt)
+          
 do ivar = 1,nvar
-    do icell = 1,ncell 
-     explicit_diffuse_op (icell,ivar) = (- diffusive_flux_hi (icell,ivar) + diffusive_flux_lo (icell,ivar))/dx
-    end do
+   explicit_diffuse_op(:,ivar) = (diffusive_flux_hi(:,ivar) - diffusive_flux_lo(:,ivar))/dx
 end do
 
 return
-end subroutine explicit_diffusion_operator 
+end subroutine 
 
-
-subroutine make_diffusive_flux ( diffusive_flux_lo,       &
-                                 diffusive_flux_hi,       &
-                                        conc_prev,        &
-                                        area_lo_prev,     &
-                                        area_hi_prev,     &
-                                        disp_coef_lo_prev,&  
-                                        disp_coef_hi_prev,&
-                                        ncell,            &
-                                        nvar,             &
-                                        time,             &
-                                        dx,               &
-                                        dt)
+subroutine make_diffusive_flux(diffusive_flux_lo,       &
+                               diffusive_flux_hi,       &
+                               conc_prev,               &
+                               area_lo_prev,            &
+                               area_hi_prev,            &
+                               disp_coef_lo_prev,       &  
+                               disp_coef_hi_prev,       &
+                               ncell,                   &
+                               nvar,                    &
+                               time,                    &
+                               dx,                      &
+                               dt)
 
 use stm_precision
 use boundary_diffusion
@@ -295,18 +291,20 @@ real(stm_real):: disp_coef_lo(ncell,nvar)
 real(stm_real):: disp_coef_hi(ncell,nvar)
 
 do ivar = 1,nvar
-    do icell = 2,ncell
-        diffusive_flux_lo(icell,ivar) = -(area_lo_prev(icell)*disp_coef_lo_prev(icell,ivar)* (conc_prev(icell,ivar)- conc_prev(icell-1,ivar)))/dx                       
-    end do
+    diffusive_flux_lo(2:ncell,ivar) = &
+        -(area_lo_prev(2:ncell)*disp_coef_lo_prev(2:ncell,ivar)* &
+        (conc_prev(2:ncell,ivar) - conc_prev(1:(ncell-1),ivar)))/dx
+               
+    diffusive_flux_hi(1:(ncell-1),ivar) = &
+        -(area_hi_prev(1:(ncell-1))*disp_coef_hi_prev(1:(ncell-1),ivar)* &
+           (conc_prev(2:ncell,ivar) - conc_prev(1:(ncell-1),ivar)))/dx                    
 end do 
-diffusive_flux_hi(1:ncell-1,:) =  diffusive_flux_lo(2:ncell,:)  
-!todo: problem is here
 diffusive_flux_hi(ncell,:) = LARGEREAL
 diffusive_flux_lo(1,:) = LARGEREAL
 
-call boundary_diffusion_flux(diffusive_flux_lo,  &
+call boundary_diffusion_flux(diffusive_flux_lo, &
                              diffusive_flux_hi, &
-                             conc_prev,              & !todo
+                             conc_prev,         & !todo
                              area_lo,           &
                              area_hi,           &
                              disp_coef_lo,      &  
@@ -361,14 +359,12 @@ integer :: ivar
 integer :: icell
 
 do ivar = 1,nvar
-    do icell = 1,ncell
-         right_hand_side(icell,ivar) = area_prev(icell)*conc_prev(icell,ivar) &
-                                       + (1-theta)*dt* explicit_diffuse_op (icell,ivar) 
-    end do
+         right_hand_side(:,ivar) = area_prev(:)*conc_prev(:,ivar) &
+                                       - (1-theta)*dt* explicit_diffuse_op (:,ivar) 
 end do
 
 return
-end subroutine construct_right_hand_side
+end subroutine
 
 
 !> Construct the matrix for the diffusion solver
@@ -430,7 +426,7 @@ d_star = dt/dx/dx
     
     end do   
 return
-end subroutine construct_diffusion_matrix
+end subroutine 
 
 
 
@@ -466,6 +462,6 @@ do ivar = 1 ,nvar
                       ncell)
 end do
 return
-end subroutine solve
+end subroutine 
 
 end module diffusion    

@@ -80,11 +80,6 @@ real(stm_real),allocatable :: reference(:)
 real(stm_real) norm_error(3,nrefine)
 character(LEN=64) filename
 
-
-! todo : area and dispersion coef are hardwired 
-!area=100 and dispersion coef = 3
-
-
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
     coarsening = coarsen_factor**(icoarse - 1)
@@ -176,17 +171,17 @@ call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 2nd order convergen
 call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 2nd order convergence on N_D diffusion")
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf 2nd order convergence on N_D diffusion")
 
-!todo: remove priints
-print *,norm_error(1,3)/norm_error(1,2)
-print *,norm_error(2,3)/norm_error(2,2)
-print *,norm_error(3,3)/norm_error(3,2)
-
-print *,norm_error(1,2)/norm_error(1,1)
-print *,norm_error(2,2)/norm_error(2,1)
-print *,norm_error(3,2)/norm_error(3,1)
-
-print *, norm_error
-pause
+!!todo: remove priints
+!print *,norm_error(1,3)/norm_error(1,2)
+!print *,norm_error(2,3)/norm_error(2,2)
+!print *,norm_error(3,3)/norm_error(3,2)
+!
+!print *,norm_error(1,2)/norm_error(1,1)
+!print *,norm_error(2,2)/norm_error(2,1)
+!print *,norm_error(3,2)/norm_error(3,1)
+!
+!print *, norm_error
+!pause
 
 return
 end subroutine
