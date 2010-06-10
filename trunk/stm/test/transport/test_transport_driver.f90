@@ -22,58 +22,56 @@
 !>@ingroup test
 program test_transport_driver
 
-  use fruit
-  
-  use test_extrapolate
-  use test_prim_cons_conversion
-  use test_uniform_flow
-  use test_matrix_solver
-  use example_initial_conditions
-  use test_boundary_difussive_flux
-  use test_make_diffusive_flux
-  use test_explicit_diffusion_operator
-  use test_interior_coef_matrix
-  use test_construct_r_h_s
-  use test_diffusion_neumann_dirichlet
-  use source_module
-  use test_diffusion_single_channel
-  use test_advection_tidal
-  use test_coarsening
-  use test_uniform_flow
-  use test_prim_increment_to_cons
-  use test_gradient
-  
-  implicit none
-  logical :: verbose = .false.
-  
-  call init_fruit
-     
-  !todo: remove comments
-  !////////// Advection
-  call test_gradient_calc
-  call test_limiter
-  call test_prim_cons_convert
-  call test_prim_increment2cons
-  call test_example_initial_conditions
-  call test_extrapolation
-  call test_tidal_advection_convergence(verbose)
-  call test_uniform_advection_convergence(verbose)
-        
-  !///////// Diffusion
-!  call test_tridi_solver
-!  call test_boundary_dif_flux
-!  call test_make_dif_flux_sub
-!  call test_explicit_diffusion_op
-!  call test_interior_coef_matrix_sub
-!  call test_construct_elemnts_rhs 
-!todo: comment
-  !call test_diffusion_convergence_single_channel
-  call test_coarsen
-  ! todo: 
-  call test_diffusion_n_d
+use fruit
+
+use test_extrapolate
+use test_prim_cons_conversion
+use test_uniform_flow
+use test_matrix_solver
+use example_initial_conditions
+use test_boundary_diffusion
+use test_make_diffusive_flux
+use test_explicit_diffusion_operator
+use test_interior_coef_matrix
+use test_construct_r_h_s
+use test_diffusion_neumann_dirichlet
+use source_module
+use test_diffusion_single_channel
+use test_advection_tidal
+use test_coarsening
+use test_uniform_flow
+use test_prim_increment_to_cons
+use test_gradient
+
+implicit none
+logical :: verbose = .false.
+
+call init_fruit
  
+!todo: remove comments
+!////////// Advection
+call test_gradient_calc
+call test_limiter
+call test_prim_cons_convert
+call test_prim_increment2cons
+call test_example_initial_conditions
+call test_extrapolation
+call test_tidal_advection_convergence(verbose)
+call test_uniform_advection_convergence(verbose)
+    
+!///////// Diffusion
+call test_tridi_solver
+call test_boundary_diffusion_flux
+call test_make_dif_flux_sub
+call test_explicit_interior_diffusion_op
+call test_interior_coef_matrix_sub
+call test_construct_elemnts_rhs 
+call test_coarsen
+call test_diffusion_convergence_single_channel
+!call test_diffusion_n_d
   
-  call fruit_summary
-  pause
-  
+call fruit_summary
+
+pause
+
 end program test_transport_driver

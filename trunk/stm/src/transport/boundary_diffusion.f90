@@ -23,8 +23,7 @@
 module boundary_diffusion
  !> Calculate boundary diffusion flux
  abstract interface
-       !> Generic interface for calculating BC that should be fulfilled by
-       !> client programs
+       !> Generic interface for boundary diffusion that should be fulfilled by client programs
        subroutine boundary_diffusive_flux_if(diffusive_flux_lo, &
                                              diffusive_flux_hi, &
                                              conc,              &
@@ -353,8 +352,8 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
       
      ! todo: add types of other BC 
           
-     center_diag(1,nvar)=area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar) + two* area_lo(1)*disp_coef_lo(1,nvar))
-     center_diag(ncell,nvar)= area(ncell) + theta_stm*d_star*(two*area_hi(ncell)*disp_coef_hi(ncell,nvar) + area_lo(ncell)*disp_coef_lo(ncell,nvar))
+     center_diag(1,nvar)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,nvar) )
+     center_diag(ncell,nvar)= area(ncell) + theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,nvar))
      
      ! todo: implement and test
      return

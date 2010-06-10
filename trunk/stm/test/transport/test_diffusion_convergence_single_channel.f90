@@ -125,30 +125,29 @@ do icoarse = 1,nrefine
                        sqrt(two*disp_coef*end_time),sqrt(start_time/end_time))
 
     time = zero
-    ! forwards
-
-    timemarch: do itime = 1,nstep
-        conc_prev=conc
-        time = start_time + itime*dt
-        call diffuse(conc,             &
-                     conc_prev,         &
-                     area,              &
-                     area_prev,         &
-                     area_lo,           &
-                     area_hi,           &
-                     area_lo_prev,      &
-                     area_hi_prev,      &
-                     disp_coef_lo,      &  
-                     disp_coef_hi,      &
-                     disp_coef_lo_prev, &  
-                     disp_coef_hi_prev, &
-                     ncell,             &
-                     nvar,              &
-                     time,              &
-                     theta,             &
-                     dt,                &
-                     dx                 ) 
-    end do timemarch
+    
+    do itime = 1,nstep
+            conc_prev = conc
+            time = start_time + itime*dt
+            call diffuse(conc,             &
+                         conc_prev,         &
+                         area,              &
+                         area_prev,         &
+                         area_lo,           &
+                         area_hi,           &
+                         area_lo_prev,      &
+                         area_hi_prev,      &
+                         disp_coef_lo,      &  
+                         disp_coef_hi,      &
+                         disp_coef_lo_prev, &  
+                         disp_coef_hi_prev, &
+                         ncell,             &
+                         nvar,              &
+                         time,              &
+                         theta,             &
+                         dt,                &
+                         dx                 ) 
+    end do 
     write(filename, "(a\i3\'.txt')"), "diffuse_gaussian_reference_", ncell 
 !    call printout(reference,xposition,filename)
     write(filename, "(a\i3\'.txt')"), "diffuse_gaussian_solution_", ncell 

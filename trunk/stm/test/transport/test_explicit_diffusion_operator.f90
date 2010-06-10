@@ -28,7 +28,7 @@ use stm_precision
 
 contains
 !> Test explicit diffusion operator versus pre calculated values 
-subroutine test_explicit_diffusion_op
+subroutine test_explicit_interior_diffusion_op
   use diffusion 
   implicit none
   
@@ -51,8 +51,6 @@ disp_coef_lo_prev(:,1) = (/0.9d0,0.92d0,0.94d0,0.96d0,0.98d0,1d0/)
 disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1d0,1.02d0/)
 dx = 2.0d0 
 time =LARGEREAL 
-
-
                                             
 call explicit_diffusion_operator (explicit_diffuse_op,  &
                                             conc_prev,        &
@@ -64,19 +62,14 @@ call explicit_diffusion_operator (explicit_diffuse_op,  &
                                             nvar,             &
                                             time,             &
                                             dx,               &
-                                            dt)
-                                            
-                                           
-                              
-  call assertEquals (explicit_diffuse_op(1,nvar),112.7d0,weak_eps,"Error in explicit diffusive flux operator 1")
-  call assertEquals (explicit_diffuse_op(2,nvar),225.7d0,weak_eps,"Error in explicit diffusive flux operator 2")
-  call assertEquals (explicit_diffuse_op(3,nvar),-112.8d0,weak_eps,"Error in explicit diffusive flux operator 3")
-  call assertEquals (explicit_diffuse_op(4,nvar),-0.2d0,weak_eps,"Error in explicit diffusive flux operator 4")
-  call assertEquals (explicit_diffuse_op(5,nvar),-0.4d0,weak_eps,"Error in explicit diffusive flux operator 5")
-  call assertEquals (explicit_diffuse_op(6,nvar),-225.0d0,weak_eps,"Error in explicit diffusive flux operator 6")
-
-
+                                            dt)                                                                     
+  
+  call assertEquals (explicit_diffuse_op(2,nvar),-225.7d0,weak_eps,"Error in explicit diffusive flux operator 2")
+  call assertEquals (explicit_diffuse_op(3,nvar),112.8d0,weak_eps,"Error in explicit diffusive flux operator 3")
+  call assertEquals (explicit_diffuse_op(4,nvar),0.2d0,weak_eps,"Error in explicit diffusive flux operator 4")
+  call assertEquals (explicit_diffuse_op(5,nvar),0.4d0,weak_eps,"Error in explicit diffusive flux operator 5")
+ 
 return
-end subroutine test_explicit_diffusion_op
+end subroutine
 
 end module

@@ -36,7 +36,6 @@ use stm_precision
 integer,parameter :: ncell = 6                       !< Number of cells
 integer,parameter  :: nvar = 1                       !< Number of variables
 
-
 real(stm_real) :: diffusive_flux_hi(ncell,nvar)      !< Explicit diffusive flux high side
 real(stm_real) :: diffusive_flux_lo(ncell,nvar)      !< Explicit diffusive flux low side
 real(stm_real) :: conc_prev(ncell,nvar)              !< Concentration at old time
@@ -56,18 +55,18 @@ disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1d0,1.02d0/)
 dx = 2.0d0 
 time =LARGEREAL ! todo do we need this?
  
-call make_diffusive_flux ( diffusive_flux_lo, &
-                           diffusive_flux_hi, &
-                            conc_prev,        &
-                            area_lo_prev,     &
-                            area_hi_prev,     &
-                            disp_coef_lo_prev,&  
-                            disp_coef_hi_prev,&
-                            ncell,            &
-                            nvar,             &
-                            time,             &
-                            dx,               &
-                            dt)
+call make_diffusive_flux(diffusive_flux_lo, &
+                         diffusive_flux_hi, &
+                          conc_prev,        &
+                          area_lo_prev,     &
+                          area_hi_prev,     &
+                          disp_coef_lo_prev,&  
+                          disp_coef_hi_prev,&
+                          ncell,            &
+                          nvar,             &
+                          time,             &
+                          dx,               &
+                          dt)
                     
                                             
 !----diffusive_flux_interior_lo
@@ -90,6 +89,6 @@ call make_diffusive_flux ( diffusive_flux_lo, &
   
 
 return
-end subroutine test_make_dif_flux_sub
+end subroutine 
 
 end module
