@@ -61,6 +61,7 @@ subroutine advect(mass,     &
 use stm_precision
 use primitive_variable_conversion
 use gradient
+use source_module
 implicit none
 
 !--- args
@@ -83,7 +84,7 @@ logical,intent(in),optional :: use_limiter          !< whether to use slope limi
 
 !---------- locals
 
-real(stm_real) :: source(ncell,nvar)      !< cell centered source 
+!real(stm_real) :: source(ncell,nvar)      !< cell centered source 
 real(stm_real) :: conc(ncell,nvar)        !< cell centered concentration
 real(stm_real) :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
 real(stm_real) :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
@@ -96,6 +97,8 @@ real(stm_real) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time cente
 real(stm_real) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
 real(stm_real) :: div_flux(ncell,nvar)    !< cell centered flux divergence, time centered
 logical        :: limit_slope             !< whether slope limiter is used
+
+source_term => linear_decay_source
 
 if (present(use_limiter))then
     limit_slope = use_limiter
@@ -122,7 +125,15 @@ call adjust_differences(grad,grad_lim,grad_lo,grad_hi,ncell,nvar)
 ! todo: source at old time, need to implement source_if
 !call compute_source(source,conc,ncell,nvar)
 !todo: source hardwired
-source = zero
+
+call linear_decay_source(source,   & 
+                           conc,   &
+                           area,   &
+                           flow,   &
+                           ncell,  &
+                           nvar,   &
+                           time)
+
 
 call extrapolate(conc_lo,  &
                  conc_hi,  & 
@@ -146,8 +157,7 @@ call compute_flux(flux_lo,  &
                   flow_lo,  &
                   flow_hi,  &
                   ncell,    &
-                  nvar      &
-                  )
+                  nvar)
 
 ! Replace fluxes for special cases having to do with boundaries, network and structures
 ! todo : Keeps the dirty stuff in one place. For now this is an empty call
@@ -160,7 +170,7 @@ call replace_boundary_flux(flux_lo,flux_hi,conc_lo,conc_hi,flow_lo,flow_hi,ncell
 call compute_divergence( div_flux, flux_lo, flux_hi, ncell, nvar)
 
 !conservative update including source. 
-call update_conservative(mass,mass_prev,div_flux,source,area,ncell,nvar,dt,dx)
+call update_conservative(mass,mass_prev,div_flux,source,area,ncell,nvar,time,dt,dx)
 
 return
 end subroutine
@@ -298,9 +308,6 @@ return
 end subroutine
 
 
-
-
-
 !> Replace original calculated flux at boundary locations
 ! todo: figure out if the arguments are right and move this routine to the 
 !       application -- it should just be an interface like sources and hydro_data
@@ -350,6 +357,7 @@ subroutine update_conservative(mass,       &
                                area,       &
                                ncell,      &
                                nvar,       &
+                               time,       &
                                dt,         &
                                dx)
                                
@@ -366,6 +374,7 @@ real(stm_real),intent(in)  :: mass_prev(ncell,nvar)  !< Old time mass
 real(stm_real),intent(in)  :: area(ncell)            !< Area of cells
 real(stm_real),intent(in)  :: source_prev(ncell,nvar)!< Old time source term
 real(stm_real),intent(in)  :: div_flux(ncell,nvar)   !< Flux divergence, time centered
+real(stm_real),intent(in)  :: time                   !< current time
 real(stm_real),intent(in)  :: dt                     !< Length of current time step
 real(stm_real),intent(in)  :: dx                     !< Spatial step
 
@@ -386,7 +395,14 @@ call cons2prim(conc,mass,area,ncell,nvar)
 
 ! todo: source at new time using heun state
 !call source(source,conc,ncell,nvar)
-source = zero
+
+call linear_decay_source(source, & 
+                         conc,   &
+                         area,   &
+                         flow,   &
+                         ncell,  &
+                         nvar,   &
+                         time) 
 
 ! now recalculate the update using a source half from the old state and half from the new state guess 
 mass =   mass_prev &

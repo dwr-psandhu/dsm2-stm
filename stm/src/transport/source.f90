@@ -51,6 +51,7 @@ module source_module
      real(stm_real),intent(in)  :: flow(ncell)          !< flow at source location
      real(stm_real),intent(in)  :: time                 !< flow at source location
      
+    
    end subroutine source_if
  end interface
  
@@ -58,7 +59,7 @@ module source_module
  !>\var source_module::source 
  !>\brief Pointer to source term
  !>This pointer should be set by the driver or client code
- procedure(source_if),pointer :: source => null() 
+ procedure(source_if),pointer :: source_term => null() 
 
   contains
  
@@ -89,10 +90,10 @@ module source_module
      call stm_fatal("No Source!")
      
      return
- end subroutine no_source
+ end subroutine 
  
  !> linear source (decay) implementation.
- !> dC/dt = K
+ !> dC/dt = -K
   subroutine linear_decay_source(source,    & 
                                     conc,   &
                                     area,   &
@@ -115,10 +116,12 @@ module source_module
      real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
      real(stm_real),intent(in)  :: time                !< flow at source location
      
-
-     ! todo: implement and test
+ ! 1.01 is the linear decay rate
+ source = conc/1.01d0 - conc
+          
+     
      return
- end subroutine linear_decay_source
+ end subroutine 
  
 
 end module
