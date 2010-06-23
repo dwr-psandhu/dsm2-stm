@@ -65,7 +65,8 @@ do icell=1,ncell
 end do
 norm_1 = norm_1/dble(ncell)
 norm_2 = norm_2/dble(ncell)
-print*,which_cell,"/",ncell
+!todo: remove
+!print*,which_cell,"/",ncell
 return
 end subroutine
 

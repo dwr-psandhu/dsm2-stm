@@ -20,11 +20,14 @@
 
 !> todo: write tests for diffusion subroutine in case of Neumann BC at the left and Dirichlet BC at the right side 
 !>@ingroup test
-module test_diffusion_neumann_dirichlet
+!> Test of transport diffusion convergence test for a single channel
+!>@ingroup test
+module test_diffusion_convergence_boundaries
 
 contains
 
-subroutine test_diffusion_n_d
+!> Subroutine that checks the error convergence ratio for diffusion routine 
+subroutine test_diffusion_neumann
 
 use stm_precision
 use state_variables
@@ -41,8 +44,8 @@ implicit none
 
 !--- Problem variables
 
-integer, parameter  :: nstep_base = 1024
-integer, parameter  :: nx_base = 24
+integer, parameter  :: nstep_base = 2048
+integer, parameter  :: nx_base = 64
 
 integer :: icoarse = 0
 integer :: nstep
@@ -50,33 +53,33 @@ integer :: nx
 
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 0.9d0
-real(stm_real), parameter :: origin = 0.1d0      
-real(stm_real), parameter :: total_time    = 1.0d0
-real(stm_real), parameter :: disp_coef     = half
+real(stm_real), parameter :: origin = 0.1d0   
+real(stm_real), parameter :: total_time    = one
+real(stm_real), parameter :: disp_coef     = seven
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
 real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent dispersion coef. at old time
 
+
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
-
-real(stm_real), parameter :: constant_area = 100.0D0
-real(stm_real), parameter :: start_time = zero
+real(stm_real), parameter :: constant_area = 100.0d0
+real(stm_real), parameter :: start_time = zero    !< Initial condition depends on this
 real(stm_real), parameter :: end_time = start_time + total_time
 
 real(stm_real) :: time
 real(stm_real), allocatable :: xposition(:)
 
 integer :: itime
-integer :: icell 
+integer :: icell ! debug only -- remove later
 !------
 integer, parameter :: coarsen_factor = 2      ! coarsening factor used for convergence test
 integer :: coarsening
 integer, parameter :: nrefine = 3
 real(stm_real),allocatable :: reference(:)
-real(stm_real):: norm_error(3,nrefine)
+real(stm_real) norm_error(3,nrefine)
 character(LEN=64) filename
 
 boundary_diffusion_impose  => n_d_test_diffusion_matrix
@@ -105,58 +108,49 @@ do icoarse = 1,nrefine
     dx = domain_length/dble(nx)
     dt = total_time/dble(nstep)
     
-    if (disp_coef*dt/dx/dx > half) then
-    print *,"instable",disp_coef*dt/dx/dx
-    pause
-    end if
+   ! print *,'D*dt/dx^2 = ', disp_coef*dt/dx/dx
     
     allocate(xposition(nx))
-    allocate(reference(nx))
-      time = zero
-do icell = 1,nx
-    xposition(icell) = origin + (dble(icell)-half)*dx 
-    conc(icell,:) = two*xposition(icell) + four*cos(pi*xposition(icell)/two)*exp(-disp_coef*time*pi*pi/four)
-end do      
-      
+    do icell = 1,nx
+        xposition(icell) = dx*(dble(icell)-half)+ origin
+    end do      
 
-!---- march
-! todo: this number must be less than half disp_coef*dt/dx/dx
-
-do itime = 1 , nstep
-
-time = start_time + itime*dt
-conc_prev = conc
-
-call diffuse(conc,              &
-             conc_prev,         &
-             area,              &
-             area_prev,         &
-             area_lo,           &
-             area_hi,           &
-             area_lo_prev,      &
-             area_hi_prev,      &
-             disp_coef_lo,      &  
-             disp_coef_hi,      &
-             disp_coef_lo_prev, &  
-             disp_coef_hi_prev, &
-             ncell,             &
-             nvar,              &
-             time,              &
-             theta,             &
-             dt,                &
-             dx                 ) 
-
-end do 
+    conc(:,1) = two*xposition(:) + four*cos(half*pi*xposition(:))*exp(-disp_coef*start_time*pi*pi/four )
+    conc(:,2) = conc(:,1)
     
-
-   ! write(filename, "(a\i3\'.txt')"), "diffuse_gaussian_reference_", ncell 
+    allocate(reference(ncell))  ! reference solution
+   
+    reference(:) = two*xposition(:) + four*cos(half*pi*xposition(:))*exp(-disp_coef*end_time*pi*pi/four )
+     
+    time = zero
+     
+    do itime = 1,nstep
+            conc_prev = conc
+            time = start_time + itime*dt
+            !todo: the new time is passed in
+            call diffuse(conc,             &
+                         conc_prev,         &
+                         area,              &
+                         area_prev,         &
+                         area_lo,           &
+                         area_hi,           &
+                         area_lo_prev,      &
+                         area_hi_prev,      &
+                         disp_coef_lo,      &  
+                         disp_coef_hi,      &
+                         disp_coef_lo_prev, &  
+                         disp_coef_hi_prev, &
+                         ncell,             &
+                         nvar,              &
+                         time,              &
+                         theta,             &
+                         dt,                &
+                         dx                 ) 
+    end do 
+    write(filename, "(a\i3\'.txt')"), "diffuse_neumann_reference_", ncell 
 !    call printout(reference,xposition,filename)
-   ! write(filename, "(a\i3\'.txt')"), "diffuse_gaussian_solution_", ncell 
+    write(filename, "(a\i3\'.txt')"), "diffuse_neumann_solution_", ncell 
  !todo:   call printout(conc(:,2),xposition,filename)
-
-  reference(:) = two*xposition(:) + four*cos(pi*xposition(:)/two)*exp(-disp_coef*end_time*pi*pi/four)
-
- 
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
@@ -168,25 +162,27 @@ end do
     call deallocate_state
 end do
 
-call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 2nd order convergence on N_D diffusion")
-call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 2nd order convergence on N_D diffusion")
-call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf 2nd order convergence on N_D diffusion")
+call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on diffusion N_D")
+call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on diffusion N_D")
+call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on diffusion N_D")
 
-call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 2nd order convergence on N_D diffusion")
-call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 2nd order convergence on N_D diffusion")
-call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf 2nd order convergence on N_D diffusion")
+call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergence on diffusion N_D")
+call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on diffusion N_D")
+call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion N_D")
 
-!todo: remove prints
-print *,norm_error(1,3)/norm_error(1,2)
-print *,norm_error(2,3)/norm_error(2,2)
-print *,norm_error(3,3)/norm_error(3,2)
+!!todo: remove priints
+!
+!print *,norm_error(1,3)/norm_error(1,2)
+!print *,norm_error(2,3)/norm_error(2,2)
+!print *,norm_error(3,3)/norm_error(3,2)
+!
+!print *,norm_error(1,2)/norm_error(1,1)
+!print *,norm_error(2,2)/norm_error(2,1)
+!print *,norm_error(3,2)/norm_error(3,1)
+!
+!print *, norm_error
+!!pause
 
-print *,norm_error(1,2)/norm_error(1,1)
-print *,norm_error(2,2)/norm_error(2,1)
-print *,norm_error(3,2)/norm_error(3,1)
-
-print *, norm_error
-pause
 
 return
 end subroutine

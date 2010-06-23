@@ -30,11 +30,11 @@ use test_uniform_flow
 use test_matrix_solver
 use example_initial_conditions
 use test_boundary_diffusion
-use test_make_diffusive_flux
+use test_diffusive_flux
 use test_explicit_diffusion_operator
 use test_interior_coef_matrix
 use test_construct_r_h_s
-use test_diffusion_neumann_dirichlet
+use test_diffusion_convergence_boundaries
 use source_module
 use test_diffusion_single_channel
 use test_advection_tidal
@@ -42,6 +42,7 @@ use test_coarsening
 use test_uniform_flow
 use test_prim_increment_to_cons
 use test_gradient
+use test_diffusion_convergence_boundaries_dirichlet
 
 implicit none
 logical :: verbose = .false.
@@ -67,7 +68,8 @@ call test_explicit_interior_diffusion_op
 call test_interior_coef_matrix_sub
 call test_construct_elemnts_rhs 
 call test_coarsen
-!call test_diffusion_n_d
+call test_diffusion_dirichlet
+call test_diffusion_neumann
 call test_diffusion_convergence_single_channel
   
 call fruit_summary

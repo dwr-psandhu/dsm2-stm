@@ -119,7 +119,7 @@ end if
 ! or other differencing is required
 call adjust_differences(grad,grad_lim,grad_lo,grad_hi,ncell,nvar)
 
-! todo: commented
+! todo: source at old time, need to implement source_if
 !call compute_source(source,conc,ncell,nvar)
 !todo: source hardwired
 source = zero
@@ -384,7 +384,7 @@ mass = mass_prev - dtbydx*div_flux + dt*source_prev
 ! compute the source at the new time from the predictor
 call cons2prim(conc,mass,area,ncell,nvar)
 
-! todo:commented
+! todo: source at new time using heun state
 !call source(source,conc,ncell,nvar)
 source = zero
 
