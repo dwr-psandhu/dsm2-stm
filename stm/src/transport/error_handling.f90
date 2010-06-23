@@ -40,51 +40,6 @@ module error_handling
     return
     end subroutine
     
-    !> Prints an array to file
-    subroutine printout(arr,x,filename)
-
-        implicit none
-        real(stm_real),intent(in) :: arr(:)         !< array values
-        real(stm_real),intent(in) :: x(:)           !< x values
-        character(LEN=*)          :: filename       !< name of file to write
-        
-        !--local
-        integer                   :: icell
-        integer                   :: nx
-        
-        nx = size(arr)
-        
-        open(unit = 11, file = filename)
-        
-        do icell = 1,nx
-          write(11,'(f10.5, f20.10)') x(icell), arr(icell)
-        end do
-        close(11)
-    end subroutine
-
-    !> Prints an array to file
-    subroutine printout_append(arr,x,time,funit)
-
-        implicit none
-        real(stm_real),   intent(in)   :: arr(:)         !< array values
-        real(stm_real),   intent(in)   :: x(:)           !< x coordinate
-        real(stm_real),   intent(in)   :: time           !< time
-        integer,          intent(in)   :: funit          !< file unit
-                
-        !--local
-        integer           :: nx
-        integer           :: icell       
-
-        
-        nx = size(arr)        
-
-        write(funit,*) 'variables = "x", "conc"'
-        write(funit,*) "zone i = ", nx, ', t="', time, '"'
-        do icell = 1,nx
-          write(funit,'(f10.5, f20.10)') x(icell), arr(icell)
-        end do
-
-    end subroutine
 
 
 end module

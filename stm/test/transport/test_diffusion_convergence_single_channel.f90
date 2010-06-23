@@ -52,7 +52,7 @@ integer :: nx
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 51200.d0
 real(stm_real), parameter :: origin = zero   
-real(stm_real), parameter :: total_time    = 2048.d0
+real(stm_real), parameter :: total_time    = 2048.d0*eight
 real(stm_real), parameter :: disp_coef     = 1024.d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
@@ -110,7 +110,7 @@ do icoarse = 1,nrefine
     dx = domain_length/dble(nx)
     dt = total_time/dble(nstep)
     
-    print *,'D*dt/dx^2 = ', disp_coef*dt/dx/dx
+   ! print *,'D*dt/dx^2 = ', disp_coef*dt/dx/dx
     
     allocate(xposition(nx))
     do icell = 1,nx
@@ -173,16 +173,16 @@ call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order conver
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion")
 
 !todo: remove priints
-
-print *,norm_error(1,3)/norm_error(1,2)
-print *,norm_error(2,3)/norm_error(2,2)
-print *,norm_error(3,3)/norm_error(3,2)
-
-print *,norm_error(1,2)/norm_error(1,1)
-print *,norm_error(2,2)/norm_error(2,1)
-print *,norm_error(3,2)/norm_error(3,1)
-
-print *, norm_error
+!
+!print *,norm_error(1,3)/norm_error(1,2)
+!print *,norm_error(2,3)/norm_error(2,2)
+!print *,norm_error(3,3)/norm_error(3,2)
+!
+!print *,norm_error(1,2)/norm_error(1,1)
+!print *,norm_error(2,2)/norm_error(2,1)
+!print *,norm_error(3,2)/norm_error(3,1)
+!
+!print *, norm_error
 !pause
 
 

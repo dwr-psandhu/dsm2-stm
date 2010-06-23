@@ -22,12 +22,12 @@
 !>@ingroup test
 !> Test of transport diffusion convergence test for a single channel
 !>@ingroup test
-module test_diffusion_convergence_boundaries_d_d
+module test_diffusion_convergence_boundaries_dirichlet
 
 contains
 
 !> Subroutine that checks the error convergence ratio for diffusion routine 
-subroutine test_diffusion_d_d_non_zero
+subroutine test_diffusion_dirichlet
 
 use stm_precision
 use state_variables
@@ -82,8 +82,8 @@ real(stm_real),allocatable :: reference(:)
 real(stm_real) norm_error(3,nrefine)
 character(LEN=64) filename
 
-boundary_diffusion_impose  => d_d_test_diffusion_matrix
-boundary_diffusion_flux    => d_d_test_diffusive_flux
+boundary_diffusion_impose  => dirichlet_test_diffusion_matrix
+boundary_diffusion_flux    => dirichlet_test_diffusive_flux
 
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
@@ -147,10 +147,10 @@ do icoarse = 1,nrefine
                          dt,                &
                          dx                 ) 
     end do 
-    write(filename, "(a\i3\'.txt')"), "diffuse_N_D_reference_", ncell 
-!    call printout(reference,xposition,filename)
-    write(filename, "(a\i3\'.txt')"), "diffuse_N_D_solution_", ncell 
- !todo:   call printout(conc(:,2),xposition,filename)
+    write(filename, "(a\i3\'.txt')"), "diffuse_dirichlet_reference_", ncell 
+    call printout(reference,xposition,filename)
+    write(filename, "(a\i3\'.txt')"), "diffuse_dirichlet_solution_", ncell 
+    call printout(conc(:,2),xposition,filename)
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
@@ -162,13 +162,13 @@ do icoarse = 1,nrefine
     call deallocate_state
 end do
 
-call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on diffusion D_D")
-call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on diffusion D_D")
-call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on diffusion D_D")
+call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on diffusion dirichlet")
+call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on diffusion dirichlet")
+call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on diffusion dirichlet")
 
-call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergence on diffusion D_D")
-call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on diffusion D_D")
-call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion D_D")
+call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergence on diffusion dirichlet")
+call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on diffusion dirichlet")
+call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion dirichlet")
 
 !!todo: remove priints
 

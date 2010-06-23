@@ -20,7 +20,7 @@
 
 !> Write tests for interior diffusive flux sobroutine
 !>@ingroup test
-module test_make_diffusive_flux
+module test_diffusive_flux
 
 contains
 
@@ -55,7 +55,7 @@ disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1d0,1.02d0/)
 dx = 2.0d0 
 time =LARGEREAL ! todo do we need this?
  
-call make_diffusive_flux(diffusive_flux_lo, &
+call diffusive_flux(diffusive_flux_lo, &
                          diffusive_flux_hi, &
                           conc_prev,        &
                           area_lo_prev,     &
