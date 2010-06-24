@@ -106,6 +106,7 @@ end subroutine
 !> Fill array with symetric triangular shape (isosceles triangle)
 !> This routine expects a 1D array, so multi-constituents
 !> have to be initialized separately
+! todo: it seems incorrect needs test
 subroutine fill_triangular(array,xpos,nloc,xlo,xhi,vertex_hight,fill_else)
     use stm_precision
     implicit none
@@ -128,8 +129,7 @@ subroutine fill_triangular(array,xpos,nloc,xlo,xhi,vertex_hight,fill_else)
     elsewhere (xpos < xhi .and. (xpos > (half*length)))
         array = array + vertex_hight - (xpos - xcenter)*vertex_hight/(half*length)
     end where
-    
-    
+        
     return
 end subroutine     
 

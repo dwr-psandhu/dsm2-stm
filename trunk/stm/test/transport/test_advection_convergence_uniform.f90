@@ -35,8 +35,10 @@ subroutine test_uniform_advection_convergence(verbose)
 
 use test_single_channel_advection
 use hydro_data
+use source_sink
 implicit none
 procedure(hydro_data_if),pointer :: uniform_hydro
+
 
 integer, parameter  :: nstep_base = 40 
 integer, parameter  :: nx_base = 256
@@ -55,6 +57,8 @@ real(stm_real) :: ic_gaussian_sd = domain_length/sixteen
 real(stm_real) :: solution_gaussian_sd = domain_length/sixteen
 character(LEN=*),parameter :: label = "uniform flow"
 uniform_hydro=> uniform_flow
+compute_source => no_source
+
 !> Subroutine which generates fine initial values and reference values to compare with 
 !> and feed the covvergence test subroutine.
 call initial_fine_solution_uniform(fine_initial_condition, &
@@ -126,16 +130,16 @@ subroutine uniform_flow(flow,    &
 end subroutine
 ! todo: ic_center and solution center must have dimension of NCONC
 !> Generates fine solution of initial condition and final values to compare for uniform flow advection 
-subroutine initial_fine_solution_uniform(fine_initial_condition,   &
-                                           fine_solution,          &
-                                           nx_base,                &
-                                           nconc,                  &
-                                           origin,                 &
-                                           domain_length,          &
-                                           ic_gaussian_sd,         &
-                                           solution_gaussian_sd,   &
-                                           ic_center,              &
-                                           solution_center   )
+subroutine initial_fine_solution_uniform(fine_initial_condition, &
+                                         fine_solution,          &
+                                         nx_base,                &
+                                         nconc,                  &
+                                         origin,                 &
+                                         domain_length,          &
+                                         ic_gaussian_sd,         &
+                                         solution_gaussian_sd,   &
+                                         ic_center,              &
+                                         solution_center)
                                    
 use example_initial_conditions
 use stm_precision
