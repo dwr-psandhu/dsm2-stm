@@ -35,7 +35,7 @@ use test_explicit_diffusion_operator
 use test_interior_coef_matrix
 use test_construct_r_h_s
 use test_diffusion_convergence_boundaries
-use source_module
+use source_sink
 use test_diffusion_single_channel
 use test_advection_tidal
 use test_coarsening
@@ -43,9 +43,10 @@ use test_uniform_flow
 use test_prim_increment_to_cons
 use test_gradient
 use test_diffusion_convergence_boundaries_dirichlet
+use test_linear_decay_no_flow
 
 implicit none
-logical :: verbose = .false.
+logical :: verbose = .true.
 
 call init_fruit
  
@@ -71,6 +72,8 @@ call test_coarsen
 call test_diffusion_dirichlet
 call test_diffusion_neumann
 call test_diffusion_convergence_single_channel
+!////// reaction
+call  test_linear_decay_convergence(verbose)
   
 call fruit_summary
 pause

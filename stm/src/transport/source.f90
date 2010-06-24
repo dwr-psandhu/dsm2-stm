@@ -90,37 +90,6 @@ module source_sink
      return
  end subroutine 
  
- !> linear source (decay) implementation.
- !> dC/dt = -K
-  subroutine linear_decay_source(source,    & 
-                                    conc,   &
-                                    area,   &
-                                    flow,   &
-                                    ncell,  &
-                                    nvar,   &
-                                    time)
-                                         
-     use stm_precision 
-     use error_handling
-     
-     
-         implicit none
-     !--- args
-     integer,intent(in):: ncell                        !< Number of cells
-     integer,intent(in):: nvar                         !< Number of variables
-     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
-     real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
-     real(stm_real),intent(in)  :: area(ncell)         !< area at source     
-     real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
-     real(stm_real),intent(in)  :: time                !< flow at source location
-     
- ! 1.01 is the linear decay rate
- source = conc/1.01d0 - conc
-          
-     
-     return
- end subroutine 
  
-
 end module
  
