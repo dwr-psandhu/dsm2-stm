@@ -22,9 +22,9 @@
 !> Specifically, the user must set the "source" pointer (a variable in this module)
 !> to a subroutine that meets the compute_source interface.
 !>@ingroup transport
-module source_module
+module source_sink
  !> Calculate source
- interface compute_source
+ interface
    !> Generic interface for calculating source that should be fulfilled by
    !> client programs. The source is calculated using concentration,
    !> and produces a source increment appropriate for primitives.
@@ -49,19 +49,17 @@ module source_module
      real(stm_real),intent(in)  :: conc(ncell,nvar)     !< Concentration 
      real(stm_real),intent(in)  :: area(ncell)          !< Cell centered area at source     
      real(stm_real),intent(in)  :: flow(ncell)          !< flow at source location
-     real(stm_real),intent(in)  :: time                 !< flow at source location
-     
-    
+     real(stm_real),intent(in)  :: time                 !< time
    end subroutine source_if
  end interface
  
  !>\file
- !>\var source_module::source 
+ !>\var source_sink::source 
  !>\brief Pointer to source term
  !>This pointer should be set by the driver or client code
- procedure(source_if),pointer :: source_term => null() 
+ procedure(source_if), pointer :: compute_source => null() 
 
-  contains
+ contains
  
  !> Zero source implementation.
  !> This source term adds nothing (e.g., for conservative constituents)
@@ -87,7 +85,7 @@ module source_module
      real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
      real(stm_real),intent(in)  :: time                !< flow at source location
      
-     call stm_fatal("No Source!")
+    source = zero
      
      return
  end subroutine 

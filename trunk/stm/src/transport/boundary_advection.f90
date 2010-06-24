@@ -46,8 +46,8 @@ module boundary_advection_module
         ! todo: check the intents
         real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
         real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
-        real(stm_real),intent(in)    :: flow_lo(ncell,nvar)     !< flow on lo side of cells centered in time
-        real(stm_real),intent(in)    :: flow_hi(ncell,nvar)     !< flow on hi side of cells centered in time
+        real(stm_real),intent(in)    :: flow_lo(ncell)     !< flow on lo side of cells centered in time
+        real(stm_real),intent(in)    :: flow_hi(ncell)     !< flow on hi side of cells centered in time
         real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
         real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
         real(stm_real), intent (in)  :: time                    !< Current time
@@ -89,8 +89,8 @@ module boundary_advection_module
         ! todo: check the intents
         real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
         real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
-        real(stm_real),intent(in)    :: flow_lo(ncell,nvar)     !< flow on lo side of cells centered in time
-        real(stm_real),intent(in)    :: flow_hi(ncell,nvar)     !< flow on hi side of cells centered in time
+        real(stm_real),intent(in)    :: flow_lo(ncell)          !< flow on lo side of cells centered in time
+        real(stm_real),intent(in)    :: flow_hi(ncell)          !< flow on hi side of cells centered in time
         real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
         real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
         real(stm_real), intent (in)  :: time                    !< Current time
@@ -124,8 +124,8 @@ module boundary_advection_module
         ! todo: check the intents
         real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
         real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
-        real(stm_real),intent(in)    :: flow_lo(ncell,nvar)     !< flow on lo side of cells centered in time
-        real(stm_real),intent(in)    :: flow_hi(ncell,nvar)     !< flow on hi side of cells centered in time
+        real(stm_real),intent(in)    :: flow_lo(ncell)     !< flow on lo side of cells centered in time
+        real(stm_real),intent(in)    :: flow_hi(ncell)     !< flow on hi side of cells centered in time
         real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
         real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
         real(stm_real), intent (in)  :: time                    !< Current time
