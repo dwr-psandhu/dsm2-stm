@@ -31,7 +31,7 @@ contains
 
 !> Input processing
 subroutine process_input ( )
-use stm_precision
+
 
 end subroutine process_input
     
