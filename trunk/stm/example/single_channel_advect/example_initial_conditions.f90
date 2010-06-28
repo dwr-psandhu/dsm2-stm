@@ -24,14 +24,16 @@
 !>@ingroup example
 module example_initial_conditions
     
-
 private gaussian_cdf
 
+use stm_precision
 contains
 
 !> Gaussian cdf (integrated Guassian pdf) from -inf to x0
 real(stm_real) function gaussian_cdf(x0,mean,sd)
-    use stm_precision
+    
+    
+    
     implicit none
     
     real(stm_real), intent(in) :: x0   !< End of integration
