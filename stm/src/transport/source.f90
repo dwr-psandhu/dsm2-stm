@@ -83,7 +83,7 @@ module source_sink
      real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
      real(stm_real),intent(in)  :: area(ncell)         !< area at source     
      real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
-     real(stm_real),intent(in)  :: time                !< flow at source location
+     real(stm_real),intent(in)  :: time                !< time
      
     source = zero
      

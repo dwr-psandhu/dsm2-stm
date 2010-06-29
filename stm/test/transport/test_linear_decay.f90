@@ -42,6 +42,7 @@ use source_sink
 
 implicit none
 procedure(hydro_data_if),pointer :: no_flow_hydro
+procedure(source_if),pointer :: compute_source
 
 integer, parameter  :: nstep_base = 40 
 integer, parameter  :: nx_base = 256
@@ -137,28 +138,28 @@ subroutine no_flow(flow,    &
     return
 end subroutine
 !========================================
-subroutine linear_decay_source(source, & 
-                             conc,   &
-                             area,   &
-                             flow,   &
-                             ncell,  &
-                             nvar,   &
-                             time)
+subroutine linear_decay_source(source,   & 
+                                 conc,   &
+                                 area,   &
+                                 flow,   &
+                                 ncell,  &
+                                 nvar,   &
+                                 time)
                                      
  use stm_precision 
  use error_handling
  implicit none
  
  !--- args
- integer,intent(in):: ncell                        !< Number of cells
- integer,intent(in):: nvar                         !< Number of variables
- real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
- real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
- real(stm_real),intent(in)  :: area(ncell)         !< area at source     
- real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
- real(stm_real),intent(in)  :: time                !< flow at source location
+integer,intent(in)  :: ncell                      !< Number of cells
+integer,intent(in)  :: nvar                       !< Number of variables
+real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
+real(stm_real),intent(in)  :: area(ncell)         !< area at source     
+real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
+real(stm_real),intent(in)  :: time                !< time 
 !--- local just for test
- 
+
  source(:,1) = rate_1*conc(:,1)
  source(:,2) = rate_2*conc(:,2)
  

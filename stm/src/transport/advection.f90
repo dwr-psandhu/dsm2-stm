@@ -326,8 +326,8 @@ real(stm_real), intent(inout) :: flux_lo(ncell,nvar) !< Flux on lo face at half 
 real(stm_real), intent(inout) :: flux_hi(ncell,nvar) !< Flux on hi face at half time
 real(stm_real), intent(in) :: conc_lo(ncell,nvar)    !< Upwinded concentration at half time at lo face
 real(stm_real), intent(in) :: conc_hi(ncell,nvar)    !< Upwinded concentration at half time at hi face
-real(stm_real), intent(in) :: flow_lo(ncell)    !< Time-centered flow at lo face
-real(stm_real), intent(in) :: flow_hi(ncell)    !< Time-centered flow at hi face
+real(stm_real), intent(in) :: flow_lo(ncell)         !< Time-centered flow at lo face
+real(stm_real), intent(in) :: flow_hi(ncell)         !< Time-centered flow at hi face
 real(stm_real), intent(in) :: time                   !< Time
 real(stm_real), intent(in) :: dt                     !< Length of current time step
 real(stm_real), intent(in) :: dx                     !< Spatial step
