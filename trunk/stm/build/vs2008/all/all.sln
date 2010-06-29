@@ -20,8 +20,6 @@ Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "example_single_channel", ".
 		{202C25E9-D1E7-44F9-8922-3301A3621F8D} = {202C25E9-D1E7-44F9-8922-3301A3621F8D}
 	EndProjectSection
 EndProject
-Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "input_processing", "..\input_processing\input_processing.vfproj", "{A388B71A-ABCA-40DB-8222-28E6C0A9242A}"
-EndProject
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "input_storage", "..\input_storage\input_storage.vfproj", "{05D1DBF4-B135-4E7A-A795-14DBAEFBAE7B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "input_storage_cpp", "..\input_storage_cpp\input_storage_cpp.vcproj", "{125CD990-5E4A-4E67-9F2F-7E62C8025526}"
@@ -54,9 +52,6 @@ Global
 		{5210E352-F6C9-4F97-B0A2-90994F07C1A0}.Debug|Win32.Build.0 = Debug|Win32
 		{5210E352-F6C9-4F97-B0A2-90994F07C1A0}.Release|Win32.ActiveCfg = Release|Win32
 		{5210E352-F6C9-4F97-B0A2-90994F07C1A0}.Release|Win32.Build.0 = Release|Win32
-		{A388B71A-ABCA-40DB-8222-28E6C0A9242A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{A388B71A-ABCA-40DB-8222-28E6C0A9242A}.Release|Win32.ActiveCfg = Release|Win32
-		{A388B71A-ABCA-40DB-8222-28E6C0A9242A}.Release|Win32.Build.0 = Release|Win32
 		{05D1DBF4-B135-4E7A-A795-14DBAEFBAE7B}.Debug|Win32.ActiveCfg = Debug|Win32
 		{05D1DBF4-B135-4E7A-A795-14DBAEFBAE7B}.Debug|Win32.Build.0 = Debug|Win32
 		{05D1DBF4-B135-4E7A-A795-14DBAEFBAE7B}.Release|Win32.ActiveCfg = Release|Win32

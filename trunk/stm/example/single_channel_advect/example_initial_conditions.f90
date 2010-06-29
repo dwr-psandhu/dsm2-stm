@@ -1,4 +1,5 @@
-!<!license>
+ 
+ !<!license>
 !    Copyright (C) 1996, 1997, 1998, 2001, 2007, 2009 State of California,
 !    Department of Water Resources.
 !    This file is part of DSM2.
@@ -26,13 +27,17 @@ module example_initial_conditions
     
 private gaussian_cdf
 
-use stm_precision
+
+
 contains
+
+
+
 
 !> Gaussian cdf (integrated Guassian pdf) from -inf to x0
 real(stm_real) function gaussian_cdf(x0,mean,sd)
     
-    
+    use stm_precision
     
     implicit none
     
