@@ -32,6 +32,7 @@
 		<File RelativePath="..\..\..\example\single_channel_advect\example_initial_conditions.f90"/>
 		<File RelativePath="..\..\..\test\transport\log_convergence.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_adr_constant_a_and_k.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_adr_no_boundary_condition.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_tidal.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_uniform.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_single_channel.f90"/>
