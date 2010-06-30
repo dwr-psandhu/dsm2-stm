@@ -91,15 +91,15 @@ end subroutine
 !-------------------------------------------
 !> Generates a fine initial and final solution of mass
 subroutine initial_fine_solution_tidal(fine_initial_condition, &
-                                         fine_solution,          &
-                                         nx_base,                &
-                                         nconc,                  &
-                                         origin,                 &
-                                         domain_length,          &
-                                         ic_gaussian_sd,         &
-                                         solution_gaussin_sd,    &
-                                         ic_center,              &
-                                         solution_center   )
+                                       fine_solution,          &
+                                       nx_base,                &
+                                       nconc,                  &
+                                       origin,                 &
+                                       domain_length,          &
+                                       ic_gaussian_sd,         &
+                                       solution_gaussin_sd,    &
+                                       ic_center,              &
+                                       solution_center)
 
 
 use example_initial_conditions

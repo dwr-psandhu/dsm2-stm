@@ -42,7 +42,7 @@ use source_sink
 
 implicit none
 procedure(hydro_data_if),pointer :: no_flow_hydro
-procedure(source_if),pointer :: compute_source
+!procedure(source_if)    ,pointer :: compute_source
 
 integer, parameter  :: nstep_base = 40 
 integer, parameter  :: nx_base = 256
@@ -146,7 +146,7 @@ subroutine linear_decay_source(source, &
                                time)
                                      
 
- use error_handling
+ use  primitive_variable_conversion
  implicit none
  
  !--- args
@@ -158,9 +158,14 @@ real(stm_real),intent(in)  :: area(ncell)         !< area at source
 real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
 real(stm_real),intent(in)  :: time                !< time 
 !--- local just for test
+real(stm_real) :: mass (ncell,nvar)
+! source must be in primitive variable 
 
-source(:,1) = rate_1*conc(:,1)
-source(:,2) = rate_2*conc(:,2)
+call prim2cons(mass,conc,area,ncell,nvar)
+
+source(:,1) = -rate_1*mass(:,1)!  todo: ?/area
+source(:,2) = -rate_2*mass(:,2) !   todo:  ?/area
+
  
 return
 end subroutine 
