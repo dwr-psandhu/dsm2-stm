@@ -258,8 +258,8 @@ dtbydx = dt/dx
 do ivar = 1,nvar
     ! todo make sure source is in terms of primitive variables
     ! todo: this only works if I disable extrapolation (first order Godunov)
-    conc_lo(:,ivar) = conc(:,ivar) - half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel +half*dt*source(:,ivar)
-    conc_hi(:,ivar) = conc(:,ivar) + half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel +half*dt*source(:,ivar)
+    conc_lo(:,ivar) = conc(:,ivar) - half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)
+    conc_hi(:,ivar) = conc(:,ivar) + half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)
     
 end do
 
@@ -472,7 +472,7 @@ integer,intent(in)  :: ncell                       !< Number of cells
 integer,intent(in)  :: nvar                        !< Number of variables
 
 real(stm_real),intent(in)  :: grad_lo(ncell,nvar)  !< Difference based on lo side difference
-real(stm_real),intent(in)  :: grad_hi(ncell,nvar)  !< Gdifference based on hi side difference
+real(stm_real),intent(in)  :: grad_hi(ncell,nvar)  !< difference based on hi side difference
 real(stm_real),intent(in)  :: grad_lim(ncell,nvar) !< Limited cell centered difference
 real(stm_real),intent(out) :: grad(ncell,nvar)     !< Cell centered difference adjusted for boundaries and hydraulic devices
 !---------

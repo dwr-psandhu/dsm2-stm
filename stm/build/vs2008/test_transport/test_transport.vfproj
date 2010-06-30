@@ -31,8 +31,10 @@
 		<File RelativePath="..\..\..\test\transport\error_metric.f90"/>
 		<File RelativePath="..\..\..\example\single_channel_advect\example_initial_conditions.f90"/>
 		<File RelativePath="..\..\..\test\transport\log_convergence.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_adr_constant_a_k.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_tidal.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_uniform.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_advection_single_channel.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_boundary_diffusive_flux.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_coarsen.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_construct_rhs.f90"/>
@@ -49,6 +51,5 @@
 		<File RelativePath="..\..\..\test\transport\test_matrix_solver.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_increment_to_cons.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_single_channel_advection.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_transport_driver.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>
