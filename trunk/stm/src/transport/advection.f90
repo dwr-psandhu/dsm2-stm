@@ -23,7 +23,6 @@
 !>@ingroup transport
 module advection
 
-
 contains
 
 !> Integrate advection plus sources for a time step.
@@ -104,21 +103,40 @@ else
     limit_slope = .true.
 end if
 ! converts the conservative variable (mass) to the primitive variable (concentration)
-call cons2prim(conc,mass_prev,area,ncell,nvar)
+call cons2prim(conc,     &
+               mass_prev,&
+               area,     &
+               ncell,    &
+               nvar)
 
 ! Calculate the (undivided) differences of concentrations
-call difference(grad_lo,grad_hi,grad_center,conc,ncell,nvar)
+call difference(grad_lo,    &
+                grad_hi,    &
+                grad_center,&
+                conc,       &
+                ncell,      &
+                nvar)
 
 if (limit_slope)then
 ! applies flux-limeter on high resolution gradient 
-    call limiter(grad_lim,grad_lo,grad_hi,grad_center,ncell,nvar)
+    call limiter(grad_lim,   &
+                 grad_lo,    &
+                 grad_hi,    &
+                 grad_center,&
+                 ncell,      &
+                 nvar)
 else
     grad_lim = grad_center
 end if
 
 ! Adjust differences to account for places (boundaries, gates, etc) where one-sided
 ! or other differencing is required
-call adjust_differences(grad,grad_lim,grad_lo,grad_hi,ncell,nvar)
+call adjust_differences(grad,    &
+                        grad_lim,&
+                        grad_lo, &
+                        grad_hi, &
+                        ncell,   &
+                        nvar)
 
 call compute_source(source, & 
                     conc,   &
@@ -155,16 +173,39 @@ call compute_flux(flux_lo,  &
 
 ! Replace fluxes for special cases having to do with boundaries, network and structures
 ! todo : Keeps the dirty stuff in one place. For now this is an empty call
-call replace_boundary_flux(flux_lo,flux_hi,conc_lo,conc_hi,flow_lo,flow_hi,ncell,nvar,time,dt,dx)
+call replace_boundary_flux(flux_lo,     &
+                           flux_hi,     &
+                           conc_lo,     &
+                           conc_hi,     &
+                           flow_lo,     &
+                           flow_hi,     &
+                           ncell,       &
+                           nvar,        &
+                           time,        &
+                           dt,          &
+                           dx)
 
 ! Combine the fluxes into a divergence term at the half time at cell edges.
 ! Computing and storing the divergence separately gives some flexibility with integrating
 ! the source term, e.g. Heun's method
 ! todo: commented
-call compute_divergence(div_flux, flux_lo, flux_hi, ncell, nvar)
+call compute_divergence(div_flux,   &
+                        flux_lo,    &
+                        flux_hi,    &
+                        ncell,      &
+                        nvar)
 
 !conservative update including source. 
-call update_conservative(mass,mass_prev,div_flux,source,area,ncell,nvar,time,dt,dx)
+call update_conservative(mass,      &
+                         mass_prev, &
+                         div_flux,  &
+                         source,    &
+                         area,      &
+                         ncell,     &
+                         nvar,      &
+                         time,      &
+                         dt,        &
+                         dx)
 
 return
 end subroutine

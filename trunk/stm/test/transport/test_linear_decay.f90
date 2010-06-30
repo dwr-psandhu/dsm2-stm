@@ -66,7 +66,6 @@ character(LEN=*),parameter :: label = "linear decay no flow"
 no_flow_hydro => no_flow
 compute_source => linear_decay_source
 
-
 !> Subroutine which generates fine initial values and reference values to compare with 
 !> and feed the covvergence test subroutine.
 do icell =1,nx_base
@@ -76,6 +75,7 @@ end do
 
 fine_initial_condition(:,1) = ten
 fine_initial_condition(:,2) = fine_initial_condition(:,1)
+
 
 fine_solution(:,1) = fine_initial_condition(:,1) *exp(- rate_1*total_time)
 fine_solution(:,2) = fine_initial_condition(:,2) *exp(- rate_2*total_time)
@@ -106,47 +106,46 @@ subroutine no_flow(flow,    &
                    dx,      &                        
                    dt)
                    
-    use stm_precision
-    implicit none
-    integer, intent(in) :: ncell                   !< number of cells
-    real(stm_real), intent(in) :: time             !< time of request
-    real(stm_real), intent(in) :: dx               !< spatial step
-    real(stm_real), intent(in) :: dt               !< time step 
-    real(stm_real), intent(out) :: flow(ncell)     !< cell and time centered flow
-    real(stm_real), intent(out) :: flow_lo(ncell)  !< lo face flow, time centered
-    real(stm_real), intent(out) :: flow_hi(ncell)  !< hi face flow, time centered
-    real(stm_real), intent(out) :: area(ncell)     !< cell center area, old time
-    real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face, time centered
-    real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
-   
-    !--- local
-    real(stm_real), parameter :: constant_flow = zero 
-    real(stm_real), parameter :: constant_area = 27.d1 
+implicit none
+integer, intent(in) :: ncell                   !< number of cells
+real(stm_real), intent(in) :: time             !< time of request
+real(stm_real), intent(in) :: dx               !< spatial step
+real(stm_real), intent(in) :: dt               !< time step 
+real(stm_real), intent(out) :: flow(ncell)     !< cell and time centered flow
+real(stm_real), intent(out) :: flow_lo(ncell)  !< lo face flow, time centered
+real(stm_real), intent(out) :: flow_hi(ncell)  !< hi face flow, time centered
+real(stm_real), intent(out) :: area(ncell)     !< cell center area, old time
+real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face, time centered
+real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
 
-    if (time <= (total_time/two)) then
-      flow = constant_flow
-    else
-      flow = minus * constant_flow
-    end if
-        
-    flow_hi = flow
-    flow_lo = flow
-    area = constant_area
-    area_lo = constant_area
-    area_hi = constant_area
-  
-    return
+!--- local
+real(stm_real), parameter :: constant_flow = zero 
+real(stm_real), parameter :: constant_area = 27.d1 
+
+if (time <= (total_time/two)) then
+  flow = constant_flow
+else
+  flow = minus * constant_flow
+end if
+    
+flow_hi = flow
+flow_lo = flow
+area = constant_area
+area_lo = constant_area
+area_hi = constant_area
+
+return
 end subroutine
 !========================================
-subroutine linear_decay_source(source,   & 
-                                 conc,   &
-                                 area,   &
-                                 flow,   &
-                                 ncell,  &
-                                 nvar,   &
-                                 time)
+subroutine linear_decay_source(source, & 
+                               conc,   &
+                               area,   &
+                               flow,   &
+                               ncell,  &
+                               nvar,   &
+                               time)
                                      
- use stm_precision 
+
  use error_handling
  implicit none
  
@@ -160,10 +159,10 @@ real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
 real(stm_real),intent(in)  :: time                !< time 
 !--- local just for test
 
- source(:,1) = rate_1*conc(:,1)
- source(:,2) = rate_2*conc(:,2)
+source(:,1) = rate_1*conc(:,1)
+source(:,2) = rate_2*conc(:,2)
  
- return
+return
 end subroutine 
 
 end module

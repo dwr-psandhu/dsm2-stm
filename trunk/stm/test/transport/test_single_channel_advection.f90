@@ -28,15 +28,15 @@ contains
 !> Subroutine that tests advection convergence
 !> A fine grid initial condition and solution at time total_time
 !> must be provided. 
-subroutine test_advection_convergence( label,               &
-                                     hydro,                  &
-                                     domain_length,          &
-                                     total_time,             &
-                                     fine_initial_conc,      &
-                                     fine_solution,          &           
-                                     nstep_base,             &
-                                     nx_base,                &
-                                     nconc,                  &
+subroutine test_advection_convergence(label,               &
+                                     hydro,                &
+                                     domain_length,        &
+                                     total_time,           &
+                                     fine_initial_conc,    &
+                                     fine_solution,        &           
+                                     nstep_base,           &
+                                     nx_base,              &
+                                     nconc,                &
                                      verbose)
                              
 use hydro_data
@@ -51,6 +51,7 @@ use fruit
 use logging
 use grid_refinement
 use log_convergence
+use source_sink
 
 implicit none
 
@@ -83,7 +84,7 @@ real(stm_real), allocatable :: x_center(:)
 real(stm_real), allocatable :: velocity (:)
 real(stm_real) :: max_velocity 
 
-real(stm_real) :: fine_initial_mass(nx_base,nconc)  !< initial condition at finest resolution
+real(stm_real) :: fine_initial_mass(nx_base,nconc)   !< initial condition at finest resolution
 real(stm_real) :: fine_solution_mass(nx_base,nconc)  !< reference solution at finest resolution
 
 real(stm_real) :: dt              ! seconds
@@ -93,7 +94,7 @@ real(stm_real) :: norm_error(3,nrefine)
 
 
 !todo: this is really "no flux"
-boundary_advection=>neumann_advective_flux
+boundary_advection => neumann_advective_flux
 
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
