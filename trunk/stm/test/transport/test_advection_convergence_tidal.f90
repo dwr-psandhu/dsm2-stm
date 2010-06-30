@@ -38,12 +38,15 @@ contains
 
 !> Tests the convergence of error rate in advection of mass which is exposed a tidal boundary 
 subroutine test_tidal_advection_convergence(verbose)
+
 use test_single_channel_advection
 use hydro_data
 use source_sink
+
     
 implicit none
 procedure(hydro_data_if),pointer :: tidal_hydro          !< The pointer points to tidal flow data
+
 integer, parameter  :: nconc = 2                         !< Number of constituents
 integer, parameter  :: nstep_base = 64                   !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 256                  !< Number of spatial discritization in finer mesh 
@@ -59,6 +62,7 @@ real(stm_real) :: solution_gaussian_sd = domain_length/64.d0 !< Standard deviati
 character(LEN=*),parameter :: label = "tidal flow"      
 tidal_hydro=> tidal_flow
 compute_source => no_source
+
 
 !> load the initial values and reference final values to feed the test routine
 call initial_fine_solution_tidal(fine_initial_condition,     &

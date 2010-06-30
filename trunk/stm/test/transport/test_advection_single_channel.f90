@@ -94,7 +94,7 @@ real(stm_real) :: norm_error(3,nrefine)
 
 
 !todo: this is really "no flux"
-boundary_advection => neumann_advective_flux
+replace_boundary_flux => neumann_advective_flux
 
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine

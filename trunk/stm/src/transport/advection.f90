@@ -60,6 +60,7 @@ use stm_precision
 use primitive_variable_conversion
 use gradient
 use source_sink
+use boundary_advection_module
 
 implicit none
 
@@ -199,7 +200,7 @@ call compute_divergence(div_flux,   &
 call update_conservative(mass,      &
                          mass_prev, &
                          div_flux,  &
-                         source,    &
+                         source,    & 
                          area,      &
                          ncell,     &
                          nvar,      &
@@ -346,42 +347,6 @@ div_flux = (flux_hi - flux_lo)
 return
 end subroutine
 
-!> Replace original calculated flux at boundary locations
-! todo: figure out if the arguments are right and move this routine to the 
-!       application -- it should just be an interface like sources and hydro_data
-!       Also, eventually have to think out channel network
-subroutine replace_boundary_flux(flux_lo,  &
-                                 flux_hi,  &
-                                 conc_lo,  &
-                                 conc_hi,  &                       
-                                 flow_lo,  &
-                                 flow_hi,  &
-                                 ncell,    &
-                                 nvar,     &
-                                 time,     &
-                                 dt,       &
-                                 dx)
-use stm_precision
-implicit none
-!--- args
-integer,intent(in)  :: ncell                        !< Number of cells
-integer,intent(in)  :: nvar                         !< Number of variables
-
-real(stm_real), intent(inout) :: flux_lo(ncell,nvar) !< Flux on lo face at half time
-real(stm_real), intent(inout) :: flux_hi(ncell,nvar) !< Flux on hi face at half time
-real(stm_real), intent(in) :: conc_lo(ncell,nvar)    !< Upwinded concentration at half time at lo face
-real(stm_real), intent(in) :: conc_hi(ncell,nvar)    !< Upwinded concentration at half time at hi face
-real(stm_real), intent(in) :: flow_lo(ncell)         !< Time-centered flow at lo face
-real(stm_real), intent(in) :: flow_hi(ncell)         !< Time-centered flow at hi face
-real(stm_real), intent(in) :: time                   !< Time
-real(stm_real), intent(in) :: dt                     !< Length of current time step
-real(stm_real), intent(in) :: dx                     !< Spatial step
-
-flux_lo(1,:)= zero
-flux_hi(ncell,:)=zero
-return
-end subroutine
-
 !///////////////////////////////////////////////////////////////////////
 
 !> Update the conservative variables using divergence of fluxes and integrate the
@@ -399,8 +364,6 @@ subroutine update_conservative(mass,       &
                                
 use stm_precision
 use primitive_variable_conversion
-! todo: is it needed here? or flow in declaration?
-! hydro
 use source_sink
 
 implicit none
