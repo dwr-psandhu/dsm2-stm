@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Test of mass transport convergence in uniform flow
+!> Test of mass transport convergence no flow
 !>@ingroup test
 module test_linear_decay_no_flow
 

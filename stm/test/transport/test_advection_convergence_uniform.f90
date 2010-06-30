@@ -36,9 +36,9 @@ subroutine test_uniform_advection_convergence(verbose)
 use test_single_channel_advection
 use hydro_data
 use source_sink
+
 implicit none
 procedure(hydro_data_if),pointer :: uniform_hydro
-
 
 integer, parameter  :: nstep_base = 40 
 integer, parameter  :: nx_base = 256
