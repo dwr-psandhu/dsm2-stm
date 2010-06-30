@@ -89,7 +89,40 @@ module source_sink
      
      return
  end subroutine 
- 
+ !==================================
+! subroutine linear_decay_source(source,   & 
+!                                 conc,   &
+!                                 area,   &
+!                                 flow,   &
+!                                 ncell,  &
+!                                 nvar,   &
+!                                 time)
+!                                     
+! use stm_precision 
+! use error_handling
+! implicit none
+! 
+! !--- args
+!integer,intent(in)  :: ncell                      !< Number of cells
+!integer,intent(in)  :: nvar                       !< Number of variables
+!real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+!real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
+!real(stm_real),intent(in)  :: area(ncell)         !< area at source     
+!real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
+!real(stm_real),intent(in)  :: time                !< time 
+!!--- local just for test
+!real(stm_real) :: rate_1
+!real(stm_real) :: rate_2
+!
+!rate_1 = 0.01d0
+!rate_2 = rate_1
+!
+!source(:,1) = rate_1*conc(:,1)
+!source(:,2) = rate_2*conc(:,2)
+! 
+!return
+!end subroutine 
+! 
  
 end module
  
