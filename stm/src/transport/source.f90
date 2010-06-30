@@ -73,8 +73,7 @@ module source_sink
                                          
      use stm_precision 
      use error_handling
-     
-     
+          
          implicit none
      !--- args
      integer,intent(in)  :: ncell                      !< Number of cells
