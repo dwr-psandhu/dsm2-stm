@@ -61,7 +61,7 @@ call test_extrapolation
 call test_tidal_advection_convergence(verbose)
 call test_uniform_advection_convergence(verbose)
     
-!///////// Diffusion
+!//////// Diffusion
 call test_tridi_solver
 call test_boundary_diffusion_flux
 call test_make_dif_flux_sub
