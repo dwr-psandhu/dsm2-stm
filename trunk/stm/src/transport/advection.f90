@@ -325,7 +325,11 @@ end subroutine
 
 !> Compute the divergence of fluxes.
 ! todo: At present, this is undivided...which may be not what we want.
-subroutine compute_divergence(div_flux, flux_lo, flux_hi, ncell, nvar)
+subroutine compute_divergence(div_flux, &
+                              flux_lo,  &
+                              flux_hi,  &
+                              ncell,    &
+                              nvar)
 
 use stm_precision
 implicit none
@@ -427,7 +431,11 @@ dtbydx = dt/dx
 mass = mass_prev - dtbydx*div_flux + dt*source_prev
 
 ! compute the source at the new time from the predictor
-call cons2prim(conc,mass,area,ncell,nvar)
+call cons2prim(conc,    &
+               mass,    &
+               area,    &
+               ncell,   &
+               nvar)
 
 call compute_source(source,& 
                     conc,  &
@@ -451,7 +459,12 @@ end module
 !//////////////////////////////
 !> Adjust differences to account for special cases (boundaries, structures, junctions, flow reversals)
 !> Currently implementation only accounts for two boundaries at ends of channel
-subroutine adjust_differences(grad,grad_lim,grad_lo,grad_hi,ncell,nvar)
+subroutine adjust_differences(grad,     &
+                              grad_lim, &
+                              grad_lo,  &
+                              grad_hi,  &
+                              ncell,    &
+                              nvar)
 use stm_precision
 implicit none
 !--- args
