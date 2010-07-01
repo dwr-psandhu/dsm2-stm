@@ -71,7 +71,7 @@ real(stm_real), intent(in) :: domain_length                     !< length of dom
 integer, parameter :: nrefine = 3
 integer, parameter :: coarsen_factor = 2                 ! coarsening factor used for convergence test
 integer :: itime
-integer :: icell ! debug only -- remove later
+integer :: icell 
 integer :: icoarse 
 integer :: nstep
 integer :: nx
@@ -205,13 +205,9 @@ do icoarse = 1,nrefine
     call deallocate_state
 end do
 
-
-
 call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on " // trim(label))
 call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on " // trim(label))
 call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
-
-
 
 if (verbose == .true.) then
    call log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label)

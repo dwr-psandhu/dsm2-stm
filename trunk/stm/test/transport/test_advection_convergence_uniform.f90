@@ -24,7 +24,6 @@ module test_uniform_flow
 
 use stm_precision
 
-integer :: istep = 0
 integer, parameter  :: nstep_base = 40
 integer, parameter  :: nx_base = 256
 real(stm_real), parameter :: total_time = 6400.D0
@@ -70,7 +69,7 @@ call initial_fine_solution_uniform(fine_initial_condition, &
                                    ic_gaussian_sd,         &
                                    solution_gaussian_sd,   &
                                    ic_center,              &
-                                   solution_center   )
+                                   solution_center)
 
 
 call test_advection_convergence(label,                  &
