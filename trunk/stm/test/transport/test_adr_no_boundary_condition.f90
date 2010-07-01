@@ -57,11 +57,12 @@ use hydro_data
 use source_sink
 use log_convergence
 use grid_refinement
+use state_variables
 
 implicit none
 
-procedure(hydro_data_if), pointer :: hydro                      !< This pointer, points to uniform flow data
-character(LEN=64) :: label                                       !< unique label for test
+procedure(hydro_data_if), pointer :: hydro_adr                  !< This pointer, points to uniform flow data
+character(LEN=64) :: label                                      !< unique label for test
 logical :: verbose                                              !< whether to output convergence results
 real(stm_real) :: fine_initial_conc(nx_base,nconc)              !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)                  !< reference solution at finest resolution
@@ -79,10 +80,21 @@ real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
 real(stm_real), allocatable :: velocity (:)
+real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
+real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
+real(stm_real),allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
+real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent dispersion coef. at old time
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
 real(stm_real) :: time
 real(stm_real) :: norm_error(3,nrefine)
+real(stm_real) :: theta = half   
+
+boundary_diffusion_impose  => neumann_diffusion_matrix
+boundary_diffusion_flux    => neumann_no_flow_diffusive_flux
+replace_boundary_flux      => neumann_advective_flux
+hydro_adr                  => uniform_flow_adr
+
 !------
 label = 'ADR uniform flow, const A & Ks'
 
@@ -90,21 +102,100 @@ call initial_final_solution(fine_initial_conc,fine_solution,ic_center,ic_stand_d
 
 do icoarse = 1,nrefine
 
-  !  call allocate_state
-!    call coarsen
+    coarsening = coarsen_factor**(icoarse - 1)
+    nx = nx_base/(coarsening)
+    nstep = nstep_base/(coarsening)
+    call allocate_state(nx,nconc)
+    area = const_area
+    area_prev = const_area
+    area_lo_prev = const_area
+    area_hi_prev = const_area
+    area_lo = const_area
+    area_hi = const_area
+    allocate(disp_coef_lo(nx,nconc),disp_coef_hi(nx,nconc), &
+             disp_coef_lo_prev(nx,nconc),disp_coef_hi_prev(nx,nconc))
+    disp_coef_lo = const_disp_coef
+    disp_coef_hi = const_disp_coef
+    disp_coef_lo_prev = const_disp_coef
+    disp_coef_hi_prev = const_disp_coef
+    
+    ! discretization parameters
+    dx = domain_length/dble(nx)
+    dt = total_time/dble(nstep)
+
+   ! print *,'D*dt/dx^2 = ', disp_coef*dt/dx/dx
+    
+    allocate(x_center(nx))
+    do icell = 1,nx
+        x_center(icell) = dx*(dble(icell)-half)+origin
+    end do      
     
     do itime = 1,nstep
     
- !       call hydro 
- !       call advect
-  !      call prim2cons
+    time = zero
+    call hydro_adr(flow,    &
+               flow_lo, &
+               flow_hi, &
+               area,    &
+               area_lo, &
+               area_hi, &
+               nx,      &
+               time,    &
+               dx,      &                  
+               dt)
+    area_prev = area
+            
+    if (icoarse == 1)then
+        call prim2cons(fine_initial_mass,fine_initial_conc,area,nx,nconc)
+    end if
+        
+    call coarsen(mass,fine_initial_mass,nx_base,nx, nconc)
+    mass_prev = mass
+    call cons2prim(conc,mass,area,nx,nconc)
+    conc_prev = conc
+      
+    do itime = 1,nstep
+       time = time + dt
+       call hydro_adr(flow,    &
+                  flow_lo, &
+                  flow_hi, &
+                  area,    &
+                  area_lo, &
+                  area_hi, &
+                  nx,      &
+                  time,    &
+                  dx,      &                  
+                  dt)
+                  
+
+      ! call transport using no_source as the callback 
+      call advect(mass,     &
+                  mass_prev,&  
+                  flow,     &
+                  flow_lo,  &
+                  flow_hi,  &
+                  area,     &
+                  area_prev,&
+                  area_lo,  &
+                  area_hi,  &
+                  nx,       &
+                  nconc,     &
+                  time,     &
+                  dt,       &
+                  dx,       &
+                  limit_slope)
+
+      mass_prev = mass
+      area_prev = area
+      call cons2prim(conc,mass,area,nx,nconc) 
   !      call diffuse
     
     end do ! itime
     
-  !  call printout
- !   call error_norm
- !   call deallocate_state
+ !  call printout
+ !  call error_norm
+ !  call deallocate_state
+ !  deallocate others
 
 end do !icoarse
 
