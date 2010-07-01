@@ -96,14 +96,15 @@ boundary_diffusion_impose  => neumann_diffusion_matrix
 boundary_diffusion_flux    => neumann_no_flow_diffusive_flux
 replace_boundary_flux      => neumann_advective_flux
 hydro_adr                  => uniform_flow_adr
+compute_source             => adr_linear_decay
 
 !------
 label = 'ADR uniform flow, const A & Ks'
 
 call initial_final_solution(fine_initial_conc,fine_solution,ic_center,ic_stand_dev,ic_peak,const_velocity,decay_rate,total_time,origin,domain_length,nx_base,nconc)
 
-print *,maxval(fine_initial_conc), maxval(fine_solution)
-pause
+!print *,maxval(fine_initial_conc), maxval(fine_solution)
+!pause
 
 do icoarse = 1,nrefine
 
@@ -148,7 +149,8 @@ do icoarse = 1,nrefine
                dx,      &                  
                dt)
     area_prev = area
-            
+    
+         
     if (icoarse == 1)then
         call prim2cons(fine_initial_mass,fine_initial_conc,area,nx,nconc)
     end if
@@ -170,9 +172,8 @@ do icoarse = 1,nrefine
                   time,    &
                   dx,      &                  
                   dt)
-                  
-
-      ! call transport using no_source as the callback 
+   
+      ! call transport using linear the callback 
       call advect(mass,     &
                   mass_prev,&  
                   flow,     &
