@@ -186,6 +186,7 @@ do icoarse = 1,nrefine
     if (icoarse == 1) then
         call prim2cons(fine_solution_mass,fine_solution,area,nx,nvar)
     end if
+    ! todo: Eli do we need the above three lines?
     call coarsen(solution_mass,fine_solution_mass,nx_base,nx, nvar)
     call cons2prim(reference,solution_mass,area,nx,nconc)
     
