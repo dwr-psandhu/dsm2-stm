@@ -44,6 +44,7 @@ use test_prim_increment_to_cons
 use test_gradient
 use test_diffusion_convergence_boundaries_dirichlet
 use test_linear_decay_no_flow
+use test_advect_diffuse_react
 
 
 implicit none
@@ -73,6 +74,7 @@ call test_diffusion_neumann
 call test_diffusion_convergence_single_channel
 !////// reaction
 call  test_linear_decay_convergence(verbose)
+call  test_advect_diffuse_reaction(verbose)
 
   
 call fruit_summary
