@@ -28,15 +28,15 @@ integer, parameter  :: nstep_base = 40
 integer, parameter  :: nx_base = 256
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: start_time = 1000.0d0 ! sec
-real(stm_real), parameter :: total_time = 1280.0d0 ! sec
+real(stm_real), parameter :: total_time = 640.0d0 ! sec
 ! todo:  since the bc is set to be zero flux, total_time and other parameters should be set 
 ! in the way solution does not reach the edges of channel.
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 500.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 0.01d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_disp_coef = 0.1d0 !todo: is it in a correct range? 
 real(stm_real), parameter :: const_velocity = 0.8d0 ! m/s
-real(stm_real), parameter :: decay_rate = 0.001d0
+real(stm_real), parameter :: decay_rate = 0.005d0
 real(stm_real), parameter :: ic_center = domain_length/four
 real(stm_real), parameter :: ic_stand_dev = domain_length/(four*four)
 real(stm_real), parameter :: ic_peak = ten
@@ -64,8 +64,10 @@ implicit none
 procedure(hydro_data_if), pointer :: hydro_adr                  !< This pointer, points to uniform flow data
 character(LEN=64) :: label                                      !< unique label for test
 logical :: verbose                                              !< whether to output convergence results
-real(stm_real) :: fine_initial_conc(nx_base,nconc)              !< initial condition at finest resolution
+real(stm_real) :: fine_initial_conc(nx_base,nconc)              !< initial condition f concentration at finest resolution
+real(stm_real) :: fine_initial_mass(nx_base,nconc)              !< initial condition of mass at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)                  !< reference solution at finest resolution
+
 !---local
 integer, parameter :: nrefine = 3
 integer, parameter :: coarsen_factor = 2                 ! coarsening factor used for convergence test
@@ -80,10 +82,10 @@ real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
 real(stm_real), allocatable :: velocity (:)
-real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
-real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
-real(stm_real),allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
-real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent dispersion coef. at old time
+real(stm_real), allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
+real(stm_real), allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
+real(stm_real), allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
+real(stm_real) ,allocatable :: disp_coef_hi_prev(:,:) !< High side constituent dispersion coef. at old time
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
 real(stm_real) :: time
@@ -100,6 +102,9 @@ label = 'ADR uniform flow, const A & Ks'
 
 call initial_final_solution(fine_initial_conc,fine_solution,ic_center,ic_stand_dev,ic_peak,const_velocity,decay_rate,total_time,origin,domain_length,nx_base,nconc)
 
+print *,maxval(fine_initial_conc), maxval(fine_solution)
+pause
+
 do icoarse = 1,nrefine
 
     coarsening = coarsen_factor**(icoarse - 1)
@@ -114,6 +119,8 @@ do icoarse = 1,nrefine
     area_hi = const_area
     allocate(disp_coef_lo(nx,nconc),disp_coef_hi(nx,nconc), &
              disp_coef_lo_prev(nx,nconc),disp_coef_hi_prev(nx,nconc))
+    allocate(reference(nx,nconc))
+    allocate(x_center(nx))
     disp_coef_lo = const_disp_coef
     disp_coef_hi = const_disp_coef
     disp_coef_lo_prev = const_disp_coef
@@ -124,13 +131,10 @@ do icoarse = 1,nrefine
     dt = total_time/dble(nstep)
 
    ! print *,'D*dt/dx^2 = ', disp_coef*dt/dx/dx
-    
-    allocate(x_center(nx))
+   
     do icell = 1,nx
         x_center(icell) = dx*(dble(icell)-half)+origin
     end do      
-    
-    do itime = 1,nstep
     
     time = zero
     call hydro_adr(flow,    &
@@ -151,8 +155,8 @@ do icoarse = 1,nrefine
         
     call coarsen(mass,fine_initial_mass,nx_base,nx, nconc)
     mass_prev = mass
-    call cons2prim(conc,mass,area,nx,nconc)
-    conc_prev = conc
+!    call cons2prim(conc,mass,area,nx,nconc)
+!    conc_prev = conc
       
     do itime = 1,nstep
        time = time + dt
@@ -188,23 +192,54 @@ do icoarse = 1,nrefine
       mass_prev = mass
       area_prev = area
       call cons2prim(conc,mass,area,nx,nconc) 
-  !      call diffuse
+      conc_prev = conc
+      
+      call diffuse(conc,              &
+                   conc_prev,         &
+                   area,              &
+                   area_prev,         &
+                   area_lo,           &
+                   area_hi,           &
+                   area_lo_prev,      &
+                   area_hi_prev,      &
+                   disp_coef_lo,      &  
+                   disp_coef_hi,      &
+                   disp_coef_lo_prev, &  
+                   disp_coef_hi_prev, &
+                   nx,                &
+                   nconc,             &
+                   time,              &
+                   theta,             &
+                   dt,                &
+                   dx)
+                   
+    call prim2cons(mass,conc,area,nx,nconc)
     
     end do ! itime
     
  !  call printout
- !  call error_norm
- !  call deallocate_state
- !  deallocate others
+ 
+    call coarsen(reference,fine_solution,nx_base,nx,nvar)
+    
+    call error_norm(norm_error(1,icoarse), &
+                    norm_error(2,icoarse), &
+                    norm_error(3,icoarse), &
+                    conc(:,2),reference(:,2),nx,dx)
+ 
+    call deallocate_state
+    deallocate (disp_coef_lo,disp_coef_hi, &
+                disp_coef_lo_prev,disp_coef_hi_prev)
+    deallocate (x_center)
+    deallocate (reference)
 
 end do !icoarse
 
-!call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on " // trim(label))
-!call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on " // trim(label))
-!call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
+call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on " // trim(label))
+call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on " // trim(label))
+call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
 
 if (verbose == .true.) then
-!   call log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label)
+   call log_convergence_results(norm_error,nrefine,dx,dt,const_velocity,label)
 end if
 
 return
@@ -249,6 +284,41 @@ end do
 
 fine_initial_conc(2,:) = fine_initial_conc(1,:) 
 fine_solution(2,:)     = fine_solution(1,:)
+
+return
+end subroutine
+!===========
+!>generat constant area and constant flow foreward and backward
+subroutine uniform_flow_adr(flow,    &
+                            flow_lo, &
+                            flow_hi, &
+                            area,    &
+                            area_lo, &
+                            area_hi, &
+                            ncell,   &
+                            time,    &
+                            dx,      &                        
+                            dt)
+use stm_precision
+implicit none
+integer, intent(in) :: ncell                   !< number of cells
+real(stm_real), intent(in) :: time             !< time of request
+real(stm_real), intent(in) :: dx               !< spatial step
+real(stm_real), intent(in) :: dt               !< time step 
+real(stm_real), intent(out) :: flow(ncell)     !< cell and time centered flow
+real(stm_real), intent(out) :: flow_lo(ncell)  !< lo face flow, time centered
+real(stm_real), intent(out) :: flow_hi(ncell)  !< hi face flow, time centered
+real(stm_real), intent(out) :: area(ncell)     !< cell center area, old time
+real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face, time centered
+real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
+
+flow = const_area*const_velocity
+flow_hi = flow
+flow_lo = flow
+
+area = const_area
+area_lo = const_area
+area_hi = const_area
 
 return
 end subroutine
