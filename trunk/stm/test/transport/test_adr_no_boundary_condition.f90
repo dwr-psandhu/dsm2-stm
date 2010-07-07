@@ -34,7 +34,7 @@ real(stm_real), parameter :: total_time = 512.0d0 ! sec
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 500.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 0.05d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_disp_coef = 0.050d0 !todo: is it in a correct range? 
 real(stm_real), parameter :: const_velocity = 1.95d0 ! m/s
 real(stm_real), parameter :: decay_rate = 0.005d0
 real(stm_real), parameter :: ic_center = domain_length/(two+half)
@@ -245,6 +245,15 @@ do icoarse = 1,nrefine
  
     call coarsen(reference,fine_solution,nx_base,nx,nvar)
     
+    !todo :remove
+    if (nx_base==nx) then
+    print *, maxval(fine_solution - conc)
+    print *, maxval(conc)
+    print *, minval(conc)
+    print *, maxval(fine_solution)
+    pause
+    
+    end if
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
