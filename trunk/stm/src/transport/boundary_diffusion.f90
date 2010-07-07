@@ -149,17 +149,17 @@ module boundary_diffusion
  
  !> Example diffusive flux that imposes Neumann boundaries with zero flux at
  !> both ends of the channel.
- subroutine neumann_no_flow_diffusive_flux(diffusive_flux_lo,  &
-                                             diffusive_flux_hi, &
-                                             conc,              &
-                                             area_lo,           &
-                                             area_hi,           &
-                                             disp_coef_lo,      &  
-                                             disp_coef_hi,      &
-                                             ncell,             &
-                                             nvar,              &
-                                             time,              &
-                                             dt)
+ subroutine neumann_no_flow_diffusive_flux(diffusive_flux_lo, &
+                                           diffusive_flux_hi, &
+                                           conc,              &
+                                           area_lo,           &
+                                           area_hi,           &
+                                           disp_coef_lo,      &  
+                                           disp_coef_hi,      &
+                                           ncell,             &
+                                           nvar,              &
+                                           time,              &
+                                           dt)
     use stm_precision
          implicit none
          !--- args

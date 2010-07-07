@@ -96,7 +96,7 @@ module boundary_advection_module
         real(stm_real), intent (in)  :: time                    !< Current time
         real(stm_real), intent (in)  :: dx                      !< Spatial step  
         real(stm_real), intent (in)  :: dt                      !< Time step     
-      
+     
      call stm_fatal("Boundary not implemented in advection!")
      
      return
@@ -124,16 +124,16 @@ module boundary_advection_module
         ! todo: check the intents
         real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
         real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
-        real(stm_real),intent(in)    :: flow_lo(ncell)     !< flow on lo side of cells centered in time
-        real(stm_real),intent(in)    :: flow_hi(ncell)     !< flow on hi side of cells centered in time
+        real(stm_real),intent(in)    :: flow_lo(ncell)          !< flow on lo side of cells centered in time
+        real(stm_real),intent(in)    :: flow_hi(ncell)          !< flow on hi side of cells centered in time
         real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
         real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
         real(stm_real), intent (in)  :: time                    !< Current time
         real(stm_real), intent (in)  :: dx                      !< Spatial step  
         real(stm_real), intent (in)  :: dt                      !< Time step     
       
-      flux_lo(1,nvar) = zero
-      flux_hi(ncell,nvar) = zero
+      flux_lo(1,:) = zero
+      flux_hi(ncell,:) = zero
         
      ! todo: implement and test
      ! todo: add non trivial cases

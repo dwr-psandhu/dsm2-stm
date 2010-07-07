@@ -25,21 +25,21 @@ module test_advect_diffuse_react
 use stm_precision
 
 integer, parameter  :: nstep_base = 40
-integer, parameter  :: nx_base = 256
+integer, parameter  :: nx_base = 128
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: start_time = 1000.0d0 ! sec
-real(stm_real), parameter :: total_time = 640.0d0 ! sec
+real(stm_real), parameter :: total_time = 512.0d0 ! sec
 ! todo:  since the bc is set to be zero flux, total_time and other parameters should be set 
 ! in the way solution does not reach the edges of channel.
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 500.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 0.1d0 !todo: is it in a correct range? 
-real(stm_real), parameter :: const_velocity = 0.8d0 ! m/s
+real(stm_real), parameter :: const_disp_coef = 0.05d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_velocity = 1.95d0 ! m/s
 real(stm_real), parameter :: decay_rate = 0.005d0
-real(stm_real), parameter :: ic_center = domain_length/four
-real(stm_real), parameter :: ic_stand_dev = domain_length/(four*four)
-real(stm_real), parameter :: ic_peak = ten
+real(stm_real), parameter :: ic_center = domain_length/(two+half)
+real(stm_real), parameter :: ic_stand_dev = domain_length/(two*four*four)
+real(stm_real), parameter :: ic_peak = one
 
 contains
 
@@ -61,7 +61,8 @@ use state_variables
 
 implicit none
 
-procedure(hydro_data_if), pointer :: hydro_adr                  !< This pointer, points to uniform flow data
+procedure(hydro_data_if),                pointer:: hydro_adr                 !< This pointer, points to uniform flow data
+
 character(LEN=64) :: label                                      !< unique label for test
 logical :: verbose                                              !< whether to output convergence results
 real(stm_real) :: fine_initial_conc(nx_base,nconc)              !< initial condition f concentration at finest resolution
@@ -103,8 +104,28 @@ label = 'ADR uniform flow, const A & Ks'
 
 call initial_final_solution(fine_initial_conc,fine_solution,ic_center,ic_stand_dev,ic_peak,const_velocity,decay_rate,total_time,origin,domain_length,nx_base,nconc)
 
-!print *,maxval(fine_initial_conc), maxval(fine_solution)
+do icell=1,nx_base
+!print *,icell, fine_initial_conc(icell,1)
+print *,fine_solution(icell,1)
+end do
+pause
+
+!================================
+!todo
+!do icell=1,nx_base
+!print *,icell,' : ', fine_initial_conc(icell,1)
+!end do 
+!print*, '================'
+!do icell=1,nx_base
+!print *,icell,' : ', fine_solution(icell,2)
+!end do
+!!
+!print *, maxloc(fine_initial_conc(:,1))
+!print *, maxloc(fine_solution(:,1))
+!print *, fine_initial_conc(nx_base-2,1),fine_initial_conc(2,1)
+!print *, fine_solution(nx_base-2,1),fine_solution(2,1)
 !pause
+!!================================
 
 do icoarse = 1,nrefine
 
@@ -130,13 +151,14 @@ do icoarse = 1,nrefine
     ! discretization parameters
     dx = domain_length/dble(nx)
     dt = total_time/dble(nstep)
-
+   ! todo:
    ! print *,'D*dt/dx^2 = ', disp_coef*dt/dx/dx
+   ! todo: we need a satbility check for Advection Diffusion splitting
    
     do icell = 1,nx
         x_center(icell) = dx*(dble(icell)-half)+origin
     end do      
-    
+      
     time = zero
     call hydro_adr(flow,    &
                flow_lo, &
@@ -174,6 +196,7 @@ do icoarse = 1,nrefine
                   dt)
    
       ! call transport using linear the callback 
+
       call advect(mass,     &
                   mass_prev,&  
                   flow,     &
@@ -313,15 +336,46 @@ real(stm_real), intent(out) :: area(ncell)     !< cell center area, old time
 real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face, time centered
 real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
 
-flow = const_area*const_velocity
-flow_hi = flow
-flow_lo = flow
-
 area = const_area
 area_lo = const_area
 area_hi = const_area
 
+flow = const_area*const_velocity
+flow_hi = flow
+flow_lo = flow
+
 return
 end subroutine
+!============
+subroutine adr_linear_decay(source, & 
+                            conc,   &
+                            area,   &
+                            flow,   &
+                            ncell,  &
+                            nvar,   &
+                            time)
+                                     
+
+ use  primitive_variable_conversion
+ implicit none
+ 
+ !--- args
+integer,intent(in)  :: ncell                      !< Number of cells
+integer,intent(in)  :: nvar                       !< Number of variables
+real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
+real(stm_real),intent(in)  :: area(ncell)         !< area at source     
+real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
+real(stm_real),intent(in)  :: time                !< time 
+!--- local just for test
+real(stm_real) :: mass (ncell,nvar)
+
+! source must be in primitive variable 
+call prim2cons(mass,conc,area,ncell,nvar)
+source(:,1) = -decay_rate*mass(:,1)
+source(:,2) = -decay_rate*mass(:,2) 
+ 
+return
+end subroutine 
 
 end module 
