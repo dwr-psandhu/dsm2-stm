@@ -34,9 +34,9 @@ real(stm_real), parameter :: total_time = 1024.0d0 ! sec
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 500.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = one + half !todo: is it in a correct range? 
-real(stm_real), parameter :: const_velocity = 1.95d0 ! m/s
-real(stm_real), parameter :: decay_rate = zero !0.001d0
+real(stm_real), parameter :: const_disp_coef = 0.9 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_velocity =  1.35d0 ! m/s
+real(stm_real), parameter :: decay_rate = 0.000d0 ! todo:?
 real(stm_real), parameter :: ic_center = domain_length/(two + half)
 real(stm_real), parameter :: ic_stand_dev = domain_length/(two*four*four)
 real(stm_real), parameter :: ic_peak = one
@@ -258,11 +258,11 @@ do icoarse = 1,nrefine
                     norm_error(3,icoarse), &
                     conc(:,1),reference(:,1),nx,dx)
 !todo remove
-if (nx == 256) then
-do icell=1,nx
-print *,icell,conc(icell,1)
-end do
-end if
+!if (nx == 256) then
+!do icell=1,nx
+!print *,icell,conc(icell,1)
+!end do
+!end if
  
     call deallocate_state
     deallocate (disp_coef_lo,disp_coef_hi, &
