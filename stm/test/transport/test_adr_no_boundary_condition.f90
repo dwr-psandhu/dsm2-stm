@@ -27,16 +27,16 @@ use stm_precision
 integer, parameter  :: nstep_base = 64
 integer, parameter  :: nx_base = 1024
 integer, parameter  :: nconc = 2
-real(stm_real), parameter :: start_time = 1000.0d0 ! sec
-real(stm_real), parameter :: total_time = 640.0d0 ! sec
+real(stm_real), parameter :: start_time = 1024.0d0 ! sec
+real(stm_real), parameter :: total_time = 1024.0d0 ! sec
 ! todo:  since the bc is set to be zero flux, total_time and other parameters should be set 
 ! in the way solution does not reach the edges of channel.
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 500.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = zero !0.050d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_disp_coef = one + half !todo: is it in a correct range? 
 real(stm_real), parameter :: const_velocity = 1.95d0 ! m/s
-real(stm_real), parameter :: decay_rate = zero !0.005d0
+real(stm_real), parameter :: decay_rate = zero !0.001d0
 real(stm_real), parameter :: ic_center = domain_length/(two + half)
 real(stm_real), parameter :: ic_stand_dev = domain_length/(two*four*four)
 real(stm_real), parameter :: ic_peak = one
@@ -242,7 +242,7 @@ do icoarse = 1,nrefine
  !  call printout
 
    call coarsen(reference,fine_solution,nx_base,nx,nvar)
-  !  call coarsen(reference,fine_initial_conc,nx_base,nx,nvar)
+
        
     !todo :remove
 !    if (nx_base==nx) then
@@ -257,6 +257,12 @@ do icoarse = 1,nrefine
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
                     conc(:,1),reference(:,1),nx,dx)
+!todo remove
+if (nx == 256) then
+do icell=1,nx
+print *,icell,conc(icell,1)
+end do
+end if
  
     call deallocate_state
     deallocate (disp_coef_lo,disp_coef_hi, &
@@ -302,27 +308,21 @@ real(stm_real) :: final_peak
 real(stm_real) :: final_center
 real(stm_real) :: final_stand_dev
 real(stm_real) :: dx
-real(stm_real) :: ic_sd ! todo : hardwired
 
 dx = domain_length/nx_base
 
-final_peak = ic_peak * sqrt( start_time/(total_time + start_time))
+final_peak = ic_peak 
 final_center = ic_center  + const_velocity * total_time
-final_stand_dev = ic_stand_dev * sqrt((total_time + start_time)/start_time)
-
-
-
-ic_sd = sqrt(two*const_disp_coef*start_time)
-final_stand_dev = sqrt(two*const_disp_coef*(total_time + start_time))
-
+final_stand_dev = ic_stand_dev * (total_time + start_time)/start_time
 
 do ivar = 1,nconc
-    call fill_gaussian(fine_initial_conc(1,ivar),nx_base,origin,dx,ic_center,ic_sd,ic_peak)
-    call fill_gaussian(fine_solution(1,ivar),nx_base,origin,dx,final_center,final_stand_dev,final_peak)
+    call fill_gaussian(fine_initial_conc(1,ivar),nx_base,origin,dx,ic_center,ic_stand_dev,ic_peak)
+    call fill_gaussian(fine_solution(1,ivar),nx_base,origin,dx,final_center,ic_stand_dev,final_peak)
 end do
 
 fine_initial_conc(2,:) = fine_initial_conc(1,:) 
 fine_solution(2,:)     = fine_solution(1,:)
+fine_solution = fine_solution * exp(-decay_rate*total_time)
 
 return
 end subroutine
