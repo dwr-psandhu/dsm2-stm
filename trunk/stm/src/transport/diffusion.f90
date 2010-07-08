@@ -112,8 +112,7 @@ call explicit_diffusion_operator(explicit_diffuse_op,&
                                  time,               &
                                  dx,                 &
                                  dt)
-  
-  
+   
 ! todo: need to change this to use just diffusive_flux_hi/lo
 
 call construct_right_hand_side(right_hand_side,       & 
