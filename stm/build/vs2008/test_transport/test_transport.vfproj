@@ -34,6 +34,7 @@
 		<File RelativePath="..\..\..\test\transport\test_adr_no_boundary_condition.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_tidal.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_uniform.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_advection_decay.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_single_channel.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_boundary_diffusive_flux.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_coarsen.f90"/>

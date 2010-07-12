@@ -24,21 +24,21 @@ module test_advect_diffuse_react
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 64
+integer, parameter  :: nstep_base = 256
 integer, parameter  :: nx_base = 1024
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: start_time = 1024.0d0 ! sec
-real(stm_real), parameter :: total_time = 1024.0d0 ! sec
+real(stm_real), parameter :: total_time = 640.0d0 ! sec
 ! todo:  since the bc is set to be zero flux, total_time and other parameters should be set 
 ! in the way solution does not reach the edges of channel.
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 500.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 0.9d0 !todo: is it in a correct range? 
-real(stm_real), parameter :: const_velocity = zero! m/s
-real(stm_real), parameter :: decay_rate = 0.019d0 ! todo:?
-real(stm_real), parameter :: ic_center = domain_length/(two + half)
-real(stm_real), parameter :: ic_stand_dev = domain_length/(two*four*four)
+real(stm_real), parameter :: const_disp_coef = 0.1d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_velocity = 2.d0 ! m/s
+real(stm_real), parameter :: decay_rate = 0.0005d0 ! todo:?
+real(stm_real), parameter :: ic_center = domain_length/(two)
+real(stm_real), parameter :: ic_stand_dev = domain_length/(five*five)
 real(stm_real), parameter :: ic_peak = one
 
 contains
@@ -150,10 +150,7 @@ do icoarse = 1,nrefine
     ! discretization parameters
     dx = domain_length/dble(nx)
     dt = total_time/dble(nstep)
-   ! todo:
-   ! print *,'D*dt/dx^2 = ', disp_coef*dt/dx/dx
-   ! todo: we need a satbility check for Advection Diffusion splitting
-   
+      
     do icell = 1,nx
         x_center(icell) = dx*(dble(icell)-half)+origin
     end do      
@@ -193,8 +190,7 @@ do icoarse = 1,nrefine
                   dx,      &                  
                   dt)
    
-      ! call transport using linear the callback 
-
+      
       call advect(mass,     &
                   mass_prev,&  
                   flow,     &
@@ -210,8 +206,7 @@ do icoarse = 1,nrefine
                   dt,       &
                   dx,       &
                   limit_slope)
-
-      mass_prev = mass
+      
       area_prev = area
       call cons2prim(conc,mass,area,nx,nconc) 
       conc_prev = conc
@@ -236,12 +231,10 @@ do icoarse = 1,nrefine
                    dx)
                    
     call prim2cons(mass,conc,area,nx,nconc)
-    
+    mass_prev = mass
     end do ! itime
     
- !  call printout
-
-   call coarsen(reference,fine_solution,nx_base,nx,nvar)
+    call coarsen(reference,fine_solution,nx_base,nx,nvar)
 
        
     !todo :remove
@@ -305,7 +298,6 @@ real(stm_real),intent(in)  :: origin
 real(stm_real),intent(in)  :: domain_length
 !--local
 integer :: ivar
-!real(stm_real) :: origin
 real(stm_real) :: final_peak
 real(stm_real) :: final_center
 real(stm_real) :: final_stand_dev
@@ -313,16 +305,16 @@ real(stm_real) :: dx
 
 dx = domain_length/nx_base
 
-final_peak = ic_peak 
-final_center = ic_center  + const_velocity * total_time
-final_stand_dev = ic_stand_dev * (total_time + start_time)/start_time
 
-do ivar = 1,nconc
-    call fill_gaussian(fine_initial_conc(1,ivar),nx_base,origin,dx,ic_center,ic_stand_dev,ic_peak)
-    call fill_gaussian(fine_solution(1,ivar),nx_base,origin,dx,final_center,ic_stand_dev,final_peak)
-end do
+call fill_gaussian(fine_initial_conc(:,1),nx_base,origin,dx,half*domain_length, & 
+                                         sqrt(two*const_disp_coef*start_time),one)
 
-fine_initial_conc(2,:) = fine_initial_conc(1,:) 
+fine_initial_conc(2,:) = fine_initial_conc(1,:)
+
+call fill_gaussian(fine_solution(:,1),nx_base,origin,dx,half*domain_length, &
+                          sqrt(two*const_disp_coef*(start_time+total_time)),sqrt(start_time/(start_time+total_time)))
+
+ 
 fine_solution(2,:)     = fine_solution(1,:)
 fine_solution = fine_solution * exp(-decay_rate*total_time)
 
@@ -357,9 +349,15 @@ area = const_area
 area_lo = const_area
 area_hi = const_area
 
-flow = const_area*const_velocity
+if (time <= (total_time/two)) then
+      flow = const_area*const_velocity
+else
+      flow = minus * const_area*const_velocity
+end if
+
 flow_hi = flow
 flow_lo = flow
+
 
 return
 end subroutine

@@ -42,7 +42,6 @@ use source_sink
 
 implicit none
 procedure(hydro_data_if),pointer :: no_flow_hydro
-!procedure(source_if)    ,pointer :: compute_source
 
 integer, parameter  :: nstep_base = 40 
 integer, parameter  :: nx_base = 256

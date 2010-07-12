@@ -191,9 +191,11 @@ do icoarse = 1,nrefine
     call cons2prim(reference,solution_mass,area,nx,nconc)
     
     write(filename, "(a\i3\'.txt')"), "uniform_gaussian_start_", nx 
-    call printout(reference(:,2),x_center,filename)
+        
+               
+    !call printout(reference(:,2),x_center,filename)
     write(filename, "(a\i3\'.txt')"), "uniform_gaussian_end_", nx 
-    call printout(conc(:,2),x_center,filename)
+   ! call printout(conc(:,2),x_center,filename)
     ! test error norm over part of domain
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
