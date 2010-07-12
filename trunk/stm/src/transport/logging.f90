@@ -64,7 +64,7 @@ module logging
         integer                   :: nx
         
         nx = size(arr)
-        
+                
         open(unit = 11, file = filename)
         
         do icell = 1,nx

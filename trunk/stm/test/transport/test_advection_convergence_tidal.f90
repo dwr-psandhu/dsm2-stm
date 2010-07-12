@@ -74,7 +74,7 @@ call initial_fine_solution_tidal(fine_initial_condition,     &
                                      ic_gaussian_sd,         &
                                      solution_gaussian_sd,   &
                                      ic_center,              &
-                                     solution_center   )
+                                     solution_center)
 
 !> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
 !> compute the norms, after each step coarsen the values and repeat computation.

@@ -27,12 +27,7 @@ module example_initial_conditions
     
 private gaussian_cdf
 
-
-
 contains
-
-
-
 
 !> Gaussian cdf (integrated Guassian pdf) from -inf to x0
 real(stm_real) function gaussian_cdf(x0,mean,sd)
