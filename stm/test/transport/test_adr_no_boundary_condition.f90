@@ -34,9 +34,9 @@ real(stm_real), parameter :: total_time = 1024.0d0 ! sec
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 500.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 0.9 !todo: is it in a correct range? 
-real(stm_real), parameter :: const_velocity =  1.35d0 ! m/s
-real(stm_real), parameter :: decay_rate = 0.000d0 ! todo:?
+real(stm_real), parameter :: const_disp_coef = 0.9d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_velocity = zero! m/s
+real(stm_real), parameter :: decay_rate = 0.019d0 ! todo:?
 real(stm_real), parameter :: ic_center = domain_length/(two + half)
 real(stm_real), parameter :: ic_stand_dev = domain_length/(two*four*four)
 real(stm_real), parameter :: ic_peak = one
@@ -278,6 +278,8 @@ call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order conv
 
 if (verbose == .true.) then
    call log_convergence_results(norm_error,nrefine,dx,dt,const_velocity,label)
+   print *, "Grid Peclet Number : " , const_disp_coef *dt/dx/dx
+   print *, "Peclet number L=dx : " , dx*const_velocity/const_disp_coef
 end if
 
 return
