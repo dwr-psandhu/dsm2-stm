@@ -25,13 +25,21 @@ module error_metric
 contains
 
 !> Calculate the L-1, L-2 and L-inf error norms for calculated values and reference solution
-subroutine error_norm(norm_1,norm_2,norm_inf,vals,reference,ncell,dx)
+subroutine error_norm(norm_1,    &
+                      norm_2,    &
+                      norm_inf,  &
+                      which_cell,&
+                      vals,      &
+                      reference, &
+                      ncell,     &
+                      dx)
 
 use stm_precision
 
 implicit none
 
 integer, intent(in) :: ncell                     !< Number of cells
+integer, intent(out):: which_cell                !< The cell in which largest error occurs
 real(stm_real), intent(out) :: norm_1            !< L-1   error norm
 real(stm_real), intent(out) :: norm_2            !< L-2   error norm
 real(stm_real), intent(out) :: norm_inf          !< L-inf error norm
@@ -42,8 +50,6 @@ real(stm_real), intent(in) :: dx                 !< Spatial step !todo: do we us
 
 !------ locals                                    
 integer :: icell                                
-! todo: should we also report which_cell ?
-integer :: which_cell                           !< The cell in which L-inf occurs
 real(stm_real) :: err
 real(stm_real) :: sq_error
 real(stm_real) :: abs_error
@@ -65,8 +71,7 @@ do icell=1,ncell
 end do
 norm_1 = norm_1/dble(ncell)
 norm_2 = norm_2/dble(ncell)
-!todo: remove
-!print*,which_cell,"/",ncell
+
 return
 end subroutine
 

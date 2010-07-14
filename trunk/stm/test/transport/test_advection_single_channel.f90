@@ -75,6 +75,7 @@ integer :: icell
 integer :: icoarse 
 integer :: nstep
 integer :: nx
+integer :: which_cell
 integer :: coarsening
 character(LEN=64)  ::  filename = "test_uniform_convergence" 
 logical, parameter :: limit_slope = .false.
@@ -200,6 +201,7 @@ do icoarse = 1,nrefine
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
+                    which_cell,            &
                     conc(:,2),reference(:,2),nx,dx) !todo: nx or ncell
     deallocate(solution_mass)
     deallocate(reference)
@@ -213,7 +215,7 @@ call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order conver
 call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
 
 if (verbose == .true.) then
-   call log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label)
+   call log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label,which_cell,nx_base)
 end if
 
 return

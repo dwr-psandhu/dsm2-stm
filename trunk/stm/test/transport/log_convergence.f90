@@ -25,32 +25,49 @@ module log_convergence
  
  !> Logs convergence results to a file
  !> Outputs the norm-p errors, maximum velocity, discretization parameters and CFL
- subroutine log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label)
+ ! todo: add peclet number and grid peclet number and other needed terms here
+ subroutine log_convergence_results(norm_error,  &
+                                    nrefine,     &
+                                    dx,          &
+                                    dt,          &
+                                    max_velocity,&
+                                    label,       &
+                                    which_cell,  &
+                                    n_cells)
  use stm_precision
  implicit none
 
  integer, intent(in) :: nrefine
+ integer, intent(in) :: which_cell
+ integer, intent(in) :: n_cells
  real(stm_real),  intent(in) :: norm_error(3,nrefine)
  real(stm_real),  intent(in) :: dx
  real(stm_real),  intent(in) :: dt
  real(stm_real),  intent(in) :: max_velocity
  character(LEN=*),intent(in) :: label
+ ! local
+ integer :: icell
 
  print *, '========'
  print *, label
- print *,'L-inf convergence ratio : ', norm_error(3,2)/norm_error(3,1)
- print *,'L-2 convergence ratio : ',norm_error(2,2)/norm_error(2,1)
- print *,'L-1 convergence ratio : ',norm_error(1,2)/norm_error(1,1)
+ print *, 'L-inf convergence ratio : ', norm_error(3,2)/norm_error(3,1)
+ print *, 'L-2 convergence ratio : ',norm_error(2,2)/norm_error(2,1)
+ print *, 'L-1 convergence ratio : ',norm_error(1,2)/norm_error(1,1)
+ print *, 'Maximum error occurs in cell : ', which_cell , 'ncell : ' , n_cells/2**(nrefine-1)
  print *, 'dt:',dt,'dx:',dx
  print *, ' CFL = ', max_velocity*dt/dx, 'Max_Velocity', max_velocity 
  print *, 'Error norms '//label//' : '
- print *, norm_error
+ do icell=1,nrefine
+     print *, 'ncell :',  n_cells/2**(icell-1)
+     print *, norm_error(:,icell)
+ end do
  print *, '========'
 
  open (unit = 3, file= label//'_error_log.txt', status='unknown')
      
  write (3,*)"Log of connvergence test "// label,':' 
  write (3,*)
+ write (3,*)'Number of fine cells' , n_cells, ' L_inf occurs at cell :', which_cell
  write (3,*)'L-inf convergence ratio : ',norm_error(3,2)/norm_error(3,1),norm_error(3,3)/norm_error(3,2)
  write (3,*)'L-2 convergence ratio : ',norm_error(2,2)/norm_error(2,1),norm_error(2,3)/norm_error(2,2)
  write (3,*)'L-1 convergence ratio : ',norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2)
