@@ -78,6 +78,7 @@ integer :: icoarse
 integer :: nstep
 integer :: nx
 integer :: coarsening
+integer :: which_cell
 logical, parameter :: limit_slope = .false.
 real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
@@ -257,6 +258,7 @@ do icoarse = 1,nrefine
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
+                    which_cell,            &
                     conc(:,1),reference(:,1),nx,dx)
 !todo remove
 !if (nx == 256) then
@@ -278,7 +280,7 @@ call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order conver
 call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
 
 if (verbose == .true.) then
-   call log_convergence_results(norm_error,nrefine,dx,dt,const_velocity,label)
+   call log_convergence_results(norm_error,nrefine,dx,dt,const_velocity,label,which_cell,nx_base)
    print *, "Grid Peclet Number : " , const_disp_coef *dt/dx/dx
    print *, "Peclet number L=dx : " , dx*const_velocity/const_disp_coef
 end if

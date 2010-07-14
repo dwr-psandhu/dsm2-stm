@@ -25,7 +25,11 @@ module grid_refinement
 contains
 
 !> Coarsen a solution at a fine level of resolution
-subroutine coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
+subroutine coarsen(coarse_data, &
+                   fine_data,   &
+                   ncell_fine,  &
+                   ncell_coarse,&
+                   nvar)
 
 use stm_precision
 use error_handling
@@ -65,6 +69,6 @@ else
 end if
 
 return
-end subroutine coarsen
+end subroutine 
 
 end module 

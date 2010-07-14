@@ -73,6 +73,7 @@ real(stm_real) :: time
 real(stm_real), allocatable :: xposition(:)
 
 integer :: itime
+integer :: which_cell
 integer :: icell ! debug only -- remove later
 !------
 integer, parameter :: coarsen_factor = 2      ! coarsening factor used for convergence test
@@ -154,6 +155,7 @@ do icoarse = 1,nrefine
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
+                    which_cell,            &
                     conc(:,2),reference,ncell,dx)
 
     deallocate(reference)
