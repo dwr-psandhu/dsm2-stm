@@ -52,5 +52,6 @@
 		<File RelativePath="..\..\..\test\transport\test_matrix_solver.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_increment_to_cons.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_reaction.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_transport_driver.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>

@@ -46,7 +46,7 @@ real(stm_real), intent(out) :: norm_inf          !< L-inf error norm
 
 real(stm_real), intent(in) :: vals(ncell)        !< Calculated values
 real(stm_real), intent(in) :: reference(ncell)   !< Reference or 'other' values
-real(stm_real), intent(in) :: dx                 !< Spatial step !todo: do we use this????
+real(stm_real), optional   :: dx                 !< Spatial step !todo: do we use this????
 
 !------ locals                                    
 integer :: icell                                
