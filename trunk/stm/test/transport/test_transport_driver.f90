@@ -46,6 +46,7 @@ use test_diffusion_convergence_boundaries_dirichlet
 use test_linear_decay_no_flow
 use test_advect_diffuse_react
 use test_linear_decay_const_flow
+use test_liner_reaction
 
 implicit none
 logical :: verbose = .true.
@@ -76,7 +77,7 @@ call test_diffusion_convergence_single_channel
 call  test_linear_decay_convergence(verbose)
 call  test_advection_decay_convergence(verbose)
 call  test_advect_diffuse_reaction(verbose)
-
+call  test_reaction_decay_convergence(verbose)
   
 call fruit_summary
 pause

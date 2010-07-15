@@ -39,6 +39,7 @@ subroutine test_linear_decay_convergence(verbose)
 use test_single_channel_advection
 use hydro_data
 use source_sink
+use error_metric
 
 implicit none
 procedure(hydro_data_if),pointer :: no_flow_hydro

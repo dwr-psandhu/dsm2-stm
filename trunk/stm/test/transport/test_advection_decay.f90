@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Test of mass transport convergence in uniform flow
+!> Test of decay of mass convergence in uniform flow
 !>@ingroup test
 module test_linear_decay_const_flow
 
@@ -26,8 +26,10 @@ use stm_precision
 
 integer, parameter  :: nstep_base = 256
 integer, parameter  :: nx_base = 512
+integer, parameter  :: nconc = 2
 real(stm_real), parameter :: total_time = 640.D0
 real(stm_real), parameter :: decay_rate = 0.002d0
+
 ! exp(0.001*640) =0.527
 
 contains
@@ -42,9 +44,6 @@ use boundary_advection_module
 implicit none
 procedure(hydro_data_if),pointer :: uniform_hydro
 
-integer, parameter  :: nstep_base = 128 
-integer, parameter  :: nx_base = 512
-integer, parameter  :: nconc = 2
 logical  :: verbose
 
 real(stm_real)   ,parameter :: domain_length = 51200.d0
