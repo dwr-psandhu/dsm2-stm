@@ -63,9 +63,9 @@ real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent di
 
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
-real(stm_real), parameter :: ic_center      = two*fourth*domain_length
-real(stm_real), parameter :: ic_gaussian_sd = domain_length/eight
-real(stm_real), parameter :: ic_peak = two
+! todo: remove? real(stm_real), parameter :: ic_center      = two*fourth*domain_length
+!               real(stm_real), parameter :: ic_gaussian_sd = domain_length/eight
+!               real(stm_real), parameter :: ic_peak = two
 real(stm_real), parameter :: constant_area = 100.0d0
 real(stm_real), parameter :: start_time = 256.d0     !< Initial condition depends on this
 real(stm_real), parameter :: end_time = start_time + total_time
@@ -176,16 +176,16 @@ call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order conv
 
 !todo: remove priints
 !
-!print *,norm_error(1,3)/norm_error(1,2)
-!print *,norm_error(2,3)/norm_error(2,2)
-!print *,norm_error(3,3)/norm_error(3,2)
-!
-!print *,norm_error(1,2)/norm_error(1,1)
-!print *,norm_error(2,2)/norm_error(2,1)
-!print *,norm_error(3,2)/norm_error(3,1)
-!
-!print *, norm_error
-!pause
+print *,norm_error(1,3)/norm_error(1,2)
+print *,norm_error(2,3)/norm_error(2,2)
+print *,norm_error(3,3)/norm_error(3,2)
+
+print *,norm_error(1,2)/norm_error(1,1)
+print *,norm_error(2,2)/norm_error(2,1)
+print *,norm_error(3,2)/norm_error(3,1)
+
+print *, norm_error
+pause
 
 
 return
