@@ -24,22 +24,22 @@ module test_advect_diffuse_react
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 64
-integer, parameter  :: nx_base = 1024
+integer, parameter  :: nstep_base = 1024*4
+integer, parameter  :: nx_base = 2048
 integer, parameter  :: nconc = 2
-real(stm_real), parameter :: start_time = 1024.0d0 ! sec
-real(stm_real), parameter :: total_time = 1024.0d0 ! sec
+real(stm_real), parameter :: start_time = 4096.0d0 ! sec
+real(stm_real), parameter :: total_time = 4096.0d0 ! sec
 ! todo:  since the bc is set to be zero flux, total_time and other parameters should be set 
 ! in the way solution does not reach the edges of channel.
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 500.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 0.2d0 !todo: is it in a correct range? 
-real(stm_real), parameter :: const_velocity = 0.0d0 ! m/s
-real(stm_real), parameter :: decay_rate = 0.005d0 ! todo:?
-real(stm_real), parameter :: ic_center = domain_length/(two + half)
-real(stm_real), parameter :: ic_stand_dev = domain_length/(two*four*four)
+real(stm_real), parameter :: const_disp_coef = 1.2d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_velocity = two ! m/s
+real(stm_real), parameter :: decay_rate = 0.0005d0 ! todo:?
+real(stm_real), parameter :: ic_center = domain_length/(four)
 real(stm_real), parameter :: ic_peak = one
+real(stm_real) :: end_time = start_time + total_time
 
 contains
 
@@ -61,13 +61,13 @@ use state_variables
 
 implicit none
 
-procedure(hydro_data_if),                pointer:: hydro_adr                 !< This pointer, points to uniform flow data
-
+procedure(hydro_data_if),pointer:: hydro_adr                    !< This pointer, points to uniform flow data
 character(LEN=64) :: label                                      !< unique label for test
 logical :: verbose                                              !< whether to output convergence results
+
 real(stm_real) :: fine_initial_conc(nx_base,nconc)              !< initial condition f concentration at finest resolution
 real(stm_real) :: fine_initial_mass(nx_base,nconc)              !< initial condition of mass at finest resolution
-real(stm_real) :: fine_solution(nx_base,nconc)                  !< reference solution at finest resolution
+real(stm_real) :: fine_solution_conc(nx_base,nconc)             !< reference solution at finest resolution
 
 !---local
 integer, parameter :: nrefine = 3
@@ -79,11 +79,12 @@ integer :: nstep
 integer :: nx
 integer :: coarsening
 integer :: which_cell
-logical, parameter :: limit_slope = .false.
+logical, parameter :: limit_slope = .true.
+
 real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
-real(stm_real), allocatable :: velocity (:)
+!todo: is it needed? real(stm_real), allocatable :: velocity (:)
 real(stm_real), allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real), allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
 real(stm_real), allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
@@ -92,24 +93,45 @@ real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
 real(stm_real) :: time
 real(stm_real) :: norm_error(3,nrefine)
-real(stm_real) :: theta = half   
+real(stm_real) :: theta = half  
 
-boundary_diffusion_impose  => neumann_diffusion_matrix
-boundary_diffusion_flux    => neumann_no_flow_diffusive_flux
-replace_boundary_flux      => neumann_advective_flux
-hydro_adr                  => uniform_flow_adr
-compute_source             => adr_linear_decay
+boundary_diffusion_impose  => neumann_diffusion_matrix 
+boundary_diffusion_flux    => neumann_no_flow_diffusive_flux 
+replace_boundary_flux      => neumann_advective_flux 
+hydro_adr                  => uniform_flow_adr  
+compute_source             => adr_linear_decay 
 !------
 label = 'ADR uniform flow, const A & Ks'
 
-call initial_final_solution(fine_initial_conc,fine_solution,ic_center,ic_stand_dev,ic_peak,const_velocity,decay_rate,total_time,origin,domain_length,nx_base,nconc)
+call initial_final_solution(fine_initial_conc,     &
+                            fine_solution_conc,    &
+                            ic_center,             &
+                            ic_peak,               &
+                            const_velocity,        &
+                            decay_rate,            &
+                            total_time,            &
+                            origin,                &
+                            domain_length,         &
+                            nx_base,               &
+                            nconc)
 
+open (unit = 11, file= label//'_fine_solution.txt', status='unknown')
+
+write (11,*) 'v',const_velocity, 'dx' ,domain_length/nx_base
+do icell = 1,nx_base
+  write (11,*) icell, fine_initial_conc(icell,2)
+end do
+write (11,*) 
+do icell = 1,nx_base
+  write (11,*) icell, fine_solution_conc(icell,2)
+end do
+
+close (11)
 !do icell=1,nx_base
 !print *, fine_initial_conc(icell,1)
 !print *,fine_solution(icell,1)
 !end do
 !pause
-
 !================================
 !todo
 !do icell=1,nx_base
@@ -178,9 +200,7 @@ do icoarse = 1,nrefine
         
     call coarsen(mass,fine_initial_mass,nx_base,nx, nconc)
     mass_prev = mass
-    call cons2prim(conc,mass,area,nx,nconc)
-    conc_prev = conc
-      
+    
     do itime = 1,nstep
        time = time + dt
        call hydro_adr(flow,&
@@ -243,15 +263,15 @@ do icoarse = 1,nrefine
     
  !  call printout
 
-   call coarsen(reference,fine_solution,nx_base,nx,nvar)
+   call coarsen(reference,fine_solution_conc,nx_base,nx,nvar)
 
        
     !todo :remove
 !    if (nx_base==nx) then
-!    print *, maxval(fine_solution - conc)
+!    print *, maxval(fine_solution_conc - conc)
 !    print *, maxval(conc)
 !    print *, minval(conc)
-!    print *, maxval(fine_solution)
+!    print *, maxval(fine_solution_conc)
 !    pause
 !    end if
 
@@ -283,23 +303,35 @@ if (verbose == .true.) then
    call log_convergence_results(norm_error,nrefine,dx,dt,const_velocity,label,which_cell,nx_base)
    print *, "Grid Peclet Number : " , const_disp_coef *dt/dx/dx
    print *, "Peclet number L=dx : " , dx*const_velocity/const_disp_coef
+   print *, "maximum error in : ", which_cell
+   print *, "decay rate is : " , decay_rate
+   print *, 'flux_limiter :' , limit_slope
 end if
 
 return
 end subroutine 
 !===========
 !> produce fine initial condition and reference solution 
-subroutine initial_final_solution(fine_initial_conc,fine_solution,ic_center,ic_stand_dev,ic_peak,const_velocity,decay_rate,total_time,origin,domain_length,nx_base,nconc)
-
+subroutine initial_final_solution(fine_initial_conc,     &
+                                  fine_solution_conc,    &
+                                  ic_center,             &
+                                  ic_peak,               &
+                                  const_velocity,        &
+                                  decay_rate,            &
+                                  total_time,            &
+                                  origin,                &
+                                  domain_length,         &
+                                  nx_base,               &
+                                  nconc)
+                                  
 use example_initial_conditions
 
 implicit none
 integer, intent(in) :: nx_base
 integer, intent(in) :: nconc
 real(stm_real),intent(out) :: fine_initial_conc(nx_base,nconc)              !< initial condition at finest resolution
-real(stm_real),intent(out) :: fine_solution(nx_base,nconc)                  !< reference solution at finest resolution
+real(stm_real),intent(out) :: fine_solution_conc(nx_base,nconc)                  !< reference solution at finest resolution
 real(stm_real),intent(in)  :: ic_center
-real(stm_real),intent(in)  :: ic_stand_dev
 real(stm_real),intent(in)  :: ic_peak
 real(stm_real),intent(in)  :: const_velocity
 real(stm_real),intent(in)  :: decay_rate
@@ -316,18 +348,17 @@ real(stm_real) :: dx
 
 dx = domain_length/nx_base
 
-final_peak = ic_peak 
 final_center = ic_center  + const_velocity * total_time
-final_stand_dev = ic_stand_dev * (total_time + start_time)/start_time
 
-do ivar = 1,nconc
-    call fill_gaussian(fine_initial_conc(1,ivar),nx_base,origin,dx,ic_center,ic_stand_dev,ic_peak)
-    call fill_gaussian(fine_solution(1,ivar),nx_base,origin,dx,final_center,ic_stand_dev,final_peak)
-end do
 
-fine_initial_conc(2,:) = fine_initial_conc(1,:) 
-fine_solution(2,:)     = fine_solution(1,:)
-fine_solution = fine_solution * exp(-decay_rate*total_time)
+call fill_gaussian(fine_initial_conc(:,1),nx_base,origin,dx,ic_center,sqrt(two*const_disp_coef*start_time),ic_peak)
+
+call fill_gaussian(fine_solution_conc(:,1),nx_base,origin,dx,final_center,sqrt(two*const_disp_coef*end_time),ic_peak*sqrt(start_time/end_time))
+
+fine_initial_conc(:,2) = fine_initial_conc(:,1) 
+fine_solution_conc(:,2)= fine_solution_conc(:,1)
+
+fine_solution_conc = fine_solution_conc * exp(-decay_rate*total_time)
 
 return
 end subroutine
@@ -392,9 +423,10 @@ real(stm_real) :: mass (ncell,nvar)
 
 ! source must be in primitive variable 
 call prim2cons(mass,conc,area,ncell,nvar)
+
 source(:,1) = -decay_rate*mass(:,1)
 source(:,2) = -decay_rate*mass(:,2) 
- 
+
 return
 end subroutine 
 

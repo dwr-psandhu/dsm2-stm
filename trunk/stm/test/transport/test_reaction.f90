@@ -113,12 +113,10 @@ if (verbose == .true.) then
     print *,'test reaction linear decay'
     print *,norm_error
 end if
-pause
  
 call assert_true(norm_error(1,2)/norm_error(1,1) > eight,"L-1 second order convergence on " // trim(label))
 call assert_true(norm_error(2,2)/norm_error(2,1) > eight, "L-2 second order convergence on " // trim(label))
 call assert_true(norm_error(3,2)/norm_error(3,1) > eight,"L-inf second order convergence on " // trim(label))
- 
                                    
 end subroutine
 
@@ -147,7 +145,6 @@ real(stm_real),intent(in)  :: time                !< time
 real(stm_real) :: mass (ncell,nvar)
 
 ! source must be in primitive variable 
-
 source = -decay_coef*conc
   
 return

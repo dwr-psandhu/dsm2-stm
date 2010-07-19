@@ -178,6 +178,7 @@ module boundary_diffusion
      diffusive_flux_lo(1,:) = zero
      diffusive_flux_hi(ncell,:) = zero
      
+        
     return
  end subroutine
  
@@ -340,22 +341,22 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
  !> Example diffusive flux that imposes Neumann boundaries with zero flux at
  !> both ends of the channel.
  !todo: make sure this is generic for all neumann bc
- subroutine neumann_diffusion_matrix( center_diag ,       &
-                                      up_diag,            &     
-                                      down_diag,          &
-                                      right_hand_side,    & 
-                                      explicit_diffuse_op,&
-                                      area,               &
-                                      area_lo,            &
-                                      area_hi,            &          
-                                      disp_coef_lo,       &
-                                      disp_coef_hi,       &
-                                      theta_stm,          &
-                                      ncell,              &
-                                      time,               & 
-                                      nvar,               & 
-                                      dx,                 &
-                                      dt)
+ subroutine neumann_diffusion_matrix(center_diag ,       &
+                                     up_diag,            &     
+                                     down_diag,          &
+                                     right_hand_side,    & 
+                                     explicit_diffuse_op,&
+                                     area,               &
+                                     area_lo,            &
+                                     area_hi,            &          
+                                     disp_coef_lo,       &
+                                     disp_coef_hi,       &
+                                     theta_stm,          &
+                                     ncell,              &
+                                     time,               & 
+                                     nvar,               & 
+                                     dx,                 &
+                                     dt)
      use stm_precision
      implicit none
          !--- args
@@ -377,7 +378,6 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
         real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
         real(stm_real), intent (in)  :: dx                                          !< Spatial step  
         real(stm_real), intent (in)  :: dt                                          !< Time step     
-      
         !---local
         real(stm_real) :: d_star 
         d_star = dt/(dx*dx)  
@@ -386,8 +386,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
           
      center_diag(1,:)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,:))
      center_diag(ncell,:)= area(ncell) + theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,:))
-     
-     ! todo: implement and test
+        
      return
  end subroutine
  
@@ -445,7 +444,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
     flux_start(:) = -area_lo(1)*disp_coef_lo(1,:)*(two-two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*time/four)) 
     flux_end(:) = - area_hi(ncell)*disp_coef_hi(ncell,:)*(two-two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*time/four)) 
      
-         center_diag(1,:)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,:)) 
+     center_diag(1,:)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,:)) 
      right_hand_side(1,:) = right_hand_side(1,:)&
                                 + theta_stm*(dt/dx)*flux_start(:)
        
