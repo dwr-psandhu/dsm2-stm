@@ -115,9 +115,8 @@ if (verbose == .true.) then
 end if
 pause
  
-! todo: 3rd order? 8 is OK?
 call assert_true(norm_error(1,2)/norm_error(1,1) > eight,"L-1 second order convergence on " // trim(label))
-call assert_true(norm_error(2,2)/norm_error(2,1) > nine, "L-2 second order convergence on " // trim(label))
+call assert_true(norm_error(2,2)/norm_error(2,1) > eight, "L-2 second order convergence on " // trim(label))
 call assert_true(norm_error(3,2)/norm_error(3,1) > eight,"L-inf second order convergence on " // trim(label))
  
                                    
