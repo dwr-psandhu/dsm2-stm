@@ -85,7 +85,7 @@ module state_variables
     !> Allocate the state variables consistently
     !> including concentration and hydrodynamics.
     !> Initial value is LARGEREAL
-    subroutine allocate_state(a_ncell, a_nvar)
+    subroutine allocate_state(a_ncell,a_nvar)
         use error_handling
         implicit none
         character(LEN=128) :: message
