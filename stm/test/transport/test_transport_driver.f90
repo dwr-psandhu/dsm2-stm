@@ -49,38 +49,42 @@ use test_linear_decay_const_flow
 use test_liner_reaction
 
 implicit none
-logical :: verbose = .true.
+logical :: verbose_a = .false.
+logical :: verbose_r = .false.
+logical :: verbose_d = .true.
 
 call init_fruit
+!//////// Advection routines
+call test_gradient_calc
+call test_limiter
+call test_prim_cons_convert
+call test_prim_increment2cons
+call test_example_initial_conditions
+call test_extrapolation
 
-call  test_advect_diffuse_reaction(verbose)
-
-!!/////// Advection
-!call test_gradient_calc
-!call test_limiter
-!call test_prim_cons_convert
-!call test_prim_increment2cons
-!call test_example_initial_conditions
-!call test_extrapolation
-!call test_tidal_advection_convergence(verbose)
-!call test_uniform_advection_convergence(verbose)
-!!    
-!!!/////// Diffusion
-!call test_tridi_solver
-!call test_boundary_diffusion_flux
-!call test_make_dif_flux_sub
-!call test_explicit_interior_diffusion_op
-!call test_interior_coef_matrix_sub
-!call test_construct_elemnts_rhs 
-!call test_coarsen
-!call test_diffusion_dirichlet
-!call test_diffusion_neumann
-!call test_diffusion_convergence_single_channel
-!!!////// reaction
-!call  test_linear_decay_convergence(verbose)
-!call  test_advection_decay_convergence(verbose)
-!call  test_reaction_decay_convergence(verbose)
+!///////// advection
+call test_tidal_advection_convergence(verbose_a)
+call test_uniform_advection_convergence(verbose_a)
   
+!!/////// Diffusion routine
+call test_tridi_solver
+call test_boundary_diffusion_flux
+call test_make_dif_flux_sub
+call test_explicit_interior_diffusion_op
+call test_interior_coef_matrix_sub
+call test_construct_elemnts_rhs 
+call test_coarsen
+!////// diffusion
+call test_diffusion_convergence_single_channel(verbose_d)
+call test_diffusion_dirichlet(verbose_d)
+call test_diffusion_neumann(verbose_d)
+!////// reaction
+call  test_linear_decay_convergence(verbose_r)
+call  test_advection_decay_convergence(verbose_r)
+call  test_reaction_decay_convergence(verbose_r)
+  
+!call  test_advect_diffuse_reaction(verbose)
+!//////// 
 call fruit_summary
 pause
 

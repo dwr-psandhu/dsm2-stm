@@ -56,7 +56,7 @@ real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
 real(stm_real) :: ic_center = domain_length/two          !< Center of initial condition
 real(stm_real) :: solution_center = domain_length/two    !< Center of final solution 
-real(stm_real) :: ic_gaussian_sd = domain_length/64.d0 !< Standard deviation of initial values 
+real(stm_real) :: ic_gaussian_sd = domain_length/64.d0   !< Standard deviation of initial values 
 real(stm_real) :: solution_gaussian_sd = domain_length/64.d0 !< Standard deviation of final values
 
 character(LEN=*),parameter :: label = "tidal flow"      

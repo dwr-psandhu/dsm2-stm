@@ -214,6 +214,10 @@ call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order conver
 call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on " // trim(label))
 call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
 
+call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergence on " // trim(label))
+call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on " // trim(label))
+call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on " // trim(label))
+
 if (verbose == .true.) then
    call log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label,which_cell,nx_base)
 end if

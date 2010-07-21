@@ -110,7 +110,11 @@ end do
 
 if (verbose == .true.) then
     print *,'==========='
-    print *,'test reaction linear decay'
+    print *,'test reaction linear decay -RK3'
+    print *, ' L1 : ',norm_error(1,2)/norm_error(1,1)
+    print *, ' L2 : ',norm_error(2,2)/norm_error(2,1)
+    print *, ' Linf : ',norm_error(3,2)/norm_error(3,1)
+    print *, " Norms : "
     print *,norm_error
 end if
  

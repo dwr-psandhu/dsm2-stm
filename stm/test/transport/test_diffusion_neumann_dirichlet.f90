@@ -27,7 +27,7 @@ module test_diffusion_convergence_boundaries
 contains
 
 !> Subroutine that checks the error convergence ratio for diffusion routine 
-subroutine test_diffusion_neumann
+subroutine test_diffusion_neumann(verbose)
 
 use stm_precision
 use state_variables
@@ -44,8 +44,8 @@ implicit none
 
 !--- Problem variables
 
-integer, parameter  :: nstep_base = 2048
-integer, parameter  :: nx_base = 64
+integer, parameter  :: nstep_base = 16*5
+integer, parameter  :: nx_base = 64*5
 
 integer :: icoarse = 0
 integer :: nstep
@@ -55,13 +55,13 @@ integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 0.9d0
 real(stm_real), parameter :: origin = 0.1d0   
 real(stm_real), parameter :: total_time    = one
-real(stm_real), parameter :: disp_coef     = seven
+real(stm_real), parameter :: disp_coef     = 0.1d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
 real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent dispersion coef. at old time
-
+logical, optional :: verbose
 
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
@@ -172,18 +172,23 @@ call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order conver
 call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on diffusion N_D")
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion N_D")
 
-!!todo: remove priints
-!
-!print *,norm_error(1,3)/norm_error(1,2)
-!print *,norm_error(2,3)/norm_error(2,2)
-!print *,norm_error(3,3)/norm_error(3,2)
-!
-!print *,norm_error(1,2)/norm_error(1,1)
-!print *,norm_error(2,2)/norm_error(2,1)
-!print *,norm_error(3,2)/norm_error(3,1)
-!
-!print *, norm_error
-!!pause
+if (verbose == .true.) then
+
+    dx = domain_length/nx_base
+    dt = total_time/nstep_base
+    print *, '======='
+    print *,"Test diffusion nuemann"
+    print *,'Mesh Peclet',disp_coef*dt/dx/dx, "dx :",dx,"dt :",dt 
+    print *, "nx:", nx_base, "nt:", nstep_base, "D:" ,disp_coef
+    print *,"L1 rate: ", norm_error(1,3)/norm_error(1,2)
+    print *,"L2 rate: ", norm_error(2,3)/norm_error(2,2)
+    print *,"Linf rate", norm_error(3,3)/norm_error(3,2)
+    print *,"L1 rate: ", norm_error(1,2)/norm_error(1,1)
+    print *,"L2 rate: ",norm_error(2,2)/norm_error(2,1)
+    print *,"Linf rate",norm_error(3,2)/norm_error(3,1)
+    print *, ' norms :' 
+    print *, norm_error
+end if
 
 
 return

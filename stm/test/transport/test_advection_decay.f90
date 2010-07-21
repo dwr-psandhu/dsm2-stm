@@ -78,16 +78,16 @@ call initial_fine_solution_uniform(fine_initial_condition, &
                                    
 fine_solution = fine_solution* exp(- total_time*decay_rate)
 
-call test_advection_convergence(label,       &
-                     uniform_hydro,          &
-                     domain_length,          &
-                     total_time,             &
-                     fine_initial_condition, &
-                     fine_solution,          &            
-                     nstep_base,             &
-                     nx_base,                &
-                     nconc,                  &
-                     verbose)
+call test_advection_convergence(label,                   &
+                                 uniform_hydro,          &
+                                 domain_length,          &
+                                 total_time,             &
+                                 fine_initial_condition, &
+                                 fine_solution,          &            
+                                 nstep_base,             &
+                                 nx_base,                &
+                                 nconc,                  &
+                                 verbose)
 
 end subroutine
 !=========================
