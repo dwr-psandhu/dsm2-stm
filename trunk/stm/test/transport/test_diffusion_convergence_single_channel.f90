@@ -25,7 +25,7 @@ module test_diffusion_single_channel
 contains
 
 !> Subroutine that checks the error convergence ratio for diffusion routine 
-subroutine test_diffusion_convergence_single_channel
+subroutine test_diffusion_convergence_single_channel(verbose)
 
 use stm_precision
 use state_variables
@@ -42,8 +42,8 @@ implicit none
 
 !--- Problem variables
 
-integer, parameter  :: nstep_base = 16
-integer, parameter  :: nx_base = 256
+integer, parameter  :: nstep_base = 8*16*16
+integer, parameter  :: nx_base = 8*10*8
 
 integer :: icoarse = 0
 integer :: nstep
@@ -52,14 +52,14 @@ integer :: nx
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 51200.d0
 real(stm_real), parameter :: origin = zero   
-real(stm_real), parameter :: total_time    = 2048.d0*eight
-real(stm_real), parameter :: disp_coef     = 1024.d0
+real(stm_real), parameter :: total_time    = 4096.d0*four
+real(stm_real), parameter :: disp_coef     = 10.2d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
 real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent dispersion coef. at old time
-
+logical, optional :: verbose
 
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
@@ -110,8 +110,7 @@ do icoarse = 1,nrefine
     ! discretization parameters
     dx = domain_length/dble(nx)
     dt = total_time/dble(nstep)
-    
-   ! print *,'D*dt/dx^2 = ', disp_coef*dt/dx/dx
+   
     
     allocate(xposition(nx))
     do icell = 1,nx
@@ -125,6 +124,11 @@ do icoarse = 1,nrefine
     allocate(reference(ncell))  ! reference solution
     call fill_gaussian(reference,nx,origin,dx,half*domain_length, &
                        sqrt(two*disp_coef*end_time),sqrt(start_time/end_time))
+
+print *,reference(3),reference(nx-3)
+print *,reference
+pause
+
 
     time = zero
      
@@ -174,19 +178,28 @@ call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order conver
 call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on diffusion")
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion")
 
-!todo: remove priints
-!
-print *,norm_error(1,3)/norm_error(1,2)
-print *,norm_error(2,3)/norm_error(2,2)
-print *,norm_error(3,3)/norm_error(3,2)
 
-print *,norm_error(1,2)/norm_error(1,1)
-print *,norm_error(2,2)/norm_error(2,1)
-print *,norm_error(3,2)/norm_error(3,1)
 
-print *, norm_error
-pause
 
+if (verbose == .true.) then
+
+    dx = domain_length/nx_base
+    dt = total_time/nstep_base
+
+    print *, '======='
+    print *,"Test diffusion single channel"
+    print *,'Mesh Peclet',disp_coef*dt/dx/dx, "dx :",dx,"dt :",dt 
+    print *, "nx :",nx_base,"nt :",nstep_base, "D: ", disp_coef
+    print *,"L1 rate: ", norm_error(1,3)/norm_error(1,2)
+    print *,"L2 rate: ", norm_error(2,3)/norm_error(2,2)
+    print *,"Linf rate", norm_error(3,3)/norm_error(3,2)
+    print *,"L1 rate: ", norm_error(1,2)/norm_error(1,1)
+    print *,"L2 rate: ", norm_error(2,2)/norm_error(2,1)
+    print *,"Linf rate", norm_error(3,2)/norm_error(3,1)
+    print *, ' norms :' 
+    print *, norm_error
+    
+end if
 
 return
 end subroutine

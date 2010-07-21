@@ -24,9 +24,9 @@ module test_uniform_flow
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 40
-integer, parameter  :: nx_base = 256
-real(stm_real), parameter :: total_time = 6400.D0
+integer, parameter  :: nstep_base = 32*5
+integer, parameter  :: nx_base = 256*5
+real(stm_real), parameter :: total_time = 6400.d0
 
 contains
 !> Subroutine that runs a small advective simulation
@@ -39,8 +39,6 @@ use source_sink
 implicit none
 procedure(hydro_data_if),pointer :: uniform_hydro
 
-integer, parameter  :: nstep_base = 40 
-integer, parameter  :: nx_base = 256
 integer, parameter  :: nconc = 2
 logical  :: verbose
 
@@ -73,16 +71,16 @@ call initial_fine_solution_uniform(fine_initial_condition, &
                                    solution_center)
 
 
-call test_advection_convergence(label,                  &
-                     uniform_hydro,          &
-                     domain_length,          &
-                     total_time,             &
-                     fine_initial_condition, &
-                     fine_solution,          &            
-                     nstep_base,             &
-                     nx_base,                &
-                     nconc,                  &
-                     verbose)
+call test_advection_convergence(label,                 &
+                               uniform_hydro,          &
+                               domain_length,          &
+                               total_time,             &
+                               fine_initial_condition, &
+                               fine_solution,          &            
+                               nstep_base,             &
+                               nx_base,                &
+                               nconc,                  &
+                               verbose)
 
 end subroutine
 !=========================
