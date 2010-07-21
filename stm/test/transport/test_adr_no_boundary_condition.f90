@@ -24,8 +24,8 @@ module test_advect_diffuse_react
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 1024*4
-integer, parameter  :: nx_base = 2048
+integer, parameter  :: nstep_base = 4096
+integer, parameter  :: nx_base = 512
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: start_time = 4096.0d0 ! sec
 real(stm_real), parameter :: total_time = 4096.0d0 ! sec
@@ -35,8 +35,8 @@ real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 500.0d0 ! m^2
 real(stm_real), parameter :: const_disp_coef = 1.2d0 !todo: is it in a correct range? 
-real(stm_real), parameter :: const_velocity = two ! m/s
-real(stm_real), parameter :: decay_rate = 0.0005d0 ! todo:?
+real(stm_real), parameter :: const_velocity = zero ! m/s
+real(stm_real), parameter :: decay_rate = 0.0000d0 ! todo:?
 real(stm_real), parameter :: ic_center = domain_length/(four)
 real(stm_real), parameter :: ic_peak = one
 real(stm_real) :: end_time = start_time + total_time
@@ -79,7 +79,7 @@ integer :: nstep
 integer :: nx
 integer :: coarsening
 integer :: which_cell
-logical, parameter :: limit_slope = .true.
+logical, parameter :: limit_slope = .false.
 
 real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
@@ -127,27 +127,6 @@ do icell = 1,nx_base
 end do
 
 close (11)
-!do icell=1,nx_base
-!print *, fine_initial_conc(icell,1)
-!print *,fine_solution(icell,1)
-!end do
-!pause
-!================================
-!todo
-!do icell=1,nx_base
-!print *,icell,' : ', fine_initial_conc(icell,1)
-!end do 
-!print*, '================'
-!do icell=1,nx_base
-!print *,icell,' : ', fine_solution(icell,2)
-!end do
-!!
-!print *, maxloc(fine_initial_conc(:,1))
-!print *, maxloc(fine_solution(:,1))
-!print *, fine_initial_conc(nx_base-2,1),fine_initial_conc(2,1)
-!print *, fine_solution(nx_base-2,1),fine_solution(2,1)
-!pause
-!!================================
 
 do icoarse = 1,nrefine
 
@@ -161,37 +140,39 @@ do icoarse = 1,nrefine
     area_hi_prev = const_area
     area_lo = const_area
     area_hi = const_area
+
     allocate(disp_coef_lo(nx,nconc),disp_coef_hi(nx,nconc), &
              disp_coef_lo_prev(nx,nconc),disp_coef_hi_prev(nx,nconc))
-    allocate(reference(nx,nconc))
-    allocate(x_center(nx))
     disp_coef_lo = const_disp_coef
     disp_coef_hi = const_disp_coef
     disp_coef_lo_prev = const_disp_coef
     disp_coef_hi_prev = const_disp_coef
+
+    allocate(reference(nx,nconc))
+    call coarsen(reference,fine_solution_conc,nx_base,nx,nvar)
+
+    allocate(x_center(nx))
+    do icell = 1,nx
+        x_center(icell) = dx*(dble(icell)-half)+origin
+    end do      
     
     ! discretization parameters
     dx = domain_length/dble(nx)
     dt = total_time/dble(nstep)
-   ! todo:
-   ! print *,'D*dt/dx^2 = ', disp_coef*dt/dx/dx
-   ! todo: we need a satbility check for Advection Diffusion splitting
-   
-    do icell = 1,nx
-        x_center(icell) = dx*(dble(icell)-half)+origin
-    end do      
       
+   ! todo: we need a satbility check for Advection Diffusion splitting
+        
     time = zero
     call hydro_adr(flow,    &
-               flow_lo, &
-               flow_hi, &
-               area,    &
-               area_lo, &
-               area_hi, &
-               nx,      &
-               time,    &
-               dx,      &                  
-               dt)
+                   flow_lo, &
+                   flow_hi, &
+                   area,    &
+                   area_lo, &
+                   area_hi, &
+                   nx,      &
+                   time,    &
+                   dx,      &                  
+                   dt)
     area_prev = area
            
     if (icoarse == 1)then
@@ -203,16 +184,16 @@ do icoarse = 1,nrefine
     
     do itime = 1,nstep
        time = time + dt
-       call hydro_adr(flow,&
-                  flow_lo, &
-                  flow_hi, &
-                  area,    &
-                  area_lo, &
-                  area_hi, &
-                  nx,      &
-                  time,    &
-                  dx,      &                  
-                  dt)
+       call hydro_adr(flow,    &
+                      flow_lo, &
+                      flow_hi, &
+                      area,    &
+                      area_lo, &
+                      area_hi, &
+                      nx,      &
+                      time,    &
+                      dx,      &                  
+                      dt)
    
       ! call transport using linear the callback 
 
@@ -226,7 +207,7 @@ do icoarse = 1,nrefine
                   area_lo,  &
                   area_hi,  &
                   nx,       &
-                  nconc,     &
+                  nconc,    &
                   time,     &
                   dt,       &
                   dx,       &
@@ -259,39 +240,22 @@ do icoarse = 1,nrefine
     call prim2cons(mass,conc,area,nx,nconc)
     mass_prev = mass
     
-    end do ! itime
-    
- !  call printout
+    end do 
+   
+     call error_norm(norm_error(1,icoarse), &
+                     norm_error(2,icoarse), &
+                     norm_error(3,icoarse), &
+                     which_cell,            &
+                     conc(:,1),             &
+                     reference(:,1),        &
+                     nx,                    &
+                     dx)
 
-   call coarsen(reference,fine_solution_conc,nx_base,nx,nvar)
-
-       
-    !todo :remove
-!    if (nx_base==nx) then
-!    print *, maxval(fine_solution_conc - conc)
-!    print *, maxval(conc)
-!    print *, minval(conc)
-!    print *, maxval(fine_solution_conc)
-!    pause
-!    end if
-
-    call error_norm(norm_error(1,icoarse), &
-                    norm_error(2,icoarse), &
-                    norm_error(3,icoarse), &
-                    which_cell,            &
-                    conc(:,1),reference(:,1),nx,dx)
-!todo remove
-!if (nx == 256) then
-!do icell=1,nx
-!print *,icell,conc(icell,1)
-!end do
-!end if
- 
     call deallocate_state
-    deallocate (disp_coef_lo,disp_coef_hi, &
-                disp_coef_lo_prev,disp_coef_hi_prev)
-    deallocate (x_center)
-    deallocate (reference)
+    deallocate(disp_coef_lo,disp_coef_hi, &
+               disp_coef_lo_prev,disp_coef_hi_prev)
+    deallocate(x_center)
+    deallocate(reference)
    
 end do !icoarse
 
