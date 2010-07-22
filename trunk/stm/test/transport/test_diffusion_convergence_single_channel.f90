@@ -42,8 +42,8 @@ implicit none
 
 !--- Problem variables
 
-integer, parameter  :: nstep_base = 8*16*16
-integer, parameter  :: nx_base = 8*10*8
+integer, parameter  :: nstep_base = 256
+integer, parameter  :: nx_base = 5120
 
 integer :: icoarse = 0
 integer :: nstep
@@ -52,8 +52,8 @@ integer :: nx
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 51200.d0
 real(stm_real), parameter :: origin = zero   
-real(stm_real), parameter :: total_time    = 4096.d0*four
-real(stm_real), parameter :: disp_coef     = 10.2d0
+real(stm_real), parameter :: total_time    = 1024.d0
+real(stm_real), parameter :: disp_coef     = 0.1d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
@@ -124,9 +124,18 @@ do icoarse = 1,nrefine
     allocate(reference(ncell))  ! reference solution
     call fill_gaussian(reference,nx,origin,dx,half*domain_length, &
                        sqrt(two*disp_coef*end_time),sqrt(start_time/end_time))
+!todo:
+print *,'num_cell :',nx
+!print *,reference(2),reference(3),reference(4)
+!print *,reference(nx-2),reference(nx-3),reference(nx-4)
 
-print *,reference(3),reference(nx-3)
-print *,reference
+! print *,conc(2,1),conc(3,1),conc(4,1)
+! print *,conc(nx-2,1),conc(nx-3,1),conc(nx-4,1)
+!do icell=1,nx
+!    if ((reference(icell)- eps)>zero )then
+!       print *, icell
+!    end if
+!end do
 pause
 
 

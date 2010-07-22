@@ -48,6 +48,7 @@ end function
 !> This routine expects a 1D array, so multi-constituents
 !> have to be initialized separately
     subroutine fill_gaussian(vals,nloc,origin,dx,mean,sd,scale)
+    !fill_guassian(OUTPUT,num_cell,Left side,dx,Center,sigma,A
     use stm_precision
     implicit none
     integer, intent(in) :: nloc                   !< Number of cells (size of array) 
@@ -63,7 +64,7 @@ end function
     integer        :: iloc
     real(stm_real) :: actual_scale
    
-    if ( present(scale))then
+    if (present(scale))then
         actual_scale = scale*sqrt(two*pi*sd*sd)
     else
         actual_scale = one*sqrt(two*pi*sd*sd)

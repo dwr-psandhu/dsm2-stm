@@ -26,11 +26,10 @@ use stm_precision
 use example_initial_conditions
 
 integer :: istep = 0
-integer, parameter  :: nstep_base = 40
-integer, parameter  :: nx_base = 256
-real(stm_real), parameter :: total_time = 128.d0
-real(stm_real), parameter :: rate_1 = 0.01d0
-real(stm_real), parameter :: rate_2 = 0.01d0
+integer, parameter  :: nstep_base = 4*8*4
+integer, parameter  :: nx_base = 4
+real(stm_real), parameter :: total_time = 2048.d0
+real(stm_real), parameter :: decay_rate = 0.0003d0
 
 contains
 !> Subroutine that runs a decay in the absence of diffusion
@@ -42,55 +41,44 @@ use source_sink
 use error_metric
 
 implicit none
-procedure(hydro_data_if),pointer :: no_flow_hydro
 
-integer, parameter  :: nstep_base = 40 
-integer, parameter  :: nx_base = 256
+procedure(hydro_data_if),pointer :: no_flow_hydro
 integer, parameter  :: nconc = 2
+integer :: icell
+character(LEN=*),parameter :: label = "linear decay no flow"
 logical  :: verbose
 
-real(stm_real),parameter :: domain_length = 51200.d0
-real(stm_real),parameter :: origin =zero
-real(stm_real),parameter :: peak_initial = sixteen
+real(stm_real),parameter :: domain_length = 512.d0
 real(stm_real) :: fine_initial_condition(nx_base,nconc) !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)          !< reference solution at finest resolution
 real(stm_real) :: xposition (nx_base)
-real(stm_real) :: x_start = domain_length/four
-real(stm_real) :: x_end = domain_length*three/four
-real(stm_real) :: other_domain_value = zero
-real(stm_real) :: delta_x = domain_length/nx_base
 
-integer :: icell
-character(LEN=*),parameter :: label = "linear decay no flow"
 
 no_flow_hydro => no_flow
 compute_source => linear_decay_source
 
 !> Subroutine which generates fine initial values and reference values to compare with 
 !> and feed the covvergence test subroutine.
-do icell =1,nx_base
-   xposition(icell)= dble(icell-1)*delta_x + delta_x/two
-end do
-
 
 fine_initial_condition(:,1) = ten
 fine_initial_condition(:,2) = fine_initial_condition(:,1)
 
+fine_solution(:,1) = fine_initial_condition(:,1) *exp(- decay_rate*total_time)
+fine_solution(:,2) = fine_initial_condition(:,2) *exp(- decay_rate*total_time)
 
-fine_solution(:,1) = fine_initial_condition(:,1) *exp(- rate_1*total_time)
-fine_solution(:,2) = fine_initial_condition(:,2) *exp(- rate_2*total_time)
+!todo:
+print *, "Kdt : " , decay_rate*total_time/nstep_base
 
-
-call test_advection_convergence(label,       &
-                     no_flow_hydro,          &
-                     domain_length,          &
-                     total_time,             &
-                     fine_initial_condition, &
-                     fine_solution,          &            
-                     nstep_base,             &
-                     nx_base,                &
-                     nconc,                  &
-                     verbose)
+call test_advection_convergence(label,                  &
+                                no_flow_hydro,          &
+                                domain_length,          &
+                                total_time,             &
+                                fine_initial_condition, &
+                                fine_solution,          &            
+                                nstep_base,             &
+                                nx_base,                &
+                                nconc,                  &
+                                verbose)
 
 end subroutine
 !=========================
@@ -162,8 +150,8 @@ real(stm_real) :: mass (ncell,nvar)
 
 ! source must be in primitive variable 
 call prim2cons(mass,conc,area,ncell,nvar)
-source(:,1) = -rate_1*mass(:,1)
-source(:,2) = -rate_2*mass(:,2) 
+source(:,1) = -decay_rate*mass(:,1)
+source(:,2) = -decay_rate*mass(:,2) 
  
 return
 end subroutine 

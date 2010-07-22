@@ -28,16 +28,16 @@ contains
 !> Subroutine that tests advection convergence
 !> A fine grid initial condition and solution at time total_time
 !> must be provided. 
-subroutine test_advection_convergence(label,               &
-                                     hydro,                &
-                                     domain_length,        &
-                                     total_time,           &
-                                     fine_initial_conc,    &
-                                     fine_solution,        &           
-                                     nstep_base,           &
-                                     nx_base,              &
-                                     nconc,                &
-                                     verbose)
+subroutine test_advection_convergence(label,                &
+                                      hydro,                &
+                                      domain_length,        &
+                                      total_time,           &
+                                      fine_initial_conc,    &
+                                      fine_solution,        &           
+                                      nstep_base,           &
+                                      nx_base,              &
+                                      nconc,                &
+                                      verbose)
                              
 use hydro_data
 use boundary_advection_module
@@ -108,7 +108,7 @@ do icoarse = 1,nrefine
     allocate(solution_mass(nx,nconc))
     allocate(velocity (nx))
     
-    dx = domain_length/dble(nx)  ! todo: it was  origin + domain_length/dble(nx)
+    dx = domain_length/dble(nx)  
     dt = total_time/dble(nstep)
 
     do icell = 1,nx
@@ -150,7 +150,6 @@ do icoarse = 1,nrefine
                   time,    &
                   dx,      &                  
                   dt)
-        
                   
       
       if (maxval(abs(flow)/area) >=  max_velocity) then
@@ -178,6 +177,13 @@ do icoarse = 1,nrefine
       mass_prev = mass
       area_prev = area
       call cons2prim(conc,mass,area,nx,nconc) 
+    
+    if (label == 'linear decay no flow') then
+        if (minval (conc) < zero)then
+            print *,'Negative concentration !!!!!','Conc =',minval(conc)             
+        end if       
+    end if
+    
     end do
 
     ! Now take fine solution (provided in concentration) and coarsen it to
