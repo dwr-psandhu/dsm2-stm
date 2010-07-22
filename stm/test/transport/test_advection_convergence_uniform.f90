@@ -24,9 +24,9 @@ module test_uniform_flow
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 32*5
-integer, parameter  :: nx_base = 256*5
-real(stm_real), parameter :: total_time = 6400.d0
+integer, parameter  :: nstep_base = 32
+integer, parameter  :: nx_base = 256
+real(stm_real), parameter :: total_time = 3200.d0
 
 contains
 !> Subroutine that runs a small advective simulation
