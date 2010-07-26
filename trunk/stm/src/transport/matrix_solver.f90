@@ -47,12 +47,12 @@ contains
 !> C(i): Values of the coefficients above diagonal in matrix
 !> D(i): Values of the right hand side vector 
 !> X(i): Values of the computed solution
-pure subroutine tridi_solver ( center_diag ,        &
-                              up_diag,              &     
-                              down_diag,            &
-                              right_hand_side,      &
-                              conc,                 &
-                              ncell)
+pure subroutine tridi_solver(center_diag,          &
+                             up_diag,              &     
+                             down_diag,            &
+                             right_hand_side,      &
+                             conc,                 &
+                             ncell)
 
     ! --- args
 
@@ -69,7 +69,7 @@ pure subroutine tridi_solver ( center_diag ,        &
     real(stm_real) :: gam(ncell)
     real(stm_real) :: bet
 
-
+! todo: what is this?
     if(center_diag(1) == 0)then
 
     end if

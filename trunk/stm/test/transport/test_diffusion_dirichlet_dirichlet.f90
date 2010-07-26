@@ -43,8 +43,8 @@ use logging
 implicit none
 
 !--- Problem variables
-integer, parameter  :: nstep_base = 32*64*64
-integer, parameter  :: nx_base = 32*4
+integer, parameter  :: nstep_base = 64*4*4
+integer, parameter  :: nx_base = 8*8*2*4
 
 integer :: icoarse = 0
 integer :: nstep
@@ -54,7 +54,7 @@ integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 0.9d0
 real(stm_real), parameter :: origin = 0.1d0   
 real(stm_real), parameter :: total_time    = one
-real(stm_real), parameter :: disp_coef     = 0.1d0
+real(stm_real), parameter :: disp_coef     = 100.1d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time

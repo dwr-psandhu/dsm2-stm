@@ -43,9 +43,8 @@ use logging
 implicit none
 
 !--- Problem variables
-
-integer, parameter  :: nstep_base = 16*5
-integer, parameter  :: nx_base = 64*5
+integer, parameter  :: nstep_base = 64*4
+integer, parameter  :: nx_base = 8*8*2
 
 integer :: icoarse = 0
 integer :: nstep
@@ -55,7 +54,7 @@ integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 0.9d0
 real(stm_real), parameter :: origin = 0.1d0   
 real(stm_real), parameter :: total_time    = one
-real(stm_real), parameter :: disp_coef     = 0.1d0
+real(stm_real), parameter :: disp_coef     = 100.1d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
@@ -149,7 +148,7 @@ do icoarse = 1,nrefine
                          dx                 ) 
     end do 
     write(filename, "(a\i3\'.txt')"), "diffuse_neumann_reference_", ncell 
-!    call printout(reference,xposition,filename)
+    call printout(reference,xposition,filename)
     write(filename, "(a\i3\'.txt')"), "diffuse_neumann_solution_", ncell 
  !todo:   call printout(conc(:,2),xposition,filename)
     call error_norm(norm_error(1,icoarse), &
@@ -177,7 +176,7 @@ if (verbose == .true.) then
     dx = domain_length/nx_base
     dt = total_time/nstep_base
     print *, '======='
-    print *,"Test diffusion nuemann"
+    print *,"Test diffusion neumann"
     print *,'Mesh Peclet',disp_coef*dt/dx/dx, "dx :",dx,"dt :",dt 
     print *, "nx:", nx_base, "nt:", nstep_base, "D:" ,disp_coef
     print *,"L1 rate: ", norm_error(1,3)/norm_error(1,2)
