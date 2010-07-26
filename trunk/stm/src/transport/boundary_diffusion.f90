@@ -234,12 +234,12 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
          integer, intent(in)  :: nvar                                    !< number of variables
          real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
          real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-         real(stm_real), intent (in)   :: area_lo         (ncell)        !< Low side area centered at old time
-         real(stm_real), intent (in)   :: area_hi         (ncell)        !< High side area centered at old time
+         real(stm_real), intent (in)   :: area_lo(ncell)                 !< Low side area centered at old time
+         real(stm_real), intent (in)   :: area_hi(ncell)                 !< High side area centered at old time
          real(stm_real), intent (in)   :: time                           !< time
          real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
-         real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
-         real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
+         real(stm_real), intent (in)   :: disp_coef_lo(ncell,nvar)       !< Low side constituent dispersion coef.
+         real(stm_real), intent (in)   :: disp_coef_hi(ncell,nvar)       !< High side constituent dispersion coef.
          real(stm_real), intent (in)   :: dt
     !--local
     real(stm_real) :: xstart = 0.1d0
@@ -247,10 +247,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     real(stm_real) :: old_time
     
     old_time = time  - dt
-    
-    print *,disp_coef_hi(ncell,:),disp_coef_hi(1,:),"hello"
-    pause
-    
+           
     diffusive_flux_lo(1,:) = - area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*old_time/four))
     diffusive_flux_hi(ncell,:) = - area_hi(ncell)*disp_coef_hi(ncell,:)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*old_time/four))
     
@@ -258,17 +255,17 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
  end subroutine
  
  
- subroutine dirichlet_test_diffusive_flux(diffusive_flux_lo,   &
-                                     diffusive_flux_hi, &
-                                     conc,              &
-                                     area_lo,           &
-                                     area_hi,           &
-                                     disp_coef_lo,      &  
-                                     disp_coef_hi,      &
-                                     ncell,             &
-                                     nvar,              &
-                                     time,              &
-                                     dt)
+ subroutine dirichlet_test_diffusive_flux(diffusive_flux_lo, &
+                                          diffusive_flux_hi, &
+                                          conc,              &
+                                          area_lo,           &
+                                          area_hi,           &
+                                          disp_coef_lo,      &  
+                                          disp_coef_hi,      &
+                                          ncell,             &
+                                          nvar,              &
+                                          time,              &
+                                          dt)
     use stm_precision
          implicit none
          !--- args
@@ -434,7 +431,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
         !---local
  
     real(stm_real) :: d_star
-    
+    real(stm_real) :: old_time
     real(stm_real) :: xstart
     real(stm_real) :: xend  
     real(stm_real) :: flux_start(nvar)
@@ -443,37 +440,47 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     d_star = dt/(dx*dx)
     xstart = 0.1d0
     xend = one 
-   
-    flux_start(:) = -area_lo(1)*disp_coef_lo(1,:)*(two-two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*time/four)) 
-    flux_end(:) = - area_hi(ncell)*disp_coef_hi(ncell,:)*(two-two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*time/four)) 
+      
+   !todo:
+   ! todo and erro here to be checked
+     flux_start(:) = - area_lo(1)*disp_coef_lo(1,:)*(two-two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*time/four)) 
+     flux_end(:) = - area_hi(ncell)*disp_coef_hi(ncell,:)*(two-two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*time/four)) 
      
-     center_diag(1,:)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,:)) 
-     right_hand_side(1,:) = right_hand_side(1,:)&
-                                + theta_stm*(dt/dx)*flux_start(:)
-       
-     center_diag(ncell,:)=  area(ncell) + theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,:))
-     right_hand_side(ncell,:) = right_hand_side(ncell,:)&
+     center_diag(1,:)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,:))  &
+                   + two * theta_stm*d_star*(area_lo(1)*disp_coef_lo(1,:))
+   
+     right_hand_side(1,:) = right_hand_side(1,:) &
+                               + theta_stm*(dt/dx)*flux_start(:)
+     
+     center_diag(ncell,:)=  area(ncell) + theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,:))&
+                        +  two * theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,:))
+     
+     right_hand_side(ncell,:) = right_hand_side(ncell,:)  &
                                    - theta_stm*(dt/dx)*flux_end(:)
+     
+     print *, flux_start,flux_end ,'flux'
+     print *,right_hand_side(1,:),right_hand_side(ncell,:),'rhs'
+     pause
      
      return
  end subroutine
  
-  subroutine dirichlet_test_diffusion_matrix(center_diag ,       &
-                                       up_diag,            &     
-                                       down_diag,          &
-                                       right_hand_side,    & 
-                                       explicit_diffuse_op,&
-                                       area,               &
-                                       area_lo,            &
-                                       area_hi,            &          
-                                       disp_coef_lo,       &
-                                       disp_coef_hi,       &
-                                       theta_stm,          &
-                                       ncell,              &
-                                       time,               & 
-                                       nvar,               & 
-                                       dx,                 &
-                                       dt)
+  subroutine dirichlet_test_diffusion_matrix(center_diag ,         &
+                                               up_diag,            &     
+                                               down_diag,          &
+                                               right_hand_side,    & 
+                                               explicit_diffuse_op,&
+                                               area,               &
+                                               area_lo,            &
+                                               area_hi,            &          
+                                               disp_coef_lo,       &
+                                               disp_coef_hi,       &
+                                               theta_stm,          &
+                                               ncell,              &
+                                               time,               & 
+                                               nvar,               & 
+                                               dx,                 &
+                                               dt)
      use stm_precision
      implicit none
          !--- args
@@ -512,9 +519,9 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     ! here time is new time
     conc_end = two
     conc_start = two*xstart + four*cos(pi*xstart/two)*exp(-disp_coef_lo(1,:)*time*pi*pi/four)
-   
+    
      center_diag(1,:)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,:)) &
-                           + two * theta_stm*d_star*(area_lo(1)*disp_coef_lo(1,:))
+                           + two * theta_stm*d_star*(area_lo(1)*disp_coef_lo(1,:))                  
      right_hand_side(1,:) = right_hand_side(1,:)&
                  + two * theta_stm*d_star*(area_lo(1)*disp_coef_lo(1,:))*conc_start
        
@@ -522,6 +529,12 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
                             +  two * theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,:))
      right_hand_side(ncell,:) = right_hand_side(ncell,:)&
                 + two * theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,:))*conc_end
+! todo: remove     
+!      print*, center_diag(1,:)
+!      print*, right_hand_side(1,:)
+!      print*, right_hand_side(ncell,:)
+!      print*, center_diag(ncell,:)
+!      pause
      
      return
  end subroutine

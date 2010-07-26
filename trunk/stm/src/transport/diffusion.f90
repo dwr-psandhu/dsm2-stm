@@ -113,7 +113,6 @@ call explicit_diffusion_operator(explicit_diffuse_op,&
                                  dx,                 &
                                  dt)
    
-! todo: need to change this to use just diffusive_flux_hi/lo
 
 call construct_right_hand_side(right_hand_side,       & 
                                explicit_diffuse_op,   & 
@@ -220,17 +219,17 @@ real(stm_real):: diffusive_flux_hi(ncell,nvar)
 explicit_diffuse_op = LARGEREAL
 
 call diffusive_flux(diffusive_flux_lo,&
-                         diffusive_flux_hi,&
-                         conc,        &
-                         area_lo,     &
-                         area_hi,     &
-                         disp_coef_lo,&  
-                         disp_coef_hi,&
-                         ncell,       &
-                         nvar,        &
-                         time,             &
-                         dx,               &
-                         dt)
+                    diffusive_flux_hi,&
+                    conc,             &
+                    area_lo,          &
+                    area_hi,          &
+                    disp_coef_lo,     &  
+                    disp_coef_hi,     &
+                    ncell,            &
+                    nvar,             &
+                    time,             &
+                    dx,               &
+                    dt)
           
 do ivar = 1,nvar
    explicit_diffuse_op(:,ivar) = (diffusive_flux_hi(:,ivar) - diffusive_flux_lo(:,ivar))/dx
@@ -240,18 +239,18 @@ return
 end subroutine 
 
 !> Estimates the diffusive flux for a moment in time
-subroutine diffusive_flux(diffusive_flux_lo,       &
-                               diffusive_flux_hi,       &
-                               conc,               &
-                               area_lo,            &
-                               area_hi,            &
-                               disp_coef_lo,       &  
-                               disp_coef_hi,       &
-                               ncell,                   &
-                               nvar,                    &
-                               time,                    &
-                               dx,                      &
-                               dt)
+subroutine diffusive_flux(diffusive_flux_lo,  &
+                          diffusive_flux_hi,  &
+                          conc,               &
+                          area_lo,            &
+                          area_hi,            &
+                          disp_coef_lo,       &  
+                          disp_coef_hi,       &
+                          ncell,              &
+                          nvar,               &
+                          time,               &
+                          dx,                 &
+                          dt)
 
 use stm_precision
 use boundary_diffusion
@@ -290,7 +289,7 @@ diffusive_flux_lo(1,:) = LARGEREAL
 
 call boundary_diffusion_flux(diffusive_flux_lo, &
                              diffusive_flux_hi, &
-                             conc,         & !todo
+                             conc,              & 
                              area_lo,           &
                              area_hi,           &
                              disp_coef_lo,      &  
@@ -307,20 +306,20 @@ end subroutine
 
 !> Construct the right hand side vector from previous step,
 !> and impose Neumann boundary condition on it.
-pure subroutine construct_right_hand_side( right_hand_side,  & 
-                                      explicit_diffuse_op,   & 
-                                      area_prev,             &
-                                      area_lo_prev,          &
-                                      area_hi_prev,          &
-                                      disp_coef_lo_prev,     &
-                                      disp_coef_hi_prev,     &
-                                      conc_prev,             &
-                                      theta,                 &
-                                      ncell,                 &
-                                      time,                  &
-                                      nvar,                  &  
-                                      dx,                    &
-                                      dt)
+pure subroutine construct_right_hand_side(right_hand_side,       & 
+                                          explicit_diffuse_op,   & 
+                                          area_prev,             &
+                                          area_lo_prev,          &
+                                          area_hi_prev,          &
+                                          disp_coef_lo_prev,     &
+                                          disp_coef_hi_prev,     &
+                                          conc_prev,             &
+                                          theta,                 &
+                                          ncell,                 &
+                                          time,                  &
+                                          nvar,                  &  
+                                          dx,                    &
+                                          dt)
 use stm_precision   
   ! ---args                                
 integer, intent (in) :: ncell                                               !< Number of cells
@@ -344,7 +343,7 @@ integer :: icell
 
 do ivar = 1,nvar
          right_hand_side(:,ivar) = area_prev(:)*conc_prev(:,ivar) &
-                                       - (one-theta)*dt* explicit_diffuse_op (:,ivar) 
+                                       - (one-theta)*dt* explicit_diffuse_op(:,ivar) 
 end do
 
 return
@@ -353,7 +352,7 @@ end subroutine
 
 !> Construct the matrix for the diffusion solver
 !> without boundary condition modification or structure on interior of domain
-subroutine construct_diffusion_matrix( center_diag ,    &
+subroutine construct_diffusion_matrix(center_diag ,     &
                                       up_diag,          &     
                                       down_diag,        &
                                       area,             &

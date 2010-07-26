@@ -43,8 +43,8 @@ use logging
 implicit none
 
 !--- Problem variables
-integer, parameter  :: nstep_base = 64*4*4
-integer, parameter  :: nx_base = 8*8*2*4
+integer, parameter  :: nstep_base = 64
+integer, parameter  :: nx_base = 8*4
 
 integer :: icoarse = 0
 integer :: nstep
@@ -54,7 +54,7 @@ integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 0.9d0
 real(stm_real), parameter :: origin = 0.1d0   
 real(stm_real), parameter :: total_time    = one
-real(stm_real), parameter :: disp_coef     = 100.1d0
+real(stm_real), parameter :: disp_coef     = 11.1d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
@@ -107,9 +107,7 @@ do icoarse = 1,nrefine
     ! discretization parameters
     dx = domain_length/dble(nx)
     dt = total_time/dble(nstep)
-    
-    !print *,'D*dt/dx^2 = ', disp_coef*dt/dx/dx
-    
+        
     allocate(xposition(nx))
     do icell = 1,nx
         xposition(icell) = dx*(dble(icell)-half)+ origin
@@ -175,9 +173,10 @@ if (verbose == .true.) then
     dx = domain_length/nx_base
     dt = total_time/nstep_base
     print *, '======='
-    print *,"Test diffusion dirichlet"
+    print *,"Test diffusion dirichlet_diriclet"
     print *,'Mesh Peclet',disp_coef*dt/(dx*dx), "dx :",dx,"dt :",dt 
     print *, "nx:", nx_base, "nt:", nstep_base, "D:" ,disp_coef
+    print *, 'Maximum error in :', which_cell ,'out of ', nx_base/2**(nrefine-1)
     print *,"L1 rate: ", norm_error(1,3)/norm_error(1,2)
     print *,"L2 rate: ", norm_error(2,3)/norm_error(2,2)
     print *,"Linf rate", norm_error(3,3)/norm_error(3,2)
