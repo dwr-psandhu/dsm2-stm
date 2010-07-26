@@ -25,7 +25,7 @@ module test_boundary_diffusion
 
 contains
 !> Tests boundary diffusive flux pointer
-!> Test for trivial nuemann no flux and also a time dependent boundary condition 
+!> Test for trivial neumann no flux and also a time dependent boundary condition 
 subroutine test_boundary_diffusion_flux
 
 use fruit

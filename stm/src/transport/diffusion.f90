@@ -36,8 +36,8 @@ contains
 !> The algoritm looks like this:
 !>   - This creates the diffusive fluxes sends them for modification for boundaries and then differences the fluxes to get the operator d/dx(Ad/dx). 
 !>         - Calculate interior and boundary fluxes 
-!>   - Construct right hand side with Nuemann boundary condition imposed
-!>   - Construct diffusion coefficeint matrix with Nuemann boundary condition imposed
+!>   - Construct right hand side with neumann boundary condition imposed
+!>   - Construct diffusion coefficeint matrix with neumann boundary condition imposed
 !>   - Solve the system
 subroutine diffuse(conc,              &
                    conc_prev,         &
@@ -409,13 +409,13 @@ end subroutine
 
 
 !> Solve the system of linear equations
-subroutine solve ( center_diag ,        &
-                  up_diag,              &     
-                  down_diag,            &
-                  right_hand_side,      &
-                  conc,                 &
-                  ncell,                &
-                  nvar)
+subroutine solve(center_diag ,         &
+                 up_diag,              &     
+                 down_diag,            &
+                 right_hand_side,      &
+                 conc,                 &
+                 ncell,                &
+                 nvar)
 
 use matrix_solver
                                                         

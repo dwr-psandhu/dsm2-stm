@@ -216,17 +216,17 @@ module boundary_diffusion
      return
  end subroutine
  
-subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
-                                     diffusive_flux_hi, &
-                                     conc,              &
-                                     area_lo,           &
-                                     area_hi,           &
-                                     disp_coef_lo,      &  
-                                     disp_coef_hi,      &
-                                     ncell,             &
-                                     nvar,              &
-                                     time,              &
-                                     dt)
+subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
+                                   diffusive_flux_hi, &
+                                   conc,              &
+                                   area_lo,           &
+                                   area_hi,           &
+                                   disp_coef_lo,      &  
+                                   disp_coef_hi,      &
+                                   ncell,             &
+                                   nvar,              &
+                                   time,              &
+                                   dt)
     use stm_precision
          implicit none
          !--- args
@@ -246,10 +246,13 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo,   &
     real(stm_real) :: xend = one
     real(stm_real) :: old_time
     
-    old_time = time - dt
+    old_time = time  - dt
     
-    diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*old_time/four))
-    diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*old_time/four))
+    print *,disp_coef_hi(ncell,:),disp_coef_hi(1,:),"hello"
+    pause
+    
+    diffusive_flux_lo(1,:) = - area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*old_time/four))
+    diffusive_flux_hi(ncell,:) = - area_hi(ncell)*disp_coef_hi(ncell,:)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*old_time/four))
     
      return
  end subroutine
