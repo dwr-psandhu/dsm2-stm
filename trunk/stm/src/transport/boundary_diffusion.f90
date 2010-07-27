@@ -248,8 +248,8 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     
     old_time = time  - dt
            
-    diffusive_flux_lo(1,:) = - area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*old_time/four))
-    diffusive_flux_hi(ncell,:) = - area_hi(ncell)*disp_coef_hi(ncell,:)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*old_time/four))
+    diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*old_time/four))
+    diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*old_time/four))
     
      return
  end subroutine
@@ -440,27 +440,25 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     d_star = dt/(dx*dx)
     xstart = 0.1d0
     xend = one 
-      
-   !todo:
-   ! todo and erro here to be checked
+      ! area is new?!?
+    ! todo: and erro here to be checked
+    !todo: call flux
      flux_start(:) = - area_lo(1)*disp_coef_lo(1,:)*(two-two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*time/four)) 
      flux_end(:) = - area_hi(ncell)*disp_coef_hi(ncell,:)*(two-two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*time/four)) 
      
-     center_diag(1,:)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,:))  &
-                   + two * theta_stm*d_star*(area_lo(1)*disp_coef_lo(1,:))
+     center_diag(1,:)= center_diag(1,:)  &
+                         + two* theta_stm*d_star*(area_lo(1)*disp_coef_lo(1,:))
    
      right_hand_side(1,:) = right_hand_side(1,:) &
-                               + theta_stm*(dt/dx)*flux_start(:)
+                                +   theta_stm*(dt/dx)*flux_start(:)
      
-     center_diag(ncell,:)=  area(ncell) + theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,:))&
-                        +  two * theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,:))
+     center_diag(ncell,:)= center_diag(ncell,:)  & 
+                           + two*theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,:))
      
-     right_hand_side(ncell,:) = right_hand_side(ncell,:)  &
+     right_hand_side(ncell,:)= right_hand_side(ncell,:) &
                                    - theta_stm*(dt/dx)*flux_end(:)
      
-     print *, flux_start,flux_end ,'flux'
-     print *,right_hand_side(1,:),right_hand_side(ncell,:),'rhs'
-     pause
+ 
      
      return
  end subroutine
@@ -519,22 +517,17 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     ! here time is new time
     conc_end = two
     conc_start = two*xstart + four*cos(pi*xstart/two)*exp(-disp_coef_lo(1,:)*time*pi*pi/four)
-    
-     center_diag(1,:)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,:)) &
-                           + two * theta_stm*d_star*(area_lo(1)*disp_coef_lo(1,:))                  
+    ! todo: one part of center diag is based on old time and other part new time
+     center_diag(1,:)=  center_diag(1,:) &
+                           + theta_stm*d_star*(area_lo(1)*disp_coef_lo(1,:))                  
      right_hand_side(1,:) = right_hand_side(1,:)&
                  + two * theta_stm*d_star*(area_lo(1)*disp_coef_lo(1,:))*conc_start
        
-     center_diag(ncell,:)=  area(ncell) + theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,:))&
-                            +  two * theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,:))
+     center_diag(ncell,:)= center_diag(ncell,:)&
+                            +  theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,:))
      right_hand_side(ncell,:) = right_hand_side(ncell,:)&
                 + two * theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,:))*conc_end
-! todo: remove     
-!      print*, center_diag(1,:)
-!      print*, right_hand_side(1,:)
-!      print*, right_hand_side(ncell,:)
-!      print*, center_diag(ncell,:)
-!      pause
+
      
      return
  end subroutine
