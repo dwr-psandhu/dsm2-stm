@@ -65,30 +65,30 @@ compute_source => no_source
 
 
 !> load the initial values and reference final values to feed the test routine
-call initial_fine_solution_tidal(fine_initial_condition,     &
-                                     fine_solution,          &
-                                     nx_base,                &
-                                     nconc,                  &
-                                     origin,                 &
-                                     domain_length,          &
-                                     ic_gaussian_sd,         &
-                                     solution_gaussian_sd,   &
-                                     ic_center,              &
-                                     solution_center)
+call initial_fine_solution_tidal(fine_initial_condition, &
+                                 fine_solution,          &
+                                 nx_base,                &
+                                 nconc,                  &
+                                 origin,                 &
+                                 domain_length,          &
+                                 ic_gaussian_sd,         &
+                                 solution_gaussian_sd,   &
+                                 ic_center,              &
+                                 solution_center)
 
 !> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
 !> compute the norms, after each step coarsen the values and repeat computation.
 !> at the end  calculates the ratio of the norms and prints a log 
-call test_advection_convergence(label,                   &
-                                 tidal_hydro,            &
-                                 domain_length,          &
-                                 total_time,             &
-                                 fine_initial_condition, &
-                                 fine_solution,          &            
-                                 nstep_base,             &
-                                 nx_base,                &
-                                 nconc,                  &
-                                 verbose)
+call test_advection_convergence(label,                  &
+                                tidal_hydro,            &
+                                domain_length,          &
+                                total_time,             &
+                                fine_initial_condition, &
+                                fine_solution,          &            
+                                nstep_base,             &
+                                nx_base,                &
+                                nconc,                  &
+                                verbose)
 
 return
 end subroutine
@@ -104,7 +104,6 @@ subroutine initial_fine_solution_tidal(fine_initial_condition, &
                                        solution_gaussin_sd,    &
                                        ic_center,              &
                                        solution_center)
-
 
 use example_initial_conditions
 use stm_precision
@@ -190,7 +189,7 @@ do icell = 1,ncell
 end do  
 
 return
-end subroutine tidal_flow
+end subroutine 
 
 end module
 
