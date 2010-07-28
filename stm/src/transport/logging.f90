@@ -64,13 +64,12 @@ module logging
         integer                   :: nx
         
         nx = size(arr)
-                
         open(unit = 11, file = filename)
-        
         do icell = 1,nx
           write(11,'(f12.4, f22.16)') x(icell), arr(icell)
         end do
         close(11)
+        return
     end subroutine
 
 

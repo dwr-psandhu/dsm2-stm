@@ -43,8 +43,8 @@ use logging
 implicit none
 
 !--- Problem variables
-integer, parameter  :: nstep_base = 32
-integer, parameter  :: nx_base = 64
+integer, parameter  :: nstep_base = 64*8
+integer, parameter  :: nx_base = 32*8
 
 integer :: icoarse = 0
 integer :: nstep
@@ -54,7 +54,7 @@ integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 0.9d0
 real(stm_real), parameter :: origin = 0.1d0   
 real(stm_real), parameter :: total_time    = one
-real(stm_real), parameter :: disp_coef     = 0.5d0
+real(stm_real), parameter :: disp_coef     = 1.5d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
@@ -175,7 +175,7 @@ if (verbose == .true.) then
     print *, '======='
     print *,"Test diffusion dirichlet_diriclet"
     print *,'Mesh Peclet',disp_coef*dt/(dx*dx), "dx :",dx,"dt :",dt 
-    print *, "nx:", nx_base, "nt:", nstep_base, "D:" ,disp_coef
+    print *, "nx_base:", nx_base, "nt_base:", nstep_base, "D:" ,disp_coef
     print *, 'Maximum error in :', which_cell ,'out of ', nx_base/2**(nrefine-1)
     print *,"L1 rate: ", norm_error(1,3)/norm_error(1,2)
     print *,"L2 rate: ", norm_error(2,3)/norm_error(2,2)

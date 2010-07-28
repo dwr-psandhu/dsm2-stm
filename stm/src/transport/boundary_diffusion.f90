@@ -55,7 +55,7 @@ module boundary_diffusion
          real(stm_real), intent (in)   :: dt
          real(stm_real), intent (in)   :: dx
          
-       end subroutine boundary_diffusive_flux_if
+       end subroutine 
  end interface
 
  !> This pointer should be set by the driver or client code to specify the 
@@ -106,7 +106,7 @@ module boundary_diffusion
         real(stm_real), intent (in)  :: dx                                          !< Spatial step  
         real(stm_real), intent (in)  :: dt                                          !< Time step     
 
-       end subroutine boundary_diffusive_matrix_if
+       end subroutine 
  end interface
 
  !> This pointer should be set by the driver or client code to specify the 
@@ -181,7 +181,6 @@ module boundary_diffusion
      
      diffusive_flux_lo(1,:) = zero
      diffusive_flux_hi(ncell,:) = zero
-     
         
     return
  end subroutine
@@ -252,17 +251,13 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     !--local
     real(stm_real) :: xstart = 0.1d0
     real(stm_real) :: xend = one
-    real(stm_real) :: old_time
-    
-    old_time = time  - dt
-           
-    diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*old_time/four))
-    diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*old_time/four))
+              
+    diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*time/four))
+    diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*time/four))
     
      return
  end subroutine
- 
- 
+  
  subroutine dirichlet_test_diffusive_flux(diffusive_flux_lo, &
                                           diffusive_flux_hi, &
                                           conc,              &
@@ -304,11 +299,9 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
    ! todo: check convergence for second order boundary fitting 
     !todo: this area also must be area_prev  
     diffusive_flux_lo(1,:)= -two*area_lo(1)*disp_coef_lo(1,:)*(conc(1,:)-conc_start(:))/dx
-    !diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*(time)/four))
-
-    diffusive_flux_hi(ncell,:) = -two*area_hi(ncell)*disp_coef_hi(ncell,:)*(conc_end(:)-conc(ncell,:))/dx
-    ! diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*time/four))
     
+    diffusive_flux_hi(ncell,:) = -two*area_hi(ncell)*disp_coef_hi(ncell,:)*(conc_end(:)-conc(ncell,:))/dx
+        
      return
  end subroutine
  
@@ -399,13 +392,22 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
         real(stm_real), intent (in)  :: dt                                          !< Time step     
         !---local
         real(stm_real) :: d_star 
+        real(stm_real) :: flux_start(nvar)
+        real(stm_real) :: flux_end(nvar)
         d_star = dt/(dx*dx)  
       
-     ! todo: add types of other BC 
+     ! todo: these must control for area or area_prev 
           
-     center_diag(1,:)= area(1) + theta_stm*d_star*(area_hi(1)*disp_coef_hi(1,:))
-     center_diag(ncell,:)= area(ncell) + theta_stm*d_star*(area_lo(ncell)*disp_coef_lo(ncell,:))
-        
+     flux_start(:) = zero
+     flux_end(:) = zero
+         
+     center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
+     right_hand_side(1,:) = right_hand_side(1,:) &
+                                + theta_stm*(dt/dx)*flux_start(:)
+     
+     center_diag(ncell,:)= area(ncell)+ theta_stm*d_star* area_lo(ncell)*disp_coef_lo(1,:)
+     right_hand_side(ncell,:)= right_hand_side(ncell,:) &
+                                   - theta_stm*(dt/dx)*flux_end(:)
      return
  end subroutine
  
@@ -450,7 +452,6 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
         !---local
  
     real(stm_real) :: d_star
-    real(stm_real) :: old_time
     real(stm_real) :: xstart
     real(stm_real) :: xend  
     real(stm_real) :: flux_start(nvar)
@@ -460,25 +461,18 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     xstart = 0.1d0
     xend = one 
       ! area is new?!?
-    ! todo: and erro here to be checked
-    !todo: call flux
+      !todo: call flux
      flux_start(:) = - area_lo(1)*disp_coef_lo(1,:)*(two-two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*time/four)) 
-     flux_end(:) = - area_hi(ncell)*disp_coef_hi(ncell,:)*(two-two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*time/four)) 
-     
-     center_diag(1,:)= center_diag(1,:)  &
-                         + two* theta_stm*d_star*(area_lo(1)*disp_coef_lo(1,:))
-   
+     flux_end(:) = - area_hi(ncell)*disp_coef_hi(ncell,:)*(two-two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*time/four))
+         
+     center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
      right_hand_side(1,:) = right_hand_side(1,:) &
-                                +   theta_stm*(dt/dx)*flux_start(:)
+                                + theta_stm*(dt/dx)*flux_start(:)
      
-     center_diag(ncell,:)= center_diag(ncell,:)  & 
-                           + two*theta_stm*d_star*(area_hi(ncell)*disp_coef_hi(ncell,:))
-     
+     center_diag(ncell,:)= area(ncell)+ theta_stm*d_star* area_lo(ncell)*disp_coef_lo(1,:)
      right_hand_side(ncell,:)= right_hand_side(ncell,:) &
                                    - theta_stm*(dt/dx)*flux_end(:)
-     
- 
-     
+      
      return
  end subroutine
  
