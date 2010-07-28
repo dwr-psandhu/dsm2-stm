@@ -304,7 +304,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
    ! todo: check convergence for second order boundary fitting 
     !todo: this area also must be area_prev  
     diffusive_flux_lo(1,:)= -two*area_lo(1)*disp_coef_lo(1,:)*(conc(1,:)-conc_start(:))/dx
-    !diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*(time-dt)/four))
+    !diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*(time)/four))
 
     diffusive_flux_hi(ncell,:) = -two*area_hi(ncell)*disp_coef_hi(ncell,:)*(conc_end(:)-conc(ncell,:))/dx
     ! diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*time/four))
@@ -482,22 +482,22 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
      return
  end subroutine
  
-  subroutine dirichlet_test_diffusion_matrix(center_diag ,         &
-                                               up_diag,            &     
-                                               down_diag,          &
-                                               right_hand_side,    & 
-                                               explicit_diffuse_op,&
-                                               area,               &
-                                               area_lo,            &
-                                               area_hi,            &          
-                                               disp_coef_lo,       &
-                                               disp_coef_hi,       &
-                                               theta_stm,          &
-                                               ncell,              &
-                                               time,               & 
-                                               nvar,               & 
-                                               dx,                 &
-                                               dt)
+  subroutine dirichlet_test_diffusion_matrix(center_diag ,       &
+                                             up_diag,            &     
+                                             down_diag,          &
+                                             right_hand_side,    & 
+                                             explicit_diffuse_op,&
+                                             area,               &
+                                             area_lo,            &
+                                             area_hi,            &          
+                                             disp_coef_lo,       &
+                                             disp_coef_hi,       &
+                                             theta_stm,          &
+                                             ncell,              &
+                                             time,               & 
+                                             nvar,               & 
+                                             dx,                 &
+                                             dt)
      use stm_precision
      implicit none
          !--- args
@@ -533,7 +533,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     d_star = dt/(dx*dx)
     xstart = 0.1d0
     xend = one 
-    ! here time is new time
+    ! here time is new time and area and Ks for updating rhs are for time stap n+1
     conc_end = two
     conc_start = two*xstart + four*cos(pi*xstart/two)*exp(-disp_coef_lo(1,:)*time*pi*pi/four)
     ! todo: one part of center diag is based on old time and other part new time
