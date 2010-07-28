@@ -144,7 +144,7 @@ module example_advection
         deallocate(reference)
         call deallocate_state
         
-    end subroutine example_advection_uniform_flow
+    end subroutine 
 
     !< simple shift function for uniform advection plot
     subroutine x_shift(x_ref,x_shifted,nloc,vel,time)
@@ -167,4 +167,4 @@ module example_advection
      return   
     end subroutine  
     
-end module example_advection
+end module 

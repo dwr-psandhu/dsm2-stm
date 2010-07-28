@@ -197,18 +197,18 @@ do icoarse = 1,nrefine
     call coarsen(solution_mass,fine_solution_mass,nx_base,nx, nvar)
     call cons2prim(reference,solution_mass,area,nx,nconc)
     
-    write(filename, "(a\i3\'.txt')"), "uniform_gaussian_start_", nx 
+    write(filename, "(a\i4\'.txt')"), "uniform_gaussian_start_", nx
         
                
-    !call printout(reference(:,2),x_center,filename)
-    write(filename, "(a\i3\'.txt')"), "uniform_gaussian_end_", nx 
-   ! call printout(conc(:,2),x_center,filename)
+    call printout(reference(:,2),x_center(:),filename)
+    write(filename, "(a\i4\'.txt')"), "uniform_gaussian_end_", nx 
+    call printout(conc(:,2),x_center(:),filename)
     ! test error norm over part of domain
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
                     which_cell,            &
-                    conc(:,2),reference(:,2),nx,dx) !todo: nx or ncell
+                    conc(:,2),reference(:,2),nx,dx) 
     deallocate(solution_mass)
     deallocate(reference)
     deallocate(x_center)

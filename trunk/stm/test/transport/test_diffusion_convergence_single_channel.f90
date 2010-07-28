@@ -42,8 +42,8 @@ implicit none
 
 !--- Problem variables
 
-integer, parameter  :: nstep_base = 256
-integer, parameter  :: nx_base = 5120
+integer, parameter  :: nstep_base = 512
+integer, parameter  :: nx_base = 512
 
 integer :: icoarse = 0
 integer :: nstep
@@ -53,7 +53,7 @@ integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 51200.d0
 real(stm_real), parameter :: origin = zero   
 real(stm_real), parameter :: total_time    = 1024.d0
-real(stm_real), parameter :: disp_coef     = 0.1d0
+real(stm_real), parameter :: disp_coef     = 1.1d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
@@ -63,11 +63,8 @@ logical, optional :: verbose
 
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
-! todo: remove? real(stm_real), parameter :: ic_center      = two*fourth*domain_length
-!               real(stm_real), parameter :: ic_gaussian_sd = domain_length/eight
-!               real(stm_real), parameter :: ic_peak = two
 real(stm_real), parameter :: constant_area = 100.0d0
-real(stm_real), parameter :: start_time = 256.d0     !< Initial condition depends on this
+real(stm_real), parameter :: start_time = 1024.d0     !< Initial condition depends on this
 real(stm_real), parameter :: end_time = start_time + total_time
 
 real(stm_real) :: time
@@ -125,12 +122,13 @@ do icoarse = 1,nrefine
     call fill_gaussian(reference,nx,origin,dx,half*domain_length, &
                        sqrt(two*disp_coef*end_time),sqrt(start_time/end_time))
 !todo:
-print *,'num_cell :',nx
-!print *,reference(2),reference(3),reference(4)
-!print *,reference(nx-2),reference(nx-3),reference(nx-4)
+!print *,'num_cell :',nx
+print*,'--------------------------------'
+print *,reference(2),reference(3),reference(4)
+print *,reference(nx-2),reference(nx-3),reference(nx-4)
 
-! print *,conc(2,1),conc(3,1),conc(4,1)
-! print *,conc(nx-2,1),conc(nx-3,1),conc(nx-4,1)
+ print *,conc(2,1),conc(3,1),conc(4,1)
+ print *,conc(nx-2,1),conc(nx-3,1),conc(nx-4,1)
 !do icell=1,nx
 !    if ((reference(icell)- eps)>zero )then
 !       print *, icell
@@ -188,8 +186,6 @@ call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order conver
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion")
 
 
-
-
 if (verbose == .true.) then
 
     dx = domain_length/nx_base
@@ -198,7 +194,8 @@ if (verbose == .true.) then
     print *, '======='
     print *,"Test diffusion single channel"
     print *,'Mesh Peclet',disp_coef*dt/dx/dx, "dx :",dx,"dt :",dt 
-    print *, "nx :",nx_base,"nt :",nstep_base, "D: ", disp_coef
+    print *, "nx_base:", nx_base, "nt_base:", nstep_base, "D:" ,disp_coef
+    print *, 'Maximum error in :', which_cell ,'out of ', nx_base/2**(nrefine-1)
     print *,"L1 rate: ", norm_error(1,3)/norm_error(1,2)
     print *,"L2 rate: ", norm_error(2,3)/norm_error(2,2)
     print *,"Linf rate", norm_error(3,3)/norm_error(3,2)

@@ -63,6 +63,5 @@ call assertEquals (coarse_data(3,2),15.5d0,tol,"error in coarsening constituent 
 deallocate (coarse_data)
 
 return
-end subroutine test_coarsen
-
+end subroutine 
 end module

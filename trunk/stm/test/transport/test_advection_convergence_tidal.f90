@@ -26,9 +26,9 @@ use stm_precision
 ! todo: make the names more meaningful
 real(stm_real),parameter :: origin = zero                  !< Left hand side of the channel
 real(stm_real),parameter :: domain_length = 102400.0d0     !< Domain Length in meter
-real(stm_real),parameter :: amplitude = fourth             !< Tidal amplitude in meter    
+real(stm_real),parameter :: amplitude = fourth               !< Tidal amplitude in meter    
 real(stm_real),parameter :: gravity = 9.80d0               !< Gravitational acceleration in m/s^2
-real(stm_real),parameter :: depth = 16.0d0                  !< Channel depth in meter
+real(stm_real),parameter :: depth = 16.0d0                 !< Channel depth in meter
 real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0       !< Convert factor of hour to second 
 real(stm_real),parameter :: m2_period = 12.4d0*sec_per_hr  !< M2 tidal period 
 real(stm_real),parameter :: freq=two*pi/m2_period          !< Frequency of tidal oscillation
@@ -48,8 +48,8 @@ implicit none
 procedure(hydro_data_if),pointer :: tidal_hydro          !< The pointer points to tidal flow data
 
 integer, parameter  :: nconc = 2                         !< Number of constituents
-integer, parameter  :: nstep_base = 64                   !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 256                  !< Number of spatial discritization in finer mesh 
+integer, parameter  :: nstep_base = 256                 !< Number of time steps in finer discritization
+integer, parameter  :: nx_base    = 512                 !< Number of spatial discritization in finer mesh 
 logical :: verbose
 real(stm_real), parameter :: total_time = m2_period      !< total time of the test
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
@@ -75,6 +75,7 @@ call initial_fine_solution_tidal(fine_initial_condition, &
                                  solution_gaussian_sd,   &
                                  ic_center,              &
                                  solution_center)
+
 
 !> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
 !> compute the norms, after each step coarsen the values and repeat computation.
@@ -104,6 +105,8 @@ subroutine initial_fine_solution_tidal(fine_initial_condition, &
                                        solution_gaussin_sd,    &
                                        ic_center,              &
                                        solution_center)
+                                       
+
 
 use example_initial_conditions
 use stm_precision
@@ -126,14 +129,14 @@ real(stm_real):: dx
 dx = domain_length/nx_base
 
 call fill_gaussian(fine_initial_condition(:,1),nx_base,origin,dx, &
-                   ic_center,ic_gaussian_sd)
+                   ic_center,ic_gaussian_sd,0.1d0)
 call fill_gaussian(fine_initial_condition(:,2),nx_base,origin,dx, &
-                   ic_center,ic_gaussian_sd)
+                   ic_center,ic_gaussian_sd,0.1d0)
 
 call fill_gaussian(fine_solution(:,1),nx_base,origin,dx, &
-                   solution_center,solution_gaussin_sd)
+                   solution_center,solution_gaussin_sd,0.1d0)
 call fill_gaussian(fine_solution(:,2),nx_base,origin,dx, &
-                   solution_center,solution_gaussin_sd)
+                   solution_center,solution_gaussin_sd,0.1d0)
 
 return
 end subroutine

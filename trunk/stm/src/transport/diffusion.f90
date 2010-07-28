@@ -183,7 +183,7 @@ call solve(center_diag ,     &
            nvar)
 
 return
-end subroutine diffuse
+end subroutine 
 !///////////////////////////////////////////////
 
 !> Calculate the explicit diffusion operator for a moment in time.
