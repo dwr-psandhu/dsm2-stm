@@ -104,6 +104,8 @@ real(stm_real) :: time_new                                    !< new time
 ! sends them for modification for boundaries and then differences the fluxes
 ! to get the operator d/dx(Ad/dx). 
 ! instantaneous function
+time_prev = time - dt
+time_new = time 
 call explicit_diffusion_operator(explicit_diffuse_op,&
                                  conc_prev,          &
                                  area_lo_prev,       &
@@ -112,7 +114,7 @@ call explicit_diffusion_operator(explicit_diffuse_op,&
                                  disp_coef_hi_prev,  &
                                  ncell,              &
                                  nvar,               &
-                                 time,               &
+                                 time_prev,          &
                                  dx,                 &
                                  dt)
    
@@ -298,6 +300,7 @@ call boundary_diffusion_flux(diffusive_flux_lo, &
                              ncell,             &
                              nvar,              &
                              time,              &
+                             dx,                &
                              dt)
 
 

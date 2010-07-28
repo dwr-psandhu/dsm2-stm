@@ -67,6 +67,7 @@ call boundary_diffusion_flux(diffusive_flux_lo, &
                              ncell,             &
                              nvar,              &
                              time,              &
+                             dx,                &
                              dt)
                                                            
  call assertEquals (diffusive_flux_lo(1,nvar),zero,eps,"Error in diffusive boundary flux low at new time")
@@ -87,7 +88,9 @@ do istep =1,nstep
                                  ncell,             &
                                  nvar,              &
                                  time,              &
+                                 dx,                &
                                  dt)
+                                
             
     reference_lo = two * cos( pi* time / three)               !Just for test 
     reference_hi = five * sin ( pi * time / seven)                         

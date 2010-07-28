@@ -34,6 +34,7 @@ module boundary_diffusion
                                              ncell,             &
                                              nvar,              &
                                              time,              &
+                                             dx,                &
                                              dt)
         
          
@@ -52,6 +53,7 @@ module boundary_diffusion
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)       !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)       !< High side constituent dispersion coef.
          real(stm_real), intent (in)   :: dt
+         real(stm_real), intent (in)   :: dx
          
        end subroutine boundary_diffusive_flux_if
  end interface
@@ -159,6 +161,7 @@ module boundary_diffusion
                                            ncell,             &
                                            nvar,              &
                                            time,              &
+                                           dx,                &
                                            dt)
     use stm_precision
          implicit none
@@ -174,6 +177,7 @@ module boundary_diffusion
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
          real(stm_real), intent (in)   :: dt
+         real(stm_real), intent (in)   :: dx
      
      diffusive_flux_lo(1,:) = zero
      diffusive_flux_hi(ncell,:) = zero
@@ -184,17 +188,18 @@ module boundary_diffusion
  
 !> Example diffusive flux that imposes sinusoidal time dependent Neumann boundary flux at
 !> both ends of the channel.
- subroutine neumann_sin_diffusive_flux(diffusive_flux_lo,   &
-                                             diffusive_flux_hi, &
-                                             conc,              &
-                                             area_lo,           &
-                                             area_hi,           &
-                                             disp_coef_lo,      &  
-                                             disp_coef_hi,      &
-                                             ncell,             &
-                                             nvar,              &
-                                             time,              &
-                                             dt)
+ subroutine neumann_sin_diffusive_flux(diffusive_flux_lo, &
+                                       diffusive_flux_hi, &
+                                       conc,              &
+                                       area_lo,           &
+                                       area_hi,           &
+                                       disp_coef_lo,      &  
+                                       disp_coef_hi,      &
+                                       ncell,             &
+                                       nvar,              &
+                                       time,              &
+                                       dx,                &
+                                       dt)
     use stm_precision
          implicit none
          !--- args
@@ -209,6 +214,7 @@ module boundary_diffusion
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
          real(stm_real), intent (in)   :: dt
+         real(stm_real), intent (in)   :: dx
           
      diffusive_flux_lo(1,:) = two * cos( pi* time / three)               !Just for test 
      diffusive_flux_hi(ncell,:) = five * sin (pi*time / seven)
@@ -226,6 +232,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
                                    ncell,             &
                                    nvar,              &
                                    time,              &
+                                   dx,                &
                                    dt)
     use stm_precision
          implicit none
@@ -241,6 +248,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
          real(stm_real), intent (in)   :: disp_coef_lo(ncell,nvar)       !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi(ncell,nvar)       !< High side constituent dispersion coef.
          real(stm_real), intent (in)   :: dt
+         real(stm_real), intent (in)   :: dx
     !--local
     real(stm_real) :: xstart = 0.1d0
     real(stm_real) :: xend = one
@@ -265,6 +273,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
                                           ncell,             &
                                           nvar,              &
                                           time,              &
+                                          dx,                &
                                           dt)
     use stm_precision
          implicit none
@@ -280,15 +289,25 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
          real(stm_real), intent (in)   :: dt
+         real(stm_real), intent (in)   :: dx
     !--local
-    real(stm_real) :: xstart = 0.1d0
-    real(stm_real) :: xend = one
-    real(stm_real) :: old_time
-    
-    old_time = time - dt
-    
-    diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*old_time/four))
-    diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*old_time/four))
+   !todo remove these fluxes
+   
+   real(stm_real) :: conc_start(nvar)
+   real(stm_real) :: conc_end(nvar) 
+   real(stm_real) :: xstart = 0.1d0
+   real(stm_real) :: xend = one
+   
+   conc_end(:) = two
+   conc_start(:) = two*xstart + four*cos(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*time/four)
+   
+   ! todo: check convergence for second order boundary fitting 
+    !todo: this area also must be area_prev  
+    diffusive_flux_lo(1,:)= -two*area_lo(1)*disp_coef_lo(1,:)*(conc(1,:)-conc_start(:))/dx
+    !diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*(time-dt)/four))
+
+    diffusive_flux_hi(ncell,:) = -two*area_hi(ncell)*disp_coef_hi(ncell,:)*(conc_end(:)-conc(ncell,:))/dx
+    ! diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell,:)*pi*pi*time/four))
     
      return
  end subroutine
