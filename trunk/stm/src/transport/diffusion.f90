@@ -106,6 +106,7 @@ real(stm_real) :: time_new                                    !< new time
 ! instantaneous function
 time_prev = time - dt
 time_new = time 
+
 call explicit_diffusion_operator(explicit_diffuse_op,&
                                  conc_prev,          &
                                  area_lo_prev,       &
@@ -118,7 +119,10 @@ call explicit_diffusion_operator(explicit_diffuse_op,&
                                  dx,                 &
                                  dt)
    
-! this functon is using old time 
+! this functon is using old time
+! todo: do we need to put area_lo_prev area_hi_prev ks_lo_hi prev? they are in the explicit_diffuse_op
+! conc_prev?
+! the subroutine uses previous time values
 call construct_right_hand_side(right_hand_side,       & 
                                explicit_diffuse_op,   & 
                                area_prev,             &
@@ -129,7 +133,7 @@ call construct_right_hand_side(right_hand_side,       &
                                conc_prev,             &
                                theta_stm,             &
                                ncell,                 &
-                               time,                  &
+                               time_prev,             &
                                nvar,                  &  
                                dx,                    &
                                dt)
@@ -147,7 +151,7 @@ call construct_diffusion_matrix(center_diag ,     &
                                 disp_coef_hi,     &
                                 theta_stm,        &
                                 ncell,            &
-                                time,             & 
+                                time_new,         & 
                                 nvar,             & 
                                 dx,               &
                                 dt)
