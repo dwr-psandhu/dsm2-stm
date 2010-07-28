@@ -54,16 +54,16 @@ logical :: verbose = .true.
 
 call init_fruit
 !//////// Advection routines
-!call test_gradient_calc
-!call test_limiter
-!call test_prim_cons_convert
-!call test_prim_increment2cons
-!call test_example_initial_conditions
-!call test_extrapolation
+call test_gradient_calc
+call test_limiter
+call test_prim_cons_convert
+call test_prim_increment2cons
+call test_example_initial_conditions
+call test_extrapolation
 
 !///////// advection
-!call test_tidal_advection_convergence(verbose)
-!call test_uniform_advection_convergence(verbose)
+call test_tidal_advection_convergence(verbose)
+call test_uniform_advection_convergence(verbose)
   
 !!/////// Diffusion routine
 !call test_tridi_solver

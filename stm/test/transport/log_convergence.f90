@@ -53,6 +53,9 @@ module log_convergence
  print *, 'L-inf convergence ratio : ', norm_error(3,2)/norm_error(3,1)
  print *, 'L-2 convergence ratio : ',norm_error(2,2)/norm_error(2,1)
  print *, 'L-1 convergence ratio : ',norm_error(1,2)/norm_error(1,1)
+ print *, 'L-inf convergence ratio : ', norm_error(3,3)/norm_error(3,2)
+ print *, 'L-2 convergence ratio : ',norm_error(2,3)/norm_error(2,2)
+ print *, 'L-1 convergence ratio : ',norm_error(1,3)/norm_error(1,2)
  print *, 'Maximum error occurs in cell : ', which_cell , 'ncell : ' , n_cells/2**(nrefine-1)
  print *, 'dt:',dt,'dx:',dx
  print *, ' CFL = ', max_velocity*dt/dx, 'Max_Velocity', max_velocity 
