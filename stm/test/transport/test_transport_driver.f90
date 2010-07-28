@@ -76,7 +76,7 @@ call init_fruit
 !////// diffusion
 !call test_diffusion_convergence_single_channel(verbose)
 call test_diffusion_dirichlet(verbose)
-call test_diffusion_neumann(verbose)
+!call test_diffusion_neumann(verbose)
 !////// reaction
 !call  test_linear_decay_convergence(verbose)
 !call  test_advection_decay_convergence(verbose)

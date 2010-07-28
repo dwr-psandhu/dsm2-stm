@@ -43,8 +43,8 @@ use logging
 implicit none
 
 !--- Problem variables
-integer, parameter  :: nstep_base = 128
-integer, parameter  :: nx_base = 32
+integer, parameter  :: nstep_base = 128*4
+integer, parameter  :: nx_base = 32*4
 
 integer :: icoarse = 0
 integer :: nstep
