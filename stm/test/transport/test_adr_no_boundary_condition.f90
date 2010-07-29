@@ -24,19 +24,19 @@ module test_advect_diffuse_react
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 4096
-integer, parameter  :: nx_base = 512
+integer, parameter  :: nstep_base = 512
+integer, parameter  :: nx_base = 1024
 integer, parameter  :: nconc = 2
-real(stm_real), parameter :: start_time = 4096.0d0 ! sec
-real(stm_real), parameter :: total_time = 4096.0d0 ! sec
+real(stm_real), parameter :: start_time = 256.0d0 ! sec
+real(stm_real), parameter :: total_time = 512.0d0 ! sec
 ! todo:  since the bc is set to be zero flux, total_time and other parameters should be set 
 ! in the way solution does not reach the edges of channel.
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
-real(stm_real), parameter :: const_area = 500.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 1.2d0 !todo: is it in a correct range? 
-real(stm_real), parameter :: const_velocity = zero ! m/s
-real(stm_real), parameter :: decay_rate = 0.0000d0 ! todo:?
+real(stm_real), parameter :: const_area = 11.0d0 ! m^2
+real(stm_real), parameter :: const_disp_coef = 110.2d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_velocity = 1.9 ! m/s
+real(stm_real), parameter :: decay_rate = 0.001d0 
 real(stm_real), parameter :: ic_center = domain_length/(four)
 real(stm_real), parameter :: ic_peak = one
 real(stm_real) :: end_time = start_time + total_time
@@ -58,6 +58,7 @@ use source_sink
 use log_convergence
 use grid_refinement
 use state_variables
+use logging
 
 implicit none
 
@@ -71,7 +72,7 @@ real(stm_real) :: fine_solution_conc(nx_base,nconc)             !< reference sol
 
 !---local
 integer, parameter :: nrefine = 3
-integer, parameter :: coarsen_factor = 2                 ! coarsening factor used for convergence test
+integer, parameter :: coarsen_factor = 2          
 integer :: itime
 integer :: icell 
 integer :: icoarse 
@@ -84,7 +85,6 @@ logical, parameter :: limit_slope = .false.
 real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
-!todo: is it needed? real(stm_real), allocatable :: velocity (:)
 real(stm_real), allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real), allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
 real(stm_real), allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
@@ -115,15 +115,16 @@ call initial_final_solution(fine_initial_conc,     &
                             nx_base,               &
                             nconc)
 
-open (unit = 11, file= label//'_fine_solution.txt', status='unknown')
+open (unit = 11, file= label//'_fine_solution_ic_adr.txt')
 
 write (11,*) 'v',const_velocity, 'dx' ,domain_length/nx_base
 do icell = 1,nx_base
-  write (11,*) icell, fine_initial_conc(icell,2)
+  write (11,*) (icell-half)*domain_length/nx_base, fine_initial_conc(icell,2)
 end do
-write (11,*) 
+write (11,*) '=============================='
+write (11,*) 'Fine solution'
 do icell = 1,nx_base
-  write (11,*) icell, fine_solution_conc(icell,2)
+  write (11,*) (icell-half)*domain_length/nx_base, fine_solution_conc(icell,2)
 end do
 
 close (11)
@@ -152,14 +153,15 @@ do icoarse = 1,nrefine
     call coarsen(reference,fine_solution_conc,nx_base,nx,nvar)
 
     allocate(x_center(nx))
-    do icell = 1,nx
-        x_center(icell) = dx*(dble(icell)-half)+origin
-    end do      
     
-    ! discretization parameters
+     ! discretization parameters
     dx = domain_length/dble(nx)
     dt = total_time/dble(nstep)
-      
+          
+    do icell = 1,nx
+        x_center(icell) = dx*(dble(icell)-half)+origin
+    end do   
+    
    ! todo: we need a satbility check for Advection Diffusion splitting
         
     time = zero
@@ -174,6 +176,8 @@ do icoarse = 1,nrefine
                    dx,      &                  
                    dt)
     area_prev = area
+    area_lo_prev = area_lo
+    area_hi_prev = area_hi
            
     if (icoarse == 1)then
         call prim2cons(fine_initial_mass,fine_initial_conc,area,nx,nconc)
@@ -183,7 +187,7 @@ do icoarse = 1,nrefine
     mass_prev = mass
     
     do itime = 1,nstep
-       time = time + dt
+       time = start_time + itime*dt
        call hydro_adr(flow,    &
                       flow_lo, &
                       flow_hi, &
@@ -250,6 +254,10 @@ do icoarse = 1,nrefine
                      reference(:,1),        &
                      nx,                    &
                      dx)
+                     
+ write(label, "(a\i4\'.txt')"), "result_adr_", nx 
+    call printout(conc(:,2),x_center,label)
+  
 
     call deallocate_state
     deallocate(disp_coef_lo,disp_coef_hi, &
@@ -388,8 +396,7 @@ real(stm_real) :: mass (ncell,nvar)
 ! source must be in primitive variable 
 call prim2cons(mass,conc,area,ncell,nvar)
 
-source(:,1) = -decay_rate*mass(:,1)
-source(:,2) = -decay_rate*mass(:,2) 
+source = -decay_rate*mass
 
 return
 end subroutine 

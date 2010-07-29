@@ -179,8 +179,11 @@ module boundary_diffusion
          real(stm_real), intent (in)   :: dt
          real(stm_real), intent (in)   :: dx
      
+     real(stm_real):: conc_start(nvar)
+     real(stm_real):: conc_end(nvar)
+     
      diffusive_flux_lo(1,:) = zero
-     diffusive_flux_hi(ncell,:) = zero
+    diffusive_flux_hi(ncell,:) = zero
         
     return
  end subroutine
@@ -401,7 +404,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
      flux_start(:) = zero
      flux_end(:) = zero
          
-     center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
+      center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
      right_hand_side(1,:) = right_hand_side(1,:) &
                                 + theta_stm*(dt/dx)*flux_start(:)
      
