@@ -42,8 +42,8 @@ implicit none
 
 !--- Problem variables
 
-integer, parameter  :: nstep_base = 8*8
-integer, parameter  :: nx_base = 2048
+integer, parameter  :: nstep_base = 16*8*2
+integer, parameter  :: nx_base = 128*3*2
 
 integer :: icoarse = 0
 integer :: nstep
@@ -52,9 +52,9 @@ integer :: nx
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 51200.d0
 real(stm_real), parameter :: origin = zero   
-real(stm_real), parameter :: total_time    = 2048.0d0
-real(stm_real), parameter :: disp_coef     = 100.0d0
-real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+real(stm_real), parameter :: total_time    = 8000.0d0
+real(stm_real), parameter :: disp_coef     = 10.5d0
+real(stm_real), parameter :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
@@ -63,8 +63,8 @@ logical, optional :: verbose
 
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
-real(stm_real), parameter :: constant_area = 2.0d0
-real(stm_real), parameter :: start_time = 256.d0     !< Initial condition depends on this
+real(stm_real), parameter :: constant_area = 120.0d0
+real(stm_real), parameter :: start_time = 2048.d0     !< Initial condition depends on this
 real(stm_real), parameter :: end_time = start_time + total_time
 
 real(stm_real) :: time
@@ -83,7 +83,7 @@ real(stm_real) norm_error(3,nrefine)
 character(LEN=64) filename
 
 boundary_diffusion_impose  => neumann_diffusion_matrix
-boundary_diffusion_flux    => neumann_no_flow_diffusive_flux
+boundary_diffusion_flux    => neumann_no_flow_flux
 
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
@@ -123,7 +123,7 @@ do icoarse = 1,nrefine
                        sqrt(two*disp_coef*end_time),sqrt(start_time/end_time))
 
 
-    time = zero
+    time = start_time
      
     do itime = 1,nstep
             conc_prev = conc
