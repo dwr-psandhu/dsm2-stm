@@ -151,6 +151,47 @@ module boundary_diffusion
  
  !> Example diffusive flux that imposes Neumann boundaries with zero flux at
  !> both ends of the channel.
+ subroutine neumann_no_flow_flux(diffusive_flux_lo, &
+                                           diffusive_flux_hi, &
+                                           conc,              &
+                                           area_lo,           &
+                                           area_hi,           &
+                                           disp_coef_lo,      &  
+                                           disp_coef_hi,      &
+                                           ncell,             &
+                                           nvar,              &
+                                           time,              &
+                                           dx,                &
+                                           dt)
+    use stm_precision
+         implicit none
+         !--- args
+         integer, intent(in)  :: ncell                                   !< number of cells
+         integer, intent(in)  :: nvar                                    !< number of variables
+         real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
+         real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+         real(stm_real), intent (in)   :: area_lo         (ncell)        !< Low side area centered at old time
+         real(stm_real), intent (in)   :: area_hi         (ncell)        !< High side area centered at old time
+         real(stm_real), intent (in)   :: time                           !< time
+         real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
+         real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
+         real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
+         real(stm_real), intent (in)   :: dt
+         real(stm_real), intent (in)   :: dx
+    
+       real(stm_real) :: xend =51200d0/two
+        
+     
+    diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(1/sqrt(four*pi*disp_coef_lo(1,:)))* &
+                             (xend/two/disp_coef_lo(1,:)/time)*exp(-(xend**2)/four/disp_coef_lo(1,:)/time)
+    diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(1/sqrt(four*pi*disp_coef_hi(ncell,:)))* &
+                                    (-xend/two/disp_coef_hi(1,:)/time)*exp(-(xend**2)/four/disp_coef_lo(1,:)/time)
+    
+    
+       
+    return
+ end subroutine
+ 
  subroutine neumann_no_flow_diffusive_flux(diffusive_flux_lo, &
                                            diffusive_flux_hi, &
                                            conc,              &
@@ -172,21 +213,21 @@ module boundary_diffusion
          real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
          real(stm_real), intent (in)   :: area_lo         (ncell)        !< Low side area centered at old time
          real(stm_real), intent (in)   :: area_hi         (ncell)        !< High side area centered at old time
-         real(stm_real), intent (in)   ::  time                          !< time
-         real(stm_real), intent (in)   ::  conc(ncell,nvar)              !< concentration 
+         real(stm_real), intent (in)   :: time                           !< time
+         real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
          real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
          real(stm_real), intent (in)   :: dt
          real(stm_real), intent (in)   :: dx
      
-     real(stm_real):: conc_start(nvar)
-     real(stm_real):: conc_end(nvar)
      
-     diffusive_flux_lo(1,:) = zero
+    diffusive_flux_lo(1,:) = zero
     diffusive_flux_hi(ncell,:) = zero
-        
+    
+       
     return
  end subroutine
+ 
  
 !> Example diffusive flux that imposes sinusoidal time dependent Neumann boundary flux at
 !> both ends of the channel.
@@ -397,14 +438,20 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
         real(stm_real) :: d_star 
         real(stm_real) :: flux_start(nvar)
         real(stm_real) :: flux_end(nvar)
-        d_star = dt/(dx*dx)  
+          
       
      ! todo: these must control for area or area_prev 
           
-     flux_start(:) = zero
-     flux_end(:) = zero
+      real(stm_real) :: xend =51200d0/two
+       d_star = dt/(dx*dx) 
+     
+    flux_start(:) = -area_lo(1)*disp_coef_lo(1,:)*(1/sqrt(four*pi*disp_coef_lo(1,:)))* &
+                             (xend/two/disp_coef_lo(1,:)/time)*exp(-(xend**2)/four/disp_coef_lo(1,:)/time)
+    flux_end(:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(1/sqrt(four*pi*disp_coef_hi(ncell,:)))* &
+                                    (-xend/two/disp_coef_hi(1,:)/time)*exp(-(xend**2)/four/disp_coef_lo(1,:)/time)
+    
          
-      center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
+     center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
      right_hand_side(1,:) = right_hand_side(1,:) &
                                 + theta_stm*(dt/dx)*flux_start(:)
      
