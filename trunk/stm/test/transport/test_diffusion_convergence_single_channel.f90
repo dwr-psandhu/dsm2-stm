@@ -42,8 +42,8 @@ implicit none
 
 !--- Problem variables
 
-integer, parameter  :: nstep_base = 512
-integer, parameter  :: nx_base = 512
+integer, parameter  :: nstep_base = 8*8
+integer, parameter  :: nx_base = 2048
 
 integer :: icoarse = 0
 integer :: nstep
@@ -52,8 +52,8 @@ integer :: nx
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 51200.d0
 real(stm_real), parameter :: origin = zero   
-real(stm_real), parameter :: total_time    = 1024.d0
-real(stm_real), parameter :: disp_coef     = 1.1d0
+real(stm_real), parameter :: total_time    = 2048.0d0
+real(stm_real), parameter :: disp_coef     = 100.0d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
@@ -63,8 +63,8 @@ logical, optional :: verbose
 
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
-real(stm_real), parameter :: constant_area = 100.0d0
-real(stm_real), parameter :: start_time = 1024.d0     !< Initial condition depends on this
+real(stm_real), parameter :: constant_area = 2.0d0
+real(stm_real), parameter :: start_time = 256.d0     !< Initial condition depends on this
 real(stm_real), parameter :: end_time = start_time + total_time
 
 real(stm_real) :: time
@@ -73,7 +73,7 @@ real(stm_real), allocatable :: xposition(:)
 
 integer :: itime
 integer :: which_cell
-integer :: icell ! debug only -- remove later
+integer :: icell 
 !------
 integer, parameter :: coarsen_factor = 2      ! coarsening factor used for convergence test
 integer :: coarsening
@@ -121,20 +121,6 @@ do icoarse = 1,nrefine
     allocate(reference(ncell))  ! reference solution
     call fill_gaussian(reference,nx,origin,dx,half*domain_length, &
                        sqrt(two*disp_coef*end_time),sqrt(start_time/end_time))
-!todo:
-!print *,'num_cell :',nx
-print*,'--------------------------------'
-print *,reference(2),reference(3),reference(4)
-print *,reference(nx-2),reference(nx-3),reference(nx-4)
-
- print *,conc(2,1),conc(3,1),conc(4,1)
- print *,conc(nx-2,1),conc(nx-3,1),conc(nx-4,1)
-!do icell=1,nx
-!    if ((reference(icell)- eps)>zero )then
-!       print *, icell
-!    end if
-!end do
-pause
 
 
     time = zero
@@ -161,10 +147,10 @@ pause
                          dt,                &
                          dx                 ) 
     end do 
-    write(filename, "(a\i3\'.txt')"), "diffuse_gaussian_reference_", ncell 
-!    call printout(reference,xposition,filename)
-    write(filename, "(a\i3\'.txt')"), "diffuse_gaussian_solution_", ncell 
- !todo:   call printout(conc(:,2),xposition,filename)
+    write(filename, "(a\i4\'.txt')"), "diffuse_gaussian_reference_", ncell 
+    call printout(reference,xposition,filename)
+    write(filename, "(a\i4\'.txt')"), "diffuse_gaussian_solution_", ncell 
+    call printout(conc(:,2),xposition,filename)
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
@@ -196,13 +182,13 @@ if (verbose == .true.) then
     print *,'Mesh Peclet',disp_coef*dt/dx/dx, "dx :",dx,"dt :",dt 
     print *, "nx_base:", nx_base, "nt_base:", nstep_base, "D:" ,disp_coef
     print *, 'Maximum error in :', which_cell ,'out of ', nx_base/2**(nrefine-1)
-    print *,"L1 rate: ", norm_error(1,3)/norm_error(1,2)
-    print *,"L2 rate: ", norm_error(2,3)/norm_error(2,2)
-    print *,"Linf rate", norm_error(3,3)/norm_error(3,2)
     print *,"L1 rate: ", norm_error(1,2)/norm_error(1,1)
     print *,"L2 rate: ", norm_error(2,2)/norm_error(2,1)
     print *,"Linf rate", norm_error(3,2)/norm_error(3,1)
-    print *, ' norms :' 
+    print *,"L1 rate: ", norm_error(1,3)/norm_error(1,2)
+    print *,"L2 rate: ", norm_error(2,3)/norm_error(2,2)
+    print *,"Linf rate", norm_error(3,3)/norm_error(3,2)
+    print *, ' norms :   L1,  L2,  L-inf' 
     print *, norm_error
     
 end if
