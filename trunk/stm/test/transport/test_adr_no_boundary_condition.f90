@@ -25,7 +25,7 @@ module test_advect_diffuse_react
 use stm_precision
 
 integer, parameter  :: nstep_base = 512
-integer, parameter  :: nx_base = 1024
+integer, parameter  :: nx_base = 512
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: start_time = 256.0d0 ! sec
 real(stm_real), parameter :: total_time = 512.0d0 ! sec

@@ -24,8 +24,8 @@ module test_linear_decay_const_flow
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 256
-integer, parameter  :: nx_base = 512
+integer, parameter  :: nstep_base = 256*4
+integer, parameter  :: nx_base = 512*4
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: total_time = 640.D0
 real(stm_real), parameter :: decay_rate = 0.002d0
@@ -117,7 +117,7 @@ subroutine uniform_flow(flow,    &
 
     
     !> local
-    real(stm_real), parameter :: constant_flow = 54.0d1
+    real(stm_real), parameter :: constant_flow = 254.0d1
     real(stm_real), parameter :: constant_area = 27.0d1 
 
 
