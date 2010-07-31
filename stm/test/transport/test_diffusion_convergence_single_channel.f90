@@ -42,8 +42,8 @@ implicit none
 
 !--- Problem variables
 
-integer, parameter  :: nstep_base = 16*8*2
-integer, parameter  :: nx_base = 128*3*2
+integer, parameter  :: nstep_base = 16*16*2
+integer, parameter  :: nx_base = 128*16
 
 integer :: icoarse = 0
 integer :: nstep
@@ -53,7 +53,7 @@ integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 51200.d0
 real(stm_real), parameter :: origin = zero   
 real(stm_real), parameter :: total_time    = 8000.0d0
-real(stm_real), parameter :: disp_coef     = 10.5d0
+real(stm_real), parameter :: disp_coef     = 1.5d0
 real(stm_real), parameter :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
