@@ -77,7 +77,7 @@ integer :: nstep
 integer :: nx
 integer :: which_cell
 integer :: coarsening
-character(LEN=64)  ::  filename = "test_uniform_convergence" 
+character(LEN=64)  ::  filename 
 logical, parameter :: limit_slope = .false.
 real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
@@ -94,9 +94,10 @@ real(stm_real) :: time
 real(stm_real) :: norm_error(3,nrefine)
 
 
+
 !todo: this is really "no flux"
 replace_boundary_flux => neumann_advective_flux
-
+filename=label
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
     coarsening = coarsen_factor**(icoarse-1)
@@ -197,9 +198,7 @@ do icoarse = 1,nrefine
     call coarsen(solution_mass,fine_solution_mass,nx_base,nx, nvar)
     call cons2prim(reference,solution_mass,area,nx,nconc)
     
-    write(filename, "(a\i4\'.txt')"), "uniform_gaussian_start_", nx
-        
-               
+    write(filename, "(a\i4\'.txt')"), "uniform_gaussian_start_", nx        
     call printout(reference(:,2),x_center(:),filename)
     write(filename, "(a\i4\'.txt')"), "uniform_gaussian_end_", nx 
     call printout(conc(:,2),x_center(:),filename)
