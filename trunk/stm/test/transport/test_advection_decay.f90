@@ -24,13 +24,14 @@ module test_linear_decay_const_flow
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 256*4
-integer, parameter  :: nx_base = 512*4
+integer, parameter  :: nstep_base = 128
+integer, parameter  :: nx_base = 512*2
 integer, parameter  :: nconc = 2
-real(stm_real), parameter :: total_time = 640.D0
-real(stm_real), parameter :: decay_rate = 0.002d0
+real(stm_real), parameter :: total_time = 600.d0
+real(stm_real), parameter :: decay_rate = 0.001d0
+real(stm_real), parameter :: constant_flow = one
+real(stm_real), parameter :: constant_area = one
 
-! exp(0.001*640) =0.527
 
 contains
 !> Subroutine that runs a small advective simulation
@@ -40,6 +41,7 @@ use test_single_channel_advection
 use hydro_data
 use source_sink
 use boundary_advection_module
+use logging
 
 implicit none
 procedure(hydro_data_if),pointer :: uniform_hydro
@@ -52,17 +54,21 @@ real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
 real(stm_real) :: fine_initial_area(nx_base)  !< initial area at finest resolution
 real(stm_real) :: fine_final_area(nx_base)    !< final area at finest resolution
-real(stm_real) :: ic_center = domain_length/two
-real(stm_real) :: solution_center = domain_length/two
-real(stm_real) :: ic_gaussian_sd = domain_length/(ten*two)
-real(stm_real) :: solution_gaussian_sd = domain_length/(ten*two)
+real(stm_real) :: ic_center = domain_length/three
+real(stm_real) :: solution_center
+real(stm_real) :: ic_gaussian_sd = domain_length/(sixteen*two)
+real(stm_real) :: solution_gaussian_sd 
+real(stm_real) :: x_center(nx_base) 
+real(stm_real) :: dx
 integer :: icell
-character(LEN=*),parameter :: label = "uniform flow_liner decay"
+character(LEN=64) :: label = "uniform flow_liner decay"
 uniform_hydro=> uniform_flow
 compute_source => linear_decay_source
-replace_boundary_flux      => neumann_advective_flux
+replace_boundary_flux  => neumann_advective_flux
 
-
+dx = domain_length/dble(nx_base)
+solution_center = ic_center + total_time*constant_flow/constant_area
+solution_gaussian_sd = ic_gaussian_sd
 !> Subroutine which generates fine initial values and reference values to compare with 
 !> and feed the covvergence test subroutine.
 call initial_fine_solution_uniform(fine_initial_condition, &
@@ -76,18 +82,26 @@ call initial_fine_solution_uniform(fine_initial_condition, &
                                    ic_center,              &
                                    solution_center)
                                    
+                         
 fine_solution = fine_solution* exp(- total_time*decay_rate)
 
-call test_advection_convergence(label,                   &
-                                 uniform_hydro,          &
-                                 domain_length,          &
-                                 total_time,             &
-                                 fine_initial_condition, &
-                                 fine_solution,          &            
-                                 nstep_base,             &
-                                 nx_base,                &
-                                 nconc,                  &
-                                 verbose)
+!todo : remove
+!do icell=1,nx_base
+!    x_center(icell) = dx*(dble(icell)-half)+origin
+!    write(label, "(a\i4\'.txt')"),'inicial_AR' , nx_base 
+!     call printout(fine_solution(:,2),x_center,label)
+!end do
+
+call test_advection_convergence(label,                  &
+                                uniform_hydro,          &
+                                domain_length,          &
+                                total_time,             &
+                                fine_initial_condition, &
+                                fine_solution,          &            
+                                nstep_base,             &
+                                nx_base,                &
+                                nconc,                  &
+                                verbose)
 
 end subroutine
 !=========================
@@ -117,14 +131,12 @@ subroutine uniform_flow(flow,    &
 
     
     !> local
-    real(stm_real), parameter :: constant_flow = 254.0d1
-    real(stm_real), parameter :: constant_area = 27.0d1 
-
-
+    ! todo: remove
     if (time <= (total_time/two)) then
       flow = constant_flow
     else
-      flow = minus * constant_flow
+      !flow = minus * constant_flow !todo:
+       flow =constant_flow
     end if
     flow_hi = flow
     flow_lo = flow

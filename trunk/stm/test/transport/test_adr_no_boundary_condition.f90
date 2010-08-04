@@ -24,8 +24,8 @@ module test_advect_diffuse_react
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 512
-integer, parameter  :: nx_base = 512
+integer, parameter  :: nstep_base = 64
+integer, parameter  :: nx_base = 2048
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: start_time = 256.0d0 ! sec
 real(stm_real), parameter :: total_time = 512.0d0 ! sec
@@ -33,10 +33,10 @@ real(stm_real), parameter :: total_time = 512.0d0 ! sec
 ! in the way solution does not reach the edges of channel.
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
-real(stm_real), parameter :: const_area = 11.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 110.2d0 !todo: is it in a correct range? 
-real(stm_real), parameter :: const_velocity = 1.9 ! m/s
-real(stm_real), parameter :: decay_rate = 0.001d0 
+real(stm_real), parameter :: const_area = 110.0d0 ! m^2
+real(stm_real), parameter :: const_disp_coef = 150.0d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_velocity = 2.9d0 ! m/s
+real(stm_real), parameter :: decay_rate = 0.0005d0 
 real(stm_real), parameter :: ic_center = domain_length/(four)
 real(stm_real), parameter :: ic_peak = one
 real(stm_real) :: end_time = start_time + total_time
@@ -255,7 +255,7 @@ do icoarse = 1,nrefine
                      nx,                    &
                      dx)
                      
- write(label, "(a\i4\'.txt')"), "result_adr_", nx 
+   write(label, "(a\i4\'.txt')"), "result_adr_", nx 
     call printout(conc(:,2),x_center,label)
   
 

@@ -42,8 +42,8 @@ implicit none
 
 !--- Problem variables
 
-integer, parameter  :: nstep_base = 16*16*2
-integer, parameter  :: nx_base = 128*16
+integer, parameter  :: nstep_base = 16*16
+integer, parameter  :: nx_base = 128*8
 
 integer :: icoarse = 0
 integer :: nstep
@@ -117,6 +117,9 @@ do icoarse = 1,nrefine
     call fill_gaussian(conc(:,1),nx,origin,dx,half*domain_length, & 
                        sqrt(two*disp_coef*start_time),one)
     conc(:,2) = conc(:,1)
+    
+    write(filename, "(a\i4\'.txt')"), "diffuse_gaussian_ic_", ncell 
+    call printout(conc(:,2),xposition,filename)
     
     allocate(reference(ncell))  ! reference solution
     call fill_gaussian(reference,nx,origin,dx,half*domain_length, &
