@@ -63,7 +63,7 @@ integer :: icell
 character(LEN=64) :: label = "uniform flow_liner decay"
 uniform_hydro=> uniform_flow
 compute_source => linear_decay_source
-replace_boundary_flux  => neumann_advective_flux
+replace_adv_boundary_flux  => neumann_advective_flux
 
 dx = domain_length/dble(nx_base)
 solution_center = ic_center + total_time*constant_flow/constant_area

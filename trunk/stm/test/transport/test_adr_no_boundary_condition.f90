@@ -98,7 +98,7 @@ real(stm_real) :: theta = half
 
 boundary_diffusion_impose  => neumann_diffusion_matrix 
 boundary_diffusion_flux    => neumann_no_flow_diffusive_flux 
-replace_boundary_flux      => neumann_advective_flux 
+replace_adv_boundary_flux      => neumann_advective_flux 
 hydro_adr                  => uniform_flow_adr  
 compute_source             => adr_linear_decay 
 !------
@@ -256,7 +256,7 @@ do icoarse = 1,nrefine
                      nx,                    &
                      dx)
                      
-   write(label, "(a\i4\'.txt')"), "result_adr_", nx 
+   write(label, "(a\i4\'.txt')"), "result_adr_no_boundary_", nx 
     call printout(conc(:,2),x_center,label)
   
 
@@ -271,6 +271,10 @@ end do !icoarse
 call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on " // trim(label))
 call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on " // trim(label))
 call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
+
+call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergence on " // trim(label))
+call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on " // trim(label))
+call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on " // trim(label))
 
 if (verbose == .true.) then
    call log_convergence_results(norm_error,nrefine,dx,dt,const_velocity,label,which_cell,nx_base)
