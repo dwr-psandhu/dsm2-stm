@@ -19,6 +19,7 @@
 !</license>
 
 !> Test advection diffusion and reaction in a single channel with uniform flow
+!> subjected to the Neumann flux = zero boundary condition
 !>@ingroup test
 module test_advect_diffuse_react
 
@@ -34,7 +35,7 @@ real(stm_real), parameter :: total_time = 512.0d0 ! sec
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 110.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 150.0d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_disp_coef = 10.0d0 !todo: is it in a correct range? 
 real(stm_real), parameter :: const_velocity = 2.9d0 ! m/s
 real(stm_real), parameter :: decay_rate = 0.001d0 
 real(stm_real), parameter :: ic_center = domain_length/(four)
@@ -390,14 +391,11 @@ real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
 real(stm_real),intent(in)  :: area(ncell)         !< area at source     
 real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
 real(stm_real),intent(in)  :: time                !< time 
-!--- local just for test
-real(stm_real) :: mass (ncell,nvar)
+integer ivar
 
-! source must be in primitive variable 
-call prim2cons(mass,conc,area,ncell,nvar)
-
-source = -decay_rate*mass
-
+do ivar = 1,nvar
+source(:,ivar) = -decay_rate*conc(:,ivar)
+end do 
 return
 end subroutine 
 
