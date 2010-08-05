@@ -82,7 +82,7 @@ real(stm_real),intent(in)  :: dt                    !< current time step
 real(stm_real),intent(in)  :: dx                    !< spatial step
 logical,intent(in),optional :: use_limiter          !< whether to use slope limiter
 
-!---------- locals
+!-----locals
 
 real(stm_real) :: source(ncell,nvar)      !< cell centered source 
 real(stm_real) :: conc(ncell,nvar)        !< cell centered concentration
@@ -138,7 +138,7 @@ call adjust_differences(grad,    &
                         grad_hi, &
                         ncell,   &
                         nvar)
-
+! source must provide in primitive variable
 call compute_source(source, & 
                     conc,   &
                     area,   &
@@ -247,7 +247,7 @@ real(stm_real),intent(in) :: dt                  !< length of current time step 
 real(stm_real),intent(in) :: dx                  !< spatial step
 !----- locals
 integer        :: ivar
-real(stm_real) :: vel(ncell)                !< cell-centered flow at old time
+real(stm_real) :: vel(ncell)                     !< cell-centered flow at old time
 real(stm_real) :: dtbydx
 !--------------------
 vel=flow/area
@@ -256,10 +256,10 @@ vel=flow/area
 dtbydx = dt/dx
 
 do ivar = 1,nvar
-    ! todo make sure source is in terms of primitive variables
+    ! todo: make sure source is in terms of primitive variables
     ! todo: this only works if I disable extrapolation (first order Godunov)
-    conc_lo(:,ivar) = conc(:,ivar) - half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)
-    conc_hi(:,ivar) = conc(:,ivar) + half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)
+    conc_lo(:,ivar) = conc(:,ivar) - half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)/area
+    conc_hi(:,ivar) = conc(:,ivar) + half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)/area
     
 end do
 

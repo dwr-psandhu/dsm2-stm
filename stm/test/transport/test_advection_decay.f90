@@ -29,9 +29,8 @@ integer, parameter  :: nx_base = 512*2
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: total_time = 600.d0
 real(stm_real), parameter :: decay_rate = 0.001d0
-real(stm_real), parameter :: constant_flow = one
-real(stm_real), parameter :: constant_area = one
-
+real(stm_real), parameter :: constant_flow = ten*sixteen
+real(stm_real), parameter :: constant_area = ten*ten
 
 contains
 !> Subroutine that runs a small advective simulation
