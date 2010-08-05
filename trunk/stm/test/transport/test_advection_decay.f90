@@ -222,9 +222,9 @@ rate_1 = decay_rate
 rate_2 = rate_1
 
 ! source must be in primitive variable 
-call prim2cons(mass,conc,area,ncell,nvar)
-source(:,1) = -rate_1*mass(:,1)
-source(:,2) = -rate_2*mass(:,2) 
+
+source(:,1) = -rate_1*conc(:,1)
+source(:,2) = -rate_2*conc(:,2) 
  
 return
 end subroutine 

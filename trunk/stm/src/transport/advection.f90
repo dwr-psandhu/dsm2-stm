@@ -390,8 +390,9 @@ dtbydx = dt/dx
 
 ! obtain a guess at the new state (predictor part of Huen) using the flux divergence and source evaluated at the
 ! old time step
-mass = mass_prev - dtbydx*div_flux + dt*source_prev
-
+do ivar=1,nvar
+    mass(:,ivar) = mass_prev(:,ivar) - dtbydx*div_flux(:,ivar) + dt*source_prev(:,ivar)*area
+end do
 ! compute the source at the new time from the predictor
 call cons2prim(conc,    &
                mass,    &
