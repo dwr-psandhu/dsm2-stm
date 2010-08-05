@@ -90,7 +90,6 @@ pure subroutine prim_increment_to_cons(mass,conc,area,nloc,nvar,scale)
     !--- locals
     integer :: ivar
 
-
     do ivar = 1,nvar
     ! todo: check this line
         mass(:,ivar) =  mass(:,ivar) + scale*conc(:,ivar)*area
