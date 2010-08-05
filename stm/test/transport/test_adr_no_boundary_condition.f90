@@ -34,8 +34,8 @@ real(stm_real), parameter :: total_time = 512.0d0 ! sec
 ! in the way solution does not reach the edges of channel.
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
-real(stm_real), parameter :: const_area = 110.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 2.0d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_area = 110.0d0 ! m^2/s
+real(stm_real), parameter :: const_disp_coef = 75.0d0 !todo: is it in a correct range? 
 real(stm_real), parameter :: const_velocity = 2.9d0 ! m/s
 real(stm_real), parameter :: decay_rate = 0.0005d0 
 real(stm_real), parameter :: ic_center = domain_length/(four)
@@ -380,7 +380,7 @@ subroutine adr_linear_decay(source, &
                             time)
                                      
 
- use  primitive_variable_conversion
+
  implicit none
  
  !--- args
