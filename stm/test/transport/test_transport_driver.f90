@@ -47,6 +47,7 @@ use test_linear_decay_no_flow
 use test_advect_diffuse_react
 use test_linear_decay_const_flow
 use test_liner_reaction
+use test_a_d_r_neumann
 
 implicit none
 
@@ -83,6 +84,7 @@ call test_diffusion_neumann(verbose)
 call test_diffusion_convergence_single_channel(verbose)
 !/// A-D-R  
 call  test_advect_diffuse_reaction(verbose)
+call  test_advect_diffuse_reaction_neumann(verbose)
 !//////// 
 call fruit_summary
 pause

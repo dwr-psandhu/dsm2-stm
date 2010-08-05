@@ -61,7 +61,7 @@ module boundary_advection_module
  !> This pointer should be set by the driver or client code to specify the 
  !> treatment at the advection boundary condition 
  ! todo: check here
- procedure(boundary_advective_flux),pointer ::replace_boundary_flux  => null()
+ procedure(boundary_advective_flux),pointer :: replace_adv_boundary_flux  => null()
 
 
  contains
