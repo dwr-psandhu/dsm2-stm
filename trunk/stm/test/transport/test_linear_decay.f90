@@ -145,13 +145,9 @@ real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
 real(stm_real),intent(in)  :: area(ncell)         !< area at source     
 real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
 real(stm_real),intent(in)  :: time                !< time 
-!--- local just for test
-real(stm_real) :: mass (ncell,nvar)
 
-! source must be in primitive variable 
-call prim2cons(mass,conc,area,ncell,nvar)
-source(:,1) = -decay_rate*mass(:,1)
-source(:,2) = -decay_rate*mass(:,2) 
+source(:,1) = -decay_rate*conc(:,1)
+source(:,2) = -decay_rate*conc(:,2) 
  
 return
 end subroutine 

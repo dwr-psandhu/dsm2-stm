@@ -258,8 +258,8 @@ dtbydx = dt/dx
 do ivar = 1,nvar
     ! todo: make sure source is in terms of primitive variables
     ! todo: this only works if I disable extrapolation (first order Godunov)
-    conc_lo(:,ivar) = conc(:,ivar) - half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)/area
-    conc_hi(:,ivar) = conc(:,ivar) + half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)/area
+    conc_lo(:,ivar) = conc(:,ivar) - half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)
+    conc_hi(:,ivar) = conc(:,ivar) + half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)
     
 end do
 
@@ -384,7 +384,7 @@ real(stm_real) :: dtbydx
 real(stm_real) :: source(ncell,nvar)                 !< New time source term
 real(stm_real) :: conc(ncell,nvar)                   !< Concentration
 real(stm_real) :: flow(ncell)                        !< cell centered flow 
-
+integer :: ivar
 !--------------------
 dtbydx = dt/dx
 
@@ -407,11 +407,14 @@ call compute_source(source,&
                     nvar,  &
                     time) 
 
-! now recalculate the update using a source half from the old state and half from the new state guess 
-mass =   mass_prev &
-       - dtbydx*div_flux &
-       + dt*half*source_prev &
-       + dt*half*source
+! now recalculate the update using a source half from the old state 
+! and half from the new state guess 
+do ivar = 1,nvar
+    mass(:,ivar) =   mass_prev(:,ivar) &
+       - dtbydx*div_flux(:,ivar) &
+       + dt*half*source_prev(:,ivar)*area &
+       + dt*half*source(:,ivar)*area
+end do 
 
 return
 end subroutine

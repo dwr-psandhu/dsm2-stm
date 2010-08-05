@@ -70,7 +70,7 @@ do icell=1,ncell
    norm_2 = norm_2 + sq_error
 end do
 norm_1 = norm_1/dble(ncell)
-norm_2 = norm_2/dble(ncell)
+norm_2 = sqrt(norm_2)/dble(ncell)
 
 return
 end subroutine
