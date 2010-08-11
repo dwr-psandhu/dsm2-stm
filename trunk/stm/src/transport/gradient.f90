@@ -33,7 +33,7 @@ implicit none
 !---- args
 integer,intent(in)  :: ncell                          !< Number of cells
 integer,intent(in)  :: nvar                           !< Number of variables
-real(stm_real),intent(in) :: vals(ncell,nvar)         !< Data to be differenced
+real(stm_real),intent(in)  :: vals(ncell,nvar)        !< Data to be differenced
 real(stm_real),intent(out) :: grad_lo(ncell,nvar)     !< Difference on lo side, LARGEREAL in first index
 real(stm_real),intent(out) :: grad_hi(ncell,nvar)     !< Difference on hi side (n+1) minus (n) LARGEREAL for last index
 real(stm_real),intent(out) :: grad_center(ncell,nvar) !< Dentered diff, LARGEREAL for undefined boundary cells

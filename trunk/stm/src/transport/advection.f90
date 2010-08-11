@@ -36,7 +36,7 @@ contains
 !>       - extrapolate()
 !>   - upwind()
 !>   - compute_flux()
-!>   - replace_adv_boundary_flux()   for boundary and special cases
+!>   - replace_advection_boundary_flux()   for boundary and special cases
 !>   - Compute conservative divergence
 !>   - Apply divergence in conservative_update along with Heun's method for sources
 !>   Note that all these steps are operations on entire arrays of values -- this keeps things efficient
@@ -173,17 +173,17 @@ call compute_flux(flux_lo,  &
 
 ! Replace fluxes for special cases having to do with boundaries, network and structures
 ! todo : Keeps the dirty stuff in one place. For now this is an empty call
-call replace_adv_boundary_flux(flux_lo,     &
-                           flux_hi,     &
-                           conc_lo,     &
-                           conc_hi,     &
-                           flow_lo,     &
-                           flow_hi,     &
-                           ncell,       &
-                           nvar,        &
-                           time,        &
-                           dt,          &
-                           dx)
+call replace_advection_boundary_flux(flux_lo,     &
+                                     flux_hi,     &
+                                     conc_lo,     &
+                                     conc_hi,     &
+                                     flow_lo,     &
+                                     flow_hi,     &
+                                     ncell,       &
+                                     nvar,        &
+                                     time,        &
+                                     dt,          &
+                                     dx)
 
 ! Combine the fluxes into a divergence term at the half time at cell edges.
 ! Computing and storing the divergence separately gives some flexibility with integrating
@@ -258,8 +258,8 @@ dtbydx = dt/dx
 do ivar = 1,nvar
     ! todo: make sure source is in terms of primitive variables
     ! todo: this only works if I disable extrapolation (first order Godunov)
-    conc_lo(:,ivar) = conc(:,ivar) - half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)
-    conc_hi(:,ivar) = conc(:,ivar) + half*grad(:,ivar) - half*dtbydx*grad(:,ivar)*vel + half*dt*source(:,ivar)
+    conc_lo(:,ivar) = conc(:,ivar) + half*(-grad(:,ivar) - dtbydx*grad(:,ivar)*vel + dt*source(:,ivar))
+    conc_hi(:,ivar) = conc(:,ivar) + half*( grad(:,ivar) - dtbydx*grad(:,ivar)*vel + dt*source(:,ivar))
     
 end do
 

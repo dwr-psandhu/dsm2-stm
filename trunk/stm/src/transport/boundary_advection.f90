@@ -25,17 +25,17 @@ module boundary_advection_module
  interface
        !> Generic interface for calculating BC advection routine that should be fulfilled by
        !> client programs
-       subroutine boundary_advective_flux(flux_lo,  &
-                                        flux_hi,    &
-                                        conc_lo,    &
-                                        conc_hi,    &
-                                        flow_lo,    &
-                                        flow_hi,    &
-                                        ncell,      &
-                                        nvar,       &
-                                        time,       &
-                                        dt,         &
-                                        dx)
+       subroutine boundary_advective_flux(flux_lo,    &
+                                          flux_hi,    &
+                                          conc_lo,    &
+                                          conc_hi,    &
+                                          flow_lo,    &
+                                          flow_hi,    &
+                                          ncell,      &
+                                          nvar,       &
+                                          time,       &
+                                          dt,         &
+                                          dx)
         
          use stm_precision
          
@@ -46,8 +46,8 @@ module boundary_advection_module
         ! todo: check the intents
         real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
         real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
-        real(stm_real),intent(in)    :: flow_lo(ncell)     !< flow on lo side of cells centered in time
-        real(stm_real),intent(in)    :: flow_hi(ncell)     !< flow on hi side of cells centered in time
+        real(stm_real),intent(in)    :: flow_lo(ncell)          !< flow on lo side of cells centered in time
+        real(stm_real),intent(in)    :: flow_hi(ncell)          !< flow on hi side of cells centered in time
         real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
         real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
         real(stm_real), intent (in)  :: time                    !< Current time
@@ -61,7 +61,7 @@ module boundary_advection_module
  !> This pointer should be set by the driver or client code to specify the 
  !> treatment at the advection boundary condition 
  ! todo: check here
- procedure(boundary_advective_flux),pointer :: replace_adv_boundary_flux  => null()
+ procedure(boundary_advective_flux),pointer :: replace_advection_boundary_flux  => null()
 
 
  contains
