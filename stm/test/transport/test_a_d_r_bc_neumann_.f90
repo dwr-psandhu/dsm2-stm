@@ -35,9 +35,9 @@ real(stm_real), parameter :: total_time = 512.0d0 ! sec
 real(stm_real), parameter :: domain_length = 4000.0d0 ! 4000m
 real(stm_real), parameter :: origin = 12800.0d0 ! low side of channel
 real(stm_real), parameter :: const_area = 110.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 150.0d0 !do not play 
+real(stm_real), parameter :: const_disp_coef = 120.0d0 !do not play with this number 
 real(stm_real), parameter :: const_velocity = 2.9d0 ! 2.9 m/s
-real(stm_real), parameter :: decay_rate = 0.0005d0 
+real(stm_real), parameter :: decay_rate = 0.0000d0 
 real(stm_real), parameter :: ic_center = origin + domain_length/(ten)  
 real(stm_real), parameter :: ic_peak = one
 real(stm_real) :: end_time = start_time + total_time
@@ -100,7 +100,7 @@ boundary_diffusion_impose        => neumann_adr_diffusion_matrix
 boundary_diffusion_flux          => neumann_adr_diffusive_flux 
 replace_advection_boundary_flux  => neumann_adr_dvective_flux 
 hydro_a_d_r                      => uniform_flow_adr  !ok
-compute_source                   => adr_linear_decay !ok
+compute_source                   => adr_linear_decay  !ok
 !------
 label = 'ADR uniform flow with Neumann BC'
 
@@ -189,7 +189,7 @@ do icoarse = 1,nrefine
     mass_prev = mass
     
     do itime = 1,nstep
-       time = start_time + itime*dt
+       time = start_time + dble(itime)*dt
        call hydro_a_d_r(flow,    &
                         flow_lo, &
                         flow_hi, &
@@ -429,29 +429,32 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
         real(stm_real),intent(in)    :: flow_hi(ncell)          !< flow on hi side of cells centered in time
         real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
         real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
-        real(stm_real), intent (in)  :: time                    !< Current time
-        real(stm_real), intent (in)  :: dx                      !< Spatial step  
-        real(stm_real), intent (in)  :: dt                      !< Time step     
+        real(stm_real), intent (in)  :: time                    !< current time
+        real(stm_real), intent (in)  :: dx                      !< spatial step  
+        real(stm_real), intent (in)  :: dt                      !< time step     
       !-----local
        integer :: nx_flux
        real(stm_real) :: gaussian_bell_center
        real(stm_real) :: channel_start
        real(stm_real) :: conc_mid (nx_base+1,nvar)
+       real(stm_real) :: time_half
             
-      gaussian_bell_center = ic_center + const_velocity*time
-      channel_start = origin - domain_length*half/dble(nx_base)
+      channel_start = origin - dx*half
       nx_flux = nx_base + 1
+      time_half = time - half*dt
       
-      call fill_gaussian(conc_mid(:,1),nx_flux,channel_start,dx,gaussian_bell_center,sqrt(two*const_disp_coef*time),ic_peak*sqrt(start_time/time))
+      gaussian_bell_center = ic_center + const_velocity*(time_half-start_time)
+      
+      call fill_gaussian(conc_mid(:,1),nx_flux,channel_start,dx,gaussian_bell_center,sqrt(two*const_disp_coef*time_half),ic_peak*sqrt(start_time/time_half))
       conc_mid (:,2) = conc_mid (:,1)
        
-      conc_mid = conc_mid * exp(-decay_rate*(time-start_time))
-       
+      ! todo: time or time +1/2  
+      conc_mid = conc_mid * exp(-decay_rate*(time_half -start_time))
       flux_lo(1,:)     = flow_lo(1)    * conc_mid(1,:)
       flux_hi(ncell,:) = flow_hi(ncell)* conc_mid(nx_flux,:)
+      
         
-     ! todo: add non trivial cases
-     return
+      return
  end subroutine
  
  subroutine neumann_adr_diffusion_matrix(center_diag ,       &
@@ -501,16 +504,14 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
         d_star=dt/(dx*dx)
      
      next_time  = time + dt
-     
-     
-     
+      
     flux_start(:) = -area_lo(1)*disp_coef_lo(1,:)*(1/sqrt(four*pi*disp_coef_lo(1,:)))* &
                              (xstart/two/disp_coef_lo(1,:)/next_time)*exp(-(xstart**2)/four/disp_coef_lo(1,:)/next_time)
     flux_end(:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(1/sqrt(four*pi*disp_coef_hi(ncell,:)))* &
                                     (-xend/two/disp_coef_hi(1,:)/next_time)*exp(-(xend**2)/four/disp_coef_lo(1,:)/next_time )
     
-    flux_start = flux_start* exp(-decay_rate*(time-next_time))
-    flux_end   = flux_end  * exp(-decay_rate*(time-next_time)) 
+    flux_start = flux_start* exp(-decay_rate*(next_time-start_time))
+    flux_end   = flux_end  * exp(-decay_rate*(next_time-start_time)) 
      
          
      center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
@@ -521,8 +522,7 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
      right_hand_side(ncell,:)= right_hand_side(ncell,:) &
                                    - theta_stm*(dt/dx)*flux_end(:)
                                    
-    
-                                   
+                                      
      return
  end subroutine
  
@@ -553,21 +553,20 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
          real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
          real(stm_real), intent (in)   :: dt
          real(stm_real), intent (in)   :: dx
-    !----local
+        !----local
         real(stm_real) :: xend = origin + domain_length
         real(stm_real) :: xstart = origin
         real(stm_real) :: next_time  
       
-     next_time  =time + dt
-     
-     
+     next_time  = time + dt 
+          
        diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(1/sqrt(four*pi*disp_coef_lo(1,:)))* &
                              (xstart/two/disp_coef_lo(1,:)/next_time )*exp(-(xstart**2)/four/disp_coef_lo(1,:)/next_time )
        diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(1/sqrt(four*pi*disp_coef_hi(ncell,:)))* &
                                     (-xend/two/disp_coef_hi(1,:)/next_time )*exp(-(xend**2)/four/disp_coef_lo(1,:)/next_time )
     
-      diffusive_flux_lo(1,:)    = diffusive_flux_lo(1,:)    * exp(-decay_rate*(time-next_time ))
-      diffusive_flux_hi(ncell,:)= diffusive_flux_hi(ncell,:)* exp(-decay_rate*(time-next_time )) 
+      diffusive_flux_lo(1,:)    = diffusive_flux_lo(1,:)    * exp(-decay_rate*(next_time-start_time ))
+      diffusive_flux_hi(ncell,:)= diffusive_flux_hi(ncell,:)* exp(-decay_rate*(next_time-start_time )) 
            
     return
  end subroutine
