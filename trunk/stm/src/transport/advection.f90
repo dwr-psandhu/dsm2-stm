@@ -286,10 +286,10 @@ integer,intent(in)  :: nvar                       !< Number of variables
 
 real(stm_real),intent(out) :: flux_lo(ncell,nvar) !< Flux on lo face at half time
 real(stm_real),intent(out) :: flux_hi(ncell,nvar) !< Flux on hi face at half time
-real(stm_real),intent(in) :: conc_lo(ncell,nvar)  !< upwinded conc at half time at lo face
-real(stm_real),intent(in) :: conc_hi(ncell,nvar)  !< upwinded conc at half time at hi face
-real(stm_real),intent(in) :: flow_lo(ncell)       !< time-centered flow at lo face
-real(stm_real),intent(in) :: flow_hi(ncell)       !< time-centered flow at hi face
+real(stm_real),intent(in)  :: conc_lo(ncell,nvar) !< upwinded conc at half time at lo face
+real(stm_real),intent(in)  :: conc_hi(ncell,nvar) !< upwinded conc at half time at hi face
+real(stm_real),intent(in)  :: flow_lo(ncell)      !< time-centered flow at lo face
+real(stm_real),intent(in)  :: flow_hi(ncell)      !< time-centered flow at hi face
 !---- locals
 integer :: ivar
 integer :: icell
