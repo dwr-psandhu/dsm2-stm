@@ -37,7 +37,7 @@ real(stm_real), parameter :: origin = 12800.0d0 ! low side of channel
 real(stm_real), parameter :: const_area = 110.0d0 ! m^2
 real(stm_real), parameter :: const_disp_coef = 120.0d0 !do not play with this number 
 real(stm_real), parameter :: const_velocity = 2.9d0 ! 2.9 m/s
-real(stm_real), parameter :: decay_rate = 0.0000d0 
+real(stm_real), parameter :: decay_rate = 0.0005d0 
 real(stm_real), parameter :: ic_center = origin + domain_length/(ten)  
 real(stm_real), parameter :: ic_peak = one
 real(stm_real) :: end_time = start_time + total_time
@@ -98,7 +98,7 @@ real(stm_real) :: theta = half
 
 boundary_diffusion_impose        => neumann_adr_diffusion_matrix 
 boundary_diffusion_flux          => neumann_adr_diffusive_flux 
-replace_advection_boundary_flux  => neumann_adr_dvective_flux 
+replace_advection_boundary_flux  => neumann_adr_dvective_flux ! OK
 hydro_a_d_r                      => uniform_flow_adr  !ok
 compute_source                   => adr_linear_decay  !ok
 !------
@@ -452,8 +452,7 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
       conc_mid = conc_mid * exp(-decay_rate*(time_half -start_time))
       flux_lo(1,:)     = flow_lo(1)    * conc_mid(1,:)
       flux_hi(ncell,:) = flow_hi(ncell)* conc_mid(nx_flux,:)
-      
-        
+             
       return
  end subroutine
  
@@ -461,6 +460,7 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
                                          up_diag,            &     
                                          down_diag,          &
                                          right_hand_side,    & 
+                                         conc,               &
                                          explicit_diffuse_op,&
                                          area,               &
                                          area_lo,            &
@@ -473,56 +473,81 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
                                          nvar,               & 
                                          dx,                 &
                                          dt)
-     use stm_precision
-     implicit none
-         !--- args
-                                       
-        integer, intent (in) :: ncell                                               !< Number of cells
-        integer, intent (in) :: nvar                                                !< Number of variables
-
-        real(stm_real),intent (inout):: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
-        real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
-        real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
-        real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of the right hand side
-        real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar)
-        real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
-        real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
-        real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
-        real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
-        real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
-        real(stm_real), intent (in)  :: time                                        !< Current time
-        real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
-        real(stm_real), intent (in)  :: dx                                          !< Spatial step  
-        real(stm_real), intent (in)  :: dt                                          !< Time step     
-        !---local
-        real(stm_real) :: d_star
-        real(stm_real) :: flux_start(nvar)
-        real(stm_real) :: flux_end(nvar)   
-        real(stm_real) :: next_time   
-        real(stm_real) :: xend = origin + domain_length
-        real(stm_real) :: xstart = origin
-        d_star=dt/(dx*dx)
-     
-     next_time  = time + dt
-      
-    flux_start(:) = -area_lo(1)*disp_coef_lo(1,:)*(1/sqrt(four*pi*disp_coef_lo(1,:)))* &
-                             (xstart/two/disp_coef_lo(1,:)/next_time)*exp(-(xstart**2)/four/disp_coef_lo(1,:)/next_time)
-    flux_end(:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(1/sqrt(four*pi*disp_coef_hi(ncell,:)))* &
-                                    (-xend/two/disp_coef_hi(1,:)/next_time)*exp(-(xend**2)/four/disp_coef_lo(1,:)/next_time )
-    
-    flux_start = flux_start* exp(-decay_rate*(next_time-start_time))
-    flux_end   = flux_end  * exp(-decay_rate*(next_time-start_time)) 
-     
-         
-     center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
-     right_hand_side(1,:) = right_hand_side(1,:) &
-                                + theta_stm*(dt/dx)*flux_start(:)
-     
-     center_diag(ncell,:)= area(ncell)+ theta_stm*d_star* area_lo(ncell)*disp_coef_lo(1,:)
-     right_hand_side(ncell,:)= right_hand_side(ncell,:) &
-                                   - theta_stm*(dt/dx)*flux_end(:)
+ use stm_precision
+ use example_initial_conditions
+ implicit none
+     !--- args
                                    
-                                      
+integer, intent (in) :: ncell                                               !< Number of cells
+integer, intent (in) :: nvar                                                !< Number of variables
+
+real(stm_real),intent (inout):: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
+real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
+real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
+real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of the right hand side
+real(stm_real),intent  (in)  :: conc(ncell,nvar)
+real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar)
+real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
+real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
+real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
+real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
+real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
+real(stm_real), intent (in)  :: time                                        !< Current time
+real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+real(stm_real), intent (in)  :: dx                                          !< Spatial step  
+real(stm_real), intent (in)  :: dt                                          !< Time step     
+!---local
+real(stm_real) :: d_star
+real(stm_real) :: flux_start(nvar)
+real(stm_real) :: flux_end(nvar)   
+real(stm_real) :: next_time   
+real(stm_real) :: xend = origin + domain_length
+real(stm_real) :: xstart = origin
+real(stm_real) :: half_time
+integer :: nx_flux
+real(stm_real) :: gaussian_bell_center
+real(stm_real) :: channel_start
+real(stm_real) :: conc_mid (2*nx_base+2,nvar)
+real(stm_real) :: old_time
+
+!nx_flux = 2*(ncell+1)
+!d_star=dt/(dx*dx)
+!channel_start = origin - dx*half
+! 
+!next_time = time 
+!half_time = time - half*dt
+!old_time  = time - dt
+!
+!gaussian_bell_center = ic_center + const_velocity*(next_time-start_time)
+!      
+!call fill_gaussian(conc_mid(:,1),nx_flux,channel_start,dx/two,gaussian_bell_center,sqrt(two*const_disp_coef*next_time),ic_peak*sqrt(start_time/next_time))
+!conc_mid (:,2) = conc_mid (:,1)
+!! todo: here outflow is right hand side!!
+!
+!!flux_start(:) = -area_lo(1)*disp_coef_lo(1,:)*(1/sqrt(four*pi*disp_coef_lo(1,:)))* &
+!!                     (xstart/(two*disp_coef_lo(1,:)*next_time))*exp(-(xstart**two)/four/disp_coef_lo(1,:)/next_time)
+!
+!flux_start(:) = -two*area_lo(1)*disp_coef_lo(1,:)*(conc_mid(2,:)-conc_mid(1,:))/dx
+!
+!! extrapolate linear 
+!
+!flux_start = flux_start* exp(-decay_rate*(time-start_time))
+!
+!     
+!center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
+!right_hand_side(1,:) = right_hand_side(1,:) &
+!                            + theta_stm*(dt/dx)*flux_start(:)
+! 
+!flux_end(:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(conc(ncell,:)-conc(ncell-1,:))/dx
+!
+!! no need to this in outflow
+!!flux_end   = flux_end  * exp(-decay_rate*(time-start_time)) 
+! 
+! 
+! center_diag(ncell,:)= area(ncell)+ theta_stm*d_star* area_lo(ncell)*disp_coef_lo(1,:)
+! right_hand_side(ncell,:)= right_hand_side(ncell,:) &
+!                               - theta_stm*(dt/dx)*flux_end(:)
+                                                             
      return
  end subroutine
  
@@ -538,35 +563,55 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
                                        time,              &
                                        dx,                &
                                        dt)
-    use stm_precision
-         implicit none
-         !--- args
-         integer, intent(in)  :: ncell                                   !< number of cells
-         integer, intent(in)  :: nvar                                    !< number of variables
-         real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
-         real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-         real(stm_real), intent (in)   :: area_lo         (ncell)        !< Low side area centered at old time
-         real(stm_real), intent (in)   :: area_hi         (ncell)        !< High side area centered at old time
-         real(stm_real), intent (in)   :: time                           !< time
-         real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
-         real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
-         real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
-         real(stm_real), intent (in)   :: dt
-         real(stm_real), intent (in)   :: dx
+ use stm_precision
+implicit none
+!--- args
+integer, intent(in)  :: ncell                                   !< number of cells
+integer, intent(in)  :: nvar                                    !< number of variables
+real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
+real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+real(stm_real), intent (in)   :: area_lo         (ncell)        !< Low side area centered at old time
+real(stm_real), intent (in)   :: area_hi         (ncell)        !< High side area centered at old time
+real(stm_real), intent (in)   :: time                           !< time
+real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
+real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
+real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
+real(stm_real), intent (in)   :: dt
+real(stm_real), intent (in)   :: dx
         !----local
-        real(stm_real) :: xend = origin + domain_length
-        real(stm_real) :: xstart = origin
-        real(stm_real) :: next_time  
-      
-     next_time  = time + dt 
-          
-       diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(1/sqrt(four*pi*disp_coef_lo(1,:)))* &
-                             (xstart/two/disp_coef_lo(1,:)/next_time )*exp(-(xstart**2)/four/disp_coef_lo(1,:)/next_time )
-       diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(1/sqrt(four*pi*disp_coef_hi(ncell,:)))* &
-                                    (-xend/two/disp_coef_hi(1,:)/next_time )*exp(-(xend**2)/four/disp_coef_lo(1,:)/next_time )
-    
-      diffusive_flux_lo(1,:)    = diffusive_flux_lo(1,:)    * exp(-decay_rate*(next_time-start_time ))
-      diffusive_flux_hi(ncell,:)= diffusive_flux_hi(ncell,:)* exp(-decay_rate*(next_time-start_time )) 
+integer :: nx_flux
+real(stm_real) :: xend  
+real(stm_real) :: xstart 
+real(stm_real) :: next_time 
+real(stm_real) :: old_time 
+real(stm_real) :: half_time
+real(stm_real) :: d_star
+real(stm_real) :: flux_start(nvar)
+real(stm_real) :: flux_end(nvar)   
+real(stm_real) :: gaussian_bell_center
+real(stm_real) :: channel_start
+real(stm_real) :: conc_mid (2*nx_base+2,nvar)
+
+ next_time = time
+ half_time = time - dt/two
+ old_time  = time - dt
+ 
+ gaussian_bell_center = ic_center + const_velocity*(next_time-start_time)
+ xend = origin + domain_length - gaussian_bell_center
+ xstart= domain_length - xend
+ 
+ 
+! flux_end
+! flux_start
+ 
+   
+!diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(1/sqrt(four*pi*disp_coef_lo(1,:)))* &
+!                      (xstart/two/disp_coef_lo(1,:)/next_time)*exp(-(xstart**2)/four/disp_coef_lo(1,:)/next_time )
+!diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(1/sqrt(four*pi*disp_coef_hi(ncell,:)))* &
+ !                            (-xend/two/disp_coef_hi(1,:)/next_time )*exp(-(xend**2)/four/disp_coef_lo(1,:)/next_time )
+
+diffusive_flux_lo(1,:)    = diffusive_flux_lo(1,:)    * exp(-decay_rate*(next_time-start_time ))
+diffusive_flux_hi(ncell,:)= diffusive_flux_hi(ncell,:)* exp(-decay_rate*(next_time-start_time )) 
            
     return
  end subroutine

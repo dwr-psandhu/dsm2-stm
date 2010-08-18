@@ -160,6 +160,7 @@ call boundary_diffusion_impose(center_diag ,       &
                                up_diag,            &     
                                down_diag,          &
                                right_hand_side,    & 
+                               conc_prev,          &
                                explicit_diffuse_op,&
                                area,               &
                                area_lo,            &

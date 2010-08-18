@@ -65,22 +65,23 @@ module boundary_diffusion
  abstract interface
        !> Generic interface for calculating BC of matrix that should be fulfilled by
        !> the driver or the client programs
-       subroutine boundary_diffusive_matrix_if( center_diag ,           &
-                                                      up_diag,          &     
-                                                      down_diag,        &
-                                                      right_hand_side,  &
-                                                      explicit_diffuse_op, &
-                                                      area,             &
-                                                      area_lo,          &
-                                                      area_hi,          &          
-                                                      disp_coef_lo,     &
-                                                      disp_coef_hi,     &
-                                                      theta_stm,        &
-                                                      ncell,            &
-                                                      time,             & 
-                                                      nvar,             & 
-                                                      dx,               &
-                                                      dt)
+       subroutine boundary_diffusive_matrix_if(center_diag ,           &
+                                               up_diag,                &     
+                                               down_diag,              &
+                                               right_hand_side,        &
+                                               conc,                   &
+                                               explicit_diffuse_op,    &
+                                               area,                   &
+                                               area_lo,                &
+                                               area_hi,                &          
+                                               disp_coef_lo,           &
+                                               disp_coef_hi,           &
+                                               theta_stm,              &
+                                               ncell,                  &
+                                               time,                   & 
+                                               nvar,                   & 
+                                               dx,                     &
+                                               dt)
                                                       
                                                       
         
@@ -95,6 +96,7 @@ module boundary_diffusion
         real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
         real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
         real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right  hand side vector
+        real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< concentration
         real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar)              
         real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
         real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
@@ -341,10 +343,10 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
    conc_start(:) = two*xstart + four*cos(pi*xstart/two)*exp(-disp_coef_lo(1,:)*pi*pi*time/four)
    
    ! todo: check convergence for second order boundary fitting 
-    !todo: this area also must be area_prev  
-    diffusive_flux_lo(1,:)= -two*area_lo(1)*disp_coef_lo(1,:)*(conc(1,:)-conc_start(:))/dx
+   ! todo: this area also must be area_prev  
+diffusive_flux_lo(1,:)=-two*area_lo(1)*disp_coef_lo(1,:)*(conc(1,:)-conc_start(:))/dx
     
-    diffusive_flux_hi(ncell,:) = -two*area_hi(ncell)*disp_coef_hi(ncell,:)*(conc_end(:)-conc(ncell,:))/dx
+diffusive_flux_hi(ncell,:)=-two*area_hi(ncell)*disp_coef_hi(ncell,:)*(conc_end(:)-conc(ncell,:))/dx
         
      return
  end subroutine
@@ -401,6 +403,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
                                      up_diag,            &     
                                      down_diag,          &
                                      right_hand_side,    & 
+                                     conc,               &
                                      explicit_diffuse_op,&
                                      area,               &
                                      area_lo,            &
@@ -424,6 +427,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
         real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
         real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
         real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of the right hand side
+        real(stm_real), intent (in)  :: conc(ncell,nvar)
         real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar)
         real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
         real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
@@ -465,6 +469,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
                                        up_diag,            &     
                                        down_diag,          &
                                        right_hand_side,    & 
+                                       conc,               &
                                        explicit_diffuse_op,&
                                        area,               &
                                        area_lo,            &
@@ -488,6 +493,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
         real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
         real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
         real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right hand side vector
+        real(stm_real), intent (in)  :: conc(ncell,nvar)
         real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar) 
         real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
         real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
@@ -529,7 +535,8 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
   subroutine dirichlet_test_diffusion_matrix(center_diag ,       &
                                              up_diag,            &     
                                              down_diag,          &
-                                             right_hand_side,    & 
+                                             right_hand_side,    &
+                                             conc,               & 
                                              explicit_diffuse_op,&
                                              area,               &
                                              area_lo,            &
@@ -553,6 +560,7 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
         real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
         real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
         real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right hand side vector
+        real(stm_real),intent (inout):: conc(ncell,nvar)
         real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar) 
         real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
         real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
