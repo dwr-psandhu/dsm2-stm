@@ -29,7 +29,7 @@ integer, parameter  :: nstep_base = 256
 integer, parameter  :: nx_base = 512
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: start_time = 256.0d0 ! sec
-real(stm_real), parameter :: total_time = 512.0d0 ! sec
+real(stm_real), parameter :: total_time = 512.0d0+128.d0 ! sec
 ! todo:  since the bc is set to be zero flux, total_time and other parameters should be set 
 ! in the way solution does not reach the edges of channel.
 real(stm_real), parameter :: domain_length = 4000.0d0 ! 4000m
@@ -37,7 +37,7 @@ real(stm_real), parameter :: origin = 12800.0d0 ! low side of channel
 real(stm_real), parameter :: const_area = 100.0d0 ! m^2
 real(stm_real), parameter :: const_disp_coef = 120.0d0 !do not play with this number 
 real(stm_real), parameter :: const_velocity = 2.9d0 ! 2.9 m/s
-real(stm_real), parameter :: decay_rate = 0.0005d0 
+real(stm_real), parameter :: decay_rate = 0.0000d0 
 real(stm_real), parameter :: ic_center = origin + domain_length/(ten)  
 real(stm_real), parameter :: ic_peak = one
 real(stm_real) :: end_time = start_time + total_time
@@ -498,8 +498,6 @@ real(stm_real), intent (in)  :: dx                                          !< S
 real(stm_real), intent (in)  :: dt                                          !< Time step     
 !---local
 real(stm_real) :: d_star
-real(stm_real) :: gradient_start(nvar)
-real(stm_real) :: gradient_end(nvar)  
 real(stm_real) :: flux_start(nvar)
 real(stm_real) :: flux_end(nvar)   
 real(stm_real) :: next_time   
@@ -527,22 +525,20 @@ old_time  = time - dt
 local_time = half_time
 
 gaussian_bell_center = ic_center + const_velocity*(local_time-start_time)
-
-!todo: this should be a function and it isn't pure gaussian      
+      
 call fill_gaussian(conc_mid(:,1),nx_flux,channel_start,dx/resolution,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
 conc_mid(:,2) = conc_mid(:,1)
 
+flux_end(:)   = (conc_mid(nx_flux,:) - conc_mid(nx_flux-1,:)) /(dx/resolution)
 
-gradient_end(:)   = (conc_mid(nx_flux,:) - conc_mid(nx_flux-1,:)) /(dx/resolution)
-gradient_start(:) = (conc_mid(2,:) - conc_mid(1,:)) /(dx/resolution)
+flux_start(:) = (conc_mid(2,:) - conc_mid(1,:)) /(dx/resolution)
 
 !flux_end(:) = (conc(ncell,:)-conc(ncell-1,:))/dx
 
 
 ! todo: here outflow is right hand side!!
-! why multiply by the gradient?
-flux_start = gradient_start* exp(-decay_rate*(local_time-start_time))
-flux_end   = f_end  * exp(-decay_rate*(local_time-start_time)) 
+flux_start = flux_start* exp(-decay_rate*(local_time-start_time))
+flux_end   = flux_end  * exp(-decay_rate*(local_time-start_time)) 
  
 flux_start = -area_lo(1)*disp_coef_lo(1,:)*flux_start
 flux_end = -area_hi(ncell)*disp_coef_hi(ncell,:)*flux_end 
@@ -622,8 +618,8 @@ flux_start(:) = (conc_mid(2,1) - conc_mid(1,1)) /(dx/resolution)
 flux_end(:)   = (conc_mid(nx_flux,1) - conc_mid(nx_flux-1,1)) /(dx/resolution)
 
 ! todo: here outflow is right hand side!!
-flux_start = flux_start* exp(-decay_rate*(local_time-start_time))
-flux_end   = flux_end  * exp(-decay_rate*(local_time-start_time)) 
+!flux_start = flux_start* exp(-decay_rate*(local_time-start_time))
+!flux_end   = flux_end  * exp(-decay_rate*(local_time-start_time)) 
  
 diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*flux_start
 diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*flux_end 
