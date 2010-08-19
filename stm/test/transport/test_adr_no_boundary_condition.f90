@@ -26,7 +26,7 @@ module test_advect_diffuse_react
 use stm_precision
 
 integer, parameter  :: nstep_base = 64
-integer, parameter  :: nx_base = 2048
+integer, parameter  :: nx_base = 1800
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: start_time = 256.0d0 ! sec
 real(stm_real), parameter :: total_time = 512.0d0 ! sec
@@ -35,7 +35,7 @@ real(stm_real), parameter :: total_time = 512.0d0 ! sec
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 110.0d0 ! m^2/s
-real(stm_real), parameter :: const_disp_coef = 75.0d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_disp_coef = 320.0d0 !todo: is it in a correct range? 
 real(stm_real), parameter :: const_velocity = 2.9d0 ! m/s
 real(stm_real), parameter :: decay_rate = 0.0005d0 
 real(stm_real), parameter :: ic_center = domain_length/(four)

@@ -34,7 +34,7 @@ real(stm_real), parameter :: total_time = 512.0d0 ! sec
 ! in the way solution does not reach the edges of channel.
 real(stm_real), parameter :: domain_length = 4000.0d0 ! 4000m
 real(stm_real), parameter :: origin = 12800.0d0 ! low side of channel
-real(stm_real), parameter :: const_area = 110.0d0 ! m^2
+real(stm_real), parameter :: const_area = 100.0d0 ! m^2
 real(stm_real), parameter :: const_disp_coef = 120.0d0 !do not play with this number 
 real(stm_real), parameter :: const_velocity = 2.9d0 ! 2.9 m/s
 real(stm_real), parameter :: decay_rate = 0.0005d0 
@@ -382,7 +382,7 @@ subroutine adr_linear_decay(source, &
                             ncell,  &
                             nvar,   &
                             time)
-                                     
+                                    
 
  implicit none
  
@@ -398,7 +398,7 @@ real(stm_real),intent(in)  :: time                !< time
 integer ivar
 
 do ivar = 1,nvar
-source(:,ivar) = -decay_rate*conc(:,ivar)
+    source(:,ivar) = -decay_rate*conc(:,ivar)
 end do 
 return
 end subroutine 
@@ -504,49 +504,51 @@ real(stm_real) :: next_time
 real(stm_real) :: xend = origin + domain_length
 real(stm_real) :: xstart = origin
 real(stm_real) :: half_time
-integer :: nx_flux
+integer :: nx_flux 
 real(stm_real) :: gaussian_bell_center
 real(stm_real) :: channel_start
-real(stm_real) :: conc_mid (2*nx_base+2,nvar)
+real(stm_real) :: conc_mid (8*ncell+2,nvar)
 real(stm_real) :: old_time
+real(stm_real) :: local_time
+real(stm_real) :: resolution
 
-!nx_flux = 2*(ncell+1)
-!d_star=dt/(dx*dx)
-!channel_start = origin - dx*half
-! 
-!next_time = time 
-!half_time = time - half*dt
-!old_time  = time - dt
-!
-!gaussian_bell_center = ic_center + const_velocity*(next_time-start_time)
-!      
-!call fill_gaussian(conc_mid(:,1),nx_flux,channel_start,dx/two,gaussian_bell_center,sqrt(two*const_disp_coef*next_time),ic_peak*sqrt(start_time/next_time))
-!conc_mid (:,2) = conc_mid (:,1)
-!! todo: here outflow is right hand side!!
-!
-!!flux_start(:) = -area_lo(1)*disp_coef_lo(1,:)*(1/sqrt(four*pi*disp_coef_lo(1,:)))* &
-!!                     (xstart/(two*disp_coef_lo(1,:)*next_time))*exp(-(xstart**two)/four/disp_coef_lo(1,:)/next_time)
-!
-!flux_start(:) = -two*area_lo(1)*disp_coef_lo(1,:)*(conc_mid(2,:)-conc_mid(1,:))/dx
-!
-!! extrapolate linear 
-!
-!flux_start = flux_start* exp(-decay_rate*(time-start_time))
-!
-!     
-!center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
-!right_hand_side(1,:) = right_hand_side(1,:) &
-!                            + theta_stm*(dt/dx)*flux_start(:)
-! 
-!flux_end(:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(conc(ncell,:)-conc(ncell-1,:))/dx
-!
-!! no need to this in outflow
-!!flux_end   = flux_end  * exp(-decay_rate*(time-start_time)) 
-! 
-! 
-! center_diag(ncell,:)= area(ncell)+ theta_stm*d_star* area_lo(ncell)*disp_coef_lo(1,:)
-! right_hand_side(ncell,:)= right_hand_side(ncell,:) &
-!                               - theta_stm*(dt/dx)*flux_end(:)
+nx_flux = 8*ncell+2
+resolution = eight
+
+d_star=dt/(dx*dx)
+channel_start = origin - dx/resolution
+ 
+next_time = time 
+half_time = time - half*dt
+old_time  = time - dt
+
+local_time = half_time
+
+gaussian_bell_center = ic_center + const_velocity*(local_time-start_time)
+      
+call fill_gaussian(conc_mid(:,1),nx_flux,channel_start,dx/resolution,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
+conc_mid (:,2) = conc_mid (:,1)
+
+flux_start(:) = (conc_mid(2,:) - conc_mid(1,:)) /(dx/resolution)
+flux_end(:)   = (conc_mid(nx_flux,:) - conc_mid(nx_flux-1,:)) /(dx/resolution)
+
+!flux_end(:) = (conc(ncell,:)-conc(ncell-1,:))/dx
+
+
+! todo: here outflow is right hand side!!
+flux_start = flux_start* exp(-decay_rate*(local_time-start_time))
+flux_end   = flux_end  * exp(-decay_rate*(local_time-start_time)) 
+ 
+flux_start = -area_lo(1)*disp_coef_lo(1,:)*flux_start
+flux_end = -area_hi(ncell)*disp_coef_hi(ncell,:)*flux_end 
+     
+center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
+right_hand_side(1,:) = right_hand_side(1,:) &
+                            + theta_stm*(dt/dx)*flux_start(:)
+ 
+center_diag(ncell,:)= area(ncell)+ theta_stm*d_star* area_lo(ncell)*disp_coef_lo(ncell,:)
+right_hand_side(ncell,:)= right_hand_side(ncell,:) &
+                               - theta_stm*(dt/dx)*flux_end(:)
                                                              
      return
  end subroutine
@@ -564,6 +566,7 @@ real(stm_real) :: old_time
                                        dx,                &
                                        dt)
  use stm_precision
+ use example_initial_conditions
 implicit none
 !--- args
 integer, intent(in)  :: ncell                                   !< number of cells
@@ -579,40 +582,47 @@ real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side con
 real(stm_real), intent (in)   :: dt
 real(stm_real), intent (in)   :: dx
         !----local
-integer :: nx_flux
-real(stm_real) :: xend  
-real(stm_real) :: xstart 
-real(stm_real) :: next_time 
-real(stm_real) :: old_time 
-real(stm_real) :: half_time
 real(stm_real) :: d_star
 real(stm_real) :: flux_start(nvar)
 real(stm_real) :: flux_end(nvar)   
+real(stm_real) :: next_time   
+real(stm_real) :: xend = origin + domain_length
+real(stm_real) :: xstart = origin
+real(stm_real) :: half_time
+integer :: nx_flux 
 real(stm_real) :: gaussian_bell_center
 real(stm_real) :: channel_start
-real(stm_real) :: conc_mid (2*nx_base+2,nvar)
+real(stm_real) :: conc_mid (4*ncell+2,1)
+real(stm_real) :: old_time
+real(stm_real) :: local_time
+real(stm_real) :: resolution
 
- next_time = time
- half_time = time - dt/two
- old_time  = time - dt
- 
- gaussian_bell_center = ic_center + const_velocity*(next_time-start_time)
- xend = origin + domain_length - gaussian_bell_center
- xstart= domain_length - xend
- 
- 
-! flux_end
-! flux_start
- 
-   
-!diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*(1/sqrt(four*pi*disp_coef_lo(1,:)))* &
-!                      (xstart/two/disp_coef_lo(1,:)/next_time)*exp(-(xstart**2)/four/disp_coef_lo(1,:)/next_time )
-!diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*(1/sqrt(four*pi*disp_coef_hi(ncell,:)))* &
- !                            (-xend/two/disp_coef_hi(1,:)/next_time )*exp(-(xend**2)/four/disp_coef_lo(1,:)/next_time )
+nx_flux = 4*ncell+2
+resolution = four
 
-diffusive_flux_lo(1,:)    = diffusive_flux_lo(1,:)    * exp(-decay_rate*(next_time-start_time ))
-diffusive_flux_hi(ncell,:)= diffusive_flux_hi(ncell,:)* exp(-decay_rate*(next_time-start_time )) 
-           
+d_star=dt/(dx*dx)
+channel_start = origin - dx/resolution
+! here time is time_prev 
+next_time = time + dt
+half_time = time + half*dt
+old_time  = time 
+
+local_time = half_time
+
+gaussian_bell_center = ic_center + const_velocity*(local_time-start_time)
+      
+call fill_gaussian(conc_mid(:,1),nx_flux,channel_start,dx/resolution,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
+
+flux_start(:) = (conc_mid(2,1) - conc_mid(1,1)) /(dx/resolution)
+flux_end(:)   = (conc_mid(nx_flux,1) - conc_mid(nx_flux-1,1)) /(dx/resolution)
+
+! todo: here outflow is right hand side!!
+flux_start = flux_start* exp(-decay_rate*(local_time-start_time))
+flux_end   = flux_end  * exp(-decay_rate*(local_time-start_time)) 
+ 
+diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*flux_start
+diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*flux_end 
+ 
     return
  end subroutine
  
