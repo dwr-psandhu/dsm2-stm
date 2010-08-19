@@ -38,6 +38,13 @@ real(stm_real), parameter  :: sd = dx*4.0d0
 real(stm_real) :: offline_calc
 real(stm_real) :: cell_calc41
 real(stm_real) :: cell_calc61
+real(stm_real) :: miu
+real(stm_real) :: sigma
+real(stm_real) :: velocity
+real(stm_real) :: xpos
+real(stm_real) :: dfbydx1
+real(stm_real) :: dfbydx2
+
 character(LEN=32) :: message
 
 integer :: icell
@@ -91,6 +98,42 @@ do icell = 62,100
     message = "Discontinuity IC, hi cells (constituent 2)"
     call assertEquals(vals(icell,2),one, message)
 end do
+
+! test derivative_gaussian(val,xposition,center,sd,scale)
+miu = ten  
+sigma = LARGEREAL
+velocity = two
+xpos = ten
+
+call derivative_gaussian(dfbydx1,xpos,miu,sigma,sixteen)
+
+message = "Error in derivative_gaussian"    
+call assertEquals(dfbydx1,zero, message)
+    
+xpos = eight
+call derivative_gaussian(dfbydx1,xpos,miu,sigma,one)    
+
+xpos = ten+two
+call derivative_gaussian(dfbydx2,xpos,miu,sigma,one)  
+
+message = "Error in derivative_gaussian"    
+call assertEquals(dfbydx1,-dfbydx2, message)  
+
+sigma=sqrt(two)
+miu = one
+xpos= one 
+call derivative_gaussian(dfbydx1,xpos,miu,sigma)
+message = "Error in derivative_gaussian"    
+call assertEquals(dfbydx1,zero, message)
+
+xpos=two
+call derivative_gaussian(dfbydx1,xpos,miu,sigma)
+message = "Error in derivative_gaussian"    
+call assertEquals(dfbydx1,-sqrt(pi)*exp(-half*half), message)
+
+call derivative_gaussian(dfbydx1,xpos,miu,sigma,(one/sqrt(two*pi*sigma*sigma)))
+message = "Error in derivative_gaussian"    
+call assertEquals(dfbydx1,-half*exp(-half*half), message)
 
 return
 end subroutine
