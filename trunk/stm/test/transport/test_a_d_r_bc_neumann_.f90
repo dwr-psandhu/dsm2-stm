@@ -25,19 +25,19 @@ module test_a_d_r_neumann
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 256
-integer, parameter  :: nx_base = 512
+integer, parameter  :: nstep_base = 512
+integer, parameter  :: nx_base = 512/2
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: start_time = 256.0d0 ! sec
-real(stm_real), parameter :: total_time = 512.0d0+128.d0 ! sec
+real(stm_real), parameter :: total_time = 2.d0*2048.0d0 ! sec
 ! todo:  since the bc is set to be zero flux, total_time and other parameters should be set 
 ! in the way solution does not reach the edges of channel.
-real(stm_real), parameter :: domain_length = 4000.0d0 ! 4000m
+real(stm_real), parameter :: domain_length = 24000.0d0 ! 4000m
 real(stm_real), parameter :: origin = 12800.0d0 ! low side of channel
 real(stm_real), parameter :: const_area = 100.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 120.0d0 !do not play with this number 
+real(stm_real), parameter :: const_disp_coef = 90.0d0 !do not play with this number 
 real(stm_real), parameter :: const_velocity = 2.9d0 ! 2.9 m/s
-real(stm_real), parameter :: decay_rate = 0.0000d0 
+real(stm_real), parameter :: decay_rate = zero
 real(stm_real), parameter :: ic_center = origin + domain_length/(ten)  
 real(stm_real), parameter :: ic_peak = one
 real(stm_real) :: end_time = start_time + total_time
@@ -279,7 +279,7 @@ call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order conv
 
 if (verbose == .true.) then
    call log_convergence_results(norm_error,nrefine,dx,dt,const_velocity,label,which_cell,nx_base)
-   print *, "Grid Peclet Number : " , const_disp_coef *dt/dx/dx
+   print *, "Grid Peclet Number : " , const_disp_coef *dt/dx**two
    print *, "Peclet number L=dx : " , dx*const_velocity/const_disp_coef
    print *, "maximum error in : ", which_cell
    print *, "decay rate is : " , decay_rate
@@ -433,25 +433,29 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
         real(stm_real), intent (in)  :: dx                      !< spatial step  
         real(stm_real), intent (in)  :: dt                      !< time step     
       !-----local
-       integer :: nx_flux
+      
        real(stm_real) :: gaussian_bell_center
        real(stm_real) :: channel_start
        real(stm_real) :: conc_mid (nx_base+1,nvar)
-       real(stm_real) :: time_half
-            
-      channel_start = origin - dx*half
-      nx_flux = nx_base + 1
-      time_half = time - half*dt
+       real(stm_real) :: local_time
+
+     
+      !local_time = time ! next time
+      local_time = time - half*dt ! half_time
+      !local_time = time - dt  ! old time
       
-      gaussian_bell_center = ic_center + const_velocity*(time_half-start_time)
+      gaussian_bell_center = ic_center + const_velocity*(local_time-start_time)
       
-      call fill_gaussian(conc_mid(:,1),nx_flux,channel_start,dx,gaussian_bell_center,sqrt(two*const_disp_coef*time_half),ic_peak*sqrt(start_time/time_half))
+      call fill_gaussian(conc_mid(:,1),nx_base,origin,dx,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
       conc_mid (:,2) = conc_mid (:,1)
        
       ! todo: time or time +1/2  
-      conc_mid = conc_mid * exp(-decay_rate*(time_half -start_time))
+      conc_mid = conc_mid * exp(-decay_rate*(local_time -start_time))
       flux_lo(1,:)     = flow_lo(1)    * conc_mid(1,:)
-      flux_hi(ncell,:) = flow_hi(ncell)* conc_mid(nx_flux,:)
+      
+      ! outflow boundary
+     ! flux_lo(1,:)     = flow_hi(ncell)    * conc_mid(ncell,:)
+      flux_hi(ncell,:) = flow_hi(ncell) *(two*flux_hi(ncell-1,:)/flow_hi(ncell-1)-flux_hi(ncell-2,:)/flow_hi(ncell-2))
              
       return
  end subroutine
@@ -499,24 +503,20 @@ real(stm_real), intent (in)  :: dt                                          !< T
 !---local
 real(stm_real) :: d_star
 real(stm_real) :: flux_start(nvar)
-real(stm_real) :: flux_end(nvar)   
+real(stm_real) :: flux_end(nvar) 
+real(stm_real) :: grad_start(nvar)
+real(stm_real) :: grad_end(nvar)  
 real(stm_real) :: next_time   
 real(stm_real) :: xend = origin + domain_length
 real(stm_real) :: xstart = origin
 real(stm_real) :: half_time
-integer :: nx_flux 
 real(stm_real) :: gaussian_bell_center
 real(stm_real) :: channel_start
-real(stm_real) :: conc_mid (8*ncell+2,nvar)
 real(stm_real) :: old_time
 real(stm_real) :: local_time
 real(stm_real) :: resolution
 
-nx_flux = 8*ncell+2
-resolution = eight
-
 d_star=dt/(dx*dx)
-channel_start = origin - dx/resolution
  
 next_time = time 
 half_time = time - half*dt
@@ -525,23 +525,19 @@ old_time  = time - dt
 local_time = half_time
 
 gaussian_bell_center = ic_center + const_velocity*(local_time-start_time)
-      
-call fill_gaussian(conc_mid(:,1),nx_flux,channel_start,dx/resolution,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
-conc_mid(:,2) = conc_mid(:,1)
 
-flux_end(:)   = (conc_mid(nx_flux,:) - conc_mid(nx_flux-1,:)) /(dx/resolution)
+call derivative_gaussian(grad_start(1),xstart,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
+grad_start(2) = grad_start(1)
+!todo: remove one
+call derivative_gaussian(grad_end(1),xend,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
+grad_end(2) = grad_end(1)
+grad_end = (conc(ncell-1,:)-conc(ncell-2,:))/dx
 
-flux_start(:) = (conc_mid(2,:) - conc_mid(1,:)) /(dx/resolution)
-
-!flux_end(:) = (conc(ncell,:)-conc(ncell-1,:))/dx
-
-
-! todo: here outflow is right hand side!!
-flux_start = flux_start* exp(-decay_rate*(local_time-start_time))
-flux_end   = flux_end  * exp(-decay_rate*(local_time-start_time)) 
  
-flux_start = -area_lo(1)*disp_coef_lo(1,:)*flux_start
-flux_end = -area_hi(ncell)*disp_coef_hi(ncell,:)*flux_end 
+flux_start = -area_lo(1)*disp_coef_lo(1,:)*grad_start
+flux_end = -area_hi(ncell)*disp_coef_hi(ncell,:)*grad_end 
+! todo:
+!flux_end = -area_hi(ncell)*disp_coef_hi(ncell,:)*(conc(ncell-1,:)-conc(ncell-2,:))/dx
      
 center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
 right_hand_side(1,:) = right_hand_side(1,:) &
@@ -568,6 +564,7 @@ right_hand_side(ncell,:)= right_hand_side(ncell,:) &
                                        dt)
  use stm_precision
  use example_initial_conditions
+ 
 implicit none
 !--- args
 integer, intent(in)  :: ncell                                   !< number of cells
@@ -585,24 +582,19 @@ real(stm_real), intent (in)   :: dx
         !----local
 real(stm_real) :: d_star
 real(stm_real) :: flux_start(nvar)
-real(stm_real) :: flux_end(nvar)   
+real(stm_real) :: flux_end(nvar)
+real(stm_real) :: grad_start(nvar)
+real(stm_real) :: grad_end(nvar)   
 real(stm_real) :: next_time   
 real(stm_real) :: xend = origin + domain_length
 real(stm_real) :: xstart = origin
 real(stm_real) :: half_time
-integer :: nx_flux 
 real(stm_real) :: gaussian_bell_center
-real(stm_real) :: channel_start
-real(stm_real) :: conc_mid (4*ncell+2,1)
 real(stm_real) :: old_time
 real(stm_real) :: local_time
-real(stm_real) :: resolution
-
-nx_flux = 4*ncell+2
-resolution = four
 
 d_star=dt/(dx*dx)
-channel_start = origin - dx/resolution
+
 ! here time is time_prev 
 next_time = time + dt
 half_time = time + half*dt
@@ -611,18 +603,23 @@ old_time  = time
 local_time = half_time
 
 gaussian_bell_center = ic_center + const_velocity*(local_time-start_time)
-      
-call fill_gaussian(conc_mid(:,1),nx_flux,channel_start,dx/resolution,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
 
-flux_start(:) = (conc_mid(2,1) - conc_mid(1,1)) /(dx/resolution)
-flux_end(:)   = (conc_mid(nx_flux,1) - conc_mid(nx_flux-1,1)) /(dx/resolution)
+! derivative_gaussian(OUTPUT or df/dx,x,center or miu,sigma,scale or a)
+call derivative_gaussian(grad_start(1),xstart,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
+grad_start(2) = grad_start(1)
+!todo: remove one
+call derivative_gaussian(grad_end(1),xend,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
+grad_end(2) = grad_end(1)
+grad_end = (conc(ncell-1,:)-conc(ncell-2,:))/dx
 
-! todo: here outflow is right hand side!!
-!flux_start = flux_start* exp(-decay_rate*(local_time-start_time))
-!flux_end   = flux_end  * exp(-decay_rate*(local_time-start_time)) 
- 
-diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*flux_start
-diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*flux_end 
+diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*grad_start
+diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*grad_end
+
+
+!! todo: here outflow is right hand side!!
+!grad_start = grad_start* exp(-decay_rate*(local_time-start_time))
+!grad_end   = grad_end  * exp(-decay_rate*(local_time-start_time))
+
  
     return
  end subroutine

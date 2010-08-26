@@ -70,7 +70,6 @@ real(stm_real), parameter :: end_time = start_time + total_time
 real(stm_real) :: time
 real(stm_real), allocatable :: xposition(:)
 
-
 integer :: itime
 integer :: which_cell
 integer :: icell 
