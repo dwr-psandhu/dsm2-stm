@@ -31,9 +31,7 @@ contains
 
 !> Gaussian cdf (integrated Guassian pdf) from -inf to x0
 real(stm_real) function gaussian_cdf(x0,mean,sd)
-    
-    
-    
+         
     implicit none
     
     real(stm_real), intent(in) :: x0   !< End of integration
@@ -48,7 +46,7 @@ end function
 !> This routine expects a 1D array, so multi-constituents
 !> have to be initialized separately
     subroutine fill_gaussian(vals,nloc,origin,dx,mean,sd,scale)
-    !fill_guassian(OUTPUT,num_cell,Left side of domain,dx,Center,sigma,a)
+    ! fill_guassian(OUTPUT,num_cell,Left side of domain,dx,Center,sigma,a)
     ! f(x) = a*exp(-(x-b)^2/(2c^2)) [c is sigma]   
     use stm_precision
     implicit none
@@ -93,17 +91,10 @@ subroutine derivative_gaussian(val,xposition,center,sd,scale)
     real(stm_real), intent(in)  :: xposition      !< X
     real(stm_real), intent(in)  :: center         !< center of gaussian shape
     real(stm_real), intent(in)  :: sd             !< Standard deviation (Sigma)
-    real(stm_real), intent(in), optional :: scale !< scale
+    real(stm_real), intent(in)  :: scale !< scale
     !---locals
-    real(stm_real) :: actual_scale
    
-    if (present(scale))then
-        actual_scale = scale*sqrt(two*pi*sd*sd)
-    else
-        actual_scale = one*sqrt(two*pi*sd*sd)
-    end if
-   
-    val = -actual_scale*(xposition - center)/(sd*sd)*exp(-(xposition-center)**2/(two*sd*sd)) 
+    val = -(scale*(xposition - center)/(sd*sd))*exp(-(xposition-center)**2/(two*sd*sd)) 
    
     return
 end subroutine

@@ -109,7 +109,8 @@ call derivative_gaussian(dfbydx1,xpos,miu,sigma,sixteen)
 
 message = "Error in derivative_gaussian"    
 call assertEquals(dfbydx1,zero, message)
-    
+  
+sigma = five    
 xpos = eight
 call derivative_gaussian(dfbydx1,xpos,miu,sigma,one)    
 
@@ -122,18 +123,16 @@ call assertEquals(dfbydx1,-dfbydx2, message)
 sigma=sqrt(two)
 miu = one
 xpos= one 
-call derivative_gaussian(dfbydx1,xpos,miu,sigma)
+call derivative_gaussian(dfbydx1,xpos,miu,sigma,one)
 message = "Error in derivative_gaussian"    
 call assertEquals(dfbydx1,zero, message)
 
 xpos=two
-call derivative_gaussian(dfbydx1,xpos,miu,sigma)
+call derivative_gaussian(dfbydx1,xpos,miu,sigma,one)
 message = "Error in derivative_gaussian"    
-call assertEquals(dfbydx1,-sqrt(pi)*exp(-half*half), weak_eps,message)
+call assertEquals(dfbydx1,-half*exp(-half*half), weak_eps,message)
 
-call derivative_gaussian(dfbydx1,xpos,miu,sigma,(one/sqrt(two*pi*sigma*sigma)))
-message = "Error in derivative_gaussian"    
-call assertEquals(dfbydx1,-half*exp(-half*half),weak_eps, message)
+
 
 return
 end subroutine
