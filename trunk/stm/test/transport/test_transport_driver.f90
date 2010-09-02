@@ -59,7 +59,7 @@ call init_fruit
 !call test_limiter
 !call test_prim_cons_convert
 !call test_prim_increment2cons
-call test_example_initial_conditions
+!call test_example_initial_conditions
 !call test_extrapolation
 !
 !!///////// advection
@@ -83,7 +83,7 @@ call test_example_initial_conditions
 !call test_diffusion_neumann(verbose)
 !call test_diffusion_convergence_single_channel(verbose)
 !!/// A-D-R  
-!call  test_advect_diffuse_reaction(verbose)
+call  test_advect_diffuse_reaction(verbose)
 call  test_advect_diffuse_reaction_neumann(verbose)
 !//////// 
 call fruit_summary

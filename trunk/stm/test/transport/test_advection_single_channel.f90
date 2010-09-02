@@ -78,7 +78,7 @@ integer :: nx
 integer :: which_cell
 integer :: coarsening
 character(LEN=64)  ::  filename 
-logical, parameter :: limit_slope = .false.
+logical, parameter :: limit_slope = .true.
 real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
