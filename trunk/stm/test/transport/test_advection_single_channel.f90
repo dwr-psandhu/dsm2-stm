@@ -75,7 +75,7 @@ integer :: icell
 integer :: icoarse 
 integer :: nstep
 integer :: nx
-integer :: which_cell
+integer :: which_cell(nrefine)
 integer :: coarsening
 character(LEN=64)  ::  filename 
 logical, parameter :: limit_slope = .true.
@@ -204,7 +204,7 @@ do icoarse = 1,nrefine
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
-                    which_cell,            &
+                    which_cell(icoarse),   &
                     conc(:,2),reference(:,2),nx,dx) 
     deallocate(solution_mass)
     deallocate(reference)
@@ -222,7 +222,20 @@ call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order conver
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on " // trim(label))
 
 if (verbose == .true.) then
-   call log_convergence_results(norm_error,nrefine,dx,dt,max_velocity,label,which_cell,nx_base)
+   call log_convergence_results(norm_error ,                   &
+                                nrefine,                       &
+                                dx,                            &
+                                dt,                            &
+                                max_velocity= const_velocity,  &
+                                label = label,                 &
+                                which_cell=which_cell,         &
+                                ncell_base = nx_base,          &
+                                ntime_base = nstep_base,       &
+                                reaction_rate= decay_rate,     &
+                                dispersion = const_disp_coef,  &
+                                scheme_order = two,            &
+                                length_scale = dx,             &
+                                limiter_switch = limit_slope )
 end if
 
 return
