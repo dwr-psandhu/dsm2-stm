@@ -35,11 +35,12 @@ real(stm_real), parameter :: total_time = 512.0d0 ! sec
 real(stm_real), parameter :: domain_length = 51200.0d0 ! m
 real(stm_real), parameter :: origin = zero ! low side of channel
 real(stm_real), parameter :: const_area = 110.0d0 ! m^2/s
-real(stm_real), parameter :: const_disp_coef = 320.0d0 !todo: is it in a correct range? 
+real(stm_real), parameter :: const_disp_coef = 120.0d0 !todo: is it in a correct range? 
 real(stm_real), parameter :: const_velocity = 2.9d0 ! m/s
 real(stm_real), parameter :: decay_rate = 0.0000d0 
 real(stm_real), parameter :: ic_center = domain_length/(four)
 real(stm_real), parameter :: ic_peak = one
+real(stm_real), parameter :: length_scale = 2000d0 ! it is set based on the dye length
 real(stm_real) :: end_time = start_time + total_time
 
 contains
@@ -279,7 +280,7 @@ call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order conv
 if (verbose == .true.) then
    call log_convergence_results(norm_error,nrefine,dx,dt,const_velocity,label,which_cell,nx_base)
    print *, "Grid Peclet Number : " , const_disp_coef *dt/dx/dx
-   print *, "Peclet number L=dx : " , dx*const_velocity/const_disp_coef
+   print *, "Peclet number L=dx : " , length_scale*const_velocity/const_disp_coef
    print *, "maximum error in : ", which_cell
    print *, "decay rate is : " , decay_rate
    print *, 'flux_limiter :' , limit_slope
