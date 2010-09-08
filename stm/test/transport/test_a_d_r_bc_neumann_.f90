@@ -29,10 +29,10 @@ integer, parameter  :: nstep_base = 512
 integer, parameter  :: nx_base = 512/2
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: start_time = 256.0d0 ! sec
-real(stm_real), parameter :: total_time = 2.d0*2048.0d0 ! sec
+real(stm_real), parameter :: total_time =2048.0d0 ! sec
 ! todo:  since the bc is set to be zero flux, total_time and other parameters should be set 
 ! in the way solution does not reach the edges of channel.
-real(stm_real), parameter :: domain_length = 24000.0d0 ! 4000m
+real(stm_real), parameter :: domain_length = 4000.0d0 ! 4000m
 real(stm_real), parameter :: origin = 12800.0d0 ! low side of channel
 real(stm_real), parameter :: const_area = 100.0d0 ! m^2
 real(stm_real), parameter :: const_disp_coef = 90.0d0 !do not play with this number 
@@ -40,6 +40,7 @@ real(stm_real), parameter :: const_velocity = 2.9d0 ! 2.9 m/s
 real(stm_real), parameter :: decay_rate = zero
 real(stm_real), parameter :: ic_center = origin + domain_length/(ten)  
 real(stm_real), parameter :: ic_peak = one
+real(stm_real), parameter :: length_scale = 2000.0d0 ! the hump of mass length at the start time
 real(stm_real) :: end_time = start_time + total_time
 
 contains
@@ -280,7 +281,7 @@ call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order conv
 if (verbose == .true.) then
    call log_convergence_results(norm_error,nrefine,dx,dt,const_velocity,label,which_cell,nx_base)
    print *, "Grid Peclet Number : " , const_disp_coef *dt/dx**two
-   print *, "Peclet number L=dx : " , dx*const_velocity/const_disp_coef
+   print *, "Peclet number L=dx : " , length_scale*const_velocity/const_disp_coef
    print *, "maximum error in : ", which_cell
    print *, "decay rate is : " , decay_rate
    print *, 'flux_limiter :' , limit_slope
