@@ -81,7 +81,7 @@ integer :: icoarse
 integer :: nstep
 integer :: nx
 integer :: coarsening
-integer :: which_cell
+
 logical, parameter :: limit_slope = .false.
 
 real(stm_real), allocatable :: solution_mass(:,:)
@@ -95,6 +95,7 @@ real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
 real(stm_real) :: time
 real(stm_real) :: norm_error(3,nrefine)
+integer :: which_cell(nrefine)
 real(stm_real) :: theta = half  
 
 boundary_diffusion_impose        => neumann_adr_diffusion_matrix 
@@ -252,7 +253,7 @@ do icoarse = 1,nrefine
      call error_norm(norm_error(1,icoarse), &
                      norm_error(2,icoarse), &
                      norm_error(3,icoarse), &
-                     which_cell,            &
+                     which_cell(icoarse),   &
                      conc(:,1),             &
                      reference(:,1),        &
                      nx,                    &
@@ -279,12 +280,20 @@ call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order conver
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on " // trim(label))
 
 if (verbose == .true.) then
-   call log_convergence_results(norm_error,nrefine,dx,dt,const_velocity,label,which_cell,nx_base)
-   print *, "Grid Peclet Number : " , const_disp_coef *dt/dx**two
-   print *, "Peclet number L=dx : " , length_scale*const_velocity/const_disp_coef
-   print *, "maximum error in : ", which_cell
-   print *, "decay rate is : " , decay_rate
-   print *, 'flux_limiter :' , limit_slope
+   call log_convergence_results(norm_error ,                   &
+                                nrefine,                       &
+                                dx,                            &
+                                dt,                            &
+                                max_velocity= const_velocity,  &
+                                label = label,                 &
+                                which_cell=which_cell,         &
+                                ncell_base = nx_base,          &
+                                ntime_base = nstep_base,       &
+                                reaction_rate= decay_rate,     &
+                                dispersion = const_disp_coef,  &
+                                scheme_order = two,            &
+                                length_scale = dx,             &
+                                limiter_switch = limit_slope )
 end if
 
 return
@@ -424,15 +433,15 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
         integer,intent(in)  :: ncell  !< Number of cells
         integer,intent(in)  :: nvar   !< Number of variables
         ! todo: check the intents
-        real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
-        real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
-        real(stm_real),intent(in)    :: flow_lo(ncell)          !< flow on lo side of cells centered in time
-        real(stm_real),intent(in)    :: flow_hi(ncell)          !< flow on hi side of cells centered in time
-        real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
-        real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
-        real(stm_real), intent (in)  :: time                    !< current time
-        real(stm_real), intent (in)  :: dx                      !< spatial step  
-        real(stm_real), intent (in)  :: dt                      !< time step     
+        real(stm_real),intent(inout):: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
+        real(stm_real),intent(inout):: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
+        real(stm_real),intent(in)   :: flow_lo(ncell)          !< flow on lo side of cells centered in time
+        real(stm_real),intent(in)   :: flow_hi(ncell)          !< flow on hi side of cells centered in time
+        real(stm_real),intent(in)   :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
+        real(stm_real),intent(in)   :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
+        real(stm_real),intent(in)   :: time                    !< current time
+        real(stm_real),intent(in)   :: dx                      !< spatial step  
+        real(stm_real),intent(in)   :: dt                      !< time step     
       !-----local
       
        real(stm_real) :: gaussian_bell_center
