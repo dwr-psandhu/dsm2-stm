@@ -45,7 +45,7 @@ implicit none
 integer, parameter  :: nstep_base = 16*16
 integer, parameter  :: nx_base = 128*8
 
-integer :: icoarse = 0
+integer :: icoarse 
 integer :: nstep
 integer :: nx
 
@@ -71,12 +71,12 @@ real(stm_real) :: time
 real(stm_real), allocatable :: xposition(:)
 
 integer :: itime
-integer :: which_cell
 integer :: icell 
 !------
 integer, parameter :: coarsen_factor = 2      ! coarsening factor used for convergence test
 integer :: coarsening
 integer, parameter :: nrefine = 3
+integer :: which_cell(nrefine)
 real(stm_real),allocatable :: reference(:)
 real(stm_real) norm_error(3,nrefine)
 character(LEN=64) filename
@@ -156,7 +156,7 @@ do icoarse = 1,nrefine
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
                     norm_error(3,icoarse), &
-                    which_cell,            &
+                    which_cell(icoarse),   &
                     conc(:,2),reference,ncell,dx)
 
     deallocate(reference)

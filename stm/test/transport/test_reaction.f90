@@ -59,7 +59,7 @@ real(stm_real), parameter :: flow_const = ten
 real(stm_real), parameter :: conc_start = ten
 real(stm_real) :: norm_error(3,nrefine)
 integer :: itime
-integer :: which_cell
+integer :: which_cell(nrefine)
 integer :: icoarse
 logical, optional :: verbose
 character(LEN =64) :: label 
@@ -98,7 +98,7 @@ do icoarse= 1,nrefine
         call error_norm(norm_error(1,icoarse),  &
                         norm_error(2,icoarse),  &
                         norm_error(3,icoarse),  &
-                        which_cell,             &
+                        which_cell(icoarse),    &
                         conc,                   &
                         reference,              &
                         ncell,                  &
