@@ -48,7 +48,7 @@ implicit none
 procedure(hydro_data_if),pointer :: tidal_hydro          !< The pointer points to tidal flow data
 
 integer, parameter  :: nconc = 2                         !< Number of constituents
-integer, parameter  :: nstep_base = 256                 !< Number of time steps in finer discritization
+integer, parameter  :: nstep_base = 128                 !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 512                 !< Number of spatial discritization in finer mesh 
 logical :: verbose
 real(stm_real), parameter :: total_time = m2_period      !< total time of the test

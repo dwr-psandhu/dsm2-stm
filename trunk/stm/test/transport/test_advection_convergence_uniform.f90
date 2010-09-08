@@ -26,7 +26,7 @@ use stm_precision
 
 integer, parameter  :: nstep_base = 32
 integer, parameter  :: nx_base = 256
-real(stm_real), parameter :: total_time = 3200.d0
+real(stm_real), parameter :: total_time = 4200.d0
 
 contains
 !> Subroutine that runs a small advective simulation
