@@ -26,7 +26,7 @@ use stm_precision
 ! todo: make the names more meaningful
 real(stm_real),parameter :: origin = zero                  !< Left hand side of the channel
 real(stm_real),parameter :: domain_length = 102400.0d0     !< Domain Length in meter
-real(stm_real),parameter :: amplitude = fourth               !< Tidal amplitude in meter    
+real(stm_real),parameter :: amplitude = fourth             !< Tidal amplitude in meter    
 real(stm_real),parameter :: gravity = 9.80d0               !< Gravitational acceleration in m/s^2
 real(stm_real),parameter :: depth = 16.0d0                 !< Channel depth in meter
 real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0       !< Convert factor of hour to second 
@@ -48,8 +48,8 @@ implicit none
 procedure(hydro_data_if),pointer :: tidal_hydro          !< The pointer points to tidal flow data
 
 integer, parameter  :: nconc = 2                         !< Number of constituents
-integer, parameter  :: nstep_base = 128                 !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 512                 !< Number of spatial discritization in finer mesh 
+integer, parameter  :: nstep_base = 128                  !< Number of time steps in finer discritization
+integer, parameter  :: nx_base    = 512                  !< Number of spatial discritization in finer mesh 
 logical :: verbose
 real(stm_real), parameter :: total_time = m2_period      !< total time of the test
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
@@ -59,10 +59,9 @@ real(stm_real) :: solution_center = domain_length/two    !< Center of final solu
 real(stm_real) :: ic_gaussian_sd = domain_length/64.d0   !< Standard deviation of initial values 
 real(stm_real) :: solution_gaussian_sd = domain_length/64.d0 !< Standard deviation of final values
 
-character(LEN=*),parameter :: label = "tidal flow"      
+character(LEN=*),parameter :: label = "tidal_flow"      
 tidal_hydro=> tidal_flow
 compute_source => no_source
-
 
 !> load the initial values and reference final values to feed the test routine
 call initial_fine_solution_tidal(fine_initial_condition, &
@@ -108,7 +107,7 @@ subroutine initial_fine_solution_tidal(fine_initial_condition, &
                                        
 
 
-use example_initial_conditions
+use gaussian_init_boundary_condition
 use stm_precision
 
 implicit none

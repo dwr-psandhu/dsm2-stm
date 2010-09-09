@@ -109,13 +109,14 @@ do icoarse= 1,nrefine
 end do
 
 if (verbose == .true.) then
-    print *,'==========='
-    print *,'test reaction linear decay -RK3'
-    print *, ' L1 : ',norm_error(1,2)/norm_error(1,1)
-    print *, ' L2 : ',norm_error(2,2)/norm_error(2,1)
-    print *, ' Linf : ',norm_error(3,2)/norm_error(3,1)
-    print *, " Norms : "
-    print *,norm_error
+    
+!    print *,'==========='
+!    print *,'test reaction linear decay -RK3'
+!    print *, ' L1 : ',norm_error(1,2)/norm_error(1,1)
+!    print *, ' L2 : ',norm_error(2,2)/norm_error(2,1)
+!    print *, ' Linf : ',norm_error(3,2)/norm_error(3,1)
+!    print *, " Norms : "
+!    print *,norm_error
 end if
  
 call assert_true(norm_error(1,2)/norm_error(1,1) > eight,"L-1 second order convergence on " // trim(label))

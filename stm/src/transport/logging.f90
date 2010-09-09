@@ -33,11 +33,12 @@ module logging
     
     interface printout
         module procedure printout
-        module procedure printout_append
     end interface
     
     
     contains
+
+
     
     !> Prints the error message and the level of occured error
     subroutine stm_log(level,message)
@@ -71,31 +72,5 @@ module logging
         close(11)
         return
     end subroutine
-
-
-
-    !> Prints an array to file
-    subroutine printout_append(arr,x,time,funit)
-
-        implicit none
-        real(stm_real),   intent(in)   :: arr(:)         !< Array values
-        real(stm_real),   intent(in)   :: x(:)           !< X coordinate
-        real(stm_real),   intent(in)   :: time           !< Time
-        integer,          intent(in)   :: funit          !< File unit
-                
-        !---local
-        integer           :: nx
-        integer           :: icell       
-        
-        nx = size(arr)        
-
-        write(funit,*) 'variables = "x", "conc"'
-        write(funit,*) "zone i = ", nx, ', t="', time, '"'
-        do icell = 1,nx
-          write(funit,'(f10.5, f20.10)') x(icell), arr(icell)
-        end do
-
-    end subroutine
-
 
 end module

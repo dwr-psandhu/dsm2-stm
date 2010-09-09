@@ -24,6 +24,7 @@ subroutine test_example_initial_conditions
 
 use stm_precision
 use example_initial_conditions
+use gaussian_init_boundary_condition
 use fruit
 
 implicit none

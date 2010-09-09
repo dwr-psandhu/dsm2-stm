@@ -52,7 +52,7 @@ real(stm_real) :: ic_center = domain_length/two
 real(stm_real) :: solution_center = domain_length/two
 real(stm_real) :: ic_gaussian_sd = domain_length/sixteen
 real(stm_real) :: solution_gaussian_sd = domain_length/sixteen
-character(LEN=*),parameter :: label = "uniform flow"
+character(LEN=*),parameter :: label = "uniform_flow"
 uniform_hydro=> uniform_flow
 compute_source => no_source
 
@@ -139,7 +139,7 @@ subroutine initial_fine_solution_uniform(fine_initial_condition, &
                                          ic_center,              &
                                          solution_center)
                                    
-use example_initial_conditions
+use gaussian_init_boundary_condition
 use stm_precision
 use grid_refinement
 implicit none

@@ -32,11 +32,12 @@ use state_variables
 use primitive_variable_conversion
 use boundary_diffusion
 use diffusion
-use example_initial_conditions
+use gaussian_init_boundary_condition
 use error_metric
 use error_handling
 use fruit
 use logging
+use log_convergence
 
 implicit none
 
@@ -173,27 +174,25 @@ call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order conver
 call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on diffusion")
 call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion")
 
+!    dx = domain_length/nx_base
+!    dt = total_time/nstep_base
+! todo: The coarsening ratio (two) is hardwired in the log_convergence_results
+ call log_convergence_results(norm_error,             & 
+                                 nrefine,                &
+                                 dx,                     &
+                                 dt,                     &
+                                 max_velocity = zero,    &
+                                 label = filename,          &
+                                 which_cell = which_cell,&
+                                 ncell_base = nx_base,   &
+                                 ntime_base = nstep_base,&
+                                 reaction_rate = zero,   &
+                                 dispersion = disp_coef, &
+                                 scheme_order = two,     &
+                                 length_scale = domain_length,  &
+                                 limiter_switch = .false.)
 
-if (verbose == .true.) then
-
-    dx = domain_length/nx_base
-    dt = total_time/nstep_base
-
-    print *, '======='
-    print *,"Test diffusion single channel"
-    print *,'Mesh Peclet',disp_coef*dt/dx/dx, "dx :",dx,"dt :",dt 
-    print *, "nx_base:", nx_base, "nt_base:", nstep_base, "D:" ,disp_coef
-    print *, 'Maximum error in :', which_cell ,'out of ', nx_base/2**(nrefine-1)
-    print *,"L1 rate: ", norm_error(1,2)/norm_error(1,1)
-    print *,"L2 rate: ", norm_error(2,2)/norm_error(2,1)
-    print *,"Linf rate", norm_error(3,2)/norm_error(3,1)
-    print *,"L1 rate: ", norm_error(1,3)/norm_error(1,2)
-    print *,"L2 rate: ", norm_error(2,3)/norm_error(2,2)
-    print *,"Linf rate", norm_error(3,3)/norm_error(3,2)
-    print *, ' norms :   L1,  L2,  L-inf' 
-    print *, norm_error
-    
-end if
+   
 
 return
 end subroutine

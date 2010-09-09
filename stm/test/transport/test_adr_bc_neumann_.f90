@@ -21,7 +21,7 @@
 !> Test advection diffusion and reaction in a single channel with uniform flow, subjected to 
 !> neumann boundary condition 
 !>@ingroup test
-module test_a_d_r_neumann
+module test_adr_neumann
 
 use stm_precision
 
@@ -64,7 +64,7 @@ use logging
 
 implicit none
 
-procedure(hydro_data_if),pointer:: hydro_a_d_r                  !< This pointer, points to uniform flow data
+procedure(hydro_data_if),pointer:: hydro_adr                  !< This pointer, points to uniform flow data
 character(LEN=64) :: label                                      !< unique label for test
 logical :: verbose                                              !< whether to output convergence results
 
@@ -101,10 +101,10 @@ real(stm_real) :: theta = half
 boundary_diffusion_impose        => neumann_adr_diffusion_matrix 
 boundary_diffusion_flux          => neumann_adr_diffusive_flux 
 replace_advection_boundary_flux  => neumann_adr_dvective_flux ! OK
-hydro_a_d_r                      => uniform_flow_adr  !ok
+hydro_adr                      => uniform_flow_adr  !ok
 compute_source                   => adr_linear_decay  !ok
 !------
-label = 'ADR uniform flow with Neumann BC'
+label = 'adr_uniform_flow_neumann_broken_name'
 
 call initial_final_solution(fine_initial_conc,     &
                             fine_solution_conc,    &
@@ -118,7 +118,9 @@ call initial_final_solution(fine_initial_conc,     &
                             nx_base,               &
                             nconc)
 
-open (unit = 11, file= label//'_fine_ic_adr_Neumann.txt')
+! todo: move this printing stuff somewhere central. Use our logging functions,
+! and if they are inadequate for your needs talk it over.
+open (unit = 11, file= trim(label)//'_fine_ic.txt')
 
 write (11,*) 'v',const_velocity, 'dx' ,domain_length/nx_base
 do icell = 1,nx_base
@@ -168,7 +170,7 @@ do icoarse = 1,nrefine
    ! todo: we need a satbility check for Advection Diffusion splitting
         
     time = zero
-    call hydro_a_d_r(flow,    &
+    call hydro_adr(flow,    &
                     flow_lo, &
                     flow_hi, &
                     area,    &
@@ -192,7 +194,7 @@ do icoarse = 1,nrefine
     
     do itime = 1,nstep
        time = start_time + dble(itime)*dt
-       call hydro_a_d_r(flow,    &
+       call hydro_adr(flow,    &
                         flow_lo, &
                         flow_hi, &
                         area,    &
