@@ -103,7 +103,7 @@ replace_advection_boundary_flux      => neumann_advective_flux
 hydro_adr                  => uniform_flow_adr  
 compute_source             => adr_linear_decay 
 !------
-label = 'ADR uniform flow, const A & Ks'
+label = 'adr_uniform_flow_constant_area_and_diff'
 
 call initial_final_solution(fine_initial_conc,     &
                             fine_solution_conc,    &
@@ -117,7 +117,7 @@ call initial_final_solution(fine_initial_conc,     &
                             nx_base,               &
                             nconc)
 
-open (unit = 11, file= label//'_fine_solution_ic_adr.txt')
+open (unit = 11, file= trim(label)//'_fine_solution_ic.txt')
 
 write (11,*) 'v',const_velocity, 'dx' ,domain_length/nx_base
 do icell = 1,nx_base
@@ -310,7 +310,7 @@ subroutine initial_final_solution(fine_initial_conc,     &
                                   nx_base,               &
                                   nconc)
                                   
-use example_initial_conditions
+use gaussian_init_boundary_condition
 
 implicit none
 integer, intent(in) :: nx_base
@@ -349,7 +349,7 @@ fine_solution_conc = fine_solution_conc * exp(-decay_rate*total_time)
 return
 end subroutine
 !===========
-!>generat constant area and constant flow foreward and backward
+!>generate constant area and constant flow foreward and backward
 subroutine uniform_flow_adr(flow,    &
                             flow_lo, &
                             flow_hi, &

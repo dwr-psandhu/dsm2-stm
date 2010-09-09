@@ -45,7 +45,7 @@ use stm_precision
 use state_variables
 use primitive_variable_conversion 
 use advection
-use example_initial_conditions
+use gaussian_init_boundary_condition
 use error_metric
 use fruit
 use logging
@@ -78,7 +78,7 @@ integer :: nx
 integer :: which_cell(nrefine)
 integer :: coarsening
 character(LEN=64)  ::  filename 
-logical, parameter :: limit_slope = .true.
+logical, parameter :: limit_slope = .false.
 real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
@@ -92,6 +92,7 @@ real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
 real(stm_real) :: time
 real(stm_real) :: norm_error(3,nrefine)
+
 
 !todo: this is really "no flux"
 replace_advection_boundary_flux => neumann_advective_flux
@@ -192,13 +193,14 @@ do icoarse = 1,nrefine
     if (icoarse == 1) then
         call prim2cons(fine_solution_mass,fine_solution,area,nx,nvar)
     end if
-    ! todo: Eli do we need the above three lines?
+
     call coarsen(solution_mass,fine_solution_mass,nx_base,nx, nvar)
     call cons2prim(reference,solution_mass,area,nx,nconc)
     
+    !todo: look up how to remove spaces in filename
     write(filename, "(a\i4\'.txt')"), "uniform_gaussian_start_", nx        
     call printout(reference(:,2),x_center(:),filename)
-    write(filename, "(a\i4\'.txt')"), "uniform_gaussian_end_", nx 
+    write(filename, "(a\i\'.txt')"), "uniform_gaussian_end_", nx 
     call printout(conc(:,2),x_center(:),filename)
     ! test error norm over part of domain
     call error_norm(norm_error(1,icoarse), &
@@ -226,16 +228,16 @@ if (verbose == .true.) then
                                 nrefine,                       &
                                 dx,                            &
                                 dt,                            &
-                                max_velocity= const_velocity,  &
+                                max_velocity= max_velocity,    &
                                 label = label,                 &
                                 which_cell=which_cell,         &
                                 ncell_base = nx_base,          &
                                 ntime_base = nstep_base,       &
-                                reaction_rate= decay_rate,     &
-                                dispersion = const_disp_coef,  &
+                                reaction_rate = zero,          &
                                 scheme_order = two,            &
                                 length_scale = dx,             &
-                                limiter_switch = limit_slope )
+                                limiter_switch = limit_slope)
+                                 
 end if
 
 return

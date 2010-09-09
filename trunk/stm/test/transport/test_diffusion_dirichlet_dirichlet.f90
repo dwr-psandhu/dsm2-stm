@@ -34,6 +34,7 @@ use state_variables
 use primitive_variable_conversion
 use boundary_diffusion
 use diffusion
+use log_convergence
 use example_initial_conditions
 use error_metric
 use error_handling
@@ -43,8 +44,9 @@ use logging
 implicit none
 
 !--- Problem variables
-integer, parameter  :: nstep_base = 64*16
-integer, parameter  :: nx_base = 32*8
+
+integer, parameter  :: nstep_base = 64*64
+integer, parameter  :: nx_base = 32
 
 integer :: icoarse = 0
 integer :: nstep
@@ -54,7 +56,7 @@ integer, parameter  :: nconc = 2
 real(stm_real), parameter :: domain_length = 0.9d0
 real(stm_real), parameter :: origin = 0.1d0   
 real(stm_real), parameter :: total_time    = one
-real(stm_real), parameter :: disp_coef     = 0.1d0
+real(stm_real), parameter :: disp_coef     = 2.1d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
 real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
@@ -80,7 +82,7 @@ integer, parameter :: nrefine = 3
 integer :: which_cell(nrefine)
 real(stm_real),allocatable :: reference(:)
 real(stm_real) norm_error(3,nrefine)
-character(LEN=64) filename
+character(LEN=64):: filename = 'test_diffusion_dirichlet_bc_fletcher'
 
 boundary_diffusion_impose  => dirichlet_test_diffusion_matrix
 boundary_diffusion_flux    => dirichlet_test_diffusive_flux
@@ -161,32 +163,34 @@ do icoarse = 1,nrefine
     call deallocate_state
 end do
 
-call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on diffusion dirichlet")
-call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on diffusion dirichlet")
-call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on diffusion dirichlet")
+call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 2nd order convergence on diffusion dirichlet")
+call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 2nd order convergence on diffusion dirichlet")
+call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf 2nd order convergence on diffusion dirichlet")
 
-call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergence on diffusion dirichlet")
-call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on diffusion dirichlet")
-call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on diffusion dirichlet")
+call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 2nd order convergence on diffusion dirichlet")
+call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 2nd order convergence on diffusion dirichlet")
+call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf 2nd order convergence on diffusion dirichlet")
 
-if (verbose == .true.) then
+
     dx = domain_length/nx_base
     dt = total_time/nstep_base
-    print *, '======='
-    print *,"Test diffusion dirichlet_diriclet"
-    print *,'Mesh Peclet',disp_coef*dt/(dx*dx), "dx :",dx,"dt :",dt 
-    print *, "nx_base:", nx_base, "nt_base:", nstep_base, "D:" ,disp_coef
-    print *, 'Maximum error in :', which_cell ,'out of ', nx_base/2**(nrefine-1)
-    print *,"L1 rate: ", norm_error(1,3)/norm_error(1,2)
-    print *,"L2 rate: ", norm_error(2,3)/norm_error(2,2)
-    print *,"Linf rate", norm_error(3,3)/norm_error(3,2)
-    print *,"L1 rate: ", norm_error(1,2)/norm_error(1,1)
-    print *,"L2 rate: ",norm_error(2,2)/norm_error(2,1)
-    print *,"Linf rate",norm_error(3,2)/norm_error(3,1)
-    print *, ' norms :' 
-    print *, norm_error
-end if
-
+            
+    call log_convergence_results(norm_error,             & 
+                                 nrefine,                &
+                                 dx,                     &
+                                 dt,                     &
+                                 max_velocity = zero,    &
+                                 label = filename,          &
+                                 which_cell = which_cell,&
+                                 ncell_base = nx_base,   &
+                                 ntime_base = nstep_base,&
+                                 reaction_rate = zero,   &
+                                 dispersion = disp_coef, &
+                                 scheme_order = two,     &
+                                 length_scale = domain_length,  &
+                                 limiter_switch = .false.)
+    
+        
 
 return
 end subroutine

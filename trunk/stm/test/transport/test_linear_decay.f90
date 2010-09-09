@@ -23,7 +23,7 @@
 module test_linear_decay_no_flow
 
 use stm_precision
-use example_initial_conditions
+use gaussian_init_boundary_condition
 
 integer :: istep = 0
 integer, parameter  :: nstep_base = 4*8*4
@@ -45,7 +45,7 @@ implicit none
 procedure(hydro_data_if),pointer :: no_flow_hydro
 integer, parameter  :: nconc = 2
 integer :: icell
-character(LEN=*),parameter :: label = "linear decay no flow"
+character(LEN=*),parameter :: label = "linear_decay_no_flow"
 logical  :: verbose
 
 real(stm_real),parameter :: domain_length = 512.d0
@@ -66,8 +66,6 @@ fine_initial_condition(:,2) = fine_initial_condition(:,1)
 fine_solution(:,1) = fine_initial_condition(:,1) *exp(- decay_rate*total_time)
 fine_solution(:,2) = fine_initial_condition(:,2) *exp(- decay_rate*total_time)
 
-!todo:
-print *, "Kdt : " , decay_rate*total_time/nstep_base
 
 call test_advection_convergence(label,                  &
                                 no_flow_hydro,          &
@@ -82,7 +80,7 @@ call test_advection_convergence(label,                  &
 
 end subroutine
 !=========================
-!>generat constant area and constant flow foreward and backward
+!>generate constant area and constant flow foreward and backward
 subroutine no_flow(flow,    &
                    flow_lo, &
                    flow_hi, &

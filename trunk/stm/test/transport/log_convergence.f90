@@ -42,7 +42,8 @@ module log_convergence
                                     limiter_switch )
  use stm_precision
  implicit none
-
+ 
+ integer, parameter  :: log_unit = 91
  integer, intent(in) :: nrefine
  integer, intent(in) :: which_cell(nrefine)
  integer, intent(in) :: ncell_base
@@ -68,76 +69,85 @@ else
     order = two
 end if
 
-open (unit = 3, file= label//'_error_log.txt', status='unknown')
+!todo : which one do we want
+open(unit = log_unit, file= trim(label)//'_convergence_log.txt', &
+      status='unknown')
+!open (unit = log_unit, file= 'log_of_run.txt', status='keep')
     
-write(3,*)"==== Log of connvergence test "// label,' ====' 
-write(3,*)
-write(3,*)'L-inf convergence ratio : '
-write(3,*)'fine :',log(norm_error(3,2)/norm_error(3,1))/log(order),' coarse :',log(norm_error(3,3)/norm_error(3,2))/log(order)  
-write(3,*)'L-2 convergence ratio : '
-write(3,*)'fine :',log(norm_error(2,2)/norm_error(2,1))/log(order),' coarse :',log(norm_error(2,3)/norm_error(2,2))/log(order)  
-write(3,*)'L-1 convergence ratio : '
-write(3,*)'fine :',log(norm_error(1,2)/norm_error(1,1))/log(order),' coarse :',log(norm_error(1,3)/norm_error(1,2))/log(order)  
-write(3,*)
-write(3,*)'number of cells : ',ncell_base,ncell_base/2,ncell_base/4
-write(3,*)'L-inf occures at :',which_cell(1),which_cell(2),which_cell(3)
-write(3,*) 'dx :', dx/four,dx/two,dx 
-write(3,*)
-write(3,*)'number of steps : ',ntime_base,ntime_base/2,ntime_base/4
-write(3,*)'dt :',dt/four,dt/two,dt
-write(3,*)
-write(3,*)'Error L-inf '//label//' : '
-write(3,*) norm_error (3,:)
-write(3,*)'Error L-2 '//label//' : '
-write(3,*) norm_error (2,:)
-write(3,*)'Error L-1 '//label//' : '
-write(3,*) norm_error (1,:)
-write(3,*)
+write(log_unit,*)"==== Log of connvergence test "// label,' ====' 
+write(log_unit,*)
+write(log_unit,*)'(from finer to coarser)'
+write(log_unit,*)'L-inf convergence ratio '
+write(log_unit,*) norm_error(3,2)/norm_error(3,1),norm_error(3,3)/norm_error(3,2)
+write(log_unit,*)'L-2 convergence ratio '
+write(log_unit,*) norm_error(2,2)/norm_error(2,1),norm_error(2,3)/norm_error(2,2)
+write(log_unit,*)'L-1 convergence ratio '
+write(log_unit,*) norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2)
+write(log_unit,*)
+write(log_unit,*)'L-inf convergence ratio LOG '
+write(log_unit,*)'fine :',log(norm_error(3,2)/norm_error(3,1))/log(order),' coarse :',log(norm_error(3,3)/norm_error(3,2))/log(order)  
+write(log_unit,*)'L-2 convergence ratio LOG '
+write(log_unit,*)'fine :',log(norm_error(2,2)/norm_error(2,1))/log(order),' coarse :',log(norm_error(2,3)/norm_error(2,2))/log(order)  
+write(log_unit,*)'L-1 convergence ratio LOG '
+write(log_unit,*)'fine :',log(norm_error(1,2)/norm_error(1,1))/log(order),' coarse :',log(norm_error(1,3)/norm_error(1,2))/log(order)  
+write(log_unit,*)
+write(log_unit,*)'number of cells : ',ncell_base,ncell_base/2,ncell_base/4
+write(log_unit,*)'L-inf occures at :',which_cell(1),which_cell(2),which_cell(3)
+write(log_unit,*) 'dx :', dx/four,dx/two,dx 
+write(log_unit,*)
+write(log_unit,*)'number of steps : ',ntime_base,ntime_base/2,ntime_base/4
+write(log_unit,*)'dt :',dt/four,dt/two,dt
+write(log_unit,*)
+write(log_unit,*)'Error L-inf '//label//' : '
+write(log_unit,*) norm_error (3,:)
+write(log_unit,*)'Error L-2 '//label//' : '
+write(log_unit,*) norm_error (2,:)
+write(log_unit,*)'Error L-1 '//label//' : '
+write(log_unit,*) norm_error (1,:)
+write(log_unit,*)
 
 if (present(reaction_rate)) then
-    write(3,*) 'Decay rate : ', reaction_rate
-    write(3,*) 'Kdt : '
-    write(3,*) reaction_rate*dt/four,reaction_rate*dt/two,reaction_rate*dt
-    write(3,*)
+    write(log_unit,*) 'Decay rate : ', reaction_rate
+    write(log_unit,*) 'Kdt : '
+    write(log_unit,*) reaction_rate*dt/four,reaction_rate*dt/two,reaction_rate*dt
+    write(log_unit,*)
 end if 
 
 if (present(dispersion)) then
-    write(3,*) 'Dispersion coefficient : ', dispersion
-    write(3,*) 'Diffusion Number (Ddt/dx2<1) : '
-    write(3,*) four*dispersion*dt/dx/dx,two*dispersion*dt/dx/dx,dispersion*dt/dx/dx
-    write(3,*)
+    write(log_unit,*) 'Dispersion coefficient : ', dispersion
+    write(log_unit,*) 'Diffusion Number (Ddt/dx2<1) : '
+    write(log_unit,*) four*dispersion*dt/dx/dx,two*dispersion*dt/dx/dx,dispersion*dt/dx/dx
+    write(log_unit,*)
 end if 
 
 if (present(max_velocity)) then
-    
-    write (3,*) 'CFL : (<1)' , max_velocity*dt/dx 
-    
+    write(log_unit,*) 'CFL : (<1)' , max_velocity*dt/dx 
     if (present(limiter_switch)) then
         if (limiter_switch == .true.)then
-            write (3,*) 'Flux Limiter : ON '
+            write(log_unit,*) 'Flux Limiter : ON '
         else
-            write(3,*) 'Flux Limiter : OFF'
+            write(log_unit,*) 'Flux Limiter : OFF'
         end if
-        write(3,*)
+        write(log_unit,*)
     end if  
     
     if (present(dispersion)) then
-        write(3,*) 'Mesh Peclet Number(Vdx/D) :'
-        write(3,*) max_velocity*dx/dispersion/four,max_velocity*dx/dispersion/two,max_velocity*dx/dispersion
-        write(3,*)
+        write(log_unit,*) 'Mesh Peclet Number(Vdx/D) :'
+        write(log_unit,*) max_velocity*dx/dispersion/four,max_velocity*dx/dispersion/two,max_velocity*dx/dispersion
+        write(log_unit,*)
         ! todo: do we also need Peclet number? I don't think
     end if
     
     if (present(reaction_rate)) then
         ! todo: this part is the scale of Damkohler
-        write(3,*) 'Da : Advection Time Scale/ Reaction Time Scale'
-        write(3,*) 'Da =', reaction_rate*dx/max_velocity   
+        write(log_unit,*) 'Da : Advection Time Scale/ Reaction Time Scale'
+        write(log_unit,*) 'Da =', reaction_rate*dx/max_velocity   
     end if 
     
-    write(3,*)
+    write(log_unit,*)
 end if
-write (3,*) '====================================' 
-close (3)
+write (log_unit,*) '====================================' 
+close (log_unit)
    
 return
 end subroutine

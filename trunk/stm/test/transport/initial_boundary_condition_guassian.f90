@@ -23,7 +23,7 @@
 !> It can fill an array with 1D Gaussin function, rectangular, and triangular,
 !> and also it can fill discontinuities. In case of multi-constituents tehy have to initialize separately     
 !>@ingroup example
-module gaussian_init_boundary_conditions
+module gaussian_init_boundary_condition
 use stm_precision   
 private gaussian_cdf
 

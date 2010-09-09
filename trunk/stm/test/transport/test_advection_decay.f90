@@ -60,7 +60,7 @@ real(stm_real) :: solution_gaussian_sd
 real(stm_real) :: x_center(nx_base) 
 real(stm_real) :: dx
 integer :: icell
-character(LEN=64) :: label = "uniform flow_liner decay"
+character(LEN=64) :: label = "uniform_flow_linear_decay"
 uniform_hydro=> uniform_flow
 compute_source => linear_decay_source
 replace_advection_boundary_flux  => neumann_advective_flux
@@ -83,13 +83,6 @@ call initial_fine_solution_uniform(fine_initial_condition, &
                                    
                          
 fine_solution = fine_solution* exp(- total_time*decay_rate)
-
-!todo : remove
-!do icell=1,nx_base
-!    x_center(icell) = dx*(dble(icell)-half)+origin
-!    write(label, "(a\i4\'.txt')"),'inicial_AR' , nx_base 
-!     call printout(fine_solution(:,2),x_center,label)
-!end do
 
 call test_advection_convergence(label,                  &
                                 uniform_hydro,          &
@@ -157,7 +150,7 @@ subroutine initial_fine_solution_uniform(fine_initial_condition, &
                                          ic_center,              &
                                          solution_center)
                                    
-use example_initial_conditions
+use gaussian_init_boundary_condition
 use stm_precision
 use grid_refinement
 implicit none
