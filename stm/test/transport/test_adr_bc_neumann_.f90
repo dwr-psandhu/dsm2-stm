@@ -312,7 +312,7 @@ subroutine initial_final_solution(fine_initial_conc,     &
                                   nx_base,               &
                                   nconc)
                                   
-use example_initial_conditions
+use gaussian_init_boundary_condition
 
 implicit none
 integer, intent(in) :: nx_base
@@ -426,7 +426,7 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
                                       dx)
      
      use stm_precision
-     use example_initial_conditions
+     use gaussian_init_boundary_condition
      
         implicit none
          !--- args          
@@ -488,7 +488,7 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
                                          dx,                 &
                                          dt)
  use stm_precision
- use example_initial_conditions
+ use gaussian_init_boundary_condition
  implicit none
      !--- args
                                    
@@ -573,7 +573,7 @@ right_hand_side(ncell,:)= right_hand_side(ncell,:) &
                                        dx,                &
                                        dt)
  use stm_precision
- use example_initial_conditions
+ use gaussian_init_boundary_condition
  
 implicit none
 !--- args
