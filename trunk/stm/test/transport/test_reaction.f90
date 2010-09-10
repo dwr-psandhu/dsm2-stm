@@ -27,7 +27,7 @@ use stm_precision
 integer, parameter  :: nstep_base = 40
 integer, parameter  :: nvar = 2
 real(stm_real), parameter :: total_time = 160.d0
-real(stm_real), parameter :: decay_coef = 0.004d0
+real(stm_real), parameter :: decay_coef = 0.01d0
 
 contains
 !> Subroutine that runs a small reaction simulation

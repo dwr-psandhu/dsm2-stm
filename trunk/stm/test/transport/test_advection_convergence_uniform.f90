@@ -32,7 +32,7 @@ contains
 !> Subroutine that runs a small advective simulation
 subroutine test_uniform_advection_convergence(verbose)
 
-use test_single_channel_advection
+use test_convergence_transport
 use hydro_data
 use source_sink
 
@@ -52,7 +52,7 @@ real(stm_real) :: ic_center = domain_length/two
 real(stm_real) :: solution_center = domain_length/two
 real(stm_real) :: ic_gaussian_sd = domain_length/sixteen
 real(stm_real) :: solution_gaussian_sd = domain_length/sixteen
-character(LEN=*),parameter :: label = "uniform_flow"
+character(LEN=*),parameter :: label = "advection_uniform"
 uniform_hydro=> uniform_flow
 compute_source => no_source
 
@@ -71,7 +71,7 @@ call initial_fine_solution_uniform(fine_initial_condition, &
                                    solution_center)
 
 
-call test_advection_convergence(label,                  &
+call test_convergence(label,                  &
                                 uniform_hydro,          &
                                 domain_length,          &
                                 total_time,             &

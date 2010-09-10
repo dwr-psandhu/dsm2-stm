@@ -403,7 +403,7 @@ integer :: icell
 integer :: ivar
 up_diag(ncell,:) = LARGEREAL
 down_diag(1,:) = LARGEREAL
-d_star = dt/dx/dx  
+d_star = dt/(dx*dx)  
     do ivar = 1,nvar 
         do icell = 1,ncell
          down_diag(icell,ivar) = - theta_stm*d_star*area_lo(icell)*disp_coef_lo(icell,ivar) 

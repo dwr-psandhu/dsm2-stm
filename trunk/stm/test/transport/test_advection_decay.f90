@@ -28,7 +28,7 @@ integer, parameter  :: nstep_base = 128
 integer, parameter  :: nx_base = 512*2
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: total_time = 600.d0
-real(stm_real), parameter :: decay_rate = 0.001d0
+real(stm_real), parameter :: decay_rate = 0.01d0
 real(stm_real), parameter :: constant_flow = sixteen
 real(stm_real), parameter :: constant_area = two
 
@@ -36,7 +36,7 @@ contains
 !> Subroutine that runs a small advective simulation
 subroutine test_advection_decay_convergence(verbose)
 
-use test_single_channel_advection
+use test_convergence_transport
 use hydro_data
 use source_sink
 use boundary_advection_module
@@ -59,10 +59,12 @@ real(stm_real) :: ic_gaussian_sd = domain_length/(sixteen*two)
 real(stm_real) :: solution_gaussian_sd 
 real(stm_real) :: x_center(nx_base) 
 real(stm_real) :: dx
+real(stm_real),dimension(nconc) :: decay_rates = (/decay_rate,decay_rate/)
+
 integer :: icell
 character(LEN=64) :: label = "uniform_flow_linear_decay"
 uniform_hydro=> uniform_flow
-compute_source => linear_decay_source
+call set_linear_decay(decay_rates,nconc)
 replace_advection_boundary_flux  => neumann_advective_flux
 
 dx = domain_length/dble(nx_base)
@@ -84,16 +86,16 @@ call initial_fine_solution_uniform(fine_initial_condition, &
                          
 fine_solution = fine_solution* exp(- total_time*decay_rate)
 
-call test_advection_convergence(label,                  &
-                                uniform_hydro,          &
-                                domain_length,          &
-                                total_time,             &
-                                fine_initial_condition, &
-                                fine_solution,          &            
-                                nstep_base,             &
-                                nx_base,                &
-                                nconc,                  &
-                                verbose)
+call test_convergence(label,                  &
+                      uniform_hydro,          &
+                      domain_length,          &
+                      total_time,             &
+                      fine_initial_condition, &
+                      fine_solution,          &            
+                      nstep_base,             &
+                      nx_base,                &
+                      nconc,                  &
+                      verbose)
 
 end subroutine
 !=========================
@@ -185,41 +187,5 @@ call fill_gaussian(fine_solution(:,2),nx_base,origin,dx, &
 
 return
 end subroutine
-!===========
-subroutine linear_decay_source(source, & 
-                               conc,   &
-                               area,   &
-                               flow,   &
-                               ncell,  &
-                               nvar,   &
-                               time)
-                                     
-
- use  primitive_variable_conversion
- implicit none
- 
- !--- args
-integer,intent(in)  :: ncell                      !< Number of cells
-integer,intent(in)  :: nvar                       !< Number of variables
-real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
-real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
-real(stm_real),intent(in)  :: area(ncell)         !< area at source     
-real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
-real(stm_real),intent(in)  :: time                !< time 
-!--- local just for test
-real(stm_real) :: mass (ncell,nvar)
-real(stm_real) :: rate_1
-real(stm_real) :: rate_2
-
-rate_1 = decay_rate
-rate_2 = rate_1
-
-! source must be in primitive variable 
-
-source(:,1) = -rate_1*conc(:,1)
-source(:,2) = -rate_2*conc(:,2) 
- 
-return
-end subroutine 
 
 end module

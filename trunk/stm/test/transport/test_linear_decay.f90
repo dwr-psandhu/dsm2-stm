@@ -29,13 +29,13 @@ integer :: istep = 0
 integer, parameter  :: nstep_base = 4*8*4
 integer, parameter  :: nx_base = 4
 real(stm_real), parameter :: total_time = 2048.d0
-real(stm_real), parameter :: decay_rate = 0.0003d0
 
 contains
+
 !> Subroutine that runs a decay in the absence of diffusion
 subroutine test_linear_decay_convergence(verbose)
 
-use test_single_channel_advection
+use test_convergence_transport
 use hydro_data
 use source_sink
 use error_metric
@@ -52,10 +52,11 @@ real(stm_real),parameter :: domain_length = 512.d0
 real(stm_real) :: fine_initial_condition(nx_base,nconc) !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)          !< reference solution at finest resolution
 real(stm_real) :: xposition (nx_base)
-
+real(stm_real), parameter :: decay_rate = 0.0003d0
+real(stm_real),dimension(nconc) :: decay_rates = (/decay_rate,decay_rate/)
 
 no_flow_hydro => no_flow
-compute_source => linear_decay_source
+call set_linear_decay(decay_rates,nconc)
 
 !> Subroutine which generates fine initial values and reference values to compare with 
 !> and feed the covvergence test subroutine.
@@ -67,7 +68,7 @@ fine_solution(:,1) = fine_initial_condition(:,1) *exp(- decay_rate*total_time)
 fine_solution(:,2) = fine_initial_condition(:,2) *exp(- decay_rate*total_time)
 
 
-call test_advection_convergence(label,                  &
+call test_convergence(label,                  &
                                 no_flow_hydro,          &
                                 domain_length,          &
                                 total_time,             &
@@ -122,32 +123,6 @@ area_hi = constant_area
 
 return
 end subroutine
-!========================================
-subroutine linear_decay_source(source, & 
-                               conc,   &
-                               area,   &
-                               flow,   &
-                               ncell,  &
-                               nvar,   &
-                               time)
-                                     
 
- use  primitive_variable_conversion
- implicit none
- 
- !--- args
-integer,intent(in)  :: ncell                      !< Number of cells
-integer,intent(in)  :: nvar                       !< Number of variables
-real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
-real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
-real(stm_real),intent(in)  :: area(ncell)         !< area at source     
-real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
-real(stm_real),intent(in)  :: time                !< time 
-
-source(:,1) = -decay_rate*conc(:,1)
-source(:,2) = -decay_rate*conc(:,2) 
- 
-return
-end subroutine 
 
 end module

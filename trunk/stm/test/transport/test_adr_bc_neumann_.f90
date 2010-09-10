@@ -97,7 +97,6 @@ real(stm_real) :: time
 real(stm_real) :: norm_error(3,nrefine)
 integer :: which_cell(nrefine)
 real(stm_real) :: theta = half  
-
 boundary_diffusion_impose        => neumann_adr_diffusion_matrix 
 boundary_diffusion_flux          => neumann_adr_diffusive_flux 
 replace_advection_boundary_flux  => neumann_adr_dvective_flux ! OK
@@ -261,9 +260,10 @@ do icoarse = 1,nrefine
                      nx,                    &
                      dx)
                      
-   write(label, "(a\i4\'.txt')"), "result_adr_neumann_bc", nx 
-    call printout(conc(:,2),x_center,label)
-  
+    !write(filename, "(a,'_start_',i4.4,'.txt')") trim(label), nx        
+    !call printout(reference(:,2),x_center(:),filename)
+    !write(filename, "(a,'_end_',i4.4,'.txt')") trim(label), nx 
+    !call printout(conc(:,2),x_center(:),filename)  
 
     call deallocate_state
     deallocate(disp_coef_lo,disp_coef_hi, &
@@ -287,7 +287,7 @@ if (verbose == .true.) then
                                 dx,                            &
                                 dt,                            &
                                 max_velocity= const_velocity,  &
-                                label = label,                 &
+                                label=label  ,                 &
                                 which_cell=which_cell,         &
                                 ncell_base = nx_base,          &
                                 ntime_base = nstep_base,       &

@@ -178,12 +178,7 @@ do icoarse = 1,nrefine
       area_prev = area
       call cons2prim(conc,mass,area,nx,nconc) 
     
-    if (label == 'linear decay no flow') then
-        if (minval (conc) < zero)then
-            print *,'Negative concentration !!!!!','Conc =',minval(conc)             
-        end if       
-    end if
-    
+     
     end do
 
     ! Now take fine solution (provided in concentration) and coarsen it to

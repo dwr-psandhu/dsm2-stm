@@ -82,6 +82,7 @@ integer :: which_cell(nrefine)
 real(stm_real),allocatable :: reference(:)
 real(stm_real) norm_error(3,nrefine)
 character(LEN=64) filename
+character(LEN=*),parameter :: label = "diffusion_neumann"
 
 boundary_diffusion_impose  => n_d_test_diffusion_matrix
 boundary_diffusion_flux    => n_d_test_diffusive_flux
@@ -146,9 +147,9 @@ do icoarse = 1,nrefine
                          dt,                &
                          dx                 ) 
     end do 
-    write(filename, "(a\i3\'.txt')"), "diffuse_neumann_reference_", ncell 
-    call printout(reference,xposition,filename)
-    write(filename, "(a\i3\'.txt')"), "diffuse_neumann_solution_", ncell 
+    !write(filename, "(a\i3\'.txt')"), "diffuse_neumann_reference_", ncell 
+    !call printout(reference,xposition,filename)
+    !write(filename, "(a\i3\'.txt')"), "diffuse_neumann_solution_", ncell 
  !todo:   call printout(conc(:,2),xposition,filename)
     call error_norm(norm_error(1,icoarse), &
                     norm_error(2,icoarse), &
@@ -162,7 +163,7 @@ do icoarse = 1,nrefine
     call deallocate_state
 end do
 
-c call convergence_asserts(norm_error, "neumann_dirichlet")
+! call convergence_asserts(norm_error, "neumann_dirichlet")
 
 call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on diffusion N_D")
 call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on diffusion N_D")
@@ -179,7 +180,7 @@ call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order conv
                                  dx,                     &
                                  dt,                     &
                                  max_velocity = zero,    &
-                                 label = filename,          &
+                                 label = label,          &
                                  which_cell = which_cell,&
                                  ncell_base = nx_base,   &
                                  ntime_base = nstep_base,&

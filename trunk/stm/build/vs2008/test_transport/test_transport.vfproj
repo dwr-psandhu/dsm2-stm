@@ -32,15 +32,16 @@
 		<File RelativePath="..\..\..\test\transport\initial_boundary_condition_examples.f90"/>
 		<File RelativePath="..\..\..\test\transport\initial_boundary_condition_guassian.f90"/>
 		<File RelativePath="..\..\..\test\transport\log_convergence.f90"/>
+		<File RelativePath="..\..\..\test\transport\single_channel_transport.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_adr_bc_neumann_.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_adr_no_boundary_condition.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_tidal.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_uniform.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_decay.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_advection_single_channel.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_boundary_diffusive_flux.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_coarsen.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_construct_rhs.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_convergence_transport.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_convergence_single_channel.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_dirichlet_dirichlet.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_neumann.f90"/>
