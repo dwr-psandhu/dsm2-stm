@@ -144,8 +144,10 @@ do icoarse = 1,nrefine
     area_lo = const_area
     area_hi = const_area
 
-    allocate(disp_coef_lo(nx,nconc),disp_coef_hi(nx,nconc), &
-             disp_coef_lo_prev(nx,nconc),disp_coef_hi_prev(nx,nconc))
+    allocate(disp_coef_lo(nx,nconc), &
+             disp_coef_hi(nx,nconc), &
+             disp_coef_lo_prev(nx,nconc), &
+             disp_coef_hi_prev(nx,nconc))
     disp_coef_lo = const_disp_coef
     disp_coef_hi = const_disp_coef
     disp_coef_lo_prev = const_disp_coef
@@ -219,7 +221,7 @@ do icoarse = 1,nrefine
                   dx,       &
                   limit_slope)
 
-      
+      !todo: Kaveh, why do this with area?
       area_prev = area
       call cons2prim(conc,mass,area,nx,nconc) 
       conc_prev = conc

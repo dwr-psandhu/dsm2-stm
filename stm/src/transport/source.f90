@@ -23,6 +23,9 @@
 !> to a subroutine that meets the compute_source interface.
 !>@ingroup transport
 module source_sink
+ use stm_precision, only: stm_real
+ real(stm_real), allocatable :: linear_decay(:) !< linear decay rates for when linear source is used, should be nonpositive
+ 
  !> Calculate source
  interface
    !> Generic interface for calculating source that should be fulfilled by
@@ -89,6 +92,58 @@ module source_sink
      return
  end subroutine 
  !==================================
+
+
+ !> Sets the decay rate and sets the source term to linear decay
+subroutine set_linear_decay(rates, nvar)
+   use stm_precision
+   use error_handling
+   real(stm_real), dimension(nvar) :: rates
+   if ( allocated(linear_decay)) then
+     deallocate(linear_decay)
+   end if
+   allocate(linear_decay(nvar))
+   if (minval(rates) .lt. zero) then
+       call stm_fatal("Decay rates for linear decay should be nonnegative")
+   end if
+   linear_decay = rates
+   compute_source => linear_decay_source
+   return
+end subroutine
+
+
+ !> Linear decay source.
+ !> This source term multiplies each constituent by a decay rate
+subroutine linear_decay_source(source, & 
+                               conc,   &
+                               area,   &
+                               flow,   &
+                               ncell,  &
+                               nvar,   &
+                               time)
+                                     
+
+ use stm_precision
+ implicit none
+ 
+ !--- args
+integer,intent(in)  :: ncell                      !< Number of cells
+integer,intent(in)  :: nvar                       !< Number of variables
+!---local
+integer :: ivar
+real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
+real(stm_real),intent(in)  :: area(ncell)         !< area at source     
+real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
+real(stm_real),intent(in)  :: time                !< time 
+
+! source must be in primitive variable 
+do ivar = 1,nvar
+  source(:,ivar) = -linear_decay(ivar)*conc(:,ivar)
+end do
+ 
+return
+end subroutine 
 
  
 end module

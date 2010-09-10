@@ -27,8 +27,6 @@ contains
 
 !> subroutine for integerating the ODE of reaction term 
 !> the method is 3rd order (Nystrom Runge-Kutta) 
-! todo: 1- Do we need 2nd order or 3rd?
-! todo: Huen, Classic ,Nystrom, or Optimal method?
 subroutine react(conc,       &
                  conc_prev,  &
                  area,       &

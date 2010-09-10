@@ -70,7 +70,7 @@ pure subroutine tridi_solver(center_diag,          &
     real(stm_real) :: bet
 
 ! todo: what is this?
-    if(center_diag(1) == 0)then
+    if(center_diag(1) == zero)then
         !call stm_fail("Error in tridiagonal system of equations")
     end if
 
