@@ -36,6 +36,12 @@ real(stm_real),parameter :: freq=two*pi/m2_period          !< Frequency of tidal
 
 contains
 
+!todo: this test could be much less weird-looking if the tidal excursion moved toward the domain
+!      rather than into the domain.
+!      the tidal range is very short, so the discretization of the plume is fairly coarse despite the apparently
+!      coarse discretization
+
+
 !> Tests the convergence of error rate in advection of mass which is exposed a tidal boundary 
 subroutine test_tidal_advection_convergence(verbose)
 
@@ -50,7 +56,7 @@ implicit none
 procedure(hydro_data_if),pointer :: tidal_hydro          !< The pointer points to tidal flow data
 
 integer, parameter  :: nconc = 2                         !< Number of constituents
-integer, parameter  :: nstep_base = 128                  !< Number of time steps in finer discritization
+integer, parameter  :: nstep_base = 64                   !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 256                  !< Number of spatial discritization in finer mesh 
 logical :: verbose
 real(stm_real), parameter :: total_time = m2_period      !< total time of the test

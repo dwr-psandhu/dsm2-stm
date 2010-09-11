@@ -1,5 +1,5 @@
 import string
-base_filename = "advection_tidal"
+base_filename = "transport_uniform_dirichlet"
 
 resolution = "0256"
 initfile = open("%s_init_%s.txt" % (base_filename,resolution),"r").readlines()
