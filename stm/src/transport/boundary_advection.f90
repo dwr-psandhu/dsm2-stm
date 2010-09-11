@@ -20,12 +20,12 @@
 
 !> boundary advection interface to be fulfilled by driver or application
 !>@ingroup transport
-module boundary_advection_module
- !> Calculate boundary advection
- interface
-       !> Generic interface for calculating BC advection routine that should be fulfilled by
-       !> client programs
-       subroutine boundary_advective_flux(flux_lo,    &
+module boundary_advection
+  !> Calculate boundary advection
+  interface
+    !> Generic interface for calculating BC advection routine that should be fulfilled by
+    !> client programs
+    subroutine boundary_advective_flux_if(flux_lo,    &
                                           flux_hi,    &
                                           conc_lo,    &
                                           conc_hi,    &
@@ -36,35 +36,72 @@ module boundary_advection_module
                                           time,       &
                                           dt,         &
                                           dx)
-        
-         use stm_precision
-         
-         implicit none
-         !--- args          
-        integer,intent(in)  :: ncell  !< Number of cells
-        integer,intent(in)  :: nvar   !< Number of variables
-        ! todo: check the intents
-        real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
-        real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
-        real(stm_real),intent(in)    :: flow_lo(ncell)          !< flow on lo side of cells centered in time
-        real(stm_real),intent(in)    :: flow_hi(ncell)          !< flow on hi side of cells centered in time
-        real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
-        real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
-        real(stm_real), intent (in)  :: time                    !< Current time
-        real(stm_real), intent (in)  :: dx                      !< Spatial step  
-        real(stm_real), intent (in)  :: dt                      !< Time step     
+     
+     use stm_precision
       
-      
-       end subroutine boundary_advective_flux
+     implicit none
+      !--- args          
+     integer,intent(in)  :: ncell  !< Number of cells
+     integer,intent(in)  :: nvar   !< Number of variables
+     ! todo: check the intents
+     real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
+     real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
+     real(stm_real),intent(in)    :: flow_lo(ncell)          !< flow on lo side of cells centered in time
+     real(stm_real),intent(in)    :: flow_hi(ncell)          !< flow on hi side of cells centered in time
+     real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
+     real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
+     real(stm_real),intent(in)    :: time                    !< Current time
+     real(stm_real),intent(in)    :: dx                      !< Spatial step  
+     real(stm_real),intent(in)    :: dt                      !< Time step     
+    
+    
+    end subroutine boundary_advective_flux_if
  end interface
 
  !> This pointer should be set by the driver or client code to specify the 
  !> treatment at the advection boundary condition 
  ! todo: check here
- procedure(boundary_advective_flux),pointer :: replace_advection_boundary_flux  => null()
+ procedure(boundary_advective_flux_if),pointer :: replace_advection_boundary_flux  => null()
 
 
  contains
+  !> Example advective flux that imposes Neumann boundaries with zero flux at
+ !> both ends of the channel.
+ subroutine neumann_zero_advective_flux(flux_lo,    &
+                              flux_hi,    &
+                              conc_lo,    &
+                              conc_hi,    &
+                              flow_lo,    &
+                              flow_hi,    &
+                              ncell,      &
+                              nvar,       &
+                              time,       &
+                              dt,         &
+                              dx)
+     
+     use stm_precision
+     use error_handling
+     implicit none
+      !--- args          
+     integer,intent(in)  :: ncell  !< Number of cells
+     integer,intent(in)  :: nvar   !< Number of variables
+     ! todo: check the intents
+     real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
+     real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
+     real(stm_real),intent(in)    :: flow_lo(ncell)          !< flow on lo side of cells centered in time
+     real(stm_real),intent(in)    :: flow_hi(ncell)          !< flow on hi side of cells centered in time
+     real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
+     real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
+     real(stm_real),intent(in)    :: time                    !< Current time
+     real(stm_real),intent(in)    :: dx                      !< Spatial step  
+     real(stm_real),intent(in)    :: dt                      !< Time step    
+     
+     flux_lo(1,:) = zero
+     flux_hi(ncell,:) = zero
+     return
+ end subroutine
+ 
+ 
  
  !> Example uninitialize that prints an error and bails
  subroutine uninitialized_advection_bc(flux_lo,     &
@@ -102,41 +139,6 @@ module boundary_advection_module
      return
  end subroutine 
  
- !> Example advective flux that imposes Neumann boundaries with zero flux at
- !> both ends of the channel.
- subroutine neumann_advective_flux(flux_lo,    &
-                                   flux_hi,    &
-                                   conc_lo,    &
-                                   conc_hi,    &
-                                   flow_lo,    &
-                                   flow_hi,    &
-                                   ncell,      &
-                                   nvar,       &
-                                   time,       &
-                                   dt,         &
-                                   dx)
-     
-     use stm_precision
-        implicit none
-         !--- args          
-        integer,intent(in)  :: ncell  !< Number of cells
-        integer,intent(in)  :: nvar   !< Number of variables
-        ! todo: check the intents
-        real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
-        real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
-        real(stm_real),intent(in)    :: flow_lo(ncell)          !< flow on lo side of cells centered in time
-        real(stm_real),intent(in)    :: flow_hi(ncell)          !< flow on hi side of cells centered in time
-        real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
-        real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
-        real(stm_real), intent (in)  :: time                    !< Current time
-        real(stm_real), intent (in)  :: dx                      !< Spatial step  
-        real(stm_real), intent (in)  :: dt                      !< Time step     
-      
-      flux_lo(1,:) = zero
-      flux_hi(ncell,:) = zero
-        
-     ! todo: add non trivial cases
-     return
- end subroutine
+
  
 end module

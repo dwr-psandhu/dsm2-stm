@@ -52,8 +52,9 @@ use fruit
 use error_metric
 use advection
 use diffusion
-use boundary_advection_module
+use boundary_advection
 use boundary_diffusion
+use gaussian_init_boundary_condition
 use primitive_variable_conversion
 use hydro_data
 use source_sink
@@ -87,19 +88,19 @@ logical, parameter :: limit_slope = .false.
 real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
-real(stm_real), allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
-real(stm_real), allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
-real(stm_real), allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
-real(stm_real) ,allocatable :: disp_coef_hi_prev(:,:) !< High side constituent dispersion coef. at old time
+real(stm_real), allocatable :: disp_coef_lo(:)     !< Low side constituent dispersion coef. at new time
+real(stm_real), allocatable :: disp_coef_hi(:)     !< High side constituent dispersion coef. at new time
+real(stm_real), allocatable :: disp_coef_lo_prev(:) !< Low side constituent dispersion coef. at old time
+real(stm_real) ,allocatable :: disp_coef_hi_prev(:) !< High side constituent dispersion coef. at old time
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
 real(stm_real) :: time
 real(stm_real) :: norm_error(3,nrefine)
 real(stm_real) :: theta = half  
 
-boundary_diffusion_impose  => neumann_diffusion_matrix 
-boundary_diffusion_flux    => neumann_no_flow_diffusive_flux 
-replace_advection_boundary_flux      => neumann_advective_flux 
+boundary_diffusion_matrix  => neumann_diffusion_matrix 
+boundary_diffusion_flux    => neumann_zero_diffusive_flux 
+replace_advection_boundary_flux  => neumann_zero_advective_flux
 hydro_adr                  => uniform_flow_adr  
 compute_source             => adr_linear_decay 
 !------
@@ -144,10 +145,10 @@ do icoarse = 1,nrefine
     area_lo = const_area
     area_hi = const_area
 
-    allocate(disp_coef_lo(nx,nconc), &
-             disp_coef_hi(nx,nconc), &
-             disp_coef_lo_prev(nx,nconc), &
-             disp_coef_hi_prev(nx,nconc))
+    allocate(disp_coef_lo(nx), &
+             disp_coef_hi(nx), &
+             disp_coef_lo_prev(nx), &
+             disp_coef_hi_prev(nx))
     disp_coef_lo = const_disp_coef
     disp_coef_hi = const_disp_coef
     disp_coef_lo_prev = const_disp_coef

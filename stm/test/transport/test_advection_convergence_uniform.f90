@@ -24,9 +24,10 @@ module test_uniform_flow
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 32
+integer, parameter  :: nstep_base = 256
 integer, parameter  :: nx_base = 256
-real(stm_real), parameter :: total_time = 4200.d0
+real(stm_real), parameter :: total_time = 25600.d0
+real(stm_real), parameter :: start_time = zero           !< starts at zero
 
 contains
 !> Subroutine that runs a small advective simulation
@@ -34,7 +35,12 @@ subroutine test_uniform_advection_convergence(verbose)
 
 use test_convergence_transport
 use hydro_data
+use hydro_uniform_flow
 use source_sink
+use diffusion
+use boundary_advection
+use gaussian_init_boundary_condition
+
 
 implicit none
 procedure(hydro_data_if),pointer :: uniform_hydro
@@ -42,20 +48,33 @@ procedure(hydro_data_if),pointer :: uniform_hydro
 integer, parameter  :: nconc = 2
 logical  :: verbose
 
-real(stm_real)   ,parameter :: domain_length = 51200.d0
+real(stm_real)   ,parameter :: domain_length = 25600.d0
 real(stm_real)   ,parameter :: origin =zero
+real(stm_real), parameter :: constant_flow = 600.d0
+real(stm_real), parameter :: constant_area = 1000.d0 
+real(stm_real), parameter :: reverse_time = total_time/two
+real(stm_real), parameter :: ic_center = origin + domain_length/three
+real(stm_real), parameter :: ic_peak = one
+real(stm_real), parameter :: ic_gaussian_sd = domain_length/32.d0
+real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd
+real(stm_real) :: solution_center = ic_center
+
+!real(stm_real), parameter :: length_scale = 2000.0d0 ! the hump of mass length at the start time
+
+
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
 real(stm_real) :: fine_initial_area(nx_base)  !< initial area at finest resolution
 real(stm_real) :: fine_final_area(nx_base)    !< final area at finest resolution
-real(stm_real) :: ic_center = domain_length/two
-real(stm_real) :: solution_center = domain_length/two
-real(stm_real) :: ic_gaussian_sd = domain_length/sixteen
-real(stm_real) :: solution_gaussian_sd = domain_length/sixteen
-character(LEN=*),parameter :: label = "advection_uniform"
-uniform_hydro=> uniform_flow
-compute_source => no_source
 
+
+character(LEN=*),parameter :: label = "advection_uniform_dirichlet"
+call set_uniform_flow_area(constant_flow,constant_area,reverse_time)
+! todo: force these to be set so they aren't just left over from last test
+replace_advection_boundary_flux => neumann_zero_advective_flux
+uniform_hydro=> uniform_flow_area
+compute_source => no_source
+use_diffusion = .false.
 
 !> Subroutine which generates fine initial values and reference values to compare with 
 !> and feed the covvergence test subroutine.
@@ -72,60 +91,19 @@ call initial_fine_solution_uniform(fine_initial_condition, &
 
 
 call test_convergence(label,                  &
-                                uniform_hydro,          &
-                                domain_length,          &
-                                total_time,             &
-                                fine_initial_condition, &
-                                fine_solution,          &            
-                                nstep_base,             &
-                                nx_base,                &
-                                nconc,                  &
-                                verbose)
+                      uniform_hydro,          &
+                      domain_length,          &
+                      total_time,             &
+                      start_time,             &
+                      fine_initial_condition, &
+                      fine_solution,          &            
+                      nstep_base,             &
+                      nx_base,                &
+                      nconc,                  &
+                      verbose)
 
 end subroutine
-!=========================
-!>generat constant area and constant flow foreward and backward
-subroutine uniform_flow(flow,    &
-                        flow_lo, &
-                        flow_hi, &
-                        area,    &
-                        area_lo, &
-                        area_hi, &
-                        ncell,   &
-                        time,    &
-                        dx,      &                        
-                        dt)
-    use stm_precision
-    implicit none
-    integer, intent(in) :: ncell                   !< number of cells
-    real(stm_real), intent(in) :: time             !< time of request
-    real(stm_real), intent(in) :: dx               !< spatial step
-    real(stm_real), intent(in) :: dt               !< time step 
-    real(stm_real), intent(out) :: flow(ncell)     !< cell and time centered flow
-    real(stm_real), intent(out) :: flow_lo(ncell)  !< lo face flow, time centered
-    real(stm_real), intent(out) :: flow_hi(ncell)  !< hi face flow, time centered
-    real(stm_real), intent(out) :: area(ncell)     !< cell center area, old time
-    real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face, time centered
-    real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
 
-    
-    !> local
-    real(stm_real), parameter :: constant_flow = 3.D2
-    real(stm_real), parameter :: constant_area = 27.D1 
-
-
-    if (time <= (total_time/two)) then
-      flow = constant_flow
-    else
-      flow = minus * constant_flow
-    end if
-    flow_hi = flow
-    flow_lo = flow
-    area = constant_area
-    area_lo = constant_area
-    area_hi = constant_area
-    return
-end subroutine
 ! todo: ic_center and solution center must have dimension of NCONC
 !> Generates fine solution of initial condition and final values to compare for uniform flow advection 
 subroutine initial_fine_solution_uniform(fine_initial_condition, &

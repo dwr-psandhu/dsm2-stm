@@ -60,7 +60,6 @@ module log_convergence
  real(stm_real),intent(in),optional :: length_scale
  logical,intent(in),optional :: limiter_switch
   ! local
- integer :: icell
  real(stm_real) :: order
 
 if (present (scheme_order)) then
@@ -74,21 +73,21 @@ open(unit = log_unit, file= trim(label)//'_convergence_log.txt', &
       status='unknown')
 !open (unit = log_unit, file= 'log_of_run.txt', status='keep')
     
-write(log_unit,*)"==== Log of connvergence test "// label,' ====' 
+write(log_unit,*)"==== Convergence test results "// label,' ====' 
 write(log_unit,*)
 write(log_unit,*)'(from finer to coarser)'
-write(log_unit,*)'L-inf convergence ratio '
+write(log_unit,*)'L-inf error ratio '
 write(log_unit,*) norm_error(3,2)/norm_error(3,1),norm_error(3,3)/norm_error(3,2)
-write(log_unit,*)'L-2 convergence ratio '
+write(log_unit,*)'L-2 error ratio '
 write(log_unit,*) norm_error(2,2)/norm_error(2,1),norm_error(2,3)/norm_error(2,2)
-write(log_unit,*)'L-1 convergence ratio '
+write(log_unit,*)'L-1 error ratio '
 write(log_unit,*) norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2)
 write(log_unit,*)
-write(log_unit,*)'L-inf convergence ratio LOG '
+write(log_unit,*)'L-inf convergence rate estimate'
 write(log_unit,*)'fine :',log(norm_error(3,2)/norm_error(3,1))/log(order),' coarse :',log(norm_error(3,3)/norm_error(3,2))/log(order)  
-write(log_unit,*)'L-2 convergence ratio LOG '
+write(log_unit,*)'L-2 convergence rate estimate'
 write(log_unit,*)'fine :',log(norm_error(2,2)/norm_error(2,1))/log(order),' coarse :',log(norm_error(2,3)/norm_error(2,2))/log(order)  
-write(log_unit,*)'L-1 convergence ratio LOG '
+write(log_unit,*)'L-1 convergence rate estimate'
 write(log_unit,*)'fine :',log(norm_error(1,2)/norm_error(1,1))/log(order),' coarse :',log(norm_error(1,3)/norm_error(1,2))/log(order)  
 write(log_unit,*)
 write(log_unit,*)'number of cells : ',ncell_base,ncell_base/2,ncell_base/4

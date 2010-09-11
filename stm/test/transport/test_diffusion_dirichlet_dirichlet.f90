@@ -33,6 +33,7 @@ use stm_precision
 use state_variables
 use primitive_variable_conversion
 use boundary_diffusion
+use gaussian_init_boundary_condition
 use diffusion
 use log_convergence
 use example_initial_conditions
@@ -58,10 +59,10 @@ real(stm_real), parameter :: origin = 0.1d0
 real(stm_real), parameter :: total_time    = one
 real(stm_real), parameter :: disp_coef     = 2.1d0
 real(stm_real) :: theta = half                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
-real(stm_real),allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
-real(stm_real),allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
-real(stm_real),allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
-real(stm_real),allocatable :: disp_coef_hi_prev(:,:) !< High side constituent dispersion coef. at old time
+real(stm_real),allocatable :: disp_coef_lo(:)       !< Low side constituent dispersion coef. at new time
+real(stm_real),allocatable :: disp_coef_hi(:)       !< High side constituent dispersion coef. at new time
+real(stm_real),allocatable :: disp_coef_lo_prev(:)   !< Low side constituent dispersion coef. at old time
+real(stm_real),allocatable :: disp_coef_hi_prev(:)   !< High side constituent dispersion coef. at old time
 logical, optional :: verbose
 
 real(stm_real) :: dt              ! seconds
@@ -84,7 +85,7 @@ real(stm_real),allocatable :: reference(:)
 real(stm_real) norm_error(3,nrefine)
 character(LEN=64):: filename = 'test_diffusion_dirichlet_bc_fletcher'
 
-boundary_diffusion_impose  => dirichlet_test_diffusion_matrix
+boundary_diffusion_matrix  => dirichlet_test_diffusion_matrix
 boundary_diffusion_flux    => dirichlet_test_diffusive_flux
 
 ! coarsening factor in convergence test
@@ -99,8 +100,8 @@ do icoarse = 1,nrefine
     area_hi_prev = constant_area
     area_lo = constant_area
     area_hi = constant_area
-    allocate(disp_coef_lo(ncell,nvar),disp_coef_hi(ncell,nvar), &
-             disp_coef_lo_prev(ncell,nvar),disp_coef_hi_prev(ncell,nvar))
+    allocate(disp_coef_lo(ncell),disp_coef_hi(ncell), &
+             disp_coef_lo_prev(ncell),disp_coef_hi_prev(ncell))
     disp_coef_lo = disp_coef
     disp_coef_hi = disp_coef
     disp_coef_lo_prev = disp_coef

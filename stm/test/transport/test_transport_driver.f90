@@ -36,24 +36,29 @@ use test_interior_coef_matrix
 use test_construct_r_h_s
 use test_diffusion_convergence_boundaries
 use source_sink
-use test_diffusion_single_channel
+
 use test_advection_tidal
 use test_coarsening
 use test_uniform_flow
 use test_prim_increment_to_cons
 use test_gradient
 use test_diffusion_convergence_boundaries_dirichlet
+use test_diffusion_single_channel
 use test_linear_decay_no_flow
 use test_advect_diffuse_react
 use test_linear_decay_const_flow
 use test_liner_reaction
 use test_adr_neumann
+use test_convergence_transport_uniform
 
 implicit none
 
 logical :: verbose = .true.
 
 call init_fruit
+
+call test_converge_transport_uniform(verbose)
+
 !!//////// Advection routines
 call test_gradient_calc
 call test_limiter
@@ -85,6 +90,6 @@ call  test_advect_diffuse_reaction(verbose)
 call  test_advect_diffuse_reaction_neumann(verbose)
 !//////// 
 call fruit_summary
-pause
 
+pause
 end program 

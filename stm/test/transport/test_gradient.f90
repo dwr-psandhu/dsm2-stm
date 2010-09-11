@@ -38,7 +38,7 @@ subroutine test_gradient_calc
   real(stm_real) :: grad_lo(nx,nconst)
   real(stm_real) :: grad_hi(nx,nconst)
   real(stm_real) :: grad_c(nx,nconst)
-  integer        :: ix,ic
+  integer        :: ix
   
   call allocate_state(nx,nconst)
   conc(1,1)=0.D0
@@ -93,7 +93,7 @@ subroutine test_limiter
   real(stm_real) :: grad_hi(nx,nconst)
   real(stm_real) :: grad_c(nx,nconst)
   real(stm_real) :: grad_lim(nx,nconst)
-  integer        :: ix,ic
+  integer        :: ic
   
   call allocate_state(nx,nconst)
   conc(1,1)=0.D0

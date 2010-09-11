@@ -24,6 +24,8 @@
 !>@ingroup transport
 module diffusion
 
+logical :: use_diffusion = .false.
+
 contains
 
 ! ///////////////////////////////////////////////////////////////////
@@ -156,7 +158,7 @@ call construct_diffusion_matrix(center_diag ,     &
                                 dx,               &
                                 dt)
                                   
-call boundary_diffusion_impose(center_diag ,       &
+call boundary_diffusion_matrix(center_diag ,       &
                                up_diag,            &     
                                down_diag,          &
                                right_hand_side,    & 
@@ -214,8 +216,8 @@ real(stm_real), intent (out) :: explicit_diffuse_op(ncell,nvar)             !< E
 real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration at old time
 real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at old time
 real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at old time 
-real(stm_real), intent (in)  :: disp_coef_lo(ncell,nvar)                    !< Low side constituent dispersion coef. at old time
-real(stm_real), intent (in)  :: disp_coef_hi(ncell,nvar)                    !< High side constituent dispersion coef. at old time
+real(stm_real), intent (in)  :: disp_coef_lo(ncell)                         !< Low side constituent dispersion coef. at old time
+real(stm_real), intent (in)  :: disp_coef_hi(ncell)                         !< High side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: time                                        !< Current time
 real(stm_real), intent (in)  :: dx                                          !< Spacial step  
 real(stm_real), intent (in)  :: dt
@@ -273,8 +275,8 @@ real(stm_real), intent (out) :: diffusive_flux_lo(ncell,nvar)               !< E
 real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration at old time
 real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at old time
 real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at old time 
-real(stm_real), intent (in)  :: disp_coef_lo(ncell,nvar)                    !< Low side constituent dispersion coef. at old time
-real(stm_real), intent (in)  :: disp_coef_hi(ncell,nvar)                    !< High side constituent dispersion coef. at old time
+real(stm_real), intent (in)  :: disp_coef_lo(ncell)                         !< Low side constituent dispersion coef. at old time
+real(stm_real), intent (in)  :: disp_coef_hi(ncell)                         !< High side constituent dispersion coef. at old time
 real(stm_real), intent (in)  :: time                                        !< Current time
 real(stm_real), intent (in)  :: dx                                          !< Spatial step   
 real(stm_real), intent (in)  :: dt
@@ -285,11 +287,11 @@ integer :: ivar
 
 do ivar = 1,nvar
     diffusive_flux_lo(2:ncell,ivar) = &
-        -(area_lo(2:ncell)*disp_coef_lo(2:ncell,ivar)* &
+        -(area_lo(2:ncell)*disp_coef_lo(2:ncellr)* &
         (conc(2:ncell,ivar) - conc(1:(ncell-1),ivar)))/dx
                
     diffusive_flux_hi(1:(ncell-1),ivar) = &
-        -(area_hi(1:(ncell-1))*disp_coef_hi(1:(ncell-1),ivar)* &
+        -(area_hi(1:(ncell-1))*disp_coef_hi(1:(ncell-1))* &
            (conc(2:ncell,ivar) - conc(1:(ncell-1),ivar)))/dx                    
 end do 
 diffusive_flux_hi(ncell,:) = LARGEREAL
@@ -388,8 +390,8 @@ real(stm_real), intent (out) :: up_diag(ncell,nvar)                         !< V
 real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
 real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
 real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
-real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
-real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
+real(stm_real), intent (in)  :: disp_coef_lo(ncell)                         !< Low side constituent dispersion coef. at new time
+real(stm_real), intent (in)  :: disp_coef_hi(ncell)                         !< High side constituent dispersion coef. at new time
 real(stm_real), intent (in)  :: time                                        !< Current time
 real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in)  :: dx                                          !< Spatial step  
@@ -397,19 +399,19 @@ real(stm_real), intent (in)  :: dt                                          !< T
                                   
 !---local                                  
 real(stm_real) :: explicit_diffuse_op (ncell,nvar)                          !< Explicit diffusion operator
-real(stm_real) :: d_star
+real(stm_real) :: dt_by_dxsq
 
 integer :: icell
 integer :: ivar
 up_diag(ncell,:) = LARGEREAL
 down_diag(1,:) = LARGEREAL
-d_star = dt/(dx*dx)  
+dt_by_dxsq = dt/(dx*dx)  
     do ivar = 1,nvar 
         do icell = 1,ncell
-         down_diag(icell,ivar) = - theta_stm*d_star*area_lo(icell)*disp_coef_lo(icell,ivar) 
-         center_diag(icell,ivar) = area(icell) + theta_stm*d_star*(area_hi(icell)*disp_coef_hi(icell,ivar) &
-                                                                 + area_lo(icell)*disp_coef_lo(icell,ivar))
-         up_diag(icell,ivar) = - theta_stm*d_star*area_hi(icell)*disp_coef_hi(icell,ivar)             
+         down_diag(icell,ivar) = - theta_stm*dt_by_dxsq*area_lo(icell)*disp_coef_lo(icell) 
+         center_diag(icell,ivar) = area(icell) + theta_stm*dt_by_dxsq*(area_hi(icell)*disp_coef_hi(icell) &
+                                                                 + area_lo(icell)*disp_coef_lo(icell))
+         up_diag(icell,ivar) = - theta_stm*dt_by_dxsq*area_hi(icell)*disp_coef_hi(icell)             
         end do
    end do   
 return
