@@ -67,7 +67,6 @@ implicit none
 
  call mainSub(35, multiplyTenTimes)
 
-  pause
 end program
 
 

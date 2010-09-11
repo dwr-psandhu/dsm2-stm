@@ -34,21 +34,20 @@ use stm_precision
 use advection
 
 implicit none
-  integer,parameter :: nx = 3       !interior and two ends
-  integer,parameter :: nconst = 2
- 
-  real(stm_real) :: grad(nx,nconst)
-  real(stm_real) :: conc(nx,nconst)
-  real(stm_real) :: conc_hi(nx,nconst)
-  real(stm_real) :: conc_lo(nx,nconst)
-  real(stm_real) :: source(nx,nconst)
+integer,parameter :: nx = 3       !interior and two ends
+integer,parameter :: nconst = 2
 
-  real(stm_real) :: flow(nx)
-  real(stm_real) :: area(nx)  
-  real(stm_real) :: dx
-  real(stm_real) :: dt
-  real(stm_real) :: time
-  integer        :: ix,ic
+real(stm_real) :: grad(nx,nconst)
+real(stm_real) :: conc(nx,nconst)
+real(stm_real) :: conc_hi(nx,nconst)
+real(stm_real) :: conc_lo(nx,nconst)
+real(stm_real) :: source(nx,nconst)
+
+real(stm_real) :: flow(nx)
+real(stm_real) :: area(nx)  
+real(stm_real) :: dx
+real(stm_real) :: dt
+real(stm_real) :: time
   
   conc(1,1)=62.D0
   conc(2,1)=64.D0
@@ -117,17 +116,10 @@ implicit none
  
   real(stm_real) :: flow_lo(nx)
   real(stm_real) :: flow_hi(nx)  
-  real(stm_real) :: conc(nx,nconst)
   real(stm_real) :: conc_hi(nx,nconst)
   real(stm_real) :: conc_lo(nx,nconst)
   real(stm_real) :: flux_lo(nx,nconst)
   real(stm_real) :: flux_hi(nx,nconst)
-  real(stm_real) :: flow(nx)
-  real(stm_real) :: area(nx)  
-  real(stm_real) :: dx
-  real(stm_real) :: dt
-  real(stm_real) :: time
-  integer        :: ix,ic
   
   conc_lo(1,1)=62.D0
   conc_lo(2,1)=64.D0

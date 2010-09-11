@@ -52,7 +52,7 @@ use fruit
 use error_metric
 use advection
 use diffusion
-use boundary_advection_module
+use boundary_advection
 use boundary_diffusion
 use primitive_variable_conversion
 use hydro_data
@@ -87,17 +87,17 @@ logical, parameter :: limit_slope = .false.
 real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
-real(stm_real), allocatable :: disp_coef_lo (:,:)     !< Low side constituent dispersion coef. at new time
-real(stm_real), allocatable :: disp_coef_hi (:,:)     !< High side constituent dispersion coef. at new time
-real(stm_real), allocatable :: disp_coef_lo_prev(:,:) !< Low side constituent dispersion coef. at old time
-real(stm_real) ,allocatable :: disp_coef_hi_prev(:,:) !< High side constituent dispersion coef. at old time
+real(stm_real), allocatable :: disp_coef_lo(:)       !< Low side constituent dispersion coef. at new time
+real(stm_real), allocatable :: disp_coef_hi(:)       !< High side constituent dispersion coef. at new time
+real(stm_real), allocatable :: disp_coef_lo_prev(:)   !< Low side constituent dispersion coef. at old time
+real(stm_real) ,allocatable :: disp_coef_hi_prev(:)   !< High side constituent dispersion coef. at old time
 real(stm_real) :: dt              ! seconds
 real(stm_real) :: dx              ! meters
 real(stm_real) :: time
 real(stm_real) :: norm_error(3,nrefine)
 integer :: which_cell(nrefine)
 real(stm_real) :: theta = half  
-boundary_diffusion_impose        => neumann_adr_diffusion_matrix 
+boundary_diffusion_matrix        => neumann_adr_diffusion_matrix 
 boundary_diffusion_flux          => neumann_adr_diffusive_flux 
 replace_advection_boundary_flux  => neumann_adr_dvective_flux ! OK
 hydro_adr                      => uniform_flow_adr  !ok
@@ -146,8 +146,8 @@ do icoarse = 1,nrefine
     area_lo = const_area
     area_hi = const_area
 
-    allocate(disp_coef_lo(nx,nconc),disp_coef_hi(nx,nconc), &
-             disp_coef_lo_prev(nx,nconc),disp_coef_hi_prev(nx,nconc))
+    allocate(disp_coef_lo(nx),disp_coef_hi(nx), &
+             disp_coef_lo_prev(nx),disp_coef_hi_prev(nx))
     disp_coef_lo = const_disp_coef
     disp_coef_hi = const_disp_coef
     disp_coef_lo_prev = const_disp_coef
@@ -222,7 +222,7 @@ do icoarse = 1,nrefine
                   dx,       &
                   limit_slope)
 
-      
+      !todo: kaveh, why do this with area?
       area_prev = area
       call cons2prim(conc,mass,area,nx,nconc) 
       conc_prev = conc
@@ -415,6 +415,7 @@ end do
 return
 end subroutine 
 
+! todo: kaveh this seems to have mistakes. You are altering the outflow boundary and this doesn't seem "neumann"
 subroutine neumann_adr_dvective_flux (flux_lo,    &
                                       flux_hi,    &
                                       conc_lo,    &
@@ -506,14 +507,14 @@ real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar)
 real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
 real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
 real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
-real(stm_real), intent (in)  :: disp_coef_lo (ncell,nvar)                   !< Low side constituent dispersion coef. at new time
-real(stm_real), intent (in)  :: disp_coef_hi (ncell,nvar)                   !< High side constituent dispersion coef. at new time
+real(stm_real), intent (in)  :: disp_coef_lo(ncell)                        !< Low side constituent dispersion coef. at new time
+real(stm_real), intent (in)  :: disp_coef_hi(ncell)                        !< High side constituent dispersion coef. at new time
 real(stm_real), intent (in)  :: time                                        !< Current time
 real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in)  :: dx                                          !< Spatial step  
 real(stm_real), intent (in)  :: dt                                          !< Time step     
 !---local
-real(stm_real) :: d_star
+real(stm_real) :: dt_by_dxsq
 real(stm_real) :: flux_start(nvar)
 real(stm_real) :: flux_end(nvar) 
 real(stm_real) :: grad_start(nvar)
@@ -528,7 +529,7 @@ real(stm_real) :: old_time
 real(stm_real) :: local_time
 real(stm_real) :: resolution
 
-d_star=dt/(dx*dx)
+dt_by_dxsq=dt/(dx*dx)
  
 next_time = time 
 half_time = time - half*dt
@@ -546,16 +547,17 @@ grad_end(2) = grad_end(1)
 grad_end = (conc(ncell-1,:)-conc(ncell-2,:))/dx
 
  
-flux_start = -area_lo(1)*disp_coef_lo(1,:)*grad_start
-flux_end = -area_hi(ncell)*disp_coef_hi(ncell,:)*grad_end 
+flux_start = -area_lo(1)*disp_coef_lo(1)*grad_start
+flux_end = -area_hi(ncell)*disp_coef_hi(ncell)*grad_end 
 ! todo:
 !flux_end = -area_hi(ncell)*disp_coef_hi(ncell,:)*(conc(ncell-1,:)-conc(ncell-2,:))/dx
-     
-center_diag(1,:)= area(1)+ theta_stm*d_star* area_hi(1)*disp_coef_hi(1,:)  
+
+!todo: kaveh are the lo and hi correct here?
+center_diag(1,:)= area(1)+ theta_stm*dt_by_dxsq* area_hi(1)*disp_coef_hi(1)  
 right_hand_side(1,:) = right_hand_side(1,:) &
                             + theta_stm*(dt/dx)*flux_start(:)
  
-center_diag(ncell,:)= area(ncell)+ theta_stm*d_star* area_lo(ncell)*disp_coef_lo(ncell,:)
+center_diag(ncell,:)= area(ncell)+ theta_stm*dt_by_dxsq* area_lo(ncell)*disp_coef_lo(ncell)
 right_hand_side(ncell,:)= right_hand_side(ncell,:) &
                                - theta_stm*(dt/dx)*flux_end(:)
                                                              
@@ -583,16 +585,16 @@ integer, intent(in)  :: ncell                                   !< number of cel
 integer, intent(in)  :: nvar                                    !< number of variables
 real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
 real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-real(stm_real), intent (in)   :: area_lo         (ncell)        !< Low side area centered at old time
-real(stm_real), intent (in)   :: area_hi         (ncell)        !< High side area centered at old time
+real(stm_real), intent (in)   :: area_lo(ncell)        !< Low side area centered at old time
+real(stm_real), intent (in)   :: area_hi(ncell)        !< High side area centered at old time
 real(stm_real), intent (in)   :: time                           !< time
 real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
-real(stm_real), intent (in)   :: disp_coef_lo (ncell,nvar)      !< Low side constituent dispersion coef.
-real(stm_real), intent (in)   :: disp_coef_hi (ncell,nvar)      !< High side constituent dispersion coef.
+real(stm_real), intent (in)   :: disp_coef_lo(ncell)      !< Low side constituent dispersion coef.
+real(stm_real), intent (in)   :: disp_coef_hi(ncell)      !< High side constituent dispersion coef.
 real(stm_real), intent (in)   :: dt
 real(stm_real), intent (in)   :: dx
         !----local
-real(stm_real) :: d_star
+real(stm_real) :: dt_by_dxsq
 real(stm_real) :: flux_start(nvar)
 real(stm_real) :: flux_end(nvar)
 real(stm_real) :: grad_start(nvar)
@@ -605,7 +607,7 @@ real(stm_real) :: gaussian_bell_center
 real(stm_real) :: old_time
 real(stm_real) :: local_time
 
-d_star=dt/(dx*dx)
+dt_by_dxsq=dt/(dx*dx)
 
 ! here time is time_prev 
 next_time = time + dt
@@ -624,8 +626,8 @@ call derivative_gaussian(grad_end(1),xend,gaussian_bell_center,sqrt(two*const_di
 grad_end(2) = grad_end(1)
 grad_end = (conc(ncell-1,:)-conc(ncell-2,:))/dx
 
-diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1,:)*grad_start
-diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell,:)*grad_end
+diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1)*grad_start
+diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell)*grad_end
 
 
 !! todo: here outflow is right hand side!!

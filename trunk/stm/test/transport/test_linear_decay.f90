@@ -29,6 +29,7 @@ integer :: istep = 0
 integer, parameter  :: nstep_base = 4*8*4
 integer, parameter  :: nx_base = 4
 real(stm_real), parameter :: total_time = 2048.d0
+real(stm_real), parameter :: start_time = zero           !< starts at zero
 
 contains
 
@@ -37,6 +38,7 @@ subroutine test_linear_decay_convergence(verbose)
 
 use test_convergence_transport
 use hydro_data
+use hydro_uniform_flow
 use source_sink
 use error_metric
 
@@ -55,7 +57,8 @@ real(stm_real) :: xposition (nx_base)
 real(stm_real), parameter :: decay_rate = 0.0003d0
 real(stm_real),dimension(nconc) :: decay_rates = (/decay_rate,decay_rate/)
 
-no_flow_hydro => no_flow
+call set_uniform_flow_area(zero,120.d0)
+no_flow_hydro => uniform_flow_area
 call set_linear_decay(decay_rates,nconc)
 
 !> Subroutine which generates fine initial values and reference values to compare with 
@@ -69,59 +72,17 @@ fine_solution(:,2) = fine_initial_condition(:,2) *exp(- decay_rate*total_time)
 
 
 call test_convergence(label,                  &
-                                no_flow_hydro,          &
-                                domain_length,          &
-                                total_time,             &
-                                fine_initial_condition, &
-                                fine_solution,          &            
-                                nstep_base,             &
-                                nx_base,                &
-                                nconc,                  &
-                                verbose)
+                      no_flow_hydro,          &
+                      domain_length,          &
+                      total_time,             &
+                      start_time,             &
+                      fine_initial_condition, &
+                      fine_solution,          &            
+                      nstep_base,             &
+                      nx_base,                &
+                      nconc,                  &
+                      verbose)
 
-end subroutine
-!=========================
-!>generate constant area and constant flow foreward and backward
-subroutine no_flow(flow,    &
-                   flow_lo, &
-                   flow_hi, &
-                   area,    &
-                   area_lo, &
-                   area_hi, &
-                   ncell,   &
-                   time,    &
-                   dx,      &                        
-                   dt)
-                   
-implicit none
-integer, intent(in) :: ncell                   !< number of cells
-real(stm_real), intent(in) :: time             !< time of request
-real(stm_real), intent(in) :: dx               !< spatial step
-real(stm_real), intent(in) :: dt               !< time step 
-real(stm_real), intent(out) :: flow(ncell)     !< cell and time centered flow
-real(stm_real), intent(out) :: flow_lo(ncell)  !< lo face flow, time centered
-real(stm_real), intent(out) :: flow_hi(ncell)  !< hi face flow, time centered
-real(stm_real), intent(out) :: area(ncell)     !< cell center area, old time
-real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face, time centered
-real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face, time centered
-
-!--- local
-real(stm_real), parameter :: constant_flow = zero 
-real(stm_real), parameter :: constant_area = 27.d1 
-
-if (time <= (total_time/two)) then
-  flow = constant_flow
-else
-  flow = minus * constant_flow
-end if
-    
-flow_hi = flow
-flow_lo = flow
-area = constant_area
-area_lo = constant_area
-area_hi = constant_area
-
-return
 end subroutine
 
 

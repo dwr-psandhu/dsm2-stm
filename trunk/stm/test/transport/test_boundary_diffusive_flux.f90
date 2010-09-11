@@ -55,7 +55,7 @@ real(stm_real) :: reference_lo
 real(stm_real) :: reference_hi
 
   
-boundary_diffusion_flux => neumann_no_flow_diffusive_flux
+boundary_diffusion_flux => neumann_zero_diffusive_flux
 
 call boundary_diffusion_flux(diffusive_flux_lo, &
                              diffusive_flux_hi, &

@@ -44,9 +44,7 @@ use stm_precision
     real(stm_real) :: scale            !< Scale factor
     real(stm_real) :: reference(nloc,nvar)!< to compare solution with
     
-    !--- locals
-    integer :: ivar
-    
+  
      !---test positive and negetive scales with very large scale 
     mass(:,1) = (/1:3/)
     mass(:,2) = (/11:13/)

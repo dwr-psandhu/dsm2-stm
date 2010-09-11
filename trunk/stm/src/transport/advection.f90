@@ -42,7 +42,7 @@ contains
 !>   Note that all these steps are operations on entire arrays of values -- this keeps things efficient
 subroutine advect(mass,     &
                   mass_prev,&
-                  flow,     &                  
+                  flow_prev,&      
                   flow_lo,  &
                   flow_hi,  &
                   area,     &
@@ -60,7 +60,7 @@ use stm_precision
 use primitive_variable_conversion
 use gradient
 use source_sink
-use boundary_advection_module
+use boundary_advection
 
 implicit none
 
@@ -70,11 +70,11 @@ integer,intent(in)  :: nvar                         !< Number of variables
 
 real(stm_real),intent(out) :: mass(ncell,nvar)      !< mass at new time
 real(stm_real),intent(in)  :: mass_prev(ncell,nvar) !< mass at old time
-real(stm_real),intent(in)  :: flow(ncell)           !< cell-centered flow, old time
+real(stm_real),intent(in)  :: flow_prev(ncell)      !< cell-centered flow, old time
 real(stm_real),intent(in)  :: flow_lo(ncell)        !< flow on lo side of cells centered in time
 real(stm_real),intent(in)  :: flow_hi(ncell)        !< flow on hi side of cells centered in time
-real(stm_real),intent(in)  :: area_prev(ncell)      !< cell-centered area at old time??
-real(stm_real),intent(in)  :: area(ncell)           !< cell-centered area at new time
+real(stm_real),intent(in)  :: area_prev(ncell)      !< cell-centered area at old time. not used in algorithm?
+real(stm_real),intent(in)  :: area(ncell)           !< cell-centered area at new time. not used in algorithm?
 real(stm_real),intent(in)  :: area_lo(ncell)        !< lo side area centered in time
 real(stm_real),intent(in)  :: area_hi(ncell)        !< hi side area centered in time
 real(stm_real),intent(in)  :: time                  !< current time
@@ -84,10 +84,10 @@ logical,intent(in),optional :: use_limiter          !< whether to use slope limi
 
 !-----locals
 
-real(stm_real) :: source(ncell,nvar)      !< cell centered source 
-real(stm_real) :: conc(ncell,nvar)        !< cell centered concentration
-real(stm_real) :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
-real(stm_real) :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
+real(stm_real) :: source_prev(ncell,nvar) !< cell centered source at old time
+real(stm_real) :: conc_prev(ncell,nvar)   !< cell centered concentration at old time
+real(stm_real) :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face at half time
+real(stm_real) :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face at half time
 real(stm_real) :: grad_lo(ncell,nvar)     !< gradient based on lo side difference
 real(stm_real) :: grad_hi(ncell,nvar)     !< gradient based on hi side difference
 real(stm_real) :: grad_center(ncell,nvar) !< cell centered difference
@@ -104,9 +104,9 @@ else
     limit_slope = .true.
 end if
 ! converts the conservative variable (mass) to the primitive variable (concentration)
-call cons2prim(conc,     &
+call cons2prim(conc_prev,&
                mass_prev,&
-               area,     &
+               area_prev,&
                ncell,    &
                nvar)
 
@@ -114,7 +114,7 @@ call cons2prim(conc,     &
 call difference(grad_lo,    &
                 grad_hi,    &
                 grad_center,&
-                conc,       &
+                conc_prev,  &
                 ncell,      &
                 nvar)
 
@@ -139,21 +139,21 @@ call adjust_differences(grad,    &
                         ncell,   &
                         nvar)
 ! source must provide in primitive variable
-call compute_source(source, & 
-                    conc,   &
-                    area,   &
-                    flow,   &
-                    ncell,  &
-                    nvar,   &
+call compute_source(source_prev, & 
+                    conc_prev,   &
+                    area_prev,   &
+                    flow_prev,   &
+                    ncell,       &
+                    nvar,        &
                     time)
 
-call extrapolate(conc_lo,  &
-                 conc_hi,  & 
-                 conc,     &
-                 grad,     &            
-                 source,   &
-                 flow,     &  
-                 area,     &
+call extrapolate(conc_lo,     &
+                 conc_hi,     & 
+                 conc_prev,   &
+                 grad,        &            
+                 source_prev, &
+                 flow_prev,   &  
+                 area_prev,   &
                  ncell,    &
                  nvar,     &
                  time,     &
@@ -199,8 +199,9 @@ call compute_divergence(div_flux,   &
 call update_conservative(mass,      &
                          mass_prev, &
                          div_flux,  &
-                         source,    & 
-                         area,      &
+                         source_prev, & 
+                         area,        &
+                         area_prev,   &                         
                          ncell,     &
                          nvar,      &
                          time,      &
@@ -355,6 +356,7 @@ subroutine update_conservative(mass,       &
                                div_flux,   &
                                source_prev,&
                                area,       &
+                               area_prev,  &                               
                                ncell,      &
                                nvar,       &
                                time,       &
@@ -373,6 +375,7 @@ integer,intent(in)  :: nvar                          !< Number of variables
 real(stm_real),intent(out) :: mass(ncell,nvar)       !< Update of mass
 real(stm_real),intent(in)  :: mass_prev(ncell,nvar)  !< Old time mass
 real(stm_real),intent(in)  :: area(ncell)            !< Area of cells
+real(stm_real),intent(in)  :: area_prev(ncell)       !< Area of cells at old time step
 real(stm_real),intent(in)  :: source_prev(ncell,nvar)!< Old time source term
 real(stm_real),intent(in)  :: div_flux(ncell,nvar)   !< Flux divergence, time centered
 real(stm_real),intent(in)  :: time                   !< current time
@@ -388,10 +391,15 @@ integer :: ivar
 !--------------------
 dtbydx = dt/dx
 
+!todo: kaveh, this is major. Up to now flow has been just an uninitialized, essentially random number
+!      I did this to make it safer. However, I doubt that we will be able to use flow in a source term
+!      at multiple time steps
+flow = LARGEREAL
+
 ! obtain a guess at the new state (predictor part of Huen) using the flux divergence and source evaluated at the
 ! old time step
 do ivar=1,nvar
-    mass(:,ivar) = mass_prev(:,ivar) - dtbydx*div_flux(:,ivar) + dt*source_prev(:,ivar)*area
+    mass(:,ivar) = mass_prev(:,ivar) - dtbydx*div_flux(:,ivar) + dt*source_prev(:,ivar)*area_prev
 end do
 ! compute the source at the new time from the predictor
 call cons2prim(conc,    &
@@ -403,7 +411,7 @@ call cons2prim(conc,    &
 call compute_source(source,& 
                     conc,  &
                     area,  &
-                    flow,  &
+                    flow,  &    ! todo: this is not really available yet
                     ncell, &
                     nvar,  &
                     time) 
@@ -413,7 +421,7 @@ call compute_source(source,&
 do ivar = 1,nvar
     mass(:,ivar) =   mass_prev(:,ivar) &
        - dtbydx*div_flux(:,ivar) &
-       + dt*half*source_prev(:,ivar)*area &
+       + dt*half*source_prev(:,ivar)*area_prev &
        + dt*half*source(:,ivar)*area
 end do 
 

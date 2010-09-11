@@ -28,6 +28,7 @@ integer, parameter  :: nstep_base = 128
 integer, parameter  :: nx_base = 512*2
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: total_time = 600.d0
+real(stm_real), parameter :: start_time = zero           !< starts at zero
 real(stm_real), parameter :: decay_rate = 0.01d0
 real(stm_real), parameter :: constant_flow = sixteen
 real(stm_real), parameter :: constant_area = two
@@ -39,7 +40,7 @@ subroutine test_advection_decay_convergence(verbose)
 use test_convergence_transport
 use hydro_data
 use source_sink
-use boundary_advection_module
+use boundary_advection
 use logging
 
 implicit none
@@ -51,21 +52,17 @@ real(stm_real)   ,parameter :: domain_length = 51200.d0
 real(stm_real)   ,parameter :: origin =zero
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
-real(stm_real) :: fine_initial_area(nx_base)  !< initial area at finest resolution
-real(stm_real) :: fine_final_area(nx_base)    !< final area at finest resolution
 real(stm_real) :: ic_center = domain_length/three
 real(stm_real) :: solution_center
 real(stm_real) :: ic_gaussian_sd = domain_length/(sixteen*two)
 real(stm_real) :: solution_gaussian_sd 
-real(stm_real) :: x_center(nx_base) 
-real(stm_real) :: dx
 real(stm_real),dimension(nconc) :: decay_rates = (/decay_rate,decay_rate/)
+real(stm_real) :: dx
 
-integer :: icell
 character(LEN=64) :: label = "uniform_flow_linear_decay"
 uniform_hydro=> uniform_flow
 call set_linear_decay(decay_rates,nconc)
-replace_advection_boundary_flux  => neumann_advective_flux
+replace_advection_boundary_flux  => neumann_zero_advective_flux
 
 dx = domain_length/dble(nx_base)
 solution_center = ic_center + total_time*constant_flow/constant_area
@@ -90,6 +87,7 @@ call test_convergence(label,                  &
                       uniform_hydro,          &
                       domain_length,          &
                       total_time,             &
+                      start_time,             &
                       fine_initial_condition, &
                       fine_solution,          &            
                       nstep_base,             &
@@ -171,7 +169,6 @@ real(stm_real),intent(in)  :: origin
 real(stm_real),intent(in)  :: domain_length  
 !----local
 real(stm_real):: dx
-real(stm_real):: area_const 
 dx = domain_length/nx_base
 !---initial condition
 call fill_gaussian(fine_initial_condition(:,1),nx_base,origin,dx, &

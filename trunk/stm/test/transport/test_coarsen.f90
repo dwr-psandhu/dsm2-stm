@@ -30,7 +30,6 @@ subroutine test_coarsen
 use fruit
 use grid_refinement
 use stm_precision
-use test_single_channel_advection
 implicit none
   
 
