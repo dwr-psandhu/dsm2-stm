@@ -1,5 +1,6 @@
 import string
-base_filename = "uniform_advect_diffuse_react"
+import sys
+base_filename = sys.argv[1]
 
 resolution = "0256"
 initfile = open("%s_init_%s.txt" % (base_filename,resolution),"r").readlines()
