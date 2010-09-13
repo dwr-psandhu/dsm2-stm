@@ -65,8 +65,6 @@ real(stm_real) :: solution_center = ic_center
 
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
-real(stm_real) :: fine_initial_area(nx_base)  !< initial area at finest resolution
-real(stm_real) :: fine_final_area(nx_base)    !< final area at finest resolution
 
 
 character(LEN=*),parameter :: label = "advection_uniform_dirichlet"
@@ -140,7 +138,7 @@ real(stm_real),intent(in)  :: origin
 real(stm_real),intent(in)  :: domain_length  
 !----local
 real(stm_real):: dx
-real(stm_real):: area_const 
+
 dx = domain_length/nx_base
 !---initial condition
 call fill_gaussian(fine_initial_condition(:,1),nx_base,origin,dx, &

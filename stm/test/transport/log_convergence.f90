@@ -32,7 +32,7 @@ character(LEN=*),intent(in)  :: norm_name        !< name of norm (something like
 character(LEN=*),intent(in)  :: label            !< label identifying problem
 real(stm_real),intent(in)    :: ratio            !< error ratio
 
-write(converge_message,"(a,' 2nd order on ',a, ' (error=', f5.3,')')")norm_name,label,ratio
+write(converge_message,"(a,' 2nd order on ',a, ' (error=', f7.4,')')")norm_name,label,ratio
 return
 end subroutine
  

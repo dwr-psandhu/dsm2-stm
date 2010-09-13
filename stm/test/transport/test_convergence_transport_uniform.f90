@@ -24,21 +24,17 @@
 module test_convergence_transport_uniform
 use stm_precision
 
-integer, parameter  :: nstep_base = 256
-integer, parameter  :: nx_base = 256
-real(stm_real), parameter :: total_time = 38400.d0
-real(stm_real), parameter :: start_time = zero
-real(stm_real) :: end_time = start_time + total_time
+! These variables are needed at the module level for things like boundary conditions
 real(stm_real) :: const_disp_coef = one
 real(stm_real), parameter :: origin =zero
-real(stm_real), parameter :: domain_length = 25600.d0
-real(stm_real), parameter :: ic_center = origin + domain_length/sixteen
+real(stm_real), parameter :: base_domain_length = 25600.d0
+real(stm_real)  :: domain_length = base_domain_length
+real(stm_real) :: ic_center = LARGEREAL 
 real(stm_real), parameter :: ic_peak = one
-real(stm_real), parameter :: constant_flow = 600.d0
-real(stm_real), parameter :: constant_area = 1000.d0 
 real(stm_real) :: const_velocity
 real(stm_real) :: diffuse_start_time
 real(stm_real) :: diffuse_end_time
+
 contains
 
 !todo: Have to parameterize this for a, ar, ad, adr
@@ -50,10 +46,10 @@ subroutine test_converge_transport_uniform(verbose)
 use stm_precision
 implicit none
 logical, intent(in) :: verbose
-
+real(stm_real), parameter :: constant_flow = 600.d0
 real(stm_real),parameter :: constant_decay = 5.d-5
 real(stm_real),parameter :: constant_diffuse = sixteen
-
+logical,parameter :: remote = .true.
 
 
 real(stm_real) :: flow
@@ -83,14 +79,31 @@ decay  = zero
 call converge_transport_uniform(verbose,"uniform_advect_diffuse",flow,diffuse,decay)
 
 flow   = constant_flow
+diffuse= constant_diffuse
+decay  = zero
+call converge_transport_uniform(verbose,"uniform_advect_diffuse_remote_bc",flow,diffuse,decay,remote)
+
+
+flow   = constant_flow
 diffuse= zero
 decay  = constant_decay
 call converge_transport_uniform(verbose,"uniform_advect_react",flow,diffuse,decay)
 
 flow   = constant_flow
+diffuse= zero
+decay  = constant_decay
+call converge_transport_uniform(verbose,"uniform_advect_react_remote_bc",flow,diffuse,decay,remote)
+
+flow   = constant_flow
 diffuse= constant_diffuse
 decay  = constant_decay
 call converge_transport_uniform(verbose,"uniform_advect_diffuse_react",flow,diffuse,decay)
+
+flow   = constant_flow
+diffuse= constant_diffuse
+decay  = constant_decay
+call converge_transport_uniform(verbose,"uniform_advect_diffuse_react_remote_bc",flow,diffuse,decay,remote)
+
 
 return
 end subroutine
@@ -101,7 +114,10 @@ subroutine converge_transport_uniform(verbose,&
                                       label,  &
                                       test_flow,   &
                                       test_diffuse,&
-                                      test_decay)
+                                      test_decay, &
+                                      boundary_remote, &
+                                      detail_result &
+                                      )
 
 use test_convergence_transport
 use fruit
@@ -127,28 +143,59 @@ logical, intent(in) :: verbose
 real(stm_real), intent(in)      :: test_flow
 real(stm_real), intent(in)      :: test_diffuse
 real(stm_real), intent(in)      :: test_decay
-
 character(LEN=*),intent(in) :: label
+logical, intent(in), optional :: detail_result
+logical, intent(in), optional :: boundary_remote
+
+integer, parameter  :: nx_base_standard = 256
+integer :: nx_base = nx_base_standard
+integer, parameter  :: nstep_base = 256
+real(stm_real), parameter :: total_time = 38400.d0
+real(stm_real), parameter :: start_time = zero
+real(stm_real), parameter :: constant_area = 1000.d0 
 
 real(stm_real), parameter :: reverse_time = total_time/two
-real(stm_real), parameter :: ic_gaussian_sd = domain_length/32.d0
-real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd
-real(stm_real) :: solution_center = ic_center
-real(stm_real), parameter :: length_scale = 2000.0d0 ! the hump of mass length at the start time
+real(stm_real), parameter :: ic_gaussian_sd = base_domain_length/32.d0
+!real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd
 
 integer, parameter :: nconc = 2
 real(stm_real) :: decay_rate = zero
 real(stm_real), dimension(nconc) :: rates
-
-real(stm_real) :: fine_initial_conc(nx_base,nconc)  !< initial condition at finest resolution
-real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
+real(stm_real),allocatable :: fine_initial_conc(:,:)  !< initial condition at finest resolution
+real(stm_real),allocatable :: fine_solution(:,:)           !< reference solution at finest resolution
 procedure(hydro_data_if), pointer :: uniform_hydro => null()
 procedure(source_if), pointer :: test_source => null()
-
 procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
 procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
 procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
 
+logical :: details = .false.
+logical :: remote = .false.
+
+
+if (present(detail_result))then
+    details = detail_result
+else 
+    details = .false.
+end if
+
+if (present(boundary_remote))then
+    remote  = boundary_remote
+else 
+    remote = .false.
+end if
+
+if (remote)then
+   ic_center = origin + base_domain_length/three
+   domain_length = base_domain_length*2
+   nx_base = nx_base_standard*2
+   call set_uniform_flow_area(test_flow,constant_area)
+else
+   ic_center = origin + base_domain_length/sixteen
+   domain_length = base_domain_length
+   nx_base = nx_base_standard
+   call set_uniform_flow_area(test_flow,constant_area)
+end if
 
 call set_uniform_flow_area(test_flow,constant_area)
 uniform_hydro=> uniform_flow_area
@@ -190,7 +237,7 @@ const_dispersion = const_disp_coef
 diffuse_start_time  = ic_gaussian_sd**two/(const_disp_coef*two)
 advection_boundary_flux => single_channel_boundary_advective_flux
 
-
+allocate(fine_initial_conc(nx_base,nconc),fine_solution(nx_base,nconc))
 !> Subroutine which generates fine initial values and reference values to compare with 
 !> and feed the covvergence test subroutine.
 call initial_final_solution_uniform(fine_initial_conc,   &
@@ -221,7 +268,10 @@ call test_convergence(label,                 &
                       nstep_base,             &
                       nx_base,                &
                       nconc,                  &
-                      verbose, .true.)
+                      verbose,                &
+                      details)
+                      
+deallocate(fine_initial_conc,fine_solution)
 return
 end subroutine
 
@@ -256,11 +306,9 @@ real(stm_real),intent(in)  :: origin
 real(stm_real),intent(in)  :: domain_length
 !--local
 integer :: ivar
-real(stm_real) :: final_peak
-real(stm_real) :: final_center
 real(stm_real) :: dx
 real(stm_real) :: diffuse_end_time = LARGEREAL
-
+real(stm_real) :: final_center
 dx = domain_length/nx_base
 
 final_center = ic_center  + const_velocity * total_time
@@ -269,6 +317,7 @@ if (use_diffusion())then
 else
     diffuse_end_time = diffuse_start_time
 end if
+
 
 do ivar = 1, nconc
   call fill_gaussian(fine_initial_conc(:,ivar),nx_base,origin,dx, &
@@ -393,10 +442,6 @@ subroutine extrapolate_hi_boundary_data(bc_data,           &
     real(stm_real), intent (in)   :: dt
     real(stm_real), intent (in)   :: dx
     
-    !--- local
-    real(stm_real) :: val
-    real(stm_real) :: current_center
-    real(stm_real) :: diffuse_time
     bc_data=conc(ncell,:) + (conc(ncell,:) - conc(ncell-1,:))/two
    
 return
