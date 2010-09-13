@@ -50,7 +50,7 @@ real(stm_real), parameter :: constant_flow = 600.d0
 real(stm_real),parameter :: constant_decay = 5.d-5
 real(stm_real),parameter :: constant_diffuse = sixteen
 logical,parameter :: remote = .true.
-
+logical,parameter :: do_detail = .true.
 
 real(stm_real) :: flow
 real(stm_real) :: diffuse
