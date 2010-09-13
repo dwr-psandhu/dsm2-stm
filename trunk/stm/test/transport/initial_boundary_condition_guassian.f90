@@ -237,15 +237,17 @@ subroutine n_d_test_diffusion_matrix(center_diag ,       &
     dt_by_dxsq = dt/(dx*dx)
     xstart = 0.1d0
     xend = one 
-    ! area is new?!?
+    ! area is new?!? 
     !todo: call flux
+    !todo: which is dirchlet?
     flux_start(:) = - area_lo(1)*disp_coef_lo(1)*(two-two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1)*pi*pi*time/four)) 
     flux_end(:) = - area_hi(ncell)*disp_coef_hi(ncell)*(two-two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell)*pi*pi*time/four))
          
     center_diag(1,:)= area(1)+ theta_stm*dt_by_dxsq* area_hi(1)*disp_coef_hi(1)  
     right_hand_side(1,:) = right_hand_side(1,:) &
                                 + theta_stm*(dt/dx)*flux_start(:)
-     
+    
+    !todo: disp_coef_lo???
     center_diag(ncell,:)= area(ncell)+ theta_stm*dt_by_dxsq* area_lo(ncell)*disp_coef_lo(1)
     right_hand_side(ncell,:)= right_hand_side(ncell,:) &
                                    - theta_stm*(dt/dx)*flux_end(:)
@@ -308,6 +310,7 @@ subroutine dirichlet_test_diffusion_matrix(center_diag ,       &
    conc_end = two
    conc_start = two*xstart + four*cos(pi*xstart/two)*exp(-disp_coef_lo(1)*time*pi*pi/four)
    ! todo: one part of center diag is based on old time and other part new time
+   ! todo: what does this mean?
    center_diag(1,:)=  center_diag(1,:) &
                          + theta_stm*dt_by_dxsq*(area_lo(1)*disp_coef_lo(1))                  
    right_hand_side(1,:) = right_hand_side(1,:)&

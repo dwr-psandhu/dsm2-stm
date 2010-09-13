@@ -36,7 +36,7 @@ contains
 !>       - extrapolate()
 !>   - upwind()
 !>   - compute_flux()
-!>   - replace_advection_boundary_flux()   for boundary and special cases
+!>   - advection_boundary_flux()   for boundary and special cases
 !>   - Compute conservative divergence
 !>   - Apply divergence in conservative_update along with Heun's method for sources
 !>   Note that all these steps are operations on entire arrays of values -- this keeps things efficient
@@ -77,8 +77,8 @@ real(stm_real),intent(in)  :: area_prev(ncell)      !< cell-centered area at old
 real(stm_real),intent(in)  :: area(ncell)           !< cell-centered area at new time. not used in algorithm?
 real(stm_real),intent(in)  :: area_lo(ncell)        !< lo side area centered in time
 real(stm_real),intent(in)  :: area_hi(ncell)        !< hi side area centered in time
-real(stm_real),intent(in)  :: time                  !< current time
-real(stm_real),intent(in)  :: dt                    !< current time step
+real(stm_real),intent(in)  :: time                  !< new time
+real(stm_real),intent(in)  :: dt                    !< current time step from old time to new time
 real(stm_real),intent(in)  :: dx                    !< spatial step
 logical,intent(in),optional :: use_limiter          !< whether to use slope limiter
 
@@ -97,6 +97,11 @@ real(stm_real) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time cente
 real(stm_real) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
 real(stm_real) :: div_flux(ncell,nvar)    !< cell centered flux divergence, time centered
 logical        :: limit_slope             !< whether slope limiter is used
+real(stm_real) :: old_time                !< previous time
+real(stm_real) :: half_time               !< half time
+
+old_time = time - dt
+half_time = time - half*dt
 
 if (present(use_limiter))then
     limit_slope = use_limiter
@@ -138,14 +143,14 @@ call adjust_differences(grad,    &
                         grad_hi, &
                         ncell,   &
                         nvar)
-! source must provide in primitive variable
+
 call compute_source(source_prev, & 
                     conc_prev,   &
                     area_prev,   &
                     flow_prev,   &
                     ncell,       &
                     nvar,        &
-                    time)
+                    old_time)
 
 call extrapolate(conc_lo,     &
                  conc_hi,     & 
@@ -173,7 +178,7 @@ call compute_flux(flux_lo,  &
 
 ! Replace fluxes for special cases having to do with boundaries, network and structures
 ! todo : Keeps the dirty stuff in one place. For now this is an empty call
-call replace_advection_boundary_flux(flux_lo,     &
+call advection_boundary_flux(flux_lo,     &
                                      flux_hi,     &
                                      conc_lo,     &
                                      conc_hi,     &
@@ -181,7 +186,7 @@ call replace_advection_boundary_flux(flux_lo,     &
                                      flow_hi,     &
                                      ncell,       &
                                      nvar,        &
-                                     time,        &
+                                     half_time,   &
                                      dt,          &
                                      dx)
 
@@ -261,7 +266,6 @@ do ivar = 1,nvar
     ! todo: this only works if I disable extrapolation (first order Godunov)
     conc_lo(:,ivar) = conc(:,ivar) + half*(-grad(:,ivar) - dtbydx*grad(:,ivar)*vel + dt*source(:,ivar))
     conc_hi(:,ivar) = conc(:,ivar) + half*( grad(:,ivar) - dtbydx*grad(:,ivar)*vel + dt*source(:,ivar))
-    
 end do
 
 return
@@ -378,7 +382,7 @@ real(stm_real),intent(in)  :: area(ncell)            !< Area of cells
 real(stm_real),intent(in)  :: area_prev(ncell)       !< Area of cells at old time step
 real(stm_real),intent(in)  :: source_prev(ncell,nvar)!< Old time source term
 real(stm_real),intent(in)  :: div_flux(ncell,nvar)   !< Flux divergence, time centered
-real(stm_real),intent(in)  :: time                   !< current time
+real(stm_real),intent(in)  :: time                   !< current (new) time
 real(stm_real),intent(in)  :: dt                     !< Length of current time step
 real(stm_real),intent(in)  :: dx                     !< Spatial step
 

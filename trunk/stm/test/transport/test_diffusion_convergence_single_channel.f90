@@ -31,6 +31,7 @@ use stm_precision
 use test_convergence_transport
 use state_variables
 use primitive_variable_conversion
+use boundary_advection
 use boundary_diffusion
 use diffusion
 use source_sink
@@ -87,7 +88,7 @@ integer :: which_cell(nrefine)
 real(stm_real),allocatable :: reference(:)
 real(stm_real) norm_error(3,nrefine)
 character(LEN=64) filename
-procedure(hydro_data_if),pointer :: no_flow_hydro
+procedure(hydro_data_if),pointer :: hydro
 
 
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
@@ -103,9 +104,8 @@ compute_source => no_source
 boundary_diffusion_matrix  => neumann_diffusion_matrix
 boundary_diffusion_flux    => neumann_gaussian_diffusive_flux
 call set_uniform_flow_area(zero, channel_area)
-no_flow_hydro => uniform_flow_area
+hydro => uniform_flow_area
 const_dispersion = disp_coef  ! todo: this is still a bit rough
-use_diffusion = .true.
 
 do ivar = 1,nconc
    call fill_gaussian(fine_initial_condition(:,ivar),nx_base,origin,fine_dx,half*domain_length, & 
@@ -120,7 +120,11 @@ end do
 !> compute the norms, after each step coarsen the values and repeat computation.
 !> at the end  calculates the ratio of the norms and prints a log 
 call test_convergence(label,                  &
-                      no_flow_hydro,          &
+                      hydro,                  &
+                      zero_advective_flux, &
+                      neumann_gaussian_diffusive_flux,      &
+                      neumann_diffusion_matrix,    &
+                      no_source,              &
                       domain_length,          &
                       total_time,             &
                       start_time,             &

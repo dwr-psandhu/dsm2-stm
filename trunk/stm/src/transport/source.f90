@@ -64,6 +64,17 @@ module source_sink
 
  contains
  
+ subroutine set_source(source_term)
+ implicit none
+ procedure(source_if), pointer :: source_term => null()
+ compute_source => source_term
+ print*, "Is associated: ", associated(compute_source)
+print*, "Is no source: ", associated(compute_source,no_source)
+print*, "Is assigned same thing: ", associated(compute_source,source_term)
+ return
+ end subroutine
+ 
+ 
  !> Zero source implementation.
  !> This source term adds nothing (e.g., for conservative constituents)
  subroutine no_source(source,   & 
@@ -82,11 +93,10 @@ module source_sink
      integer,intent(in)  :: ncell                      !< Number of cells
      integer,intent(in)  :: nvar                       !< Number of variables
      real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
-     real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
-     real(stm_real),intent(in)  :: area(ncell)         !< area at source     
-     real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
-     real(stm_real),intent(in)  :: time                !< time
-     ! todo: source must be primitive variable
+     real(stm_real),intent(in)    :: conc(ncell,nvar)    !< Concentration
+     real(stm_real),intent(in)    :: area(ncell)         !< area at source     
+     real(stm_real),intent(in)    :: flow(ncell)         !< flow at source location
+     real(stm_real),intent(in)    :: time                !< time
     source = zero
      
      return

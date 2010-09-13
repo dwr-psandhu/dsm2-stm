@@ -39,6 +39,8 @@ subroutine test_linear_decay_convergence(verbose)
 use test_convergence_transport
 use hydro_data
 use hydro_uniform_flow
+use boundary_advection
+use boundary_diffusion
 use source_sink
 use error_metric
 
@@ -60,6 +62,9 @@ real(stm_real),dimension(nconc) :: decay_rates = (/decay_rate,decay_rate/)
 call set_uniform_flow_area(zero,120.d0)
 no_flow_hydro => uniform_flow_area
 call set_linear_decay(decay_rates,nconc)
+boundary_diffusion_flux => no_diffusion_flux
+boundary_diffusion_matrix => no_diffusion_matrix
+compute_source => linear_decay_source
 
 !> Subroutine which generates fine initial values and reference values to compare with 
 !> and feed the covvergence test subroutine.
@@ -73,6 +78,10 @@ fine_solution(:,2) = fine_initial_condition(:,2) *exp(- decay_rate*total_time)
 
 call test_convergence(label,                  &
                       no_flow_hydro,          &
+                      zero_advective_flux,      &
+                      no_diffusion_flux,      &
+                      no_diffusion_matrix,    &
+                      linear_decay_source,    &
                       domain_length,          &
                       total_time,             &
                       start_time,             &

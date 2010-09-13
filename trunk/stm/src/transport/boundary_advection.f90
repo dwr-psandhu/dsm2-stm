@@ -61,13 +61,13 @@ module boundary_advection
  !> This pointer should be set by the driver or client code to specify the 
  !> treatment at the advection boundary condition 
  ! todo: check here
- procedure(boundary_advective_flux_if),pointer :: replace_advection_boundary_flux  => null()
+ procedure(boundary_advective_flux_if),pointer :: advection_boundary_flux  => null()
 
 
  contains
   !> Example advective flux that imposes Neumann boundaries with zero flux at
  !> both ends of the channel.
- subroutine neumann_zero_advective_flux(flux_lo,    &
+ subroutine zero_advective_flux(flux_lo,    &
                               flux_hi,    &
                               conc_lo,    &
                               conc_hi,    &

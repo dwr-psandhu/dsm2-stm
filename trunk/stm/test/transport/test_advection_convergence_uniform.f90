@@ -39,6 +39,7 @@ use hydro_uniform_flow
 use source_sink
 use diffusion
 use boundary_advection
+use boundary_diffusion
 use gaussian_init_boundary_condition
 
 
@@ -71,10 +72,9 @@ real(stm_real) :: fine_final_area(nx_base)    !< final area at finest resolution
 character(LEN=*),parameter :: label = "advection_uniform_dirichlet"
 call set_uniform_flow_area(constant_flow,constant_area,reverse_time)
 ! todo: force these to be set so they aren't just left over from last test
-replace_advection_boundary_flux => neumann_zero_advective_flux
+advection_boundary_flux => zero_advective_flux
 uniform_hydro=> uniform_flow_area
 compute_source => no_source
-use_diffusion = .false.
 
 !> Subroutine which generates fine initial values and reference values to compare with 
 !> and feed the covvergence test subroutine.
@@ -92,6 +92,10 @@ call initial_fine_solution_uniform(fine_initial_condition, &
 
 call test_convergence(label,                  &
                       uniform_hydro,          &
+                      zero_advective_flux, &
+                      no_diffusion_flux,      &
+                      no_diffusion_matrix,    &
+                      no_source,              &
                       domain_length,          &
                       total_time,             &
                       start_time,             &

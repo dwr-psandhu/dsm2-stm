@@ -47,6 +47,7 @@ subroutine test_tidal_advection_convergence(verbose)
 
 use hydro_data
 use boundary_advection
+use boundary_diffusion
 use gaussian_init_boundary_condition
 use source_sink
 use test_convergence_transport
@@ -70,10 +71,10 @@ real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd !< Standard deviation of
 
 character(LEN=*),parameter :: label = "advection_tidal"      
 tidal_hydro=> tidal_flow
+advection_boundary_flux => zero_advective_flux !todo: move this so it isn't hardwired
+boundary_diffusion_flux => no_diffusion_flux
+boundary_diffusion_matrix => no_diffusion_matrix
 compute_source => no_source
-replace_advection_boundary_flux => neumann_zero_advective_flux !todo: move this so it isn't hardwired
-use_diffusion = .false.
-
 
 !> load the initial values and reference final values to feed the test routine
 call initial_fine_solution_tidal(fine_initial_condition, &
@@ -92,7 +93,11 @@ call initial_fine_solution_tidal(fine_initial_condition, &
 !> compute the norms, after each step coarsen the values and repeat computation.
 !> at the end  calculates the ratio of the norms and prints a log 
 call test_convergence(label,                  &
-                      tidal_hydro,            &
+                      tidal_hydro ,            &
+                      zero_advective_flux,    &
+                      no_diffusion_flux,      &
+                      no_diffusion_matrix,    &
+                      no_source,              &
                       domain_length,          &
                       total_time,             &
                       start_time,             &

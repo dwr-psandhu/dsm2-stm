@@ -14,6 +14,9 @@ EndProject
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "transport", "..\transport\transport.vfproj", "{60C0982F-68F9-499E-92FD-2BC71D98A315}"
 EndProject
 Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "sediment", "..\sediment\sediment.vfproj", "{8778F2DC-A1E9-4D7E-989C-DB026BDACD92}"
+	ProjectSection(ProjectDependencies) = postProject
+		{60C0982F-68F9-499E-92FD-2BC71D98A315} = {60C0982F-68F9-499E-92FD-2BC71D98A315}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
