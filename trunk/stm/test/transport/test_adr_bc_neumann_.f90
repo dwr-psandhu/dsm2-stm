@@ -84,7 +84,6 @@ integer :: coarsening
 
 logical, parameter :: limit_slope = .false.
 
-real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
 real(stm_real), allocatable :: disp_coef_lo(:)       !< Low side constituent dispersion coef. at new time
