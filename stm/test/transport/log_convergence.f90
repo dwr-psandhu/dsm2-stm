@@ -22,10 +22,24 @@
 !>@ingroup tes
 module log_convergence
  contains
+
+!> Create a assert message based on an error ratio
+subroutine create_converge_message(converge_message,norm_name,label,ratio)
+use stm_precision
+implicit none
+character(LEN=*),intent(out) :: converge_message !< message
+character(LEN=*),intent(in)  :: norm_name        !< name of norm (something like 'L-2 (fine)'
+character(LEN=*),intent(in)  :: label            !< label identifying problem
+real(stm_real),intent(in)    :: ratio            !< error ratio
+
+write(converge_message,"(a,' 2nd order on ',a, ' (error=', f5.3,')')")norm_name,label,ratio
+return
+end subroutine
  
  !> Logs convergence results to a file
  !> Outputs the norm-p errors, maximum velocity, discretization parameters and CFL
  ! todo: add peclet number and grid peclet number and other needed terms here
+ ! todo: this subroutine assumes a lot, like a scalar reaction rate. Makes it less general
  subroutine log_convergence_results(norm_error,    &
                                     nrefine,       &
                                     dx,            &
@@ -58,6 +72,7 @@ module log_convergence
  real(stm_real),intent(in),optional :: reaction_rate
  real(stm_real),intent(in),optional :: dispersion
  real(stm_real),intent(in),optional :: length_scale
+ real(stm_real) :: refine_rate = two
  logical,intent(in),optional :: limiter_switch
   ! local
  real(stm_real) :: order
@@ -84,11 +99,11 @@ write(log_unit,*)'L-1 error ratio '
 write(log_unit,*) norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2)
 write(log_unit,*)
 write(log_unit,*)'L-inf convergence rate estimate'
-write(log_unit,*)'fine :',log(norm_error(3,2)/norm_error(3,1))/log(order),' coarse :',log(norm_error(3,3)/norm_error(3,2))/log(order)  
+write(log_unit,*)'fine :',log(norm_error(3,2)/norm_error(3,1))/log(order),' coarse :',log(norm_error(3,3)/norm_error(3,2))/log(refine_rate)  
 write(log_unit,*)'L-2 convergence rate estimate'
-write(log_unit,*)'fine :',log(norm_error(2,2)/norm_error(2,1))/log(order),' coarse :',log(norm_error(2,3)/norm_error(2,2))/log(order)  
+write(log_unit,*)'fine :',log(norm_error(2,2)/norm_error(2,1))/log(order),' coarse :',log(norm_error(2,3)/norm_error(2,2))/log(refine_rate)  
 write(log_unit,*)'L-1 convergence rate estimate'
-write(log_unit,*)'fine :',log(norm_error(1,2)/norm_error(1,1))/log(order),' coarse :',log(norm_error(1,3)/norm_error(1,2))/log(order)  
+write(log_unit,*)'fine :',log(norm_error(1,2)/norm_error(1,1))/log(order),' coarse :',log(norm_error(1,3)/norm_error(1,2))/log(refine_rate)  
 write(log_unit,*)
 write(log_unit,*)'number of cells : ',ncell_base,ncell_base/2,ncell_base/4
 write(log_unit,*)'L-inf occures at :',which_cell(1),which_cell(2),which_cell(3)

@@ -4,7 +4,7 @@
 		<Platform Name="Win32"/></Platforms>
 	<Configurations>
 		<Configuration Name="Debug|Win32">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" AdditionalIncludeDirectories="$(ProjectDir)\..\fruit\Debug;$(ProjectDir)\..\transport\debug;$(ProjectDir)\..\example_single_channel\debug" Interfaces="true" WarnInterfaces="true" Traceback="true" BoundsCheck="true" UninitializedVariablesCheck="true" DescriptorDataTypeCheck="true" DescriptorDataSizeCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" AdditionalIncludeDirectories="$(ProjectDir)\..\fruit\Debug;$(ProjectDir)\..\transport\debug;$(ProjectDir)\..\example_single_channel\debug" Interfaces="true" WarnInterfaces="true" Traceback="true" NullPointerCheck="true" BoundsCheck="true" UninitializedVariablesCheck="true" DescriptorDataTypeCheck="true" DescriptorDataSizeCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
 				<Tool Name="VFLinkerTool" LinkIncremental="linkIncrementalNo" SuppressStartupBanner="true" GenerateDebugInformation="true" SubSystem="subSystemConsole"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
@@ -33,6 +33,7 @@
 		<File RelativePath="..\..\..\test\transport\initial_boundary_condition_examples.f90"/>
 		<File RelativePath="..\..\..\test\transport\initial_boundary_condition_guassian.f90"/>
 		<File RelativePath="..\..\..\test\transport\log_convergence.f90"/>
+		<File RelativePath="..\..\..\test\transport\single_channel_boundary.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_adr_bc_neumann_.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_adr_no_boundary_condition.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_tidal.f90"/>

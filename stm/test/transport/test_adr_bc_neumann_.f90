@@ -99,7 +99,7 @@ integer :: which_cell(nrefine)
 real(stm_real) :: theta = half  
 boundary_diffusion_matrix        => neumann_adr_diffusion_matrix 
 boundary_diffusion_flux          => neumann_adr_diffusive_flux 
-replace_advection_boundary_flux  => neumann_adr_dvective_flux ! OK
+advection_boundary_flux  => neumann_adr_dvective_flux ! OK
 hydro_adr                      => uniform_flow_adr  !ok
 compute_source                   => adr_linear_decay  !ok
 !------
@@ -560,6 +560,8 @@ right_hand_side(1,:) = right_hand_side(1,:) &
 center_diag(ncell,:)= area(ncell)+ theta_stm*dt_by_dxsq* area_lo(ncell)*disp_coef_lo(ncell)
 right_hand_side(ncell,:)= right_hand_side(ncell,:) &
                                - theta_stm*(dt/dx)*flux_end(:)
+
+
                                                              
      return
  end subroutine

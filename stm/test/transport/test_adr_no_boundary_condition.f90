@@ -100,7 +100,7 @@ real(stm_real) :: theta = half
 
 boundary_diffusion_matrix  => neumann_diffusion_matrix 
 boundary_diffusion_flux    => neumann_zero_diffusive_flux 
-replace_advection_boundary_flux  => neumann_zero_advective_flux
+advection_boundary_flux  => zero_advective_flux
 hydro_adr                  => uniform_flow_adr  
 compute_source             => adr_linear_decay 
 !------

@@ -41,6 +41,7 @@ use test_convergence_transport
 use hydro_data
 use source_sink
 use boundary_advection
+use boundary_diffusion
 use logging
 
 implicit none
@@ -62,7 +63,11 @@ real(stm_real) :: dx
 character(LEN=64) :: label = "uniform_flow_linear_decay"
 uniform_hydro=> uniform_flow
 call set_linear_decay(decay_rates,nconc)
-replace_advection_boundary_flux  => neumann_zero_advective_flux
+advection_boundary_flux  => zero_advective_flux
+boundary_diffusion_flux => no_diffusion_flux
+boundary_diffusion_matrix => no_diffusion_matrix
+compute_source => linear_decay_source
+
 
 dx = domain_length/dble(nx_base)
 solution_center = ic_center + total_time*constant_flow/constant_area
@@ -85,6 +90,10 @@ fine_solution = fine_solution* exp(- total_time*decay_rate)
 
 call test_convergence(label,                  &
                       uniform_hydro,          &
+                      zero_advective_flux,    & !todo: this is wrong
+                      no_diffusion_flux,      &
+                      no_diffusion_matrix,    &
+                      linear_decay_source,    &
                       domain_length,          &
                       total_time,             &
                       start_time,             &

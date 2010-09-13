@@ -24,9 +24,16 @@
 !>@ingroup transport
 module diffusion
 
-logical :: use_diffusion = .false.
 
 contains
+
+logical function use_diffusion()
+use boundary_diffusion
+implicit none
+use_diffusion = associated(boundary_diffusion_flux) .and. &
+                (.not. associated(boundary_diffusion_flux, no_diffusion_flux))
+return
+end function
 
 ! ///////////////////////////////////////////////////////////////////
 
@@ -121,10 +128,7 @@ call explicit_diffusion_operator(explicit_diffuse_op,&
                                  dx,                 &
                                  dt)
    
-! this functon is using old time
-! todo: do we need to put area_lo_prev area_hi_prev ks_lo_hi prev? they are in the explicit_diffuse_op
-! conc_prev?
-! the subroutine uses previous time values
+
 call construct_right_hand_side(right_hand_side,       & 
                                explicit_diffuse_op,   & 
                                area_prev,             &
