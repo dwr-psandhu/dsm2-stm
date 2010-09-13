@@ -75,8 +75,15 @@ real(stm_real),intent(in)  :: flow_lo(ncell)        !< flow on lo side of cells 
 real(stm_real),intent(in)  :: flow_hi(ncell)        !< flow on hi side of cells centered in time
 real(stm_real),intent(in)  :: area_prev(ncell)      !< cell-centered area at old time. not used in algorithm?
 real(stm_real),intent(in)  :: area(ncell)           !< cell-centered area at new time. not used in algorithm?
-real(stm_real),intent(in)  :: area_lo(ncell)        !< lo side area centered in time
-real(stm_real),intent(in)  :: area_hi(ncell)        !< hi side area centered in time
+
+! todo: area_lo is time centered here?  I think currently it is correct for advection only.
+!       however, area_lo is also needed for diffusion at old time and new time.
+!       including being needed here if we want to include explicit diffusion op (though strictly speaking,
+!       it may be adequately accurate to have a first order estimate and the half time estimate is first order)
+
+! todo: should we separate hydro_if for centered and face data?
+real(stm_real),intent(in)  :: area_lo(ncell)        !< lo side area (todo: at new time?)
+real(stm_real),intent(in)  :: area_hi(ncell)        !< hi side area (todo: at new time?
 real(stm_real),intent(in)  :: time                  !< new time
 real(stm_real),intent(in)  :: dt                    !< current time step from old time to new time
 real(stm_real),intent(in)  :: dx                    !< spatial step
