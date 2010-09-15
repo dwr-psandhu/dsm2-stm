@@ -436,7 +436,6 @@ subroutine extrapolate_hi_boundary_data(bc_data,           &
     real(stm_real), intent (in)   :: conc(ncell,nvar)                !< Concentration 
     real(stm_real), intent (in)   :: dt
     real(stm_real), intent (in)   :: dx
-    integer ivar
     
     bc_data=conc(ncell,:) + (conc(ncell,:) - conc(ncell-1,:))/two
     bc_data = conc(ncell,:)
