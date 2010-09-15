@@ -338,6 +338,7 @@ subroutine dirichlet_advective_flux_lo(flux_lo,    &
                                        dx)
      
      use stm_precision
+     use source_sink
      implicit none
       !--- args          
      integer,intent(in)  :: ncell  !< Number of cells
@@ -356,7 +357,7 @@ subroutine dirichlet_advective_flux_lo(flux_lo,    &
     real(stm_real) :: bc_data(nvar)
     real(stm_real) :: xloc
     real(stm_real) :: origin = zero !todo: HARDWIRE
-
+    real(stm_real) :: multiplier(nvar)
     xloc = origin
     call advection_data_lo( bc_data,           &
                             xloc,              &
@@ -368,7 +369,9 @@ subroutine dirichlet_advective_flux_lo(flux_lo,    &
                             dx,                &
                             dt)
    if (flow_lo(1) .ge. zero)then
-     flux_lo(1,:)=bc_data*flow_lo(1)
+     multiplier = one
+     if(allocated(linear_decay))multiplier=exp(linear_decay*half*dt)
+     flux_lo(1,:)=bc_data*flow_lo(1)*multiplier
    end if
    return
  end subroutine

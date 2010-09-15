@@ -283,7 +283,7 @@ subroutine dirichlet_test_diffusion_matrix(center_diag ,       &
    real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
    real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
    real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right hand side vector
-   real(stm_real),intent (inout):: conc(ncell,nvar)
+   real(stm_real),intent   (in):: conc(ncell,nvar)
    real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar) 
    real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
    real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
