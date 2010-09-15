@@ -45,7 +45,6 @@ use test_gradient
 use test_diffusion_convergence_boundaries_dirichlet
 use test_diffusion_single_channel
 use test_linear_decay_no_flow
-use test_advect_diffuse_react
 use test_linear_decay_const_flow
 use test_liner_reaction
 use test_adr_neumann
@@ -67,8 +66,8 @@ call test_prim_increment2cons
 call test_example_initial_conditions
 call test_extrapolation
 !!///////// advection
-!call test_tidal_advection_convergence(verbose)
-!call test_uniform_advection_convergence(verbose)
+call test_tidal_advection_convergence(verbose)
+call test_uniform_advection_convergence(verbose)
 !!!/////// Diffusion routine
 call test_tridi_solver
 call test_boundary_diffusion_flux
@@ -85,9 +84,9 @@ call  test_reaction_decay_convergence(verbose)
 call test_diffusion_dirichlet(verbose)
 call test_diffusion_neumann(verbose)
 call test_diffusion_convergence_single_channel(verbose)
+
 !!/// A-D-R  
-!call  test_advect_diffuse_reaction(verbose)
-!call  test_advect_diffuse_reaction_neumann(verbose)
+call  test_advect_diffuse_reaction_neumann(verbose)
 !//////// 
 call fruit_summary
 
