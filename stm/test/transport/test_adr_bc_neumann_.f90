@@ -18,8 +18,11 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Test advection diffusion and reaction in a single channel with uniform flow, subjected to 
-!> neumann boundary condition 
+!> Test advection diffusion and reaction in a single channel. 
+!  BC for advection is Dirichlet, BC for inflow is Neumann (in) and extrapolation (out)
+!  Todo: these BC are not really valid for operator splitting, but it is good to remember we
+!  don't have any other Neumann test for diffusion.
+!  todo: move to test framework.
 !>@ingroup test
 module test_adr_neumann
 
@@ -32,15 +35,14 @@ real(stm_real), parameter :: start_time = 256.0d0 ! sec
 real(stm_real), parameter :: total_time =2048.0d0 ! sec
 ! todo:  since the bc is set to be zero flux, total_time and other parameters should be set 
 ! in the way solution does not reach the edges of channel.
-real(stm_real), parameter :: domain_length = 4000.0d0 ! 4000m
+real(stm_real), parameter :: domain_length = 8000.0d0 ! 4000m
 real(stm_real), parameter :: origin = 12800.0d0 ! low side of channel
 real(stm_real), parameter :: const_area = 100.0d0 ! m^2
-real(stm_real), parameter :: const_disp_coef = 90.0d0 !do not play with this number 
+real(stm_real), parameter :: dispersion_coef = 90.0d0 !do not play with this number 
 real(stm_real), parameter :: const_velocity = 2.9d0 ! 2.9 m/s
 real(stm_real), parameter :: decay_rate = zero
 real(stm_real), parameter :: ic_center = origin + domain_length/(ten)  
 real(stm_real), parameter :: ic_peak = one
-real(stm_real), parameter :: length_scale = 2000.0d0 ! the hump of mass length at the start time
 real(stm_real) :: end_time = start_time + total_time
 
 contains
@@ -60,6 +62,7 @@ use source_sink
 use log_convergence
 use grid_refinement
 use state_variables
+use test_convergence_transport
 use logging
 
 implicit none
@@ -68,9 +71,9 @@ procedure(hydro_data_if),pointer:: hydro_adr                  !< This pointer, p
 character(LEN=64) :: label                                      !< unique label for test
 logical :: verbose                                              !< whether to output convergence results
 
-real(stm_real) :: fine_initial_conc(nx_base,nconc)              !< initial condition f concentration at finest resolution
+real(stm_real) :: fine_initial_condition(nx_base,nconc)              !< initial condition f concentration at finest resolution
 real(stm_real) :: fine_initial_mass(nx_base,nconc)              !< initial condition of mass at finest resolution
-real(stm_real) :: fine_solution_conc(nx_base,nconc)             !< reference solution at finest resolution
+real(stm_real) :: fine_solution(nx_base,nconc)             !< reference solution at finest resolution
 
 !---local
 integer, parameter :: nrefine = 3
@@ -96,16 +99,18 @@ real(stm_real) :: time
 real(stm_real) :: norm_error(3,nrefine)
 integer :: which_cell(nrefine)
 real(stm_real) :: theta = half  
-boundary_diffusion_matrix        => neumann_adr_diffusion_matrix 
-boundary_diffusion_flux          => neumann_adr_diffusive_flux 
-advection_boundary_flux  => neumann_adr_dvective_flux ! OK
-hydro_adr                      => uniform_flow_adr  !ok
-compute_source                   => adr_linear_decay  !ok
+boundary_diffusion_matrix => neumann_adr_diffusion_matrix 
+boundary_diffusion_flux   => neumann_adr_diffusive_flux 
+advection_boundary_flux   => neumann_adr_advective_flux
+hydro_adr                 => uniform_flow_adr
+compute_source            => adr_linear_decay
 !------
-label = 'adr_uniform_flow_neumann_broken_name'
+label = 'uniform_adr_neumann'
+const_dispersion = 90.d0
 
-call initial_final_solution(fine_initial_conc,     &
-                            fine_solution_conc,    &
+
+call initial_final_solution(fine_initial_condition,     &
+                            fine_solution,    &
                             ic_center,             &
                             ic_peak,               &
                             const_velocity,        &
@@ -116,186 +121,21 @@ call initial_final_solution(fine_initial_conc,     &
                             nx_base,               &
                             nconc)
 
-! todo: move this printing stuff somewhere central. Use our logging functions,
-! and if they are inadequate for your needs talk it over.
-open (unit = 11, file= trim(label)//'_fine_ic.txt')
-
-write (11,*) 'v',const_velocity, 'dx' ,domain_length/nx_base
-do icell = 1,nx_base
-  write (11,*) origin + (icell-half)*domain_length/nx_base, fine_initial_conc(icell,2)
-end do
-write (11,*) '=============================='
-write (11,*) 'Fine solution'
-do icell = 1,nx_base
-  write (11,*) origin +(icell-half)*domain_length/nx_base, fine_solution_conc(icell,2)
-end do
-
-close (11)
-
-do icoarse = 1,nrefine
-
-    coarsening = coarsen_factor**(icoarse - 1)
-    nx = nx_base/(coarsening)
-    nstep = nstep_base/(coarsening)
-    call allocate_state(nx,nconc)
-    area = const_area
-    area_prev = const_area
-    area_lo_prev = const_area
-    area_hi_prev = const_area
-    area_lo = const_area
-    area_hi = const_area
-
-    allocate(disp_coef_lo(nx),disp_coef_hi(nx), &
-             disp_coef_lo_prev(nx),disp_coef_hi_prev(nx))
-    disp_coef_lo = const_disp_coef
-    disp_coef_hi = const_disp_coef
-    disp_coef_lo_prev = const_disp_coef
-    disp_coef_hi_prev = const_disp_coef
-
-    allocate(reference(nx,nconc))
-    call coarsen(reference,fine_solution_conc,nx_base,nx,nvar)
-
-    allocate(x_center(nx))
-    
-     ! discretization parameters
-    dx = domain_length/dble(nx)
-    dt = total_time/dble(nstep)
-          
-    do icell = 1,nx
-        x_center(icell) = dx*(dble(icell)-half)+origin
-    end do   
-    
-   ! todo: we need a satbility check for Advection Diffusion splitting
-        
-    time = zero
-    call hydro_adr(flow,    &
-                    flow_lo, &
-                    flow_hi, &
-                    area,    &
-                    area_lo, &
-                    area_hi, &
-                    nx,      &
-                    time,    &
-                    dx,      &                  
-                    dt)
-                    
-    area_prev = area
-    area_lo_prev = area_lo
-    area_hi_prev = area_hi
-           
-    if (icoarse == 1)then
-        call prim2cons(fine_initial_mass,fine_initial_conc,area,nx,nconc)
-    end if
-        
-    call coarsen(mass,fine_initial_mass,nx_base,nx, nconc)
-    mass_prev = mass
-    
-    do itime = 1,nstep
-       time = start_time + dble(itime)*dt
-       call hydro_adr(flow,    &
-                        flow_lo, &
-                        flow_hi, &
-                        area,    &
-                        area_lo, &
-                        area_hi, &
-                        nx,      &
-                        time,    &
-                        dx,      &                  
-                        dt)
-   
-      ! call transport using linear the callback 
-
-      call advect(mass,     &
-                  mass_prev,&  
-                  flow,     &
-                  flow_lo,  &
-                  flow_hi,  &
-                  area,     &
-                  area_prev,&
-                  area_lo,  &
-                  area_hi,  &
-                  nx,       &
-                  nconc,    &
-                  time,     &
-                  dt,       &
-                  dx,       &
-                  limit_slope)
-
-      !todo: kaveh, why do this with area?
-      area_prev = area
-      call cons2prim(conc,mass,area,nx,nconc) 
-      conc_prev = conc
-      
-      call diffuse(conc,              &
-                   conc_prev,         &
-                   area,              &
-                   area_prev,         &
-                   area_lo,           &
-                   area_hi,           &
-                   area_lo_prev,      &
-                   area_hi_prev,      &
-                   disp_coef_lo,      &  
-                   disp_coef_hi,      &
-                   disp_coef_lo_prev, &  
-                   disp_coef_hi_prev, &
-                   nx,                &
-                   nconc,             &
-                   time,              &
-                   theta,             &
-                   dt,                &
-                   dx)
-                   
-    call prim2cons(mass,conc,area,nx,nconc)
-    mass_prev = mass
-    
-    end do 
-   
-     call error_norm(norm_error(1,icoarse), &
-                     norm_error(2,icoarse), &
-                     norm_error(3,icoarse), &
-                     which_cell(icoarse),   &
-                     conc(:,1),             &
-                     reference(:,1),        &
-                     nx,                    &
-                     dx)
-                     
-    !write(filename, "(a,'_start_',i4.4,'.txt')") trim(label), nx        
-    !call printout(reference(:,2),x_center(:),filename)
-    !write(filename, "(a,'_end_',i4.4,'.txt')") trim(label), nx 
-    !call printout(conc(:,2),x_center(:),filename)  
-
-    call deallocate_state
-    deallocate(disp_coef_lo,disp_coef_hi, &
-               disp_coef_lo_prev,disp_coef_hi_prev)
-    deallocate(x_center)
-    deallocate(reference)
-   
-end do !icoarse
-
-call assert_true(norm_error(1,2)/norm_error(1,1) > four,"L-1 second order convergence on " // trim(label))
-call assert_true(norm_error(2,2)/norm_error(2,1) > four,"L-2 second order convergence on " // trim(label))
-call assert_true(norm_error(3,2)/norm_error(3,1) > four,"L-inf second order convergence on " // trim(label))
-
-call assert_true(norm_error(1,3)/norm_error(1,2) > four,"L-1 second order convergence on " // trim(label))
-call assert_true(norm_error(2,3)/norm_error(2,2) > four,"L-2 second order convergence on " // trim(label))
-call assert_true(norm_error(3,3)/norm_error(3,2) > four,"L-inf second order convergence on " // trim(label))
-
-if (verbose == .true.) then
-   call log_convergence_results(norm_error ,                   &
-                                nrefine,                       &
-                                dx,                            &
-                                dt,                            &
-                                max_velocity= const_velocity,  &
-                                label=label  ,                 &
-                                which_cell=which_cell,         &
-                                ncell_base = nx_base,          &
-                                ntime_base = nstep_base,       &
-                                reaction_rate= decay_rate,     &
-                                dispersion = const_disp_coef,  &
-                                scheme_order = two,            &
-                                length_scale = dx,             &
-                                limiter_switch = limit_slope )
-end if
+call test_convergence(label,                     &
+                      hydro_adr,                 &
+                      neumann_adr_advective_flux,    &
+                      neumann_adr_diffusive_flux,    &
+                      neumann_adr_diffusion_matrix , &
+                      adr_linear_decay,              &
+                      domain_length,          &
+                      total_time,             &
+                      start_time,             &
+                      fine_initial_condition, &
+                      fine_solution,          &            
+                      nstep_base,             &
+                      nx_base,                &
+                      nconc,                  &
+                      verbose,.true.)
 
 return
 end subroutine 
@@ -339,9 +179,9 @@ dx = domain_length/nx_base
 final_center = ic_center  + const_velocity * total_time
 
 
-call fill_gaussian(fine_initial_conc(:,1),nx_base,origin,dx,ic_center,sqrt(two*const_disp_coef*start_time),ic_peak)
+call fill_gaussian(fine_initial_conc(:,1),nx_base,origin,dx,ic_center,sqrt(two*dispersion_coef*start_time),ic_peak)
 
-call fill_gaussian(fine_solution_conc(:,1),nx_base,origin,dx,final_center,sqrt(two*const_disp_coef*end_time),ic_peak*sqrt(start_time/end_time))
+call fill_gaussian(fine_solution_conc(:,1),nx_base,origin,dx,final_center,sqrt(two*dispersion_coef*end_time),ic_peak*sqrt(start_time/end_time))
 
 fine_initial_conc(:,2) = fine_initial_conc(:,1) 
 fine_solution_conc(:,2)= fine_solution_conc(:,1)
@@ -415,7 +255,7 @@ return
 end subroutine 
 
 ! todo: kaveh this seems to have mistakes. You are altering the outflow boundary and this doesn't seem "neumann"
-subroutine neumann_adr_dvective_flux (flux_lo,    &
+subroutine neumann_adr_advective_flux (flux_lo,    &
                                       flux_hi,    &
                                       conc_lo,    &
                                       conc_hi,    &
@@ -458,7 +298,7 @@ subroutine neumann_adr_dvective_flux (flux_lo,    &
       
       gaussian_bell_center = ic_center + const_velocity*(local_time-start_time)
       
-      call fill_gaussian(conc_mid(:,1),nx_base,origin,dx,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
+      call fill_gaussian(conc_mid(:,1),nx_base,origin,dx,gaussian_bell_center,sqrt(two*dispersion_coef*local_time),ic_peak*sqrt(start_time/local_time))
       conc_mid (:,2) = conc_mid (:,1)
        
       ! todo: time or time +1/2  
@@ -538,10 +378,10 @@ local_time = half_time
 
 gaussian_bell_center = ic_center + const_velocity*(local_time-start_time)
 
-call derivative_gaussian(grad_start(1),xstart,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
+call derivative_gaussian(grad_start(1),xstart,gaussian_bell_center,sqrt(two*dispersion_coef*local_time),ic_peak*sqrt(start_time/local_time))
 grad_start(2) = grad_start(1)
 !todo: remove one
-call derivative_gaussian(grad_end(1),xend,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
+call derivative_gaussian(grad_end(1),xend,gaussian_bell_center,sqrt(two*dispersion_coef*local_time),ic_peak*sqrt(start_time/local_time))
 grad_end(2) = grad_end(1)
 grad_end = (conc(ncell-1,:)-conc(ncell-2,:))/dx
 
@@ -620,10 +460,10 @@ local_time = half_time
 gaussian_bell_center = ic_center + const_velocity*(local_time-start_time)
 
 ! derivative_gaussian(OUTPUT or df/dx,x,center or miu,sigma,scale or a)
-call derivative_gaussian(grad_start(1),xstart,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
+call derivative_gaussian(grad_start(1),xstart,gaussian_bell_center,sqrt(two*dispersion_coef*local_time),ic_peak*sqrt(start_time/local_time))
 grad_start(2) = grad_start(1)
 !todo: remove one
-call derivative_gaussian(grad_end(1),xend,gaussian_bell_center,sqrt(two*const_disp_coef*local_time),ic_peak*sqrt(start_time/local_time))
+call derivative_gaussian(grad_end(1),xend,gaussian_bell_center,sqrt(two*dispersion_coef*local_time),ic_peak*sqrt(start_time/local_time))
 grad_end(2) = grad_end(1)
 grad_end = (conc(ncell-1,:)-conc(ncell-2,:))/dx
 
