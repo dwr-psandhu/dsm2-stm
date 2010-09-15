@@ -364,6 +364,7 @@ if (verbose == .true.) then
                                 dx,                            &
                                 dt,                            &
                                 max_velocity= max_velocity,    &
+                                dispersion = const_dispersion, &
                                 label = label,                 &
                                 which_cell=which_cell,         &
                                 ncell_base = nx_base,          &
