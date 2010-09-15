@@ -68,9 +68,6 @@ module source_sink
  implicit none
  procedure(source_if), pointer :: source_term => null()
  compute_source => source_term
- print*, "Is associated: ", associated(compute_source)
-print*, "Is no source: ", associated(compute_source,no_source)
-print*, "Is assigned same thing: ", associated(compute_source,source_term)
  return
  end subroutine
  
