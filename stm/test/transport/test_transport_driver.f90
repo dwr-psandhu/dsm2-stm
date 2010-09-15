@@ -42,7 +42,6 @@ use test_uniform_flow
 use test_prim_increment_to_cons
 use test_gradient
 use test_diffusion_fletcher
-use test_diffusion_single_channel
 use test_linear_decay_no_flow
 use test_linear_decay_const_flow
 use test_liner_reaction
@@ -81,9 +80,8 @@ call  test_advection_decay_convergence(verbose)
 call  test_reaction_decay_convergence(verbose)
 !!////// diffusion
 call test_diffusion_convergence_fletcher(verbose)
-call test_diffusion_convergence_single_channel(verbose)
 
-!!/// A-D-R  
+!!/// ADR 
 call  test_advect_diffuse_reaction_neumann(verbose)
 !//////// 
 call fruit_summary
