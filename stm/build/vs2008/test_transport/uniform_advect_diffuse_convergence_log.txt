@@ -1,0 +1,43 @@
+ ==== Convergence test results uniform_advect_diffuse ====
+ 
+ (from finer to coarser)
+ L-inf error ratio 
+  0.794151711320573        2.04907440011257     
+ L-2 error ratio 
+   2.31194495448849        3.86521499821639     
+ L-1 error ratio 
+   1.75253848064352        3.04207151343501     
+ 
+ L-inf convergence rate estimate
+ fine : -0.332513454947073       coarse :   1.03497236830463     
+ L-2 convergence rate estimate
+ fine :   1.20910704886287       coarse :   1.95054866466340     
+ L-1 convergence rate estimate
+ fine :  0.809446121967192       coarse :   1.60505406853425     
+ 
+ number of cells :          256         128          64
+ L-inf occures at :         256         128          58
+ dx :   100.000000000000        200.000000000000        400.000000000000     
+ 
+ number of steps :          256         128          64
+ dt :   150.000000000000        300.000000000000        600.000000000000     
+ 
+ Error L-inf uniform_advect_diffuse : 
+  4.649013663234225E-003  3.692022156610186E-003  7.565228085758324E-003
+ Error L-2 uniform_advect_diffuse : 
+  2.699854051665098E-005  6.241913952602436E-005  2.412633942717509E-004
+ Error L-1 uniform_advect_diffuse : 
+  1.397625118925170E-004  2.449391802430338E-004  7.451225027414559E-004
+ 
+ Dispersion coefficient :    16.0000000000000     
+ Diffusion Number (Ddt/dx2<1) : 
+  0.240000000000000       0.120000000000000       6.000000000000000E-002
+ 
+ CFL : (<1)  0.900000000000000     
+ Flux Limiter : OFF
+ 
+ Mesh Peclet Number(Vdx/D) :
+   3.75000000000000        7.50000000000000        15.0000000000000     
+ 
+ 
+ ====================================

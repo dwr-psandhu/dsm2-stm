@@ -1,0 +1,50 @@
+ ==== Log of connvergence test result_adr_no_boundary_ 450.txt                  
+                 ====
+ 
+ (from finer to coarser)
+ L-inf convergence ratio 
+   3.42154686840481        2.69949440234779     
+ L-2 convergence ratio 
+   4.92926723793578        4.07644812322784     
+ L-1 convergence ratio 
+   3.48812541657472        2.93548071392421     
+ 
+ L-inf convergence ratio LOG 
+ fine :   1.77464870956676       coarse :   1.43268922522819     
+ L-2 convergence ratio LOG 
+ fine :   2.30137319817155       coarse :   2.02731265543457     
+ L-1 convergence ratio LOG 
+ fine :   1.80245191357170       coarse :   1.55359677822656     
+ 
+ number of cells :         1800         900         450
+ L-inf occures at :         499         249         130
+ dx :   28.4444444444444        56.8888888888889        113.777777777778     
+ 
+ number of steps :           64          32          16
+ dt :   8.00000000000000        16.0000000000000        32.0000000000000     
+ 
+ Error L-inf result_adr_no_boundary_ 450.txt                                  : 
+  2.049934102177353E-004  7.013945607741157E-004  1.893410690646913E-003
+ Error L-2 result_adr_no_boundary_ 450.txt                                  : 
+  5.352118818353833E-007  2.638202394485110E-006  1.075449519969403E-005
+ Error L-1 result_adr_no_boundary_ 450.txt                                  : 
+  4.228522824685738E-006  1.474961793935265E-005  4.329721899872018E-005
+ 
+ Decay rate :   0.000000000000000E+000
+ Kdt : 
+  0.000000000000000E+000  0.000000000000000E+000  0.000000000000000E+000
+ 
+ Dispersion coefficient :    120.000000000000     
+ Diffusion Number (Ddt/dx2<1) : 
+   1.18652343750000       0.593261718750000       0.296630859375000     
+ 
+ CFL : (<1)  0.815625000000000     
+ Flux Limiter : OFF
+ 
+ Mesh Peclet Number(Vdx/D) :
+  0.687407407407407        1.37481481481481        2.74962962962963     
+ 
+ Da : Advection Time Scale/ Reaction Time Scale
+ Da =  0.000000000000000E+000
+ 
+ ====================================
