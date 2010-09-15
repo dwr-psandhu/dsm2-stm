@@ -1,0 +1,43 @@
+ ==== Convergence test results uniform_advect_diffuse_react_remote_bc ====
+ 
+ (from finer to coarser)
+ L-inf error ratio 
+   3.70456959918981        3.70745702225533     
+ L-2 error ratio 
+   5.27828247328974        5.14543589665427     
+ L-1 error ratio 
+   3.75399600519796        3.64079163365115     
+ 
+ L-inf convergence rate estimate
+ fine :   1.88930593843296       coarse :   1.89042996870459     
+ L-2 convergence rate estimate
+ fine :   2.40006856019612       coarse :   2.36329330050184     
+ L-1 convergence rate estimate
+ fine :   1.90842711493060       coarse :   1.86425217618476     
+ 
+ number of cells :          512         256         128
+ L-inf occures at :         308         154          76
+ dx :   100.000000000000        200.000000000000        400.000000000000     
+ 
+ number of steps :          256         128          64
+ dt :   150.000000000000        300.000000000000        600.000000000000     
+ 
+ Error L-inf uniform_advect_diffuse_react_remote_bc : 
+  9.488721138389833E-005  3.515162786446868E-004  1.303231495698304E-003
+ Error L-2 uniform_advect_diffuse_react_remote_bc : 
+  8.486895013240440E-007  4.479622920103708E-006  2.304961257657682E-005
+ Error L-1 uniform_advect_diffuse_react_remote_bc : 
+  6.269372500072539E-006  2.353519932037028E-005  8.568675678191637E-005
+ 
+ Dispersion coefficient :    16.0000000000000     
+ Diffusion Number (Ddt/dx2<1) : 
+  0.240000000000000       0.120000000000000       6.000000000000000E-002
+ 
+ CFL : (<1)  0.900000000000000     
+ Flux Limiter : OFF
+ 
+ Mesh Peclet Number(Vdx/D) :
+   3.75000000000000        7.50000000000000        15.0000000000000     
+ 
+ 
+ ====================================

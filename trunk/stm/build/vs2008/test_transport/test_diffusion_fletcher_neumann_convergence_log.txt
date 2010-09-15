@@ -1,0 +1,44 @@
+ ==== Convergence test results test_diffusion_fletcher_neumann                  
+                 ====
+ 
+ (from finer to coarser)
+ L-inf error ratio 
+   4.11436422210160        4.02311513528911     
+ L-2 error ratio 
+   5.81896655285103        5.68925575980762     
+ L-1 error ratio 
+   4.11463088110536        4.02291111231269     
+ 
+ L-inf convergence rate estimate
+ fine :   2.04066951339638       coarse :   2.00831302623940     
+ L-2 convergence rate estimate
+ fine :   2.54076295356911       coarse :   2.50823993867236     
+ L-1 convergence rate estimate
+ fine :   2.04076301390711       coarse :   2.00823986144294     
+ 
+ number of cells :           64          32          16
+ L-inf occures at :           1           1           1
+ dx :  1.406250000000000E-002  2.812500000000000E-002  5.625000000000000E-002
+ 
+ number of steps :           64          32          16
+ dt :  1.562500000000000E-002  3.125000000000000E-002  6.250000000000000E-002
+ 
+ Error L-inf test_diffusion_fletcher_neumann                                  : 
+  1.249048720012885E-003  5.139041365282815E-003  2.067495509754608E-002
+ Error L-2 test_diffusion_fletcher_neumann                                  : 
+  1.560032431354728E-004  9.077776539416030E-004  5.164579246311912E-003
+ Error L-1 test_diffusion_fletcher_neumann                                  : 
+  1.248025741009962E-003  5.135165254373989E-003  2.065831336538315E-002
+ 
+ Dispersion coefficient :    2.10000000000000     
+ Diffusion Number (Ddt/dx2<1) : 
+   165.925925925926        82.9629629629630        41.4814814814815     
+ 
+ CFL : (<1)  0.000000000000000E+000
+ Flux Limiter : OFF
+ 
+ Mesh Peclet Number(Vdx/D) :
+  0.000000000000000E+000  0.000000000000000E+000  0.000000000000000E+000
+ 
+ 
+ ====================================

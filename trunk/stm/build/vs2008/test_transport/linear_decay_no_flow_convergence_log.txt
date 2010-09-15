@@ -1,0 +1,43 @@
+ ==== Convergence test results linear_decay_no_flow ====
+ 
+ (from finer to coarser)
+ L-inf error ratio 
+   4.01444521920726        4.02898067641651     
+ L-2 error ratio 
+   5.67728287440674        5.69783911512735     
+ L-1 error ratio 
+   4.01444521920726        4.02898067641651     
+ 
+ L-inf convergence rate estimate
+ fine :   2.00520062664655       coarse :   2.01041488612565     
+ L-2 convergence rate estimate
+ fine :   2.50520062664655       coarse :   2.51041488612565     
+ L-1 convergence rate estimate
+ fine :   2.00520062664655       coarse :   2.01041488612565     
+ 
+ number of cells :            4           2           1
+ L-inf occures at :           1           1           1
+ dx :   128.000000000000        256.000000000000        512.000000000000     
+ 
+ number of steps :          128          64          32
+ dt :   16.0000000000000        32.0000000000000        64.0000000000000     
+ 
+ Error L-inf linear_decay_no_flow : 
+  1.280902458677957E-005  5.142112751510552E-005  2.071747291179094E-004
+ Error L-2 linear_decay_no_flow : 
+  6.404512293389786E-006  3.636022796218928E-005  2.071747291179094E-004
+ Error L-1 linear_decay_no_flow : 
+  1.280902458677957E-005  5.142112751510552E-005  2.071747291179094E-004
+ 
+ Dispersion coefficient :    16.0000000000000     
+ Diffusion Number (Ddt/dx2<1) : 
+  1.562500000000000E-002  7.812500000000000E-003  3.906250000000000E-003
+ 
+ CFL : (<1)  0.000000000000000E+000
+ Flux Limiter : OFF
+ 
+ Mesh Peclet Number(Vdx/D) :
+  0.000000000000000E+000  0.000000000000000E+000  0.000000000000000E+000
+ 
+ 
+ ====================================

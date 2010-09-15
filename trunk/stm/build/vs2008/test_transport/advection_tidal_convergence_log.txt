@@ -1,0 +1,43 @@
+ ==== Convergence test results advection_tidal ====
+ 
+ (from finer to coarser)
+ L-inf error ratio 
+   5.09419818755915        5.76612161560490     
+ L-2 error ratio 
+   7.35286259222225        9.09684237423706     
+ L-1 error ratio 
+   5.13447063667373        6.66737329359279     
+ 
+ L-inf convergence rate estimate
+ fine :   2.34885508812542       coarse :   2.52760126561877     
+ L-2 convergence rate estimate
+ fine :   2.87830602458702       coarse :   3.18536585502879     
+ L-1 convergence rate estimate
+ fine :   2.36021554251942       coarse :   2.73711850313694     
+ 
+ number of cells :          256         128          64
+ L-inf occures at :         119          65          33
+ dx :   800.000000000000        1600.00000000000        3200.00000000000     
+ 
+ number of steps :           64          32          16
+ dt :   697.500000000000        1395.00000000000        2790.00000000000     
+ 
+ Error L-inf advection_tidal : 
+  7.967751511568366E-004  4.058930530915328E-003  2.340428707054953E-002
+ Error L-2 advection_tidal : 
+  1.052765063013360E-005  7.740836850229437E-005  7.041717267122289E-004
+ Error L-1 advection_tidal : 
+  6.097403056776212E-005  3.130693695498213E-004  2.087350353578411E-003
+ 
+ Dispersion coefficient :    16.0000000000000     
+ Diffusion Number (Ddt/dx2<1) : 
+  1.743750000000000E-002  8.718749999999999E-003  4.359375000000000E-003
+ 
+ CFL : (<1)  0.255444207323057     
+ Flux Limiter : OFF
+ 
+ Mesh Peclet Number(Vdx/D) :
+   14.6491301690642        29.2982603381284        58.5965206762568     
+ 
+ 
+ ====================================

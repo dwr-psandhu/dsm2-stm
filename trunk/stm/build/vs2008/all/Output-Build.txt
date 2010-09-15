@@ -1,0 +1,20 @@
+------ Build started: Project: test_transport, Configuration: Debug Win32 ------
+Compiling with Intel(R) Visual Fortran 11.1.065 [IA-32]...
+log_convergence.f90
+test_advection_single_channel.f90
+D:\delta\trunk\stm\test\transport\test_advection_single_channel.f90(229): error #6404: This name does not have a type, and must have an explicit type.   [CONST_VELOCITY]
+D:\delta\trunk\stm\test\transport\test_advection_single_channel.f90(234): error #6404: This name does not have a type, and must have an explicit type.   [DECAY_RATE]
+D:\delta\trunk\stm\test\transport\test_advection_single_channel.f90(235): error #6404: This name does not have a type, and must have an explicit type.   [CONST_DISP_COEF]
+compilation aborted for D:\delta\trunk\stm\test\transport\test_advection_single_channel.f90 (code 1)
+test_a_d_r_bc_neumann_.f90
+test_advection_convergence_uniform.f90
+test_adr_no_boundary_condition.f90
+test_advection_decay.f90
+test_coarsen.f90
+test_advection_convergence_tidal.f90
+test_linear_decay.f90
+test_transport_driver.f90
+
+Build log written to  "file://D:\delta\trunk\stm\build\vs2008\test_transport\Debug\BuildLog.htm"
+test_transport - 4 error(s), 0 warning(s)
+========== Build: 0 succeeded, 1 failed, 3 up-to-date, 0 skipped ==========

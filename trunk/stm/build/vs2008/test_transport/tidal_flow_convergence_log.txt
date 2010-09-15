@@ -1,0 +1,42 @@
+ ==== Log of connvergence test tidal_flow ====
+ 
+ (from finer to coarser)
+ L-inf convergence ratio 
+   4.97809793109056        4.77483687589463     
+ L-2 convergence ratio 
+   6.80667963112735        7.60329666268052     
+ L-1 convergence ratio 
+   4.95709620787618        5.82650483532454     
+ 
+ L-inf convergence ratio LOG 
+ fine :   2.31559461185952       coarse :   2.25545144679073     
+ L-2 convergence ratio LOG 
+ fine :   2.76695120823873       coarse :   2.92662508272377     
+ L-1 convergence ratio LOG 
+ fine :   2.30949525906625       coarse :   2.54263070866426     
+ 
+ number of cells :          512         256         128
+ L-inf occures at :         246         129          65
+ dx :   200.000000000000        400.000000000000        800.000000000000     
+ 
+ number of steps :          128          64          32
+ dt :   348.750000000000        697.500000000000        1395.00000000000     
+ 
+ Error L-inf tidal_flow : 
+  2.809860168931852E-004  1.398775909361341E-003  6.678926793131576E-003
+ Error L-2 tidal_flow : 
+  1.948672634319343E-006  1.326399032775676E-005  1.008500533928597E-004
+ Error L-1 tidal_flow : 
+  1.091380746372269E-005  5.410079359191052E-005  3.152185354581613E-004
+ 
+ Decay rate :   0.000000000000000E+000
+ Kdt : 
+  0.000000000000000E+000  0.000000000000000E+000  0.000000000000000E+000
+ 
+ CFL : (<1)  0.762901823239262     
+ Flux Limiter : OFF
+ 
+ Da : Advection Time Scale/ Reaction Time Scale
+ Da =  0.000000000000000E+000
+ 
+ ====================================
