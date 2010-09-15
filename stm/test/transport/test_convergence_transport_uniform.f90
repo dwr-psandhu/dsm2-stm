@@ -57,7 +57,6 @@ real(stm_real) :: diffuse
 real(stm_real) :: decay
 
 
-
 flow   = constant_flow
 diffuse= zero
 decay  = zero
@@ -80,7 +79,7 @@ call converge_transport_uniform(verbose,"uniform_react_remote_bc",flow,diffuse,d
 flow   = constant_flow
 diffuse= constant_diffuse
 decay  = zero
-call converge_transport_uniform(verbose,"uniform_advect_diffuse",flow,diffuse,decay)
+call converge_transport_uniform(verbose,"uniform_advect_diffuse",flow,diffuse,decay,detail_result=do_detail)
 call converge_transport_uniform(verbose,"uniform_advect_diffuse_remote_bc",flow,diffuse,decay,remote)
 
 
@@ -198,6 +197,8 @@ const_velocity = test_flow/constant_area
 
 ! source
 decay_rate = test_decay
+rates = decay_rate
+call set_linear_decay(rates,2)
 if (test_decay .ne. zero)then
     rates = decay_rate
     call set_linear_decay(rates,2)
@@ -219,7 +220,7 @@ if (test_diffuse .eq. zero) then
 else
     const_disp_coef =  test_diffuse
     call set_single_channel_boundary(dirichlet_advective_flux_lo, gaussian_data, &
-                                     dirichlet_advective_flux_hi, extrapolate_hi_boundary_data, &
+                                     dirichlet_advective_flux_hi, gaussian_data, &
                                      dirichlet_diffusive_flux_lo, gaussian_data, &
                                      dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data )
 
@@ -435,9 +436,10 @@ subroutine extrapolate_hi_boundary_data(bc_data,           &
     real(stm_real), intent (in)   :: conc(ncell,nvar)                !< Concentration 
     real(stm_real), intent (in)   :: dt
     real(stm_real), intent (in)   :: dx
+    integer ivar
     
     bc_data=conc(ncell,:) + (conc(ncell,:) - conc(ncell-1,:))/two
-   
+    bc_data = conc(ncell,:)
 return
 end subroutine
 

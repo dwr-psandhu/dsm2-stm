@@ -22,12 +22,12 @@
 !>@ingroup test
 !> Test of transport diffusion convergence test for a single channel
 !>@ingroup test
-module test_diffusion_convergence_boundaries_dirichlet
+module test_diffusion_fletcher
 
 contains
 
 !> Subroutine that checks the error convergence ratio for diffusion routine 
-subroutine test_diffusion_dirichlet(verbose)
+subroutine test_diffusion_convergence_fletcher(verbose)
 use test_convergence_transport
 use stm_precision
 use state_variables

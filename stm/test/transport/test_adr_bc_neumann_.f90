@@ -135,7 +135,7 @@ call test_convergence(label,                     &
                       nstep_base,             &
                       nx_base,                &
                       nconc,                  &
-                      verbose,.true.)
+                      verbose)
 
 return
 end subroutine 
@@ -471,9 +471,6 @@ diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1)*grad_start
 diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell)*grad_end
 
 
-!! todo: here outflow is right hand side!!
-!grad_start = grad_start* exp(-decay_rate*(local_time-start_time))
-!grad_end   = grad_end  * exp(-decay_rate*(local_time-start_time))
 
  
     return

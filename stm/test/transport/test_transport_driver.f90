@@ -34,7 +34,6 @@ use test_diffusive_flux
 use test_explicit_diffusion_operator
 use test_interior_coef_matrix
 use test_construct_r_h_s
-use test_diffusion_convergence_boundaries
 use source_sink
 
 use test_advection_tidal
@@ -42,7 +41,7 @@ use test_coarsening
 use test_uniform_flow
 use test_prim_increment_to_cons
 use test_gradient
-use test_diffusion_convergence_boundaries_dirichlet
+use test_diffusion_fletcher
 use test_diffusion_single_channel
 use test_linear_decay_no_flow
 use test_linear_decay_const_flow
@@ -81,8 +80,7 @@ call  test_linear_decay_convergence(verbose)
 call  test_advection_decay_convergence(verbose)
 call  test_reaction_decay_convergence(verbose)
 !!////// diffusion
-call test_diffusion_dirichlet(verbose)
-call test_diffusion_neumann(verbose)
+call test_diffusion_convergence_fletcher(verbose)
 call test_diffusion_convergence_single_channel(verbose)
 
 !!/// A-D-R  
