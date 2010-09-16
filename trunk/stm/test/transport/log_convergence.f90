@@ -129,7 +129,7 @@ end if
 
 if (present(dispersion)) then
     write(log_unit,*) 'Dispersion coefficient : ', dispersion
-    write(log_unit,*) 'Diffusion Number (Ddt/dx2<1) : '
+    write(log_unit,*) 'Diffusion Number (Ddt/dx2) : '
     write(log_unit,*) four*dispersion*dt/dx/dx,two*dispersion*dt/dx/dx,dispersion*dt/dx/dx
     write(log_unit,*)
 end if 
