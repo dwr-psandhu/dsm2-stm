@@ -66,7 +66,7 @@ call test_extrapolation
 !!///////// advection
 call test_tidal_advection_convergence(verbose)
 call test_uniform_advection_convergence(verbose)
-!!!/////// Diffusion routine
+!!!!/////// Diffusion routine
 call test_tridi_solver
 call test_boundary_diffusion_flux
 call test_make_dif_flux_sub
@@ -74,7 +74,7 @@ call test_explicit_interior_diffusion_op
 call test_interior_coef_matrix_sub
 call test_construct_elemnts_rhs 
 call test_coarsen
-!!////// reaction
+!!!////// reaction
 call  test_linear_decay_convergence(verbose)
 call  test_advection_decay_convergence(verbose)
 call  test_reaction_decay_convergence(verbose)

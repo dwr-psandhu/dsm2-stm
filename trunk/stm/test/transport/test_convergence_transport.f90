@@ -86,7 +86,7 @@ logical, intent(in),optional :: detail_printout                 !< whether to pr
 
 
 !---local
-logical :: detailed_printout = .false.
+logical :: detailed_printout = .true.
 
 integer, parameter :: nrefine = 3
 integer, parameter :: coarsen_factor = 2                 ! coarsening factor used for convergence test
@@ -127,6 +127,8 @@ if (present(detail_printout))then
 else 
     detailed_printout = .false.
 end if
+
+
 
 !todo: this should be much simpler. Should just be able to say "compute_source => source_term
 !      however at present (intel 11.1 pointer reassignment is buggy (or doing something wrong)

@@ -40,6 +40,7 @@ contains
 !      rather than into the domain.
 !      the tidal range is very short, so the discretization of the plume is fairly coarse despite the apparently
 !      coarse discretization
+!todo: to have an approximation in mind the tide hight is about one meter in Antioch where the water depth is ?? 
 
 
 !> Tests the convergence of error rate in advection of mass which is exposed a tidal boundary 
@@ -57,9 +58,10 @@ implicit none
 procedure(hydro_data_if),pointer :: tidal_hydro          !< The pointer points to tidal flow data
 
 integer, parameter  :: nconc = 2                         !< Number of constituents
-integer, parameter  :: nstep_base = 64                   !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 256                  !< Number of spatial discritization in finer mesh 
+integer, parameter  :: nstep_base = 512                !< Number of time steps in finer discritization
+integer, parameter  :: nx_base    = 1024              !< Number of spatial discritization in finer mesh 
 logical :: verbose
+logical :: detail_printout=.true.
 real(stm_real), parameter :: total_time = m2_period      !< total time of the test
 real(stm_real), parameter :: start_time = zero           !< starts at zero
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
@@ -68,6 +70,7 @@ real(stm_real),parameter :: ic_center = domain_length/two  !< Center of initial 
 real(stm_real) :: solution_center = ic_center             !< Center of final solution 
 real(stm_real),parameter :: ic_gaussian_sd = domain_length/32.d0   !< Standard deviation of initial values 
 real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd !< Standard deviation of final values
+real(stm_real),parameter :: dye_length = domain_length/3.0d0
 
 character(LEN=*),parameter :: label = "advection_tidal"      
 tidal_hydro=> tidal_flow
@@ -86,14 +89,15 @@ call initial_fine_solution_tidal(fine_initial_condition, &
                                  ic_gaussian_sd,         &
                                  solution_gaussian_sd,   &
                                  ic_center,              &
-                                 solution_center)
+                                 solution_center,        &
+                                 dye_length)
 
 
 !> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
 !> compute the norms, after each step coarsen the values and repeat computation.
 !> at the end  calculates the ratio of the norms and prints a log 
 call test_convergence(label,                  &
-                      tidal_hydro ,            &
+                      tidal_hydro ,           &
                       zero_advective_flux,    &
                       no_diffusion_flux,      &
                       no_diffusion_matrix,    &
@@ -106,7 +110,10 @@ call test_convergence(label,                  &
                       nstep_base,             &
                       nx_base,                &
                       nconc,                  &
-                      verbose)
+                      verbose,                &
+                      detail_printout)
+
+
 
 return
 end subroutine
@@ -121,7 +128,8 @@ subroutine initial_fine_solution_tidal(fine_initial_condition, &
                                        ic_gaussian_sd,         &
                                        solution_gaussin_sd,    &
                                        ic_center,              &
-                                       solution_center)
+                                       solution_center,        &
+                                       dye_length)
                                        
 
 
@@ -140,20 +148,37 @@ real(stm_real),intent(in)  :: ic_gaussian_sd                        !< Standard 
 real(stm_real),intent(in)  :: solution_gaussin_sd                   !< Standard deviation of solution 
 real(stm_real),intent(in)  :: origin                                !< Left hand side of the channel
 real(stm_real),intent(in)  :: domain_length                         !< Domain length
+real(stm_real),intent(in)  :: dye_length                            !< length of cosine shape mass in the middle of the domain
 !----local
 real(stm_real):: dx
+real(stm_real):: xposition(nx_base)
+integer :: icell
 
 dx = domain_length/nx_base
 
-call fill_gaussian(fine_initial_condition(:,1),nx_base,origin,dx, &
-                   ic_center,ic_gaussian_sd,0.1d0)
-call fill_gaussian(fine_initial_condition(:,2),nx_base,origin,dx, &
-                   ic_center,ic_gaussian_sd,one)
+!todo: remove these gaussian
+!call fill_gaussian(fine_initial_condition(:,1),nx_base,origin,dx, &
+!                   ic_center,ic_gaussian_sd,0.1d0)
+!call fill_gaussian(fine_initial_condition(:,2),nx_base,origin,dx, &
+!                   ic_center,ic_gaussian_sd,one)
+!
+!call fill_gaussian(fine_solution(:,1),nx_base,origin,dx, &
+!                   solution_center,solution_gaussin_sd,0.1d0)
+!call fill_gaussian(fine_solution(:,2),nx_base,origin,dx, &
+!                   solution_center,solution_gaussin_sd,one)
 
-call fill_gaussian(fine_solution(:,1),nx_base,origin,dx, &
-                   solution_center,solution_gaussin_sd,0.1d0)
-call fill_gaussian(fine_solution(:,2),nx_base,origin,dx, &
-                   solution_center,solution_gaussin_sd,one)
+do icell=1,nx_base
+    xposition(icell)=(dble(icell)-half)*dx
+    if ((xposition(icell)>(domain_length*half + dye_length*half)).or.(xposition(icell)<(domain_length*half - dye_length*half))) then
+        fine_initial_condition(icell,1)=zero
+    else
+        fine_initial_condition(icell,1)=cos((xposition(icell) - domain_length*half)*pi/dye_length)
+    end if
+end do
+
+fine_initial_condition(:,2)=fine_initial_condition(:,1)
+fine_solution = fine_initial_condition
+
 
 return
 end subroutine
