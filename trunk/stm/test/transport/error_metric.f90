@@ -75,4 +75,40 @@ norm_2 = sqrt(norm_2)/dble(ncell)
 return
 end subroutine
 
+!> claculates the total mass and checks the oscilations
+subroutine mass_calculator(total_mass,  &
+                           vals,        &
+                           num_cell,    &
+                           dx,          &
+                           mass_alarm)
+use stm_precision
+              
+implicit none
+
+real(stm_real), intent(out) :: total_mass        !< mass
+integer, intent(in) :: num_cell                  !< number of cells
+real(stm_real), intent(in) :: vals(num_cell)     !< input values
+real(stm_real), intent(in) :: dx                 !< space discretization
+logical, intent(in), optional :: mass_alarm      !< negative mass alarm
+!---local
+integer :: icell
+
+total_mass=zero
+
+total_mass = sum(vals)
+total_mass = total_mass*dx
+
+if (present(mass_alarm)) then
+    if (mass_alarm ==.true.) then
+        do icell=2,ncell
+          if (vals(icell)*vals(icell-1) < zero) then
+           ! todo: call error log 
+          end if
+        end do        
+    end if
+end if
+
+return
+end subroutine
+
 end module
