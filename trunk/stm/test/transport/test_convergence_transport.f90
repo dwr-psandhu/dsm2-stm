@@ -339,23 +339,23 @@ do icoarse = 1,nrefine
     call deallocate_state
 end do
 ratio = norm_error(1,2)/norm_error(1,1)
-call create_converge_message(converge_message,"L-1   (coarse) ",trim(label),ratio)
+call create_converge_message(converge_message,"L-1   (fine)   ",trim(label),ratio)
 call assert_true(ratio > four,trim(converge_message))
 ratio = norm_error(2,2)/norm_error(2,1)
-call create_converge_message(converge_message,"L-2   (coarse) ",trim(label),ratio)
+call create_converge_message(converge_message,"L-2   (fine)   ",trim(label),ratio)
 call assert_true(ratio > four,trim(converge_message))
 ratio = norm_error(3,2)/norm_error(3,1)
-call create_converge_message(converge_message,"L-inf (coarse) ",trim(label),ratio)
+call create_converge_message(converge_message,"L-inf (fine)   ",trim(label),ratio)
 call assert_true(ratio > four,trim(converge_message))
 
 ratio = norm_error(1,3)/norm_error(1,2)
-call create_converge_message(converge_message,"L-1   (fine)   ",trim(label),ratio)
+call create_converge_message(converge_message,"L-1   (coarse) ",trim(label),ratio)
 call assert_true(ratio > four,trim(converge_message))
 ratio = norm_error(2,3)/norm_error(2,2)
-call create_converge_message(converge_message,"L-2   (fine)   ",trim(label),ratio)
+call create_converge_message(converge_message,"L-2   (coarse) ",trim(label),ratio)
 call assert_true(ratio > four,trim(converge_message))
 ratio = norm_error(3,3)/norm_error(3,2)
-call create_converge_message(converge_message,"L-inf (fine)   ",trim(label),ratio)
+call create_converge_message(converge_message,"L-inf (coarse) ",trim(label),ratio)
 call assert_true(ratio > four,trim(converge_message))
 
 
