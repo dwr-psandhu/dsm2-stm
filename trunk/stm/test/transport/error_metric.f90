@@ -100,9 +100,11 @@ total_mass = total_mass*dx
 
 if (present(mass_alarm)) then
     if (mass_alarm ==.true.) then
-        do icell=2,ncell
+        do icell=2,num_cell
           if (vals(icell)*vals(icell-1) < zero) then
-           ! todo: call error log 
+           ! todo: call error report
+           ! todo: how we should find oscillations in case we shift the concentrations up
+           !  should we check gradients? grad_left*grad_right >0  
           end if
         end do        
     end if
