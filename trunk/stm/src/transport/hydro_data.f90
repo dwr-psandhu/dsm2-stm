@@ -40,7 +40,7 @@ module hydro_data
         use stm_precision
         implicit none
         integer, intent(in) :: ncell                   !< Number of cells
-        real(stm_real), intent(in)  :: time            !< Time of request "old time"
+        real(stm_real), intent(in)  :: time            !< Time of request
         real(stm_real), intent(in)  :: dx              !< Spatial step 
         real(stm_real), intent(in)  :: dt              !< Time step 
         real(stm_real), intent(out) :: flow(ncell)     !< Cell and time centered flow
