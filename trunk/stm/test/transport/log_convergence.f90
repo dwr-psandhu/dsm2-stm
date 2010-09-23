@@ -136,6 +136,7 @@ end if
 
 if (present(max_velocity)) then
     write(log_unit,*) 'CFL : (<1)' , max_velocity*dt/dx 
+    write(log_unit,*) 'Max Velocity', max_velocity
     if (present(limiter_switch)) then
         if (limiter_switch == .true.)then
             write(log_unit,*) 'Flux Limiter : ON '
