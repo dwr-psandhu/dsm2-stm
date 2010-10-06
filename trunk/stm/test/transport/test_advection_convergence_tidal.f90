@@ -26,13 +26,13 @@ use stm_precision
 ! todo: make the names more meaningful
 real(stm_real),parameter :: origin = zero                  !< Left hand side of the channel
 real(stm_real),parameter :: domain_length = 204800.0d0     !< Domain Length in meter
-real(stm_real),parameter :: amplitude = fourth             !< Tidal amplitude in meter    
+real(stm_real),parameter :: amplitude = half               !< Tidal amplitude in meter    
 real(stm_real),parameter :: gravity = 9.80d0               !< Gravitational acceleration in m/s^2
 real(stm_real),parameter :: depth = 16.0d0                 !< Channel depth in meter
 real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0       !< Convert factor of hour to second 
 real(stm_real),parameter :: m2_period = 12.4d0*sec_per_hr  !< M2 tidal period 
 real(stm_real),parameter :: freq=two*pi/m2_period          !< Frequency of tidal oscillation
-real(stm_real),parameter :: dye_length = domain_length/two
+real(stm_real),parameter :: dye_length = domain_length/three
 real(stm_real),parameter :: dye_center = domain_length/two
 integer, parameter  :: nconc = 2                           !< Number of constituents
 integer, parameter  :: nstep_base = 64                     !< Number of time steps in finer discritization
@@ -62,9 +62,6 @@ use diffusion
 implicit none
 procedure(hydro_data_if),pointer :: tidal_hydro          !< The pointer points to tidal flow data
 
-integer, parameter  :: nconc = 2                         !< Number of constituents
-integer, parameter  :: nstep_base = 512                !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 1024              !< Number of spatial discritization in finer mesh 
 logical :: verbose
 
 logical :: detail_printout=.true.
@@ -76,7 +73,6 @@ real(stm_real),parameter :: ic_center = domain_length/two  !< Center of initial 
 real(stm_real) :: solution_center = ic_center             !< Center of final solution 
 real(stm_real),parameter :: ic_gaussian_sd = domain_length/sixteen   !< Standard deviation of initial values 
 real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd !< Standard deviation of final values
-real(stm_real),parameter :: dye_length = domain_length/3.0d0
 
 character(LEN=64) :: label 
  
@@ -100,7 +96,6 @@ call initial_fine_solution_tidal_gaussian(fine_initial_condition, &
                                           solution_gaussian_sd,   &
                                           ic_center,              &
                                           solution_center)
-
 
 !> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
 !> compute the norms, after each step coarsen the values and repeat computation.
@@ -269,7 +264,7 @@ subroutine tidal_flow(flow,    &
                       area_lo, &
                       area_hi, &
                       ncell,   &
-                      time,  &
+                      new_time,  &
                       dx,      &
                       dt)
                       
@@ -277,7 +272,7 @@ use stm_precision
 
 implicit none
 integer, intent(in) :: ncell                   !< number of cells
-real(stm_real), intent(in)  :: time            !< time of request
+real(stm_real), intent(in)  :: new_time        !< time of request
 real(stm_real), intent(in)  :: dx              !< spatial step 
 real(stm_real), intent(in)  :: dt              !< time step 
 real(stm_real), intent(out) :: flow(ncell)     !< cell centered flow
@@ -296,18 +291,20 @@ real(stm_real) :: vel_hi
 real(stm_real) :: vel
 integer :: icell
 !todo: check this
-half_time = time - half*dt
+half_time = new_time  - half*dt
+
+
 big_b = freq/sqrt(gravity*depth)
 big_a = amplitude* sqrt(gravity*depth)/(depth*cos(big_b*domain_length))
 
 ! width is assumed to be equal to 1 meter 
 do icell = 1,ncell  
-  area(icell)    = depth + amplitude * cos(big_b*(domain_length-(dble(icell)-half)*dx))/cos(big_b*domain_length)*cos(freq*time)  
+  area(icell)    = depth + amplitude * cos(big_b*(domain_length-(dble(icell)-half)*dx))/cos(big_b*domain_length)*cos(freq*new_time)  
   area_lo(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell-1)*dx)))   /cos(big_b*domain_length)*cos(freq*half_time)  
   area_hi(icell) = depth + amplitude * cos(big_b*(domain_length-(dble(icell)*dx)))     /cos(big_b*domain_length)*cos(freq*half_time)  
   vel_lo = big_a*sin(big_b*(domain_length - (dble(icell-1)*dx)) )*sin(freq*half_time)
   vel_hi = big_a*sin(big_b*(domain_length - (dble(icell)*dx  )) )*sin(freq*half_time)
-  vel    = big_a*sin(big_b*(domain_length - ((dble(icell)-half)*dx)))*sin(freq*time)
+  vel    = big_a*sin(big_b*(domain_length - ((dble(icell)-half)*dx)))*sin(freq*new_time)
   flow(icell)    = area(icell)*vel
   flow_lo(icell) = area_lo(icell)*vel_lo
   flow_hi(icell) = area_hi(icell)*vel_hi

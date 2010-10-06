@@ -75,7 +75,7 @@ norm_2 = sqrt(norm_2)/dble(ncell)
 return
 end subroutine
 
-!> claculates the total mass and checks the oscilations
+!> claculates the total mass and checks the oscillations
 subroutine mass_calculator(total_mass,  &
                            vals,        &
                            num_cell,    &
