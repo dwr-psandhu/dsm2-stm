@@ -84,10 +84,8 @@ real(stm_real), intent(in) :: start_time                        !< start time of
 real(stm_real), intent(in) :: domain_length                     !< length of domain
 logical, intent(in),optional :: detail_printout                 !< whether to produce detailed printouts
 
-
 !---local
-logical :: detailed_printout = .true.
-
+logical :: detailed_printout= .true. 
 integer, parameter :: nrefine = 3
 integer, parameter :: coarsen_factor = 2                 ! coarsening factor used for convergence test
 integer :: itime
@@ -144,7 +142,6 @@ advection_boundary_flux => bc_advective_flux
 !todo: this had to be disabled. 
 !call set_diffusion_boundary(bc_diffusive_flux,bc_diffusive_matrix)
 
-
 filename=label
 ! coarsening factor in convergence test
 do icoarse = 1,nrefine
@@ -170,6 +167,8 @@ do icoarse = 1,nrefine
     end do
 
     time = start_time
+    ! Get cell centered data for t(n+1)
+    ! and face data for t(n+1/2)
     call hydro(flow,    &
                flow_lo, &
                flow_hi, &
@@ -248,30 +247,30 @@ do icoarse = 1,nrefine
       call cons2prim(conc,mass,area,nx,nconc) 
       conc_prev = conc
       
-      if( use_diffusion()) then
+      if(use_diffusion()) then
         call get_dispersion_coef(disp_coef_lo, &
                                  disp_coef_hi, &
                                  ncell, &
                                  time)
                                   
-        call diffuse(conc,            &
-                   conc_prev,         &
-                   area,              &
-                   area_prev,         &
-                   area_lo,           &
-                   area_hi,           &
-                   area_lo_prev,      &
-                   area_hi_prev,      &
-                   disp_coef_lo,      &  
-                   disp_coef_hi,      &
-                   disp_coef_lo_prev, &  
-                   disp_coef_hi_prev, &
-                   nx,                &
-                   nconc,             &
-                   time,              &
-                   theta,             &
-                   dt,                &
-                   dx)
+        call diffuse(conc,              &
+                     conc_prev,         &
+                     area,              &
+                     area_prev,         &
+                     area_lo,           &
+                     area_hi,           &
+                     area_lo_prev,      &
+                     area_hi_prev,      &
+                     disp_coef_lo,      &  
+                     disp_coef_hi,      &
+                     disp_coef_lo_prev, &  
+                     disp_coef_hi_prev, &
+                     nx,                &
+                     nconc,             &
+                     time,              &
+                     theta,             &
+                     dt,                &
+                     dx)
       end if
                       
       call prim2cons(mass,conc,area,nx,nconc)

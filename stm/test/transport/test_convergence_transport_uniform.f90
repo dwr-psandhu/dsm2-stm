@@ -109,8 +109,7 @@ subroutine converge_transport_uniform(verbose,&
                                       test_diffuse,&
                                       test_decay, &
                                       boundary_remote, &
-                                      detail_result &
-                                      )
+                                      detail_result)
 
 use test_convergence_transport
 use fruit
