@@ -115,7 +115,7 @@ call test_convergence(label,                  &
                       nx_base,                &
                       nconc,                  &
                       verbose,                &
-                      detail_printout=.true.)
+                      detail_printout=.false.)
                       
 label = "advection_tidal_sinusoidal" 
 !> load the initial values and reference final values to feed the test routine
