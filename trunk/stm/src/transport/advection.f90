@@ -184,18 +184,22 @@ call compute_flux(flux_lo,  &
                   nvar)
 
 ! Replace fluxes for special cases having to do with boundaries, network and structures
-! todo : Keeps the dirty stuff in one place. For now this is an empty call
+! todo: Keeps the dirty stuff in one place. For now this is an empty call
+
+!!!!!
+!todo: boundary flux half_time?
+!!!!!
 call advection_boundary_flux(flux_lo,     &
-                                     flux_hi,     &
-                                     conc_lo,     &
-                                     conc_hi,     &
-                                     flow_lo,     &
-                                     flow_hi,     &
-                                     ncell,       &
-                                     nvar,        &
-                                     half_time,   &
-                                     dt,          &
-                                     dx)
+                             flux_hi,     &
+                             conc_lo,     &
+                             conc_hi,     &
+                             flow_lo,     &
+                             flow_hi,     &
+                             ncell,       &
+                             nvar,        &
+                             half_time,   &
+                             dt,          &
+                             dx)
 
 ! Combine the fluxes into a divergence term at the half time at cell edges.
 ! Computing and storing the divergence separately gives some flexibility with integrating
