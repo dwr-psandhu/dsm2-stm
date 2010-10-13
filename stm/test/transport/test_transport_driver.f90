@@ -36,6 +36,7 @@ use test_interior_coef_matrix
 use test_construct_r_h_s
 use source_sink
 
+use test_tidal_flow_provider
 use test_advection_tidal
 use test_advection_tidal_experience
 use test_coarsening
@@ -63,6 +64,7 @@ call init_fruit
 !call test_prim_increment2cons
 !call test_example_initial_conditions
 !call test_extrapolation
+ call test_tidal_hydro_provider
 !!///////// advection
 call test_tidal_advection_convergence(verbose)
 call test_tidal_advection_convergence_experience(verbose)
