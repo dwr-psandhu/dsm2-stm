@@ -263,8 +263,6 @@ subroutine tidal_flow_cell_average(flow,    &
                                    dx,      &
                                    dt)
                       
-use stm_precision
-
 implicit none
 integer, intent(in) :: ncell                   !< number of cells
 real(stm_real), intent(in)  :: time            !< time of request
