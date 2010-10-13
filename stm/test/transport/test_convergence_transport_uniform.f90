@@ -28,7 +28,7 @@ use stm_precision
 real(stm_real) :: const_disp_coef = one
 real(stm_real), parameter :: origin =zero
 real(stm_real), parameter :: base_domain_length = 25600.d0
-real(stm_real)  :: domain_length = base_domain_length
+real(stm_real) :: domain_length = base_domain_length
 real(stm_real) :: ic_center = LARGEREAL 
 real(stm_real), parameter :: ic_peak = one
 real(stm_real) :: const_velocity
@@ -47,15 +47,14 @@ use stm_precision
 implicit none
 logical, intent(in) :: verbose
 real(stm_real), parameter :: constant_flow = 600.d0
-real(stm_real),parameter :: constant_decay = 5.d-5
-real(stm_real),parameter :: constant_diffuse = sixteen
+real(stm_real), parameter :: constant_decay = 5.d-5
+real(stm_real), parameter :: constant_diffuse = sixteen
 logical,parameter :: remote = .true.
 logical,parameter :: do_detail = .true.
 
 real(stm_real) :: flow
 real(stm_real) :: diffuse
 real(stm_real) :: decay
-
 
 flow   = constant_flow
 diffuse= zero
@@ -82,7 +81,6 @@ decay  = zero
 call converge_transport_uniform(verbose,"uniform_advect_diffuse",flow,diffuse,decay,detail_result=do_detail)
 call converge_transport_uniform(verbose,"uniform_advect_diffuse_remote_bc",flow,diffuse,decay,remote)
 
-
 flow   = constant_flow
 diffuse= zero
 decay  = constant_decay
@@ -96,18 +94,15 @@ decay  = constant_decay
 call converge_transport_uniform(verbose,"uniform_advect_diffuse_react",flow,diffuse,decay)
 call converge_transport_uniform(verbose,"uniform_advect_diffuse_react_remote_bc",flow,diffuse,decay,remote)
 
-
-
 return
 end subroutine
 
-
 !> Subroutine that tests error convergence of advection diffusion reaction 
-subroutine converge_transport_uniform(verbose,&
-                                      label,  &
-                                      test_flow,   &
-                                      test_diffuse,&
-                                      test_decay, &
+subroutine converge_transport_uniform(verbose,         &
+                                      label,           &
+                                      test_flow,       &
+                                      test_diffuse,    &
+                                      test_decay,      &
                                       boundary_remote, &
                                       detail_result)
 
@@ -130,11 +125,10 @@ use hydro_uniform_flow
 
 implicit none
 
-
 logical, intent(in) :: verbose
-real(stm_real), intent(in)      :: test_flow
-real(stm_real), intent(in)      :: test_diffuse
-real(stm_real), intent(in)      :: test_decay
+real(stm_real), intent(in) :: test_flow
+real(stm_real), intent(in) :: test_diffuse
+real(stm_real), intent(in) :: test_decay
 character(LEN=*),intent(in) :: label
 logical, intent(in), optional :: detail_result
 logical, intent(in), optional :: boundary_remote
