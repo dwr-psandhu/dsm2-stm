@@ -25,6 +25,7 @@ module test_tidal_flow_provider
 use stm_precision
 use test_advection_tidal_experience
 use hydro_data
+use fruit
 
 contains
 
@@ -35,12 +36,11 @@ subroutine test_tidal_hydro_provider
 
 implicit none
 
-integer,parameter :: ncell = 64           !< number of cells
+integer,parameter :: ncell = 128           !< number of cells
 integer,parameter :: nstep = 128 
 real(stm_real),parameter :: start_time = zero
 real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0          !< Convert factor of hour to second 
-real(stm_real),parameter :: total_time
- = 12.4d0*sec_per_hr     !< M2 tidal period 
+real(stm_real),parameter :: total_time = 12.4d0*sec_per_hr     !< M2 tidal period 
 real(stm_real),parameter :: domain_length = 128000.0d0 
   
 real(stm_real):: time            !< time of request
@@ -59,9 +59,14 @@ integer :: itime
 integer :: icell
 real(stm_real):: flow_new(ncell)     !< cell centered flow at time n+1
 real(stm_real):: flow_old(ncell)     !< cell centered flow at time n
+real(stm_real):: flow_hi_new(ncell)  !< high side flow at time n+1
+real(stm_real):: flow_hi_old(ncell)  !< high side flow at time n
+real(stm_real):: flow_lo_new(ncell)  !< low side flow at time n+1
+real(stm_real):: flow_lo_old(ncell)  !< low side flow at time n
 real(stm_real):: area_new(ncell)     !< cell centered area at time n+1
 real(stm_real):: area_old(ncell)     !< cell centered area at time n
 real(stm_real):: mass_difference(ncell)
+real(stm_real):: max_mass_diff(nstep)
 
 tidal_hydro=> tidal_flow_cell_average
 
@@ -72,8 +77,8 @@ dx = domain_length/ncell
 do itime=1,nstep
 
 call tidal_hydro(flow_old,&
-                 flow_lo, &
-                 flow_hi, &
+                 flow_lo_old, &
+                 flow_hi_old, &
                  area_old,    &
                  area_lo, &
                  area_hi, &
@@ -85,8 +90,8 @@ call tidal_hydro(flow_old,&
 time = time + dt
            
 call tidal_hydro(flow_new,&
-                 flow_lo, &
-                 flow_hi, &
+                 flow_lo_new, &
+                 flow_hi_new, &
                  area_new,&
                  area_lo, &
                  area_hi, &
@@ -94,20 +99,15 @@ call tidal_hydro(flow_new,&
                  time,    &
                  dx,      &                  
                  dt)
- 
- do icell=1,ncell-1               
-    mass_difference(ncell) = (flow_old(icell+1)-flow_old(icell))/dx  - (area_new(icell)-area_old(icell))/dt
- end do 
- 
-! todo: remove
-! print *, mass_difference         
-! pause          
-           
-
-
+          
+          ! todo: check this
+ mass_difference = (flow_hi_old-flow_lo_old)/dx  + (area_new- area_old)/dt
+ max_mass_diff(itime)= maxval(abs(mass_difference))
 end do
 
-
+ !todo: remove
+ print *, max_mass_diff        
+ pause          
 
 end subroutine
 
