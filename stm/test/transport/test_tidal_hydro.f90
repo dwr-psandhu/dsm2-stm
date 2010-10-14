@@ -105,9 +105,11 @@ call tidal_hydro(flow_new,&
  max_mass_diff(itime)= maxval(abs(mass_difference))
 end do
 
- !todo: remove
- print *, max_mass_diff        
- pause          
+!todo: remove
+!print *, max_mass_diff        
+!pause          
+ 
+call assert_true (maxval(max_mass_diff) < weak_eps ,'water mass balance error in tidal flow generator')
 
 end subroutine
 
