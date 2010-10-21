@@ -25,16 +25,16 @@ use stm_precision
 !----- module variables
 ! todo: make the names more meaningful
 integer, parameter  :: nconc = 2                              !< Number of constituents
-integer, parameter  :: nstep_base = 128                      !< Number of time steps in finer discritization
+integer, parameter  :: nstep_base = 128                    !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 256                      !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero                     !< Left hand side of the channel
-real(stm_real),parameter :: domain_length = 204800.d0/two        !< Domain Length in meter
-real(stm_real),parameter :: amplitude = half                !< Tidal amplitude in meter    
+real(stm_real),parameter :: domain_length = 204800.d0/two     !< Domain Length in meter
+real(stm_real),parameter :: amplitude = half                  !< Tidal amplitude in meter    
 real(stm_real),parameter :: gravity = 9.80d0                  !< Gravitational acceleration in m/s^2
 real(stm_real),parameter :: depth = 16.0d0                    !< Channel depth in meter
 real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0          !< Convert factor of hour to second 
 !todo: half tidal cycle is 12hr 25 min so 12.416666667 is more correct
-real(stm_real),parameter :: m2_period = 12.4d0*sec_per_hr     !< M2 tidal period 
+real(stm_real),parameter :: m2_period = 12.4d0*sec_per_hr    !< M2 tidal period 
 real(stm_real),parameter :: freq=two*pi/m2_period             !< Frequency of tidal oscillation
 real(stm_real),parameter :: dye_length = domain_length/six    !< Length of cosine distribution of mass
 real(stm_real),parameter :: dye_center = domain_length/two    !< Center of cosine distribution of mass
@@ -277,6 +277,7 @@ real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face
 
 !--- local
 real(stm_real) :: half_time
+real(stm_real) :: old_time
 real(stm_real) :: big_b 
 real(stm_real) :: big_a 
 real(stm_real) :: vel_lo
@@ -285,14 +286,15 @@ real(stm_real) :: vel
 real(stm_real) :: xpos_lo
 real(stm_real) :: xpos_hi
 real(stm_real) :: xpos
+real(stm_real) :: flow_term1
+real(stm_real) :: flow_term2
 
 integer :: icell
 
 half_time = time - half*dt
+old_time = time - dt
 big_b = freq/sqrt(gravity*depth)
 big_a = amplitude* sqrt(gravity*depth)/(depth*cos(big_b*domain_length))
-
-
 
 ! width is assumed to be equal to 1 meter 
 do icell = 1,ncell  
@@ -301,31 +303,33 @@ do icell = 1,ncell
   xpos_lo = domain_length- dble(icell-1)*dx
   xpos_hi = domain_length- dble(icell)*dx
   xpos    = domain_length-(dble(icell)-half)*dx
+  
  
-  area(icell)    = depth + amplitude * (one/(big_b*dx))*(sin(big_b*xpos_lo)-sin(big_b*xpos_hi))&
-                                                 /cos(big_b*domain_length)*cos(freq*time)  
+  area(icell)    = depth + (amplitude*cos(freq*time))/(dx*big_b*cos(big_b*domain_length)) &
+                    *(sin(big_b*xpos_hi) - sin(big_b*xpos_lo))
+  
   area_lo(icell) = depth + amplitude * cos(big_b*xpos_lo)/cos(big_b*domain_length)*cos(freq*half_time)  
   area_hi(icell) = depth + amplitude * cos(big_b*xpos_hi)/cos(big_b*domain_length)*cos(freq*half_time)  
-  
-  vel_lo = big_a*sin(big_b*xpos_lo)*sin(freq*half_time)
-  vel_hi = big_a*sin(big_b*xpos_hi)*sin(freq*half_time)
-  vel    =(big_a/dx/big_b)*(cos(big_b*xpos_hi)-cos(big_b*xpos_lo))*sin(freq*time)
  
- !todo: remove  
- ! flow(icell)    = area(icell)*vel
- !print *, flow(icell)
- 
-  flow(icell)    = big_a*depth*sin(freq*time)*(cos(big_b*xpos_hi)-cos(big_b*xpos_lo))/(dx*big_b) &
-                 + big_a*amplitude*sin(two*freq*time)*(one/(four*dx*big_b*cos(big_b*domain_length))) * &
-                   (cos(big_b*xpos_hi)**2 - cos(big_b*xpos_lo)**2)
+  ! todo: check this
+   flow(icell)    = big_a*depth*sin(freq*time)*(cos(big_b*xpos_hi)-cos(big_b*xpos_lo))/(dx*big_b) &
+                   + big_a*amplitude*sin(two*freq*time)*(one/(four*dx*big_b*cos(big_b*domain_length))) * &
+                   (cos(big_b*xpos_hi)**two - cos(big_b*xpos_lo)**two)
 
-  !todo: remove
-  !print *, flow(icell)
-  !pause
- 
-  flow_lo(icell) = area_lo(icell)*vel_lo
-  flow_hi(icell) = area_hi(icell)*vel_hi
+   flow_term1 = - big_a*depth*sin(big_b*xpos_lo)*(cos(freq*time)-cos(freq*old_time))/(dt*freq)
+   flow_term2 = - big_a*amplitude*sin(two*big_b*xpos_lo)*(cos(freq*time)**two-cos(freq*old_time)**two)&
+                   /(four*freq*cos(big_b*domain_length)*dt)
+   flow_lo(icell) = flow_term1+flow_term2
+          
+
+   flow_term1 = - big_a*depth*sin(big_b*xpos_hi)*(cos(freq*time)-cos(freq*old_time))/(dt*freq)
+   flow_term2 = - big_a*amplitude*sin(two*big_b*xpos_hi)*(cos(freq*time)**two-cos(freq*old_time)**two)&
+                   /(four*freq*cos(big_b*domain_length)*dt)
+   flow_hi(icell) = flow_term1+flow_term2
+   
+   
 end do  
+
 
 return
 end subroutine 
