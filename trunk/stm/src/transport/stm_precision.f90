@@ -25,23 +25,24 @@ module stm_precision
 !> Precision of REAL number
 integer, parameter :: stm_real = 8
 
-real(stm_real), parameter :: minus = -1.d0      !< Real constant -1. properly typed
-real(stm_real), parameter :: zero  =  0.d0      !< Real constant  0. properly typed
-real(stm_real), parameter :: one   =  1.d0      !< Real constant  1. properly typed
-real(stm_real), parameter :: two   =  2.d0      !< Real constant  2. properly typed
-real(stm_real), parameter :: three =  3.d0      !< Real constant  3. properly typed
-real(stm_real), parameter :: four  =  4.d0      !< Real constant  4. properly typed
-real(stm_real), parameter :: five  =  5.d0      !< Real constant  5. properly typed
-real(stm_real), parameter :: six   =  6.d0      !< Real constant  6. properly typed
-real(stm_real), parameter :: seven =  7.d0      !< Real constant  7. properly typed
-real(stm_real), parameter :: eight =  8.d0      !< Real constant  8. properly typed
-real(stm_real), parameter :: nine  =  9.d0      !< Real constant  9. properly typed
-real(stm_real), parameter :: ten   =  1.d1      !< Real constant  10. properly typed
-real(stm_real), parameter :: sixteen  =  1.6D1  !< Real constant  16. properly typed
-real(stm_real), parameter :: half     =  5.d-1  !< Real constant  0.5 properly typed
-real(stm_real), parameter :: third = one/three  !< Real constant  1/3 properly typed
+real(stm_real), parameter :: minus = -1.d0      !< Real constant -1.   properly typed
+real(stm_real), parameter :: zero  =  0.d0      !< Real constant  0.   properly typed
+real(stm_real), parameter :: one   =  1.d0      !< Real constant  1.   properly typed
+real(stm_real), parameter :: two   =  2.d0      !< Real constant  2.   properly typed
+real(stm_real), parameter :: three =  3.d0      !< Real constant  3.   properly typed
+real(stm_real), parameter :: four  =  4.d0      !< Real constant  4.   properly typed
+real(stm_real), parameter :: five  =  5.d0      !< Real constant  5.   properly typed
+real(stm_real), parameter :: six   =  6.d0      !< Real constant  6.   properly typed
+real(stm_real), parameter :: seven =  7.d0      !< Real constant  7.   properly typed
+real(stm_real), parameter :: eight =  8.d0      !< Real constant  8.   properly typed
+real(stm_real), parameter :: nine  =  9.d0      !< Real constant  9.   properly typed
+real(stm_real), parameter :: ten   =  1.d1      !< Real constant  10.  properly typed
+real(stm_real), parameter :: sixteen  =  1.6d1  !< Real constant  16.  properly typed
+real(stm_real), parameter :: half     =  5.d-1  !< Real constant  0.5  properly typed
+real(stm_real), parameter :: third = one/three  !< Real constant  1/3  properly typed
 real(stm_real), parameter :: fourth   =  2.5d-1 !< Real constant  0.25 properly typed
 real(stm_real), parameter :: pi = acos(-one)    !< Pi 
+
 
 !> Absurd high value, for initialization and for marking undefined
 !> data in calculations. This makes bugs easier to spot.
