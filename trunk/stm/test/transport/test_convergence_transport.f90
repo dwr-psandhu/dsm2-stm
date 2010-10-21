@@ -127,7 +127,6 @@ else
 end if
 
 
-
 !todo: this should be much simpler. Should just be able to say "compute_source => source_term
 !      however at present (intel 11.1 pointer reassignment is buggy (or doing something wrong)
 if (associated(source_term,no_source))then

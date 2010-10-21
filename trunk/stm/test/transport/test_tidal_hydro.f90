@@ -26,6 +26,7 @@ use stm_precision
 use test_advection_tidal_experience
 use hydro_data
 use fruit
+use error_metric
 
 contains
 
@@ -36,12 +37,9 @@ subroutine test_tidal_hydro_provider
 
 implicit none
 
-integer,parameter :: ncell = 128           !< number of cells
-integer,parameter :: nstep = 128 
-real(stm_real),parameter :: start_time = zero
-real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0          !< Convert factor of hour to second 
-real(stm_real),parameter :: total_time = 12.4d0*sec_per_hr     !< M2 tidal period 
-real(stm_real),parameter :: domain_length = 128000.0d0 
+! it must be equal to test_advection_tidal_experience
+integer,parameter :: ncell = 32          !< number of cells
+integer,parameter :: nstep = 64
   
 real(stm_real):: time            !< time of request
 real(stm_real):: dx              !< spatial step 
@@ -58,27 +56,29 @@ procedure(hydro_data_if),pointer :: tidal_hydro          !< The pointer points t
 integer :: itime
 integer :: icell
 real(stm_real):: flow_new(ncell)     !< cell centered flow at time n+1
-real(stm_real):: flow_old(ncell)     !< cell centered flow at time n
-real(stm_real):: flow_hi_new(ncell)  !< high side flow at time n+1
-real(stm_real):: flow_hi_old(ncell)  !< high side flow at time n
-real(stm_real):: flow_lo_new(ncell)  !< low side flow at time n+1
-real(stm_real):: flow_lo_old(ncell)  !< low side flow at time n
+real(stm_real):: flow_hi_half(ncell)  !< high side flow at time n+1/2
+real(stm_real):: flow_lo_half(ncell)  !< low side flow at time n+1/2
 real(stm_real):: area_new(ncell)     !< cell centered area at time n+1
 real(stm_real):: area_old(ncell)     !< cell centered area at time n
 real(stm_real):: mass_difference(ncell)
 real(stm_real):: max_mass_diff(nstep)
+real(stm_real):: l1_mass_diff(nstep)
+real(stm_real):: l2_mass_diff(nstep)
+integer       :: which_cell
+real(stm_real):: all_zero(ncell)
+
 
 tidal_hydro=> tidal_flow_cell_average
 
-time = start_time 
+time = start_time
 dt = total_time/nstep
 dx = domain_length/ncell
 
-do itime=1,nstep
+all_zero = zero
 
-call tidal_hydro(flow_old,&
-                 flow_lo_old, &
-                 flow_hi_old, &
+call tidal_hydro(flow_new,&
+                 flow_lo_half, &
+                 flow_hi_half, &
                  area_old,    &
                  area_lo, &
                  area_hi, &
@@ -86,28 +86,46 @@ call tidal_hydro(flow_old,&
                  time,    &
                  dx,      &                  
                  dt)
-           
-time = time + dt
-           
-call tidal_hydro(flow_new,&
-                 flow_lo_new, &
-                 flow_hi_new, &
-                 area_new,&
-                 area_lo, &
-                 area_hi, &
-                 ncell,   &
-                 time,    &
-                 dx,      &                  
-                 dt)
+
+do itime=1,nstep
+  time = time + dt        
+  call tidal_hydro(flow_new,&
+                   flow_lo_half, &
+                   flow_hi_half, &
+                   area_new,&
+                   area_lo, &
+                   area_hi, &
+                   ncell,   &
+                   time,    &
+                   dx,      &
+                   dt)
           
           ! todo: check this
- mass_difference = (flow_hi_old-flow_lo_old)/dx  + (area_new- area_old)/dt
- max_mass_diff(itime)= maxval(abs(mass_difference))
+   mass_difference = (flow_hi_half-flow_lo_half)*dt  + (area_new-area_old)*dx
+  
+   call error_norm(l1_mass_diff(itime),   &
+                   l2_mass_diff(itime),   &
+                   max_mass_diff(itime),  &
+                   which_cell,            &
+                   mass_difference,       &
+                   all_zero,              &
+                   ncell,     &
+                   dx)  
+  
+   area_old = area_new
 end do
 
 !todo: remove
-!print *, max_mass_diff        
-!pause          
+
+print *, 'L_inf mass diff'
+!print *, max_mass_diff  
+print *, maxval(max_mass_diff)
+print *, 'Average: ' , sum(max_mass_diff)/dble(nstep)
+print *, 'L1 mass diff'
+!print *, l1_mass_diff
+print *, 'Average: ' , sum(l1_mass_diff)/dble(nstep)
+
+pause          
  
 call assert_true (maxval(max_mass_diff) < weak_eps ,'water mass balance error in tidal flow generator')
 
