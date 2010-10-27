@@ -66,8 +66,8 @@ call init_fruit
 !call test_extrapolation
  call test_tidal_hydro_provider
 !!///////// advection
-!call test_tidal_advection_convergence(verbose)
-!call test_tidal_advection_convergence_experience(verbose)
+call test_tidal_advection_convergence(verbose)
+call test_tidal_advection_convergence_experience(verbose)
 !call test_uniform_advection_convergence(verbose)
 !!!!!/////// Diffusion routine
 !call test_tridi_solver
