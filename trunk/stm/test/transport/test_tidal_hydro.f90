@@ -68,7 +68,7 @@ integer       :: which_cell
 real(stm_real):: all_zero(ncell)
 
 
-tidal_hydro=> tidal_flow_cell_average
+tidal_hydro=> tidal_flow_modified
 
 time = start_time
 dt = total_time/nstep
@@ -100,8 +100,7 @@ do itime=1,nstep
                    dx,      &
                    dt)
           
-          ! todo: check this
-   mass_difference = (flow_hi_half-flow_lo_half)*dt  + (area_new-area_old)*dx
+     mass_difference = (flow_hi_half-flow_lo_half)*dt  + (area_new-area_old)*dx
   
    call error_norm(l1_mass_diff(itime),   &
                    l2_mass_diff(itime),   &
@@ -115,18 +114,6 @@ do itime=1,nstep
    area_old = area_new
 end do
 
-!todo: remove
-
-print *, 'L_inf mass diff'
-!print *, max_mass_diff  
-print *, maxval(max_mass_diff)
-print *, 'Average: ' , sum(max_mass_diff)/dble(nstep)
-print *, 'L1 mass diff'
-!print *, l1_mass_diff
-print *, 'Average: ' , sum(l1_mass_diff)/dble(nstep)
-
-pause          
- 
 call assert_true (maxval(max_mass_diff) < weak_eps ,'water mass balance error in tidal flow generator')
 
 end subroutine
