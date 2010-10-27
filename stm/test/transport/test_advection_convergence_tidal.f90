@@ -20,12 +20,16 @@
 
 !> Testing advection of mass which is subjected to a tidal boundary
 !>@ingroup test
+!todo: this test does not work correctly, mostly because the hydro flow is not
+! accurate and not mass convergent. see test_advection_convergence_tidal_experience
+
+
 module test_advection_tidal
 use stm_precision
 !----- module variables
 ! todo: make the names more meaningful
 real(stm_real),parameter :: origin = zero                  !< Left hand side of the channel
-real(stm_real),parameter :: domain_length = 204800.0d0     !< Domain Length in meter
+real(stm_real),parameter :: domain_length = 204800.0d0/two     !< Domain Length in meter
 real(stm_real),parameter :: amplitude = half               !< Tidal amplitude in meter    
 real(stm_real),parameter :: gravity = 9.80d0               !< Gravitational acceleration in m/s^2
 real(stm_real),parameter :: depth = 16.0d0                 !< Channel depth in meter
