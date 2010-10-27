@@ -20,12 +20,18 @@
 
 !> Testing advection of mass which is subjected to a tidal boundary
 !>@ingroup test
+
+!todo: this test fixes test_advection_covergence_tidal by having a mass
+! conserving hydro interface. We need to do housekeeping and also compare them carefullly
+! to make sure the fix is correct (things like dx and other parameters)
+
+
 module test_advection_tidal_experience
 use stm_precision
 !----- module variables
 ! todo: make the names more meaningful
 integer, parameter  :: nconc = 2                              !< Number of constituents
-integer, parameter  :: nstep_base = 128                    !< Number of time steps in finer discritization
+integer, parameter  :: nstep_base = 64                    !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 256                      !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero                     !< Left hand side of the channel
 real(stm_real),parameter :: domain_length = 204800.d0/two     !< Domain Length in meter
@@ -73,7 +79,9 @@ real(stm_real) :: solution_center = ic_center             !< Center of final sol
 real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd !< Standard deviation of final values
 character(LEN=64) :: label 
  
+!tidal_hydro=> tidal_flow_modified
 tidal_hydro=> tidal_flow_cell_average
+
 advection_boundary_flux => zero_advective_flux !todo: move this so it isn't hardwired
 boundary_diffusion_flux => no_diffusion_flux
 boundary_diffusion_matrix => no_diffusion_matrix
@@ -329,7 +337,108 @@ do icell = 1,ncell
    
    
 end do  
+return
+end subroutine
 
+
+!> tidal flow for a rectangular basin with periodic forcing in the finite volume form
+!> the area here retrived from dQ/dx+dA/dt=0 --> A =width*(depth+int(-dQ/dx,t)) 
+subroutine tidal_flow_modified(flow,    &
+                               flow_lo, &
+                               flow_hi, &
+                               area,    &
+                               area_lo, &
+                               area_hi, &
+                               ncell,   &
+                               time,    &
+                               dx,      &
+                               dt)
+                      
+implicit none
+integer, intent(in) :: ncell                   !< number of cells
+real(stm_real), intent(in)  :: time            !< time of request
+real(stm_real), intent(in)  :: dx              !< spatial step 
+real(stm_real), intent(in)  :: dt              !< time step 
+real(stm_real), intent(out) :: flow(ncell)     !< cell centered flow
+real(stm_real), intent(out) :: flow_lo(ncell)  !< lo face flow
+real(stm_real), intent(out) :: flow_hi(ncell)  !< hi face flow
+real(stm_real), intent(out) :: area(ncell)     !< cell center area
+real(stm_real), intent(out) :: area_lo(ncell)  !< area lo face
+real(stm_real), intent(out) :: area_hi(ncell)  !< area hi face
+
+!--- local
+real(stm_real) :: half_time
+real(stm_real) :: old_time
+real(stm_real) :: big_b 
+real(stm_real) :: big_a 
+real(stm_real) :: vel_lo
+real(stm_real) :: vel_hi
+real(stm_real) :: vel
+real(stm_real) :: xpos_lo
+real(stm_real) :: xpos_hi
+real(stm_real) :: xpos
+real(stm_real) :: flow_term1
+real(stm_real) :: flow_term2
+
+integer :: icell
+
+half_time = time - half*dt
+old_time = time - dt
+big_b = freq/sqrt(gravity*depth)
+big_a = amplitude* sqrt(gravity*depth)/(depth*cos(big_b*domain_length))
+
+! width is assumed to be equal to 1 meter 
+do icell = 1,ncell  
+  
+  ! this is L-x
+  xpos_lo = domain_length- dble(icell-1)*dx
+  xpos_hi = domain_length- dble(icell)*dx
+  xpos    = domain_length-(dble(icell)-half)*dx
+  
+   area(icell) = (big_a/(freq*dx))*(depth*cos(freq*time)*(sin(big_b*xpos_hi)-sin(big_b*xpos_lo))+&
+                                  amplitude*cos(two*freq*time)*(sin(two*big_b*xpos_hi)-sin(two*big_b*xpos_lo))/(eight*cos(big_b*domain_length)))
+ ! todo: is it a correction factor for constant in integeration?
+ ! check this
+   area(icell) = depth + area(icell)
+   area_lo(icell) = depth + amplitude * cos(big_b*xpos_lo)/cos(big_b*domain_length)*cos(freq*half_time)  
+
+   area_lo(icell) = big_a*big_b*(-depth*cos(big_b*xpos_lo)*cos(freq*half_time)/freq - &
+                                amplitude*cos(two*freq*half_time)*cos(two*big_b*xpos_lo)&
+                               /(four*freq*cos(big_b*domain_length)))
+  ! todo:
+   ! i just match them base on old values ???                             
+  area_lo(icell) = depth + area_lo(icell)
+ 
+  area_hi(icell) = depth + amplitude * cos(big_b*xpos_hi)/cos(big_b*domain_length)*cos(freq*half_time) 
+   
+  area_hi(icell) = big_a*big_b*(-depth*cos(big_b*xpos_hi)*cos(freq*half_time)/freq - &
+                                amplitude*cos(two*freq*half_time)*cos(two*big_b*xpos_hi)&
+                               /(four*freq*cos(big_b*domain_length)))
+   ! todo:
+   ! i just match them base on old values ???
+   
+   area_hi(icell) = depth + area_hi(icell)
+
+                         
+                               
+  ! todo: check this
+   flow(icell)    = big_a*depth*sin(freq*time)*(cos(big_b*xpos_hi)-cos(big_b*xpos_lo))/(dx*big_b) &
+                   + big_a*amplitude*sin(two*freq*time)*(one/(four*dx*big_b*cos(big_b*domain_length))) * &
+                   (cos(big_b*xpos_hi)**two - cos(big_b*xpos_lo)**two)
+  
+   flow_term1 = - big_a*depth*sin(big_b*xpos_lo)*(cos(freq*time)-cos(freq*old_time))/(dt*freq)
+   flow_term2 = - big_a*amplitude*sin(two*big_b*xpos_lo)*(cos(freq*time)**two-cos(freq*old_time)**two)&
+                   /(four*freq*cos(big_b*domain_length)*dt)
+   flow_lo(icell) = flow_term1+flow_term2
+          
+
+   flow_term1 = - big_a*depth*sin(big_b*xpos_hi)*(cos(freq*time)-cos(freq*old_time))/(dt*freq)
+   flow_term2 = - big_a*amplitude*sin(two*big_b*xpos_hi)*(cos(freq*time)**two-cos(freq*old_time)**two)&
+                   /(four*freq*cos(big_b*domain_length)*dt)
+   flow_hi(icell) = flow_term1+flow_term2
+   
+   
+end do  
 
 return
 end subroutine 
