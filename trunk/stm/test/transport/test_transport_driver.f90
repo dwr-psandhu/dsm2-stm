@@ -46,7 +46,7 @@ use test_gradient
 use test_diffusion_fletcher
 use test_linear_decay_no_flow
 use test_linear_decay_const_flow
-use test_liner_reaction
+use test_rk3
 use test_adr_neumann
 use test_convergence_transport_uniform
 
@@ -64,10 +64,10 @@ call init_fruit
 !call test_prim_increment2cons
 !call test_example_initial_conditions
 !call test_extrapolation
- call test_tidal_hydro_provider
+ !call test_tidal_hydro_provider
 !!///////// advection
-call test_tidal_advection_convergence(verbose)
-call test_tidal_advection_convergence_experience(verbose)
+!call test_tidal_advection_convergence(verbose)
+!call test_tidal_advection_convergence_experience(verbose)
 !call test_uniform_advection_convergence(verbose)
 !!!!!/////// Diffusion routine
 !call test_tridi_solver
@@ -80,7 +80,7 @@ call test_tidal_advection_convergence_experience(verbose)
 !!!!////// reaction
 !call  test_linear_decay_convergence(verbose)
 !call  test_advection_decay_convergence(verbose)
-!call  test_reaction_decay_convergence(verbose)
+call  test_reaction_decay_convergence_rk3(verbose)
 !!!////// diffusion
 !call test_diffusion_convergence_fletcher(verbose)
 !!!/// ADR 
