@@ -39,7 +39,7 @@ real(stm_real),parameter :: freq=two*pi/m2_period          !< Frequency of tidal
 real(stm_real),parameter :: dye_length = domain_length/three
 real(stm_real),parameter :: dye_center = domain_length/two
 integer, parameter  :: nconc = 2                           !< Number of constituents
-integer, parameter  :: nstep_base = 64                     !< Number of time steps in finer discritization
+integer, parameter  :: nstep_base = 128                     !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 256                    !< Number of spatial discritization in finer mesh 
 
 
