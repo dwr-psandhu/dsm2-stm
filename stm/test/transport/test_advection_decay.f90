@@ -35,6 +35,7 @@ real(stm_real), parameter :: constant_area = two
 
 contains
 !> Subroutine that runs a small advective simulation
+! todo: this test does not send k (decay rate) to printout
 subroutine test_advection_decay_convergence(verbose)
 
 use test_convergence_transport
