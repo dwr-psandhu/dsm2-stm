@@ -31,7 +31,7 @@ use stm_precision
 !----- module variables
 ! todo: make the names more meaningful
 integer, parameter  :: nconc = 2                              !< Number of constituents
-integer, parameter  :: nstep_base = 64                    !< Number of time steps in finer discritization
+integer, parameter  :: nstep_base = 128                   !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 256                      !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero                     !< Left hand side of the channel
 real(stm_real),parameter :: domain_length = 204800.d0/two     !< Domain Length in meter
@@ -79,8 +79,8 @@ real(stm_real) :: solution_center = ic_center             !< Center of final sol
 real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd !< Standard deviation of final values
 character(LEN=64) :: label 
  
-!tidal_hydro=> tidal_flow_modified
-tidal_hydro=> tidal_flow_cell_average
+tidal_hydro=> tidal_flow_modified
+!tidal_hydro=> tidal_flow_cell_average
 
 advection_boundary_flux => zero_advective_flux !todo: move this so it isn't hardwired
 boundary_diffusion_flux => no_diffusion_flux
