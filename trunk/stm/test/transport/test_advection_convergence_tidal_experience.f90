@@ -79,8 +79,8 @@ real(stm_real) :: solution_center = ic_center             !< Center of final sol
 real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd !< Standard deviation of final values
 character(LEN=64) :: label 
  
-tidal_hydro=> tidal_flow_modified
-!tidal_hydro=> tidal_flow_cell_average
+tidal_hydro=> tidal_flow_modified ! this flow generator is mass conservative
+!tidal_hydro=> tidal_flow_cell_average ! this flow generator is NOT mass conservative but it is cell averaged
 
 advection_boundary_flux => zero_advective_flux !todo: move this so it isn't hardwired
 boundary_diffusion_flux => no_diffusion_flux
