@@ -20,7 +20,7 @@
 
 !> Test of mass transport convergence in uniform flow
 !>@ingroup test
-module test_liner_reaction
+module test_rk3
 
 use stm_precision
 
@@ -31,7 +31,7 @@ real(stm_real), parameter :: decay_coef = 0.01d0
 
 contains
 !> Subroutine that runs a small reaction simulation
-subroutine test_reaction_decay_convergence(verbose)
+subroutine test_reaction_decay_convergence_rk3(verbose)
 
 use source_sink
 use reaction
