@@ -145,6 +145,8 @@ real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
 real(stm_real),intent(in)  :: time                !< time 
 
 ! source must be in primitive variable 
+
+
 do ivar = 1,nvar
   source(:,ivar) = -linear_decay(ivar)*conc(:,ivar)
 end do
