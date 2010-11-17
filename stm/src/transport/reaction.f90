@@ -26,7 +26,7 @@ module reaction
 contains
 
 !> subroutine for integerating the ODE of reaction term 
-!> the method is 3rd order (Nystrom Runge-Kutta) 
+!> the method is 3rd order (Runge-Kutta) 
 subroutine react(conc,       &
                  conc_prev,  &
                  area,       &
@@ -39,7 +39,7 @@ subroutine react(conc,       &
                  
 use stm_precision
 use source_sink
-use primitive_variable_conversion ! todo: do we need it
+use primitive_variable_conversion ! todo: do we need it?
 !---arg
 implicit none
                  
