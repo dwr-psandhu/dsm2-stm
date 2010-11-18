@@ -63,6 +63,8 @@ logical :: verbose
 logical :: detail_printout=.true.
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)            !< reference solution at finest resolution
+real(stm_real) :: domain_length
+real(stm_real) :: total_time
 character(LEN=64) :: label 
  
 zoppou_hydro=> zoppou_flow        ! this flow generator is mass conservative
@@ -81,6 +83,8 @@ compute_source => no_source
 !const_dispersion = zero
 
 label = 'advection_dispersion_zoppou' 
+domain_length = xl - x0
+total_time = end_time - start_time
 
 !> load the initial values and reference final values to feed the test routine
 call initial_fine_solution_zoppou(fine_initial_condition, &
@@ -102,7 +106,7 @@ call initial_fine_solution_zoppou(fine_initial_condition, &
 !> compute the norms, after each step coarsen the values and repeat computation.
 !> at the end  calculates the ratio of the norms and prints a log 
 call test_convergence(label,                  &
-                      tidal_hydro ,           &
+                      zoppou_hydro ,           &
                       zero_advective_flux,    &
                       no_diffusion_flux,      &
                       no_diffusion_matrix,    &
@@ -293,8 +297,8 @@ subroutine zoppou_advective_flux(flux_lo,    &
      real(stm_real),intent(in)    :: dx                      !< Spatial step  
      real(stm_real),intent(in)    :: dt                      !< Time step    
      
-     flux_lo(1,:) = !zero
-     flux_hi(ncell,:) = !zero
+     flux_lo(1,:) = zero
+     flux_hi(ncell,:) = zero
      return
  end subroutine
  
@@ -326,8 +330,8 @@ subroutine zoppou_advective_flux(flux_lo,    &
     real(stm_real), intent (in)   :: dt
     real(stm_real), intent (in)   :: dx
     
-    diffusive_flux_lo(1,:) = !zero
-    diffusive_flux_hi(ncell,:) = !zero
+    diffusive_flux_lo(1,:) = zero
+    diffusive_flux_hi(ncell,:) = zero
     
        
     return

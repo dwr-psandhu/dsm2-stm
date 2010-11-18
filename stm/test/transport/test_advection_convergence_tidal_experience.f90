@@ -39,7 +39,6 @@ real(stm_real),parameter :: amplitude = half                  !< Tidal amplitude
 real(stm_real),parameter :: gravity = 9.80d0                  !< Gravitational acceleration in m/s^2
 real(stm_real),parameter :: depth = 16.0d0                    !< Channel depth in meter
 real(stm_real),parameter :: sec_per_hr = 60.d0*60.d0          !< Convert factor of hour to second 
-!todo: half tidal cycle is 12hr 25 min so 12.416666667 is more correct
 real(stm_real),parameter :: m2_period = 12.4d0*sec_per_hr    !< M2 tidal period 
 real(stm_real),parameter :: freq=two*pi/m2_period             !< Frequency of tidal oscillation
 real(stm_real),parameter :: dye_length = domain_length/six    !< Length of cosine distribution of mass
