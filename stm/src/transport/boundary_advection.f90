@@ -36,7 +36,6 @@ module boundary_advection
                                           time,       &
                                           dt,         &
                                           dx)
-     
      use stm_precision
       
      implicit none
@@ -52,9 +51,8 @@ module boundary_advection
      real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
      real(stm_real),intent(in)    :: time                    !< Current time
      real(stm_real),intent(in)    :: dx                      !< Spatial step  
-     real(stm_real),intent(in)    :: dt                      !< Time step     
-    
-    
+     real(stm_real),intent(in)    :: dt                      !< Time step
+     
     end subroutine boundary_advective_flux_if
  end interface
 
@@ -102,7 +100,6 @@ module boundary_advection
  end subroutine
  
  
- 
  !> Example uninitialize that prints an error and bails
  subroutine uninitialized_advection_bc(flux_lo,     &
                                         flux_hi,    &
@@ -138,7 +135,5 @@ module boundary_advection
      
      return
  end subroutine 
- 
-
- 
+  
 end module
