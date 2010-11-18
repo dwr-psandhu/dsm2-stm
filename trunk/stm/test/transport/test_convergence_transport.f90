@@ -375,6 +375,11 @@ if (verbose == .true.) then
                                  
 end if
 
+! set pointers to null so that if future tests don't set the interfaces an obvious 
+! error will result
+!source => null()
+
+
 return
 end subroutine
 
