@@ -49,6 +49,8 @@ use test_linear_decay_const_flow
 use test_rk3
 use test_adr_neumann
 use test_convergence_transport_uniform
+use test_advection_reaction_tidal
+use test_zoppou_advection_dispersion
 
 implicit none
 
@@ -56,35 +58,40 @@ logical :: verbose = .true.
 
 call init_fruit
 
-call test_converge_transport_uniform(verbose)
-!!//////// Advection routines
-call test_gradient_calc
-call test_limiter
-call test_prim_cons_convert
-call test_prim_increment2cons
-call test_example_initial_conditions
-call test_extrapolation
-call test_tidal_hydro_provider
-!!///////// advection
-call test_tidal_advection_convergence(verbose)
-call test_tidal_advection_convergence_experience(verbose)
-call test_uniform_advection_convergence(verbose)
-!!!!!/////// Diffusion routine
-call test_tridi_solver
-call test_boundary_diffusion_flux
-call test_make_dif_flux_sub
-call test_explicit_interior_diffusion_op
-call test_interior_coef_matrix_sub
-call test_construct_elemnts_rhs 
-call test_coarsen
-!!!!////// reaction
-call  test_linear_decay_convergence(verbose)
-call  test_advection_decay_convergence(verbose)
-call  test_reaction_decay_convergence_rk3(verbose)
-!!!////// diffusion
-call test_diffusion_convergence_fletcher(verbose)
-!!!/// ADR 
-call  test_advect_diffuse_reaction_neumann(verbose)
+!call test_converge_transport_uniform(verbose)
+!!!//////// Advection routines
+!call test_gradient_calc
+!call test_limiter
+!call test_prim_cons_convert
+!call test_prim_increment2cons
+!call test_example_initial_conditions
+!call test_extrapolation
+!call test_tidal_hydro_provider
+!!!///////// advection
+!!!todo: this test should remove
+!!call test_tidal_advection_convergence(verbose)
+!call test_tidal_advection_convergence_experience(verbose)
+!call test_uniform_advection_convergence(verbose)
+!!!!!!/////// Diffusion routine
+!call test_tridi_solver
+!call test_boundary_diffusion_flux
+!call test_make_dif_flux_sub
+!call test_explicit_interior_diffusion_op
+!call test_interior_coef_matrix_sub
+!call test_construct_elemnts_rhs 
+!call test_coarsen
+!!!!!////// reaction
+!call  test_linear_decay_convergence(verbose)
+!call  test_advection_decay_convergence(verbose)
+!call  test_reaction_decay_convergence_rk3(verbose)
+!!!!////// diffusion
+!call test_diffusion_convergence_fletcher(verbose)
+!!!A-R
+!call test_tidal_advection_reaction(verbose)
+!!!/////A-D
+call test_advection_diffusion_zoppou(verbose)
+!!!!/// ADR 
+!call  test_advect_diffuse_reaction_neumann(verbose)
 !//////// 
 call fruit_summary
 

@@ -122,6 +122,7 @@ use grid_refinement
 use state_variables
 use logging
 use hydro_uniform_flow
+use dispersion_coefficient
 
 implicit none
 
@@ -148,12 +149,14 @@ integer, parameter :: nconc = 2
 real(stm_real) :: decay_rate = zero
 real(stm_real), dimension(nconc) :: rates
 real(stm_real),allocatable :: fine_initial_conc(:,:)  !< initial condition at finest resolution
-real(stm_real),allocatable :: fine_solution(:,:)           !< reference solution at finest resolution
+real(stm_real),allocatable :: fine_solution(:,:)      !< reference solution at finest resolution
 procedure(hydro_data_if), pointer :: uniform_hydro => null()
 procedure(source_if), pointer :: test_source => null()
 procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
 procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
 procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
+! todo: add
+procedure(diffusion_coef_if),pointer :: diff_coef  => null()
 
 logical :: details = .false.
 logical :: remote = .false.
@@ -173,7 +176,7 @@ end if
 
 if (remote)then
    ic_center = origin + base_domain_length/three
-   domain_length = base_domain_length*2
+   domain_length = base_domain_length*two
    nx_base = nx_base_standard*2
    call set_uniform_flow_area(test_flow,constant_area)
 else

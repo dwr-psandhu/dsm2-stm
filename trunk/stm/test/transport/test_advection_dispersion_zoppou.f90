@@ -53,9 +53,9 @@ subroutine test_advection_diffusion_zoppou(verbose)
 use hydro_data
 use boundary_advection
 use boundary_diffusion
+use dispersion_coefficient
 use source_sink
 use test_convergence_transport
-!use diffusion ! todo: does it needed here?
     
 implicit none
 procedure(hydro_data_if),pointer :: zoppou_hydro          !< The pointer points to the test's flow data
@@ -154,8 +154,8 @@ real(stm_real),intent(in) :: a0                                    !< constant o
 real(stm_real),intent(in) :: c0                                    !< constant concentration
 real(stm_real),intent(in) :: d0                                    !< constant of dispersion coefficent D=D0*(x^2)
 real(stm_real),intent(in) :: u0                                    !< constant of velocity U=u0*x
-real(stm_real),intent(in) :: x0
-real(stm_real),intent(in) :: xl
+real(stm_real),intent(in) :: x0                                    !< beginning of the channel
+real(stm_real),intent(in) :: xl                                    !< end of the channel
 real(stm_real),intent(in) :: start_time
 real(stm_real),intent(in) :: end_time
 !----local
