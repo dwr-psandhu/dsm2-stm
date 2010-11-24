@@ -20,7 +20,7 @@
 
 !> Testing the subroutine which provides the hydrodynamics of the tidal flow
 !>@ingroup test
-module test_tidal_flow_provider
+module test_tidal_flow
 
 use stm_precision
 use test_advection_tidal_experience
@@ -33,7 +33,7 @@ contains
 ! the subroutine tests the flow to satisfy the continuity of mass for water 
 ! dQ/dx + dA/dt = 0 
 ! here unit width is assumed Q=AU*1
-subroutine test_tidal_hydro_provider
+subroutine test_tidal_hydro
 
 implicit none
 
