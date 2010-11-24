@@ -1,0 +1,66 @@
+\hypertarget{a00067}{
+\section{Package primitive\_\-variable\_\-conversion}
+\label{a00067}\index{primitive\_\-variable\_\-conversion@{primitive\_\-variable\_\-conversion}}
+}
+Module containing routines for converting mass to concentraion, and concentration to mass.  
+
+
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00067_2edfec41c794933d2a8f72a39e44154a}{cons2prim} (conc, mass, area, nloc, nvar)
+\begin{CompactList}\small\item\em Convert conservative variables (ie mass) to primitive (concentration) There is no precaution against divide by zero, so if you put in zero for area you will get NaN. \item\end{CompactList}\item 
+subroutine \hyperlink{a00067_2c2c479bf94ce3408c1dd62d3d6ee8da}{prim2cons} (mass, conc, area, nloc, nvar)
+\begin{CompactList}\small\item\em Convert primitive (concentration) to conservative variables (ie mass). \item\end{CompactList}\item 
+subroutine \hyperlink{a00067_20339ce5df07783e776535c314dbb515}{prim\_\-increment\_\-to\_\-cons} (mass, conc, area, nloc, nvar, scale)
+\begin{CompactList}\small\item\em Increment a conservative variable using an increment (e.g. source) in primitive terms Converts increment of primitive (concentration) to conservative variable (mass) and adds it to the conservative variable. \char`\"{}Scale\char`\"{} will typically involve dt or half$\ast$dt. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Module containing routines for converting mass to concentraion, and concentration to mass. 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00067_2edfec41c794933d2a8f72a39e44154a}{
+\index{primitive\_\-variable\_\-conversion@{primitive\_\-variable\_\-conversion}!cons2prim@{cons2prim}}
+\index{cons2prim@{cons2prim}!primitive_variable_conversion@{primitive\_\-variable\_\-conversion}}
+\subsubsection[{cons2prim}]{\setlength{\rightskip}{0pt plus 5cm}subroutine primitive\_\-variable\_\-conversion.cons2prim (real(stm\_\-real),dimension(nloc,nvar),intent(out) {\em conc}, \/  real(stm\_\-real),dimension(nloc,nvar),intent(in) {\em mass}, \/  real(stm\_\-real),dimension(nloc),intent(in) {\em area}, \/  integer,intent(in) {\em nloc}, \/  integer,intent(in) {\em nvar})}}
+\label{a00067_2edfec41c794933d2a8f72a39e44154a}
+
+
+Convert conservative variables (ie mass) to primitive (concentration) There is no precaution against divide by zero, so if you put in zero for area you will get NaN. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em conc}]Concentration (converted from mass per unit length )\item[{\em mass}]Mass per unit length \item[{\em area}]Area at conversion locations\item[{\em nloc}]Number of cells or faces\item[{\em nvar}]Number of variables \end{description}
+\end{Desc}
+\hypertarget{a00067_2c2c479bf94ce3408c1dd62d3d6ee8da}{
+\index{primitive\_\-variable\_\-conversion@{primitive\_\-variable\_\-conversion}!prim2cons@{prim2cons}}
+\index{prim2cons@{prim2cons}!primitive_variable_conversion@{primitive\_\-variable\_\-conversion}}
+\subsubsection[{prim2cons}]{\setlength{\rightskip}{0pt plus 5cm}subroutine primitive\_\-variable\_\-conversion.prim2cons (real(stm\_\-real),dimension(nloc,nvar),intent(out) {\em mass}, \/  real(stm\_\-real),dimension(nloc,nvar),intent(in) {\em conc}, \/  real(stm\_\-real),dimension(nloc),intent(in) {\em area}, \/  integer,intent(in) {\em nloc}, \/  integer,intent(in) {\em nvar})}}
+\label{a00067_2c2c479bf94ce3408c1dd62d3d6ee8da}
+
+
+Convert primitive (concentration) to conservative variables (ie mass). 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em mass}]Mass per unit length (converted from concentration)\item[{\em conc}]Concentrations to convert\item[{\em area}]Area at conversion locations\item[{\em nloc}]Number of cells or faces\item[{\em nvar}]Number of variables \end{description}
+\end{Desc}
+\hypertarget{a00067_20339ce5df07783e776535c314dbb515}{
+\index{primitive\_\-variable\_\-conversion@{primitive\_\-variable\_\-conversion}!prim\_\-increment\_\-to\_\-cons@{prim\_\-increment\_\-to\_\-cons}}
+\index{prim\_\-increment\_\-to\_\-cons@{prim\_\-increment\_\-to\_\-cons}!primitive_variable_conversion@{primitive\_\-variable\_\-conversion}}
+\subsubsection[{prim\_\-increment\_\-to\_\-cons}]{\setlength{\rightskip}{0pt plus 5cm}subroutine primitive\_\-variable\_\-conversion.prim\_\-increment\_\-to\_\-cons (real(stm\_\-real),dimension(nloc,nvar),intent(inout) {\em mass}, \/  real(stm\_\-real),dimension(nloc,nvar),intent(in) {\em conc}, \/  real(stm\_\-real),dimension(nloc),intent(in) {\em area}, \/  integer,intent(in) {\em nloc}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em scale})}}
+\label{a00067_20339ce5df07783e776535c314dbb515}
+
+
+Increment a conservative variable using an increment (e.g. source) in primitive terms Converts increment of primitive (concentration) to conservative variable (mass) and adds it to the conservative variable. \char`\"{}Scale\char`\"{} will typically involve dt or half$\ast$dt. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em mass}]Mass per unit length (converted from concentration)\item[{\em conc}]Concentrations to convert\item[{\em area}]Area at conversion locations\item[{\em nloc}]Number of cells or faces\item[{\em nvar}]Number of variables\item[{\em scale}]Scale factor \end{description}
+\end{Desc}

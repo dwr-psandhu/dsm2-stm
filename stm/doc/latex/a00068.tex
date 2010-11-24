@@ -1,0 +1,34 @@
+\hypertarget{a00068}{
+\section{Package reaction}
+\label{a00068}\index{reaction@{reaction}}
+}
+Module orchestrating the \hyperlink{a00068}{reaction} scheme. The main routine in the module is \hyperlink{a00068_ce059846828705ce745ad6a3549d3d8a}{react()}.  
+
+
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00068_ce059846828705ce745ad6a3549d3d8a}{react} (conc, conc\_\-prev, area, area\_\-prev, flow, ncell, nvar, time, dt)
+\begin{CompactList}\small\item\em subroutine for integerating the ODE of \hyperlink{a00068}{reaction} term the method is 3rd order (Nystrom Runge-Kutta) \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Module orchestrating the \hyperlink{a00068}{reaction} scheme. The main routine in the module is \hyperlink{a00068_ce059846828705ce745ad6a3549d3d8a}{react()}. 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00068_ce059846828705ce745ad6a3549d3d8a}{
+\index{reaction@{reaction}!react@{react}}
+\index{react@{react}!reaction@{reaction}}
+\subsubsection[{react}]{\setlength{\rightskip}{0pt plus 5cm}subroutine reaction.react (real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em conc}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc\_\-prev}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area\_\-prev}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em flow}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00068_ce059846828705ce745ad6a3549d3d8a}
+
+
+subroutine for integerating the ODE of \hyperlink{a00068}{reaction} term the method is 3rd order (Nystrom Runge-Kutta) 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em conc}]Concentration at new time\item[{\em conc\_\-prev}]Concentration at old time\item[{\em area}]Cell-centered area at new time\item[{\em area\_\-prev}]Cell-centered area at old time\item[{\em flow}]cell-centered flow \item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]current time\item[{\em dt}]Time step \end{description}
+\end{Desc}

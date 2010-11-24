@@ -1,0 +1,34 @@
+\hypertarget{a00029}{
+\section{Package example\_\-hydro\_\-data}
+\label{a00029}\index{example\_\-hydro\_\-data@{example\_\-hydro\_\-data}}
+}
+Sample flow fields for tests.  
+
+
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00029_b28caf18eccb73132ba5037a9c2e7081}{constant\_\-uniform} (flow, flow\_\-lo, flow\_\-hi, ncell, time, q\_\-const)
+\begin{CompactList}\small\item\em Constant uniform flow todo: needs to satisfy the \hyperlink{a00034}{hydro\_\-data\_\-if} interface, has to change. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Sample flow fields for tests. 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00029_b28caf18eccb73132ba5037a9c2e7081}{
+\index{example\_\-hydro\_\-data@{example\_\-hydro\_\-data}!constant\_\-uniform@{constant\_\-uniform}}
+\index{constant\_\-uniform@{constant\_\-uniform}!example_hydro_data@{example\_\-hydro\_\-data}}
+\subsubsection[{constant\_\-uniform}]{\setlength{\rightskip}{0pt plus 5cm}subroutine example\_\-hydro\_\-data.constant\_\-uniform (real(STM\_\-REAL),dimension(ncell),intent(out) {\em flow}, \/  real(STM\_\-REAL),dimension(ncell),intent(out) {\em flow\_\-lo}, \/  real(STM\_\-REAL),dimension(ncell),intent(out) {\em flow\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  real(STM\_\-REAL),intent(in) {\em time}, \/  real(STM\_\-REAL),intent(in) {\em q\_\-const})}}
+\label{a00029_b28caf18eccb73132ba5037a9c2e7081}
+
+
+Constant uniform flow todo: needs to satisfy the \hyperlink{a00034}{hydro\_\-data\_\-if} interface, has to change. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em flow}]cell-centered flow at time\item[{\em flow\_\-lo}]flow on lo side of cells at time\item[{\em flow\_\-hi}]flow on hi side at time\item[{\em ncell}]Number of cells\item[{\em time}]time\item[{\em q\_\-const}]constant flow to be used \end{description}
+\end{Desc}

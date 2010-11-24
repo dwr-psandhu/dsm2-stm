@@ -1,0 +1,50 @@
+\hypertarget{a00027}{
+\section{Package diffusion}
+\label{a00027}\index{diffusion@{diffusion}}
+}
+Module orchestrating the \hyperlink{a00027}{diffusion} scheme. The main routine in the module is \hyperlink{a00027_1d88a1781a952a596470deaf3506b476}{diffuse()}. Explicit and implicit \hyperlink{a00027}{diffusion} operators are included here.  
+
+
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00027_1d88a1781a952a596470deaf3506b476}{diffuse} (conc, conc\_\-prev, mass, mass\_\-prev, area, area\_\-prev, area\_\-lo, area\_\-hi, ks\_\-lo, ks\_\-hi, ncell, nvar, time, theta\_\-stm, dt, dx, end\_\-flx\_\-bc\_\-prev, strt\_\-flx\_\-bc\_\-prev, explicit\_\-diffusion\_\-term)
+\begin{CompactList}\small\item\em Calculates the diffusive portion of the constituent transport. It contains an explicit version of the \hyperlink{a00027}{diffusion} operator and a general (involving all potential cases) \hyperlink{a00027}{diffusion} operator as well, with a coefficient theta\_\-stm for selecting the level of implicitness. (theta\_\-stm=0.5 is Crank Nicolson.). The matrix is solved via a tri-diagonal solver. \item\end{CompactList}\item 
+subroutine \hyperlink{a00027_9da6bb8848c4bfaf6b6a8f4cb4d4dd9c}{explicit\_\-diffusion\_\-operator} (explicit\_\-diffuse\_\-op, conc, conc\_\-prev, mass, mass\_\-prev, area, area\_\-lo, area\_\-hi, ks\_\-lo, ks\_\-hi, ncell, nvar, time, start\_\-flux\_\-bc\_\-prev, end\_\-flx\_\-bc\_\-prev, dt, dx)
+\begin{CompactList}\small\item\em Calculate the explicit \hyperlink{a00027}{diffusion} term. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Module orchestrating the \hyperlink{a00027}{diffusion} scheme. The main routine in the module is \hyperlink{a00027_1d88a1781a952a596470deaf3506b476}{diffuse()}. Explicit and implicit \hyperlink{a00027}{diffusion} operators are included here. 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00027_1d88a1781a952a596470deaf3506b476}{
+\index{diffusion@{diffusion}!diffuse@{diffuse}}
+\index{diffuse@{diffuse}!diffusion@{diffusion}}
+\subsubsection[{diffuse}]{\setlength{\rightskip}{0pt plus 5cm}subroutine diffusion.diffuse (real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em conc}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc\_\-prev}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em mass}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em mass\_\-prev}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em area}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em area\_\-prev}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em ks\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em ks\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time}, \/  real(stm\_\-real),intent(in) {\em theta\_\-stm}, \/  real(stm\_\-real),intent(in) {\em dt}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em end\_\-flx\_\-bc\_\-prev}, \/  real(stm\_\-real),intent(in) {\em strt\_\-flx\_\-bc\_\-prev}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em explicit\_\-diffusion\_\-term})}}
+\label{a00027_1d88a1781a952a596470deaf3506b476}
+
+
+Calculates the diffusive portion of the constituent transport. It contains an explicit version of the \hyperlink{a00027}{diffusion} operator and a general (involving all potential cases) \hyperlink{a00027}{diffusion} operator as well, with a coefficient theta\_\-stm for selecting the level of implicitness. (theta\_\-stm=0.5 is Crank Nicolson.). The matrix is solved via a tri-diagonal solver. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em conc}]Concentration at new time\item[{\em conc\_\-prev}]Concentration at old time\item[{\em mass}]mass (A$\ast$C) at new time\item[{\em mass\_\-prev}]mass (A$\ast$C) at old time\item[{\em area}]Cell-centered area at new time\item[{\em area\_\-prev}]Cell-centered area at old time\item[{\em area\_\-lo}]Low side area centered intime\item[{\em area\_\-hi}]High side area centered in time \item[{\em ks\_\-lo}]Low side sediment dispersion coef. centered in time\item[{\em ks\_\-hi}]High side sediment dispersion coef. centered in time\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]Current time\item[{\em theta\_\-stm}]Expilicitness coefficient 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit \item[{\em dt}]Time step \item[{\em dx}]Spacial step \item[{\em end\_\-flx\_\-bc\_\-prev}]flux at right hand side old time\item[{\em strt\_\-flx\_\-bc\_\-prev}]flux at left hand side old time\item[{\em explicit\_\-diffusion\_\-term}]Explicit \hyperlink{a00027}{diffusion} predictor \end{description}
+\end{Desc}
+\hypertarget{a00027_9da6bb8848c4bfaf6b6a8f4cb4d4dd9c}{
+\index{diffusion@{diffusion}!explicit\_\-diffusion\_\-operator@{explicit\_\-diffusion\_\-operator}}
+\index{explicit\_\-diffusion\_\-operator@{explicit\_\-diffusion\_\-operator}!diffusion@{diffusion}}
+\subsubsection[{explicit\_\-diffusion\_\-operator}]{\setlength{\rightskip}{0pt plus 5cm}subroutine diffusion.explicit\_\-diffusion\_\-operator (explicit\_\-diffuse\_\-op, \/  real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em conc}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc\_\-prev}, \/  real(STM\_\-REAL),dimension(ncell,nvar),intent(out) {\em mass}, \/  real(STM\_\-REAL),dimension(ncell,nvar),intent(in) {\em mass\_\-prev}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em area}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em ks\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em ks\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time}, \/  start\_\-flux\_\-bc\_\-prev, \/  real(stm\_\-real),intent(in) {\em end\_\-flx\_\-bc\_\-prev}, \/  real(stm\_\-real),intent(in) {\em dt}, \/  real(stm\_\-real),intent(in) {\em dx})}}
+\label{a00027_9da6bb8848c4bfaf6b6a8f4cb4d4dd9c}
+
+
+Calculate the explicit \hyperlink{a00027}{diffusion} term. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em conc}]Concentration at new time\item[{\em conc\_\-prev}]Concentration at old time\item[{\em mass}]mass at new time\item[{\em mass\_\-prev}]mass at old time\item[{\em area}]Cell-centered area at new time\item[{\em area\_\-lo}]Low side area at old time\item[{\em area\_\-hi}]High side area \item[{\em ks\_\-lo}]Low side sediment dispersion coef. at old time\item[{\em ks\_\-hi}]High side sediment dispersion coef. at old time\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]Current time\item[{\em end\_\-flx\_\-bc\_\-prev}]flux at right hand side old time\item[{\em dt}]Time step \item[{\em dx}]Spacial step \end{description}
+\end{Desc}

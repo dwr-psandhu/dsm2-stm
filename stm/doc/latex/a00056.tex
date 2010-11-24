@@ -1,0 +1,122 @@
+\hypertarget{a00056}{
+\section{Package diffusion}
+\label{a00056}\index{diffusion@{diffusion}}
+}
+Module orchestrating the \hyperlink{a00056}{diffusion} scheme. The main routine in the module is \hyperlink{a00056_b108f04e81c5fda27fe18ee2aa18086c}{diffuse()}. Explicit and implicit \hyperlink{a00056}{diffusion} operators are included here.  
+
+
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00056_b108f04e81c5fda27fe18ee2aa18086c}{diffuse} (conc, conc\_\-prev, area, area\_\-prev, area\_\-lo, area\_\-hi, area\_\-lo\_\-prev, area\_\-hi\_\-prev, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, disp\_\-coef\_\-lo\_\-prev, disp\_\-coef\_\-hi\_\-prev, ncell, nvar, time, theta\_\-stm, dt, dx)
+\begin{CompactList}\small\item\em Calculates the diffusive portion of the constituent transport. It contains an explicit version of the \hyperlink{a00056}{diffusion} operator and a general (involving all potential cases) \hyperlink{a00056}{diffusion} operator as well, with a coefficient theta\_\-stm for selecting the level of implicitness. (theta\_\-stm=0.5 is Crank Nicolson.). The matrix is solved via a tri-diagonal solver. ! The algoritm looks like this:\begin{itemize}
+\item This creates the diffusive fluxes sends them for modification for boundaries and then differences the fluxes to get the operator d/dx(Ad/dx).\begin{itemize}
+\item Calculate interior and boundary fluxes\end{itemize}
+\item Construct right hand side with neumann boundary condition imposed\item Construct \hyperlink{a00056}{diffusion} coefficeint matrix with neumann boundary condition imposed\item Solve the system. \end{itemize}
+\item\end{CompactList}\item 
+subroutine \hyperlink{a00056_e421e32336560a2a59008f31316260db}{explicit\_\-diffusion\_\-operator} (explicit\_\-diffuse\_\-op, conc, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, ncell, nvar, time, dx, dt)
+\begin{CompactList}\small\item\em Calculate the explicit \hyperlink{a00056}{diffusion} operator for a moment in time. Explicit \hyperlink{a00056}{diffusion} operator construction. This creates the diffusive fluxes sends them for modification for boundaries and then differences the fluxes to get the operator d/dx(Ad/dx). \item\end{CompactList}\item 
+subroutine \hyperlink{a00056_e86297565f3ce065298d53a286894fa0}{diffusive\_\-flux} (diffusive\_\-flux\_\-lo, diffusive\_\-flux\_\-hi, conc, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, ncell, nvar, time, dx, dt)
+\begin{CompactList}\small\item\em Estimates the diffusive flux for a moment in time. \item\end{CompactList}\item 
+subroutine \hyperlink{a00056_1b9df807b9c9eb3829821221f8933051}{construct\_\-right\_\-hand\_\-side} (right\_\-hand\_\-side, explicit\_\-diffuse\_\-op, area\_\-prev, area\_\-lo\_\-prev, area\_\-hi\_\-prev, disp\_\-coef\_\-lo\_\-prev, disp\_\-coef\_\-hi\_\-prev, conc\_\-prev, theta, ncell, time, nvar, dx, dt)
+\begin{CompactList}\small\item\em Construct the right hand side vector from previous step, and impose Neumann boundary condition on it. \item\end{CompactList}\item 
+subroutine \hyperlink{a00056_5b532c0d826dac456883290b6350db07}{construct\_\-diffusion\_\-matrix} (center\_\-diag, up\_\-diag, down\_\-diag, area, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, theta\_\-stm, ncell, time, nvar, dx, dt)
+\begin{CompactList}\small\item\em Construct the matrix for the \hyperlink{a00056}{diffusion} solver without boundary condition modification or structure on interior of domain. \item\end{CompactList}\item 
+subroutine \hyperlink{a00056_1fe7c419971f40e38980d90c9b0270b3}{solve} (center\_\-diag, up\_\-diag, down\_\-diag, right\_\-hand\_\-side, conc, ncell, nvar)
+\begin{CompactList}\small\item\em Solve the system of linear equations. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Module orchestrating the \hyperlink{a00056}{diffusion} scheme. The main routine in the module is \hyperlink{a00056_b108f04e81c5fda27fe18ee2aa18086c}{diffuse()}. Explicit and implicit \hyperlink{a00056}{diffusion} operators are included here. 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00056_5b532c0d826dac456883290b6350db07}{
+\index{diffusion@{diffusion}!construct\_\-diffusion\_\-matrix@{construct\_\-diffusion\_\-matrix}}
+\index{construct\_\-diffusion\_\-matrix@{construct\_\-diffusion\_\-matrix}!diffusion@{diffusion}}
+\subsubsection[{construct\_\-diffusion\_\-matrix}]{\setlength{\rightskip}{0pt plus 5cm}subroutine diffusion.construct\_\-diffusion\_\-matrix (real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em center\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em up\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em down\_\-diag}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  real(stm\_\-real),intent(in) {\em theta\_\-stm}, \/  integer,intent(in) {\em ncell}, \/  real(stm\_\-real),intent(in) {\em time}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00056_5b532c0d826dac456883290b6350db07}
+
+
+Construct the matrix for the \hyperlink{a00056}{diffusion} solver without boundary condition modification or structure on interior of domain. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em center\_\-diag}]Values of the coefficients at the diagonal in matrix\item[{\em up\_\-diag}]Values of the coefficients above the diagonal in matrix\item[{\em down\_\-diag}]Values of the coefficients below diagonal in matrix\item[{\em area}]Cell centered area at new time \item[{\em area\_\-lo}]Low side area at new time\item[{\em area\_\-hi}]High side area at new time \item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef. at new time\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef. at new time\item[{\em theta\_\-stm}]Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit \item[{\em ncell}]Number of cells\item[{\em time}]Current time\item[{\em nvar}]Number of variables\item[{\em dx}]Spatial step \item[{\em dt}]Time step \end{description}
+\end{Desc}
+\hypertarget{a00056_1b9df807b9c9eb3829821221f8933051}{
+\index{diffusion@{diffusion}!construct\_\-right\_\-hand\_\-side@{construct\_\-right\_\-hand\_\-side}}
+\index{construct\_\-right\_\-hand\_\-side@{construct\_\-right\_\-hand\_\-side}!diffusion@{diffusion}}
+\subsubsection[{construct\_\-right\_\-hand\_\-side}]{\setlength{\rightskip}{0pt plus 5cm}subroutine diffusion.construct\_\-right\_\-hand\_\-side (real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em right\_\-hand\_\-side}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em explicit\_\-diffuse\_\-op}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area\_\-prev}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area\_\-lo\_\-prev}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area\_\-hi\_\-prev}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo\_\-prev}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi\_\-prev}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc\_\-prev}, \/  real(stm\_\-real),intent(in) {\em theta}, \/  integer,intent(in) {\em ncell}, \/  real(stm\_\-real),intent(in) {\em time}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00056_1b9df807b9c9eb3829821221f8933051}
+
+
+Construct the right hand side vector from previous step, and impose Neumann boundary condition on it. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em right\_\-hand\_\-side}]The right hand side vector\item[{\em explicit\_\-diffuse\_\-op}]Explicit \hyperlink{a00056}{diffusion} operator\item[{\em area\_\-prev}]Cell centered area at old time \item[{\em area\_\-lo\_\-prev}]Low side area at old time\item[{\em area\_\-hi\_\-prev}]High side area at old time \item[{\em disp\_\-coef\_\-lo\_\-prev}]Low side constituent dispersion coef. at old time\item[{\em disp\_\-coef\_\-hi\_\-prev}]High side constituent dispersion coef. at old time\item[{\em conc\_\-prev}]Concentration at old time\item[{\em theta}]Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit \item[{\em ncell}]Number of cells\item[{\em time}]Current time\item[{\em nvar}]Number of variables\item[{\em dx}]Spatial step \item[{\em dt}]Time step \end{description}
+\end{Desc}
+\hypertarget{a00056_b108f04e81c5fda27fe18ee2aa18086c}{
+\index{diffusion@{diffusion}!diffuse@{diffuse}}
+\index{diffuse@{diffuse}!diffusion@{diffusion}}
+\subsubsection[{diffuse}]{\setlength{\rightskip}{0pt plus 5cm}subroutine diffusion.diffuse (real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em conc}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc\_\-prev}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area\_\-prev}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area\_\-lo\_\-prev}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area\_\-hi\_\-prev}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo\_\-prev}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi\_\-prev}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time}, \/  real(stm\_\-real),intent(in) {\em theta\_\-stm}, \/  real(stm\_\-real),intent(in) {\em dt}, \/  real(stm\_\-real),intent(in) {\em dx})}}
+\label{a00056_b108f04e81c5fda27fe18ee2aa18086c}
+
+
+Calculates the diffusive portion of the constituent transport. It contains an explicit version of the \hyperlink{a00056}{diffusion} operator and a general (involving all potential cases) \hyperlink{a00056}{diffusion} operator as well, with a coefficient theta\_\-stm for selecting the level of implicitness. (theta\_\-stm=0.5 is Crank Nicolson.). The matrix is solved via a tri-diagonal solver. ! The algoritm looks like this:\begin{itemize}
+\item This creates the diffusive fluxes sends them for modification for boundaries and then differences the fluxes to get the operator d/dx(Ad/dx).\begin{itemize}
+\item Calculate interior and boundary fluxes\end{itemize}
+\item Construct right hand side with neumann boundary condition imposed\item Construct \hyperlink{a00056}{diffusion} coefficeint matrix with neumann boundary condition imposed\item Solve the system. \end{itemize}
+
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em conc}]Concentration at new time\item[{\em conc\_\-prev}]Concentration at old time\item[{\em area}]Cell-centered area at new time\item[{\em area\_\-prev}]Cell-centered area at old time\item[{\em area\_\-lo}]Low side area centered in time\item[{\em area\_\-hi}]High side area centered in time \item[{\em area\_\-lo\_\-prev}]Low side area centered at old time\item[{\em area\_\-hi\_\-prev}]High side area centered at old time \item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef. at new time\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef. at new time\item[{\em disp\_\-coef\_\-lo\_\-prev}]Low side constituent dispersion coef. at old time\item[{\em disp\_\-coef\_\-hi\_\-prev}]High side constituent dispersion coef. at old time\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]instantaneous time\item[{\em theta\_\-stm}]Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit \item[{\em dt}]Time step \item[{\em dx}]Spacial step \end{description}
+\end{Desc}
+\hypertarget{a00056_e86297565f3ce065298d53a286894fa0}{
+\index{diffusion@{diffusion}!diffusive\_\-flux@{diffusive\_\-flux}}
+\index{diffusive\_\-flux@{diffusive\_\-flux}!diffusion@{diffusion}}
+\subsubsection[{diffusive\_\-flux}]{\setlength{\rightskip}{0pt plus 5cm}subroutine diffusion.diffusive\_\-flux (real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em diffusive\_\-flux\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em diffusive\_\-flux\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00056_e86297565f3ce065298d53a286894fa0}
+
+
+Estimates the diffusive flux for a moment in time. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em diffusive\_\-flux\_\-lo}]Explicit diffusive flux low side\item[{\em diffusive\_\-flux\_\-hi}]Explicit diffusive flux high side\item[{\em conc}]Concentration at old time\item[{\em area\_\-lo}]Low side area at old time\item[{\em area\_\-hi}]High side area at old time \item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef. at old time\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef. at old time\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]Current time\item[{\em dx}]Spatial step \end{description}
+\end{Desc}
+\hypertarget{a00056_e421e32336560a2a59008f31316260db}{
+\index{diffusion@{diffusion}!explicit\_\-diffusion\_\-operator@{explicit\_\-diffusion\_\-operator}}
+\index{explicit\_\-diffusion\_\-operator@{explicit\_\-diffusion\_\-operator}!diffusion@{diffusion}}
+\subsubsection[{explicit\_\-diffusion\_\-operator}]{\setlength{\rightskip}{0pt plus 5cm}subroutine diffusion.explicit\_\-diffusion\_\-operator (real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em explicit\_\-diffuse\_\-op}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00056_e421e32336560a2a59008f31316260db}
+
+
+Calculate the explicit \hyperlink{a00056}{diffusion} operator for a moment in time. Explicit \hyperlink{a00056}{diffusion} operator construction. This creates the diffusive fluxes sends them for modification for boundaries and then differences the fluxes to get the operator d/dx(Ad/dx). 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em explicit\_\-diffuse\_\-op}]Explicit \hyperlink{a00056}{diffusion} operator\item[{\em conc}]Concentration at old time\item[{\em area\_\-lo}]Low side area at old time\item[{\em area\_\-hi}]High side area at old time \item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef. at old time\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef. at old time\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]Current time\item[{\em dx}]Spacial step \end{description}
+\end{Desc}
+\hypertarget{a00056_1fe7c419971f40e38980d90c9b0270b3}{
+\index{diffusion@{diffusion}!solve@{solve}}
+\index{solve@{solve}!diffusion@{diffusion}}
+\subsubsection[{solve}]{\setlength{\rightskip}{0pt plus 5cm}subroutine diffusion.solve (real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em center\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em up\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em down\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em right\_\-hand\_\-side}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em conc}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar})}}
+\label{a00056_1fe7c419971f40e38980d90c9b0270b3}
+
+
+Solve the system of linear equations. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em center\_\-diag}]Values of the coefficients at the diagonal in matrix\item[{\em up\_\-diag}]Values of the coefficients above the diagonal in matrix\item[{\em down\_\-diag}]Values of the coefficients below diagonal in matrix\item[{\em right\_\-hand\_\-side}]Values of the right hand side vector\item[{\em conc}]Values of the computed solution\item[{\em ncell}]Number of volumes\item[{\em nvar}]Number of variables \end{description}
+\end{Desc}

@@ -1,0 +1,34 @@
+\hypertarget{a00062}{
+\section{Package grid\_\-refinement}
+\label{a00062}\index{grid\_\-refinement@{grid\_\-refinement}}
+}
+Routines for grid refinement/coarsening operations.  
+
+
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00062_99b7a47dc715dbb51c2ddab900f7ce69}{coarsen} (coarse\_\-data, fine\_\-data, ncell\_\-fine, ncell\_\-coarse, nvar)
+\begin{CompactList}\small\item\em Coarsen a solution at a fine level of resolution. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Routines for grid refinement/coarsening operations. 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00062_99b7a47dc715dbb51c2ddab900f7ce69}{
+\index{grid\_\-refinement@{grid\_\-refinement}!coarsen@{coarsen}}
+\index{coarsen@{coarsen}!grid_refinement@{grid\_\-refinement}}
+\subsubsection[{coarsen}]{\setlength{\rightskip}{0pt plus 5cm}subroutine grid\_\-refinement.coarsen (real(stm\_\-real),dimension(ncell\_\-coarse,nvar),intent(out) {\em coarse\_\-data}, \/  real(stm\_\-real),dimension(ncell\_\-fine,nvar),intent(in) {\em fine\_\-data}, \/  integer,intent(in) {\em ncell\_\-fine}, \/  integer,intent(in) {\em ncell\_\-coarse}, \/  integer,intent(in) {\em nvar})}}
+\label{a00062_99b7a47dc715dbb51c2ddab900f7ce69}
+
+
+Coarsen a solution at a fine level of resolution. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em coarse\_\-data}]Coarsened finial data (output)\item[{\em fine\_\-data}]Fine initial data (input)\item[{\em ncell\_\-fine}]Number of fine initial array cells\item[{\em ncell\_\-coarse}]Number of coarsened array cells \item[{\em nvar}]Number of constituents \end{description}
+\end{Desc}

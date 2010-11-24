@@ -1,0 +1,195 @@
+\hypertarget{a00073}{
+\section{Package test\_\-a\_\-d\_\-r\_\-neumann}
+\label{a00073}\index{test\_\-a\_\-d\_\-r\_\-neumann@{test\_\-a\_\-d\_\-r\_\-neumann}}
+}
+Test \hyperlink{a00052}{advection} \hyperlink{a00056}{diffusion} and \hyperlink{a00068}{reaction} in a single channel with uniform flow, subjected to neumann boundary condition.  
+
+
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00073_b372cb5a88b5e4676a429d2b7480e751}{test\_\-advect\_\-diffuse\_\-reaction\_\-neumann} (verbose)
+\begin{CompactList}\small\item\em Subroutine that tests error convergence of \hyperlink{a00052}{advection} \hyperlink{a00056}{diffusion} \hyperlink{a00068}{reaction}. \item\end{CompactList}\item 
+subroutine \hyperlink{a00073_9f20e21758429fe71c04c49fb7669c5d}{initial\_\-final\_\-solution} (fine\_\-initial\_\-conc, fine\_\-solution\_\-conc, ic\_\-center, ic\_\-peak, const\_\-velocity, decay\_\-rate, total\_\-time, origin, domain\_\-length, nx\_\-base, nconc)
+\begin{CompactList}\small\item\em produce fine initial condition and reference solution \item\end{CompactList}\item 
+subroutine \hyperlink{a00073_4b815140b3893ced6a09ae8dcd52f86b}{uniform\_\-flow\_\-adr} (flow, flow\_\-lo, flow\_\-hi, area, area\_\-lo, area\_\-hi, ncell, time, dx, dt)
+\begin{CompactList}\small\item\em generat constant area and constant flow foreward and backward \item\end{CompactList}\item 
+subroutine \hyperlink{a00073_933654fc0ee3665286bb1c6530fbf363}{adr\_\-linear\_\-decay} (source, conc, area, flow, ncell, nvar, time)
+\item 
+subroutine \hyperlink{a00073_9163250ea77d1da6ca6c76251c24060e}{neumann\_\-adr\_\-dvective\_\-flux} (flux\_\-lo, flux\_\-hi, conc\_\-lo, conc\_\-hi, flow\_\-lo, flow\_\-hi, ncell, nvar, time, dt, dx)
+\item 
+subroutine \hyperlink{a00073_63a873ba17146675e814ba8aa96747d5}{neumann\_\-adr\_\-diffusion\_\-matrix} (center\_\-diag, up\_\-diag, down\_\-diag, right\_\-hand\_\-side, explicit\_\-diffuse\_\-op, area, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, theta\_\-stm, ncell, time, nvar, dx, dt)
+\item 
+subroutine \hyperlink{a00073_d74dc597fa06e3a626df2dd9a70c8d9d}{neumann\_\-adr\_\-diffusive\_\-flux} (diffusive\_\-flux\_\-lo, diffusive\_\-flux\_\-hi, conc, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, ncell, nvar, time, dx, dt)
+\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+\hypertarget{a00073_d1b2a2bf58f522e774cc11871bb03d90}{
+integer, parameter \textbf{nstep\_\-base} = 256}
+\label{a00073_d1b2a2bf58f522e774cc11871bb03d90}
+
+\item 
+\hypertarget{a00073_8f55345372816b9ee5baa3dde5c05636}{
+integer, parameter \textbf{nx\_\-base} = 512}
+\label{a00073_8f55345372816b9ee5baa3dde5c05636}
+
+\item 
+\hypertarget{a00073_eae24c99ed489fd4cb3700b329504710}{
+integer, parameter \textbf{nconc} = 2}
+\label{a00073_eae24c99ed489fd4cb3700b329504710}
+
+\item 
+\hypertarget{a00073_c61aca11953a2bf32befd80b2f30a476}{
+real(stm\_\-real), parameter \textbf{start\_\-time} = 256.0d0}
+\label{a00073_c61aca11953a2bf32befd80b2f30a476}
+
+\item 
+\hypertarget{a00073_7ae0c3b6aa3d87d9a759927939763639}{
+real(stm\_\-real), parameter \textbf{total\_\-time} = 512.0d0}
+\label{a00073_7ae0c3b6aa3d87d9a759927939763639}
+
+\item 
+\hypertarget{a00073_b067857f8e786a7c42fdd647b9041463}{
+real(stm\_\-real), parameter \textbf{domain\_\-length} = 4000.0d0}
+\label{a00073_b067857f8e786a7c42fdd647b9041463}
+
+\item 
+\hypertarget{a00073_b4329bc9a269ab7453454a92ef427c01}{
+real(stm\_\-real), parameter \textbf{origin} = 12800.0d0}
+\label{a00073_b4329bc9a269ab7453454a92ef427c01}
+
+\item 
+\hypertarget{a00073_a0a389a8af065baca773c3e98e3d91af}{
+real(stm\_\-real), parameter \textbf{const\_\-area} = 110.0d0}
+\label{a00073_a0a389a8af065baca773c3e98e3d91af}
+
+\item 
+\hypertarget{a00073_1e5fbc940d08436d4597188500d6ab58}{
+real(stm\_\-real), parameter \textbf{const\_\-disp\_\-coef} = 150.0d0}
+\label{a00073_1e5fbc940d08436d4597188500d6ab58}
+
+\item 
+\hypertarget{a00073_929635b459204795af96df2484316cf7}{
+real(stm\_\-real), parameter \textbf{const\_\-velocity} = 2.9d0}
+\label{a00073_929635b459204795af96df2484316cf7}
+
+\item 
+\hypertarget{a00073_7a9624c36944428d570f948a1de47033}{
+real(stm\_\-real), parameter \textbf{decay\_\-rate} = 0.0005d0}
+\label{a00073_7a9624c36944428d570f948a1de47033}
+
+\item 
+\hypertarget{a00073_2446c2bb8c3c844642185dff43de167f}{
+real(stm\_\-real), parameter \textbf{ic\_\-center} = origin + domain\_\-length/(ten)}
+\label{a00073_2446c2bb8c3c844642185dff43de167f}
+
+\item 
+\hypertarget{a00073_cdef4891d5f15560128a312b1bf23786}{
+real(stm\_\-real), parameter \textbf{ic\_\-peak} = one}
+\label{a00073_cdef4891d5f15560128a312b1bf23786}
+
+\item 
+\hypertarget{a00073_9715f5cff3bd7d8603c4c412bd19e254}{
+real(stm\_\-real) \textbf{end\_\-time} = start\_\-time + total\_\-time}
+\label{a00073_9715f5cff3bd7d8603c4c412bd19e254}
+
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Test \hyperlink{a00052}{advection} \hyperlink{a00056}{diffusion} and \hyperlink{a00068}{reaction} in a single channel with uniform flow, subjected to neumann boundary condition. 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00073_933654fc0ee3665286bb1c6530fbf363}{
+\index{test\_\-a\_\-d\_\-r\_\-neumann@{test\_\-a\_\-d\_\-r\_\-neumann}!adr\_\-linear\_\-decay@{adr\_\-linear\_\-decay}}
+\index{adr\_\-linear\_\-decay@{adr\_\-linear\_\-decay}!test_a_d_r_neumann@{test\_\-a\_\-d\_\-r\_\-neumann}}
+\subsubsection[{adr\_\-linear\_\-decay}]{\setlength{\rightskip}{0pt plus 5cm}subroutine test\_\-a\_\-d\_\-r\_\-neumann.adr\_\-linear\_\-decay (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em source}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em flow}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time})}}
+\label{a00073_933654fc0ee3665286bb1c6530fbf363}
+
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em source}]cell centered source \item[{\em conc}]Concentration\item[{\em area}]area at source \item[{\em flow}]flow at source location\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]time \end{description}
+\end{Desc}
+\hypertarget{a00073_9f20e21758429fe71c04c49fb7669c5d}{
+\index{test\_\-a\_\-d\_\-r\_\-neumann@{test\_\-a\_\-d\_\-r\_\-neumann}!initial\_\-final\_\-solution@{initial\_\-final\_\-solution}}
+\index{initial\_\-final\_\-solution@{initial\_\-final\_\-solution}!test_a_d_r_neumann@{test\_\-a\_\-d\_\-r\_\-neumann}}
+\subsubsection[{initial\_\-final\_\-solution}]{\setlength{\rightskip}{0pt plus 5cm}subroutine test\_\-a\_\-d\_\-r\_\-neumann.initial\_\-final\_\-solution (real(stm\_\-real),dimension(nx\_\-base,nconc),intent(out) {\em fine\_\-initial\_\-conc}, \/  real(stm\_\-real),dimension(nx\_\-base,nconc),intent(out) {\em fine\_\-solution\_\-conc}, \/  real(stm\_\-real),intent(in) {\em ic\_\-center}, \/  real(stm\_\-real),intent(in) {\em ic\_\-peak}, \/  real(stm\_\-real),intent(in) {\em const\_\-velocity}, \/  real(stm\_\-real),intent(in) {\em decay\_\-rate}, \/  real(stm\_\-real),intent(in) {\em total\_\-time}, \/  real(stm\_\-real),intent(in) {\em origin}, \/  real(stm\_\-real),intent(in) {\em domain\_\-length}, \/  integer,intent(in) {\em nx\_\-base}, \/  integer,intent(in) {\em nconc})}}
+\label{a00073_9f20e21758429fe71c04c49fb7669c5d}
+
+
+produce fine initial condition and reference solution 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em fine\_\-initial\_\-conc}]initial condition at finest resolution\item[{\em fine\_\-solution\_\-conc}]reference solution at finest resolution \end{description}
+\end{Desc}
+\hypertarget{a00073_63a873ba17146675e814ba8aa96747d5}{
+\index{test\_\-a\_\-d\_\-r\_\-neumann@{test\_\-a\_\-d\_\-r\_\-neumann}!neumann\_\-adr\_\-diffusion\_\-matrix@{neumann\_\-adr\_\-diffusion\_\-matrix}}
+\index{neumann\_\-adr\_\-diffusion\_\-matrix@{neumann\_\-adr\_\-diffusion\_\-matrix}!test_a_d_r_neumann@{test\_\-a\_\-d\_\-r\_\-neumann}}
+\subsubsection[{neumann\_\-adr\_\-diffusion\_\-matrix}]{\setlength{\rightskip}{0pt plus 5cm}subroutine test\_\-a\_\-d\_\-r\_\-neumann.neumann\_\-adr\_\-diffusion\_\-matrix (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em center\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em up\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em down\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em right\_\-hand\_\-side}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em explicit\_\-diffuse\_\-op}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  real(stm\_\-real),intent(in) {\em theta\_\-stm}, \/  integer,intent(in) {\em ncell}, \/  real(stm\_\-real),intent(in) {\em time}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00073_63a873ba17146675e814ba8aa96747d5}
+
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em center\_\-diag}]Values of the coefficients at the diagonal in matrix\item[{\em up\_\-diag}]Values of the coefficients above the diagonal in matrix\item[{\em down\_\-diag}]Values of the coefficients below diagonal in matrix\item[{\em right\_\-hand\_\-side}]Values of the coefficients of the right hand side\item[{\em area}]Cell centered area at new time \item[{\em area\_\-lo}]Low side area at new time\item[{\em area\_\-hi}]High side area at new time \item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef. at new time\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef. at new time\item[{\em theta\_\-stm}]Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit \item[{\em ncell}]Number of cells\item[{\em time}]Current time\item[{\em nvar}]Number of variables\item[{\em dx}]Spatial step \item[{\em dt}]Time step \end{description}
+\end{Desc}
+\hypertarget{a00073_d74dc597fa06e3a626df2dd9a70c8d9d}{
+\index{test\_\-a\_\-d\_\-r\_\-neumann@{test\_\-a\_\-d\_\-r\_\-neumann}!neumann\_\-adr\_\-diffusive\_\-flux@{neumann\_\-adr\_\-diffusive\_\-flux}}
+\index{neumann\_\-adr\_\-diffusive\_\-flux@{neumann\_\-adr\_\-diffusive\_\-flux}!test_a_d_r_neumann@{test\_\-a\_\-d\_\-r\_\-neumann}}
+\subsubsection[{neumann\_\-adr\_\-diffusive\_\-flux}]{\setlength{\rightskip}{0pt plus 5cm}subroutine test\_\-a\_\-d\_\-r\_\-neumann.neumann\_\-adr\_\-diffusive\_\-flux (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em diffusive\_\-flux\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em diffusive\_\-flux\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc}, \/  real(stm\_\-real),dimension         (ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension         (ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00073_d74dc597fa06e3a626df2dd9a70c8d9d}
+
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em diffusive\_\-flux\_\-lo}]face flux, lo side\item[{\em diffusive\_\-flux\_\-hi}]face flux, hi side\item[{\em conc}]concentration \item[{\em area\_\-lo}]Low side area centered at old time\item[{\em area\_\-hi}]High side area centered at old time\item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef.\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef.\item[{\em ncell}]number of cells\item[{\em nvar}]number of variables\item[{\em time}]time \end{description}
+\end{Desc}
+\hypertarget{a00073_9163250ea77d1da6ca6c76251c24060e}{
+\index{test\_\-a\_\-d\_\-r\_\-neumann@{test\_\-a\_\-d\_\-r\_\-neumann}!neumann\_\-adr\_\-dvective\_\-flux@{neumann\_\-adr\_\-dvective\_\-flux}}
+\index{neumann\_\-adr\_\-dvective\_\-flux@{neumann\_\-adr\_\-dvective\_\-flux}!test_a_d_r_neumann@{test\_\-a\_\-d\_\-r\_\-neumann}}
+\subsubsection[{neumann\_\-adr\_\-dvective\_\-flux}]{\setlength{\rightskip}{0pt plus 5cm}subroutine test\_\-a\_\-d\_\-r\_\-neumann.neumann\_\-adr\_\-dvective\_\-flux (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em flux\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em flux\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc\_\-hi}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em flow\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em flow\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time}, \/  real(stm\_\-real),intent(in) {\em dt}, \/  real(stm\_\-real),intent(in) {\em dx})}}
+\label{a00073_9163250ea77d1da6ca6c76251c24060e}
+
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em flux\_\-lo}]flux on lo side of cell, time centered\item[{\em flux\_\-hi}]flux on hi side of cell, time centered\item[{\em conc\_\-lo}]concentration extrapolated to lo face\item[{\em conc\_\-hi}]concentration extrapolated to hi face\item[{\em flow\_\-lo}]flow on lo side of cells centered in time\item[{\em flow\_\-hi}]flow on hi side of cells centered in time\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]Current time\item[{\em dt}]Time step \item[{\em dx}]Spatial step \end{description}
+\end{Desc}
+\hypertarget{a00073_b372cb5a88b5e4676a429d2b7480e751}{
+\index{test\_\-a\_\-d\_\-r\_\-neumann@{test\_\-a\_\-d\_\-r\_\-neumann}!test\_\-advect\_\-diffuse\_\-reaction\_\-neumann@{test\_\-advect\_\-diffuse\_\-reaction\_\-neumann}}
+\index{test\_\-advect\_\-diffuse\_\-reaction\_\-neumann@{test\_\-advect\_\-diffuse\_\-reaction\_\-neumann}!test_a_d_r_neumann@{test\_\-a\_\-d\_\-r\_\-neumann}}
+\subsubsection[{test\_\-advect\_\-diffuse\_\-reaction\_\-neumann}]{\setlength{\rightskip}{0pt plus 5cm}subroutine test\_\-a\_\-d\_\-r\_\-neumann.test\_\-advect\_\-diffuse\_\-reaction\_\-neumann (logical {\em verbose})}}
+\label{a00073_b372cb5a88b5e4676a429d2b7480e751}
+
+
+Subroutine that tests error convergence of \hyperlink{a00052}{advection} \hyperlink{a00056}{diffusion} \hyperlink{a00068}{reaction}. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em verbose}]whether to output convergence results \end{description}
+\end{Desc}
+\hypertarget{a00073_4b815140b3893ced6a09ae8dcd52f86b}{
+\index{test\_\-a\_\-d\_\-r\_\-neumann@{test\_\-a\_\-d\_\-r\_\-neumann}!uniform\_\-flow\_\-adr@{uniform\_\-flow\_\-adr}}
+\index{uniform\_\-flow\_\-adr@{uniform\_\-flow\_\-adr}!test_a_d_r_neumann@{test\_\-a\_\-d\_\-r\_\-neumann}}
+\subsubsection[{uniform\_\-flow\_\-adr}]{\setlength{\rightskip}{0pt plus 5cm}subroutine test\_\-a\_\-d\_\-r\_\-neumann.uniform\_\-flow\_\-adr (real(stm\_\-real),dimension(ncell),intent(out) {\em flow}, \/  real(stm\_\-real),dimension(ncell),intent(out) {\em flow\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(out) {\em flow\_\-hi}, \/  real(stm\_\-real),dimension(ncell),intent(out) {\em area}, \/  real(stm\_\-real),dimension(ncell),intent(out) {\em area\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(out) {\em area\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  real(stm\_\-real),intent(in) {\em time}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00073_4b815140b3893ced6a09ae8dcd52f86b}
+
+
+generat constant area and constant flow foreward and backward 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em flow}]cell and time centered flow\item[{\em flow\_\-lo}]lo face flow, time centered\item[{\em flow\_\-hi}]hi face flow, time centered\item[{\em area}]cell center area, old time\item[{\em area\_\-lo}]area lo face, time centered\item[{\em area\_\-hi}]area hi face, time centered\item[{\em ncell}]number of cells\item[{\em time}]time of request\item[{\em dx}]spatial step\item[{\em dt}]time step \end{description}
+\end{Desc}
