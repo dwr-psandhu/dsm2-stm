@@ -65,7 +65,7 @@ procedure(diffusion_coef_if),pointer :: dispersion_coef  => null()
 
 contains
 
-subroutine set_constant_disp_coef(disp_coef,            &
+subroutine set_constant_dispersion(disp_coef,            &
                                   disp_coef_lo,         &
                                   disp_coef_hi,         &
                                   flow,                 &
