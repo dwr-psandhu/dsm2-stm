@@ -25,7 +25,7 @@ module single_channel_boundary
 use boundary_diffusion
 use boundary_advection
 
-!> Advectove fluxes on lo and hi side of single channel.
+!> Advective fluxes on lo and hi side of single channel.
 !> Each is expected to operate on only one end
 procedure(boundary_advective_flux_if),  pointer :: advective_flux_lo  => null()
 procedure(boundary_advective_flux_if),  pointer :: advective_flux_hi  => null()

@@ -161,7 +161,6 @@ procedure(diffusion_coef_if),pointer :: diff_coef  => null()
 logical :: details = .false.
 logical :: remote = .false.
 
-
 if (present(detail_result))then
     details = detail_result
 else 
