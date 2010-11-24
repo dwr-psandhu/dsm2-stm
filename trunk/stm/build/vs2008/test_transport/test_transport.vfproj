@@ -36,9 +36,11 @@
 		<File RelativePath="..\..\..\test\transport\single_channel_boundary.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_adr_bc_neumann_.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_tidal.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_advection_convergence_tidal_working.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_advection_convergence_tidal_experience.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_convergence_uniform.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_advection_decay.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_advection_dispersion_zoppou.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_advection_reaction_tidal.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_boundary_diffusive_flux.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_coarsen.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_construct_rhs.f90"/>
@@ -56,5 +58,6 @@
 		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_increment_to_cons.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_reaction.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_tidal_hydro.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_transport_driver.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>
