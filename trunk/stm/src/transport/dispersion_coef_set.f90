@@ -107,7 +107,7 @@ subroutine set_constant_disp_coef(disp_coef,            &
          disp_coef_lo = disp_coef
          disp_coef_hi = disp_coef_lo
     else
-      call stm_fatal('Constant Dispersion coef. is not set!')
+      call stm_fatal('Constant dispersion coef. is not set!')
     end if
         
      return
