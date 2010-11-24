@@ -65,19 +65,18 @@ procedure(diffusion_coef_if),pointer :: dispersion_coef  => null()
 
 contains
 
-subroutine set_constant_dispersion(disp_coef,            &
-                                  disp_coef_lo,         &
-                                  disp_coef_hi,         &
-                                  flow,                 &
-                                  flow_lo,              &
-                                  flow_hi,              &
-                                  time,                 &
-                                  dx,                   &
-                                  dt,                   &
-                                  origin,               &
-                                  ncell,                &
-                                  nvar,                 &
-                                  const_disp_coef)  
+subroutine set_constant_dispersion(disp_coef_lo,         &
+                                   disp_coef_hi,         &
+                                   flow,                 &
+                                   flow_lo,              &
+                                   flow_hi,              &
+                                   time,                 &
+                                   dx,                   &
+                                   dt,                   &
+                                   origin,               &
+                                   ncell,                &
+                                   nvar,                 &
+                                   const_disp_coef)  
      
      use stm_precision
      use error_handling
@@ -93,22 +92,16 @@ subroutine set_constant_dispersion(disp_coef,            &
     real(stm_real),intent(in) :: flow_lo(ncell)          !< flow on lo side of cells centered in time
     real(stm_real),intent(in) :: flow_hi(ncell)          !< flow on hi side of cells centered in time       
     real(stm_real),intent(in) :: flow(ncell)             !< flow on center of cells 
-    real(stm_real),intent(out):: disp_coef(ncell,nvar)   !< center constituent dispersion coef. at new time
     real(stm_real),intent(out):: disp_coef_lo(ncell,nvar)!< Low side constituent dispersion coef. at new time
     real(stm_real),intent(out):: disp_coef_hi(ncell,nvar)!< High side constituent dispersion coef. at new time
-    real(stm_real),intent(in),optional :: const_disp_coef(nvar)!< Constant value of dispersion coef. 
+    real(stm_real),intent(in) :: const_disp_coef(nvar)   !< Constant value of dispersion coef. 
     !--
     integer :: ivar
-               
-    if (present(const_disp_coef)) then
+   
          do ivar=1,nvar
-             disp_coef(:,ivar)=const_disp_coef(ivar)
+             disp_coef_lo(:,ivar)=const_disp_coef(ivar)
          end do
-         disp_coef_lo = disp_coef
          disp_coef_hi = disp_coef_lo
-    else
-      call stm_fatal('Constant dispersion coef. is not set!')
-    end if
         
      return
  end subroutine
