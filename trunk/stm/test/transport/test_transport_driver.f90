@@ -89,7 +89,9 @@ call init_fruit
 !!!A-R
 !call test_tidal_advection_reaction(verbose)
 !!!/////A-D
-call test_advection_diffusion_zoppou(verbose)
+call test_zoppou_flow()
+!call test_advection_diffusion_zoppou(verbose)
+
 !!!!/// ADR 
 !call  test_advect_diffuse_reaction_neumann(verbose)
 !//////// 

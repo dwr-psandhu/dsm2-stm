@@ -375,9 +375,12 @@ if (verbose == .true.) then
                                  
 end if
 
-! set pointers to null so that if future tests don't set the interfaces an obvious 
+! todo: set pointers to null so that if future tests don't set the interfaces an obvious 
 ! error will result
 !source => null()
+!or 
+!call unset_interfaces()
+
 
 
 return
