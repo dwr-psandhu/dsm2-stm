@@ -1,0 +1,114 @@
+\hypertarget{a00051}{
+\section{Package boundary\_\-diffusion}
+\label{a00051}\index{boundary\_\-diffusion@{boundary\_\-diffusion}}
+}
+boundary diffusive flux interface to be fulfilled by driver or application  
+
+
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00051_5540992a4e125d1b4affb67bb805df11}{boundary\_\-diffusive\_\-flux\_\-if} (diffusive\_\-flux\_\-lo, diffusive\_\-flux\_\-hi, conc, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, ncell, nvar, time)
+\begin{CompactList}\small\item\em Calculate boundary \hyperlink{a00053}{diffusion} flux. \item\end{CompactList}\item 
+subroutine \hyperlink{a00051_781f25a83683631c224d3f258b12590b}{boundary\_\-diffusive\_\-matrix\_\-if} (center\_\-diag, up\_\-diag, down\_\-diag, area, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, theta\_\-stm, ncell, time, nvar, dx, dt)
+\begin{CompactList}\small\item\em This pointer should be set by the driver or client code to specify the treatment at the boundaries. \item\end{CompactList}\item 
+subroutine \hyperlink{a00051_c27cf26f93c52ce9d432267264793736}{uninitialized\_\-diffusive\_\-flux} (diffusive\_\-flux\_\-lo, diffusive\_\-flux\_\-hi, conc, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, ncell, nvar, time)
+\begin{CompactList}\small\item\em This pointer should be set by the driver or client code to specify the treatment at the first and last row of coefficient matrix. \item\end{CompactList}\item 
+subroutine \hyperlink{a00051_1e0b364f397107a8d87850fedede417a}{neumann\_\-no\_\-flow\_\-diffusive\_\-flux} (diffusive\_\-flux\_\-lo, diffusive\_\-flux\_\-hi, conc, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, ncell, nvar, time)
+\begin{CompactList}\small\item\em Example diffusive flux that imposes Neumann boundaries with zero flux at both ends of the channel. \item\end{CompactList}\item 
+subroutine \hyperlink{a00051_6a67899a1c3944d943a1b2fb5aac2986}{uninitialized\_\-diffusive\_\-bc\_\-matrix} (center\_\-diag, up\_\-diag, down\_\-diag, area, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, theta\_\-stm, ncell, time, nvar, dx, dt)
+\begin{CompactList}\small\item\em Example matrix that prints an error and bails. \item\end{CompactList}\item 
+subroutine \hyperlink{a00051_35936f4856e0472bc61d1deef432ff3e}{neumann\_\-diffusion\_\-matrix} (center\_\-diag, up\_\-diag, down\_\-diag, area, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, theta\_\-stm, ncell, time, nvar, dx, dt)
+\begin{CompactList}\small\item\em Example diffusive flux that imposes Neumann boundaries with zero flux at both ends of the channel. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+boundary diffusive flux interface to be fulfilled by driver or application 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00051_5540992a4e125d1b4affb67bb805df11}{
+\index{boundary\_\-diffusion@{boundary\_\-diffusion}!boundary\_\-diffusive\_\-flux\_\-if@{boundary\_\-diffusive\_\-flux\_\-if}}
+\index{boundary\_\-diffusive\_\-flux\_\-if@{boundary\_\-diffusive\_\-flux\_\-if}!boundary_diffusion@{boundary\_\-diffusion}}
+\subsubsection[{boundary\_\-diffusive\_\-flux\_\-if}]{\setlength{\rightskip}{0pt plus 5cm}subroutine boundary\_\-diffusion.boundary\_\-diffusive\_\-flux\_\-if (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em diffusive\_\-flux\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em diffusive\_\-flux\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc}, \/  real(stm\_\-real),dimension         (ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension         (ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time})}}
+\label{a00051_5540992a4e125d1b4affb67bb805df11}
+
+
+Calculate boundary \hyperlink{a00053}{diffusion} flux. 
+
+Generic interface for calculating BC that should be fulfilled by client programs \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em diffusive\_\-flux\_\-lo}]Face flux, lo side\item[{\em diffusive\_\-flux\_\-hi}]Face flux, hi side\item[{\em conc}]Concentration \item[{\em area\_\-lo}]Low side area centered at old time\item[{\em area\_\-hi}]High side area centered at old time\item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef.\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef.\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]Time \end{description}
+\end{Desc}
+\hypertarget{a00051_781f25a83683631c224d3f258b12590b}{
+\index{boundary\_\-diffusion@{boundary\_\-diffusion}!boundary\_\-diffusive\_\-matrix\_\-if@{boundary\_\-diffusive\_\-matrix\_\-if}}
+\index{boundary\_\-diffusive\_\-matrix\_\-if@{boundary\_\-diffusive\_\-matrix\_\-if}!boundary_diffusion@{boundary\_\-diffusion}}
+\subsubsection[{boundary\_\-diffusive\_\-matrix\_\-if}]{\setlength{\rightskip}{0pt plus 5cm}subroutine boundary\_\-diffusion.boundary\_\-diffusive\_\-matrix\_\-if (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em center\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em up\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em down\_\-diag}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  real(stm\_\-real),intent(in) {\em theta\_\-stm}, \/  integer,intent(in) {\em ncell}, \/  real(stm\_\-real),intent(in) {\em time}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00051_781f25a83683631c224d3f258b12590b}
+
+
+This pointer should be set by the driver or client code to specify the treatment at the boundaries. 
+
+Generic interface for calculating BC of matrix that should be fulfilled by the driver or the client programs \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em center\_\-diag}]Values of the coefficients at the diagonal in matrix\item[{\em up\_\-diag}]Values of the coefficients above the diagonal in matrix\item[{\em down\_\-diag}]Values of the coefficients below diagonal in matrix\item[{\em area}]Cell centered area at new time \item[{\em area\_\-lo}]Low side area at new time\item[{\em area\_\-hi}]High side area at new time \item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef. at new time\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef. at new time\item[{\em theta\_\-stm}]Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit \item[{\em ncell}]Number of cells\item[{\em time}]Current time\item[{\em nvar}]Number of variables\item[{\em dx}]Spatial step \item[{\em dt}]Time step \end{description}
+\end{Desc}
+\hypertarget{a00051_35936f4856e0472bc61d1deef432ff3e}{
+\index{boundary\_\-diffusion@{boundary\_\-diffusion}!neumann\_\-diffusion\_\-matrix@{neumann\_\-diffusion\_\-matrix}}
+\index{neumann\_\-diffusion\_\-matrix@{neumann\_\-diffusion\_\-matrix}!boundary_diffusion@{boundary\_\-diffusion}}
+\subsubsection[{neumann\_\-diffusion\_\-matrix}]{\setlength{\rightskip}{0pt plus 5cm}subroutine boundary\_\-diffusion.neumann\_\-diffusion\_\-matrix (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em center\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em up\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em down\_\-diag}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  real(stm\_\-real),intent(in) {\em theta\_\-stm}, \/  integer,intent(in) {\em ncell}, \/  real(stm\_\-real),intent(in) {\em time}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00051_35936f4856e0472bc61d1deef432ff3e}
+
+
+Example diffusive flux that imposes Neumann boundaries with zero flux at both ends of the channel. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em center\_\-diag}]Values of the coefficients at the diagonal in matrix\item[{\em up\_\-diag}]Values of the coefficients above the diagonal in matrix\item[{\em down\_\-diag}]Values of the coefficients below diagonal in matrix\item[{\em area}]Cell centered area at new time \item[{\em area\_\-lo}]Low side area at new time\item[{\em area\_\-hi}]High side area at new time \item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef. at new time\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef. at new time\item[{\em theta\_\-stm}]Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit \item[{\em ncell}]Number of cells\item[{\em time}]Current time\item[{\em nvar}]Number of variables\item[{\em dx}]Spatial step \item[{\em dt}]Time step \end{description}
+\end{Desc}
+\hypertarget{a00051_1e0b364f397107a8d87850fedede417a}{
+\index{boundary\_\-diffusion@{boundary\_\-diffusion}!neumann\_\-no\_\-flow\_\-diffusive\_\-flux@{neumann\_\-no\_\-flow\_\-diffusive\_\-flux}}
+\index{neumann\_\-no\_\-flow\_\-diffusive\_\-flux@{neumann\_\-no\_\-flow\_\-diffusive\_\-flux}!boundary_diffusion@{boundary\_\-diffusion}}
+\subsubsection[{neumann\_\-no\_\-flow\_\-diffusive\_\-flux}]{\setlength{\rightskip}{0pt plus 5cm}subroutine boundary\_\-diffusion.neumann\_\-no\_\-flow\_\-diffusive\_\-flux (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em diffusive\_\-flux\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em diffusive\_\-flux\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc}, \/  real(stm\_\-real),dimension         (ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension         (ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time})}}
+\label{a00051_1e0b364f397107a8d87850fedede417a}
+
+
+Example diffusive flux that imposes Neumann boundaries with zero flux at both ends of the channel. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em diffusive\_\-flux\_\-lo}]face flux, lo side\item[{\em diffusive\_\-flux\_\-hi}]face flux, hi side\item[{\em conc}]concentration \item[{\em area\_\-lo}]Low side area centered at old time\item[{\em area\_\-hi}]High side area centered at old time\item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef.\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef.\item[{\em ncell}]number of cells\item[{\em nvar}]number of variables\item[{\em time}]time \end{description}
+\end{Desc}
+\hypertarget{a00051_6a67899a1c3944d943a1b2fb5aac2986}{
+\index{boundary\_\-diffusion@{boundary\_\-diffusion}!uninitialized\_\-diffusive\_\-bc\_\-matrix@{uninitialized\_\-diffusive\_\-bc\_\-matrix}}
+\index{uninitialized\_\-diffusive\_\-bc\_\-matrix@{uninitialized\_\-diffusive\_\-bc\_\-matrix}!boundary_diffusion@{boundary\_\-diffusion}}
+\subsubsection[{uninitialized\_\-diffusive\_\-bc\_\-matrix}]{\setlength{\rightskip}{0pt plus 5cm}subroutine boundary\_\-diffusion.uninitialized\_\-diffusive\_\-bc\_\-matrix (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em center\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em up\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em down\_\-diag}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  real(stm\_\-real),intent(in) {\em theta\_\-stm}, \/  integer,intent(in) {\em ncell}, \/  real(stm\_\-real),intent(in) {\em time}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00051_6a67899a1c3944d943a1b2fb5aac2986}
+
+
+Example matrix that prints an error and bails. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em center\_\-diag}]Values of the coefficients at the diagonal in matrix\item[{\em up\_\-diag}]Values of the coefficients above the diagonal in matrix\item[{\em down\_\-diag}]Values of the coefficients below diagonal in matrix\item[{\em area}]Cell centered area at new time \item[{\em area\_\-lo}]Low side area at new time\item[{\em area\_\-hi}]High side area at new time \item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef. at new time\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef. at new time\item[{\em theta\_\-stm}]Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit \item[{\em ncell}]Number of cells\item[{\em time}]Current time\item[{\em nvar}]Number of variables\item[{\em dx}]Spatial step \item[{\em dt}]Time step \end{description}
+\end{Desc}
+\hypertarget{a00051_c27cf26f93c52ce9d432267264793736}{
+\index{boundary\_\-diffusion@{boundary\_\-diffusion}!uninitialized\_\-diffusive\_\-flux@{uninitialized\_\-diffusive\_\-flux}}
+\index{uninitialized\_\-diffusive\_\-flux@{uninitialized\_\-diffusive\_\-flux}!boundary_diffusion@{boundary\_\-diffusion}}
+\subsubsection[{uninitialized\_\-diffusive\_\-flux}]{\setlength{\rightskip}{0pt plus 5cm}subroutine boundary\_\-diffusion.uninitialized\_\-diffusive\_\-flux (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em diffusive\_\-flux\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em diffusive\_\-flux\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc}, \/  real(stm\_\-real),dimension         (ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension         (ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time})}}
+\label{a00051_c27cf26f93c52ce9d432267264793736}
+
+
+This pointer should be set by the driver or client code to specify the treatment at the first and last row of coefficient matrix. 
+
+Example diffusive flux that prints an error and bails \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em diffusive\_\-flux\_\-lo}]face flux, lo side\item[{\em diffusive\_\-flux\_\-hi}]face flux, hi side\item[{\em conc}]concentration \item[{\em area\_\-lo}]Low side area centered at old time\item[{\em area\_\-hi}]High side area centered at old time\item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef.\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef.\item[{\em ncell}]number of cells\item[{\em nvar}]number of variables\item[{\em time}]time \end{description}
+\end{Desc}

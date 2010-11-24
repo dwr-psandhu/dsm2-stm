@@ -1,0 +1,39 @@
+\hypertarget{a00069}{
+\section{Package source\_\-sink}
+\label{a00069}\index{source\_\-sink@{source\_\-sink}}
+}
+Source \hyperlink{a00002}{interface} to be fulfilled by driver or application Specifically, the user must set the \char`\"{}source\char`\"{} pointer (a variable in this module) to a subroutine that meets the compute\_\-source \hyperlink{a00002}{interface}.  
+
+
+\subsection*{Data Types}
+\begin{CompactItemize}
+\item 
+interface \hyperlink{a00002}{interface}
+\begin{CompactList}\small\item\em Calculate source. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00069_55d2e6a4c1b1ffb79f6bc5b4e39b9c2c}{no\_\-source} (source, conc, area, flow, ncell, nvar, time)
+\begin{CompactList}\small\item\em Zero source implementation. This source term adds nothing (e.g., for conservative constituents). \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Source \hyperlink{a00002}{interface} to be fulfilled by driver or application Specifically, the user must set the \char`\"{}source\char`\"{} pointer (a variable in this module) to a subroutine that meets the compute\_\-source \hyperlink{a00002}{interface}. 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00069_55d2e6a4c1b1ffb79f6bc5b4e39b9c2c}{
+\index{source\_\-sink@{source\_\-sink}!no\_\-source@{no\_\-source}}
+\index{no\_\-source@{no\_\-source}!source_sink@{source\_\-sink}}
+\subsubsection[{no\_\-source}]{\setlength{\rightskip}{0pt plus 5cm}subroutine source\_\-sink.no\_\-source (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em source}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em flow}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time})}}
+\label{a00069_55d2e6a4c1b1ffb79f6bc5b4e39b9c2c}
+
+
+Zero source implementation. This source term adds nothing (e.g., for conservative constituents). 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em source}]cell centered source \item[{\em conc}]Concentration\item[{\em area}]area at source \item[{\em flow}]flow at source location\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]time \end{description}
+\end{Desc}

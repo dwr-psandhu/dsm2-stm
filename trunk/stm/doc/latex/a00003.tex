@@ -1,0 +1,37 @@
+\hypertarget{a00003}{
+\section{boundary\_\-diffusion\_\-matrix\_\-module.interface Interface Reference}
+\label{a00003}\index{boundary\_\-diffusion\_\-matrix\_\-module::interface@{boundary\_\-diffusion\_\-matrix\_\-module::interface}}
+}
+Calculate boundary \hyperlink{a00056}{diffusion} matrix.  
+
+
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00003_264875de0ad3240178f5d579d8542776}{boundary\_\-diffusive\_\-matrix\_\-if} (center\_\-diag, up\_\-diag, down\_\-diag, area, area\_\-lo, area\_\-hi, disp\_\-coef\_\-lo, disp\_\-coef\_\-hi, theta\_\-stm, ncell, time, nvar, dx, dt)
+\begin{CompactList}\small\item\em Generic \hyperlink{a00003}{interface} for calculating BC of matrix that should be fulfilled by client programs. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Calculate boundary \hyperlink{a00056}{diffusion} matrix. 
+
+\subsection{Member Function/Subroutine Documentation}
+\hypertarget{a00003_264875de0ad3240178f5d579d8542776}{
+\index{boundary\_\-diffusion\_\-matrix\_\-module::interface@{boundary\_\-diffusion\_\-matrix\_\-module::interface}!boundary\_\-diffusive\_\-matrix\_\-if@{boundary\_\-diffusive\_\-matrix\_\-if}}
+\index{boundary\_\-diffusive\_\-matrix\_\-if@{boundary\_\-diffusive\_\-matrix\_\-if}!boundary_diffusion_matrix_module::interface@{boundary\_\-diffusion\_\-matrix\_\-module::interface}}
+\subsubsection[{boundary\_\-diffusive\_\-matrix\_\-if}]{\setlength{\rightskip}{0pt plus 5cm}subroutine boundary\_\-diffusion\_\-matrix\_\-module.interface.boundary\_\-diffusive\_\-matrix\_\-if (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em center\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em up\_\-diag}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em down\_\-diag}, \/  real(stm\_\-real),dimension (ncell),intent(in) {\em area}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area\_\-hi}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-lo}, \/  real(stm\_\-real),dimension (ncell,nvar),intent(in) {\em disp\_\-coef\_\-hi}, \/  real(stm\_\-real),intent(in) {\em theta\_\-stm}, \/  integer,intent(in) {\em ncell}, \/  real(stm\_\-real),intent(in) {\em time}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00003_264875de0ad3240178f5d579d8542776}
+
+
+Generic \hyperlink{a00003}{interface} for calculating BC of matrix that should be fulfilled by client programs. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em center\_\-diag}]Values of the coefficients at the diagonal in matrix\item[{\em up\_\-diag}]Values of the coefficients above the diagonal in matrix\item[{\em down\_\-diag}]Values of the coefficients below diagonal in matrix\item[{\em area}]Cell centered area at new time \item[{\em area\_\-lo}]Low side area at new time\item[{\em area\_\-hi}]High side area at new time \item[{\em disp\_\-coef\_\-lo}]Low side constituent dispersion coef. at new time\item[{\em disp\_\-coef\_\-hi}]High side constituent dispersion coef. at new time\item[{\em theta\_\-stm}]Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit \item[{\em ncell}]Number of cells\item[{\em time}]Current time\item[{\em nvar}]Number of variables\item[{\em dx}]Spatial step \item[{\em dt}]Time step \end{description}
+\end{Desc}
+
+
+The documentation for this interface was generated from the following file:\begin{CompactItemize}
+\item 
+D:/delta/trunk/stm/src/transport/boundary\_\-diffusion\_\-matrix.f90\end{CompactItemize}

@@ -1,0 +1,42 @@
+\hypertarget{a00066}{
+\section{Package matrix\_\-solver}
+\label{a00066}\index{matrix\_\-solver@{matrix\_\-solver}}
+}
+Matrix solver module for the system of linear equations. The solvers include:\begin{itemize}
+\item Tri-diagonal solver using todo:? algorithm\item Penta-diagonal solver using todo:? algorithm\item Sparse matrix solver. \end{itemize}
+ 
+
+
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00066_f8a75322afb36d15bb848db092161abd}{tridi\_\-solver} (center\_\-diag, up\_\-diag, down\_\-diag, right\_\-hand\_\-side, conc, ncell)
+\begin{CompactList}\small\item\em Solves a tridiagonal system. This sub-routine was taken from the Numerical Recipes in Fortran, page 43 (Edition of 1992). \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Matrix solver module for the system of linear equations. The solvers include:\begin{itemize}
+\item Tri-diagonal solver using todo:? algorithm\item Penta-diagonal solver using todo:? algorithm\item Sparse matrix solver. \end{itemize}
+
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00066_f8a75322afb36d15bb848db092161abd}{
+\index{matrix\_\-solver@{matrix\_\-solver}!tridi\_\-solver@{tridi\_\-solver}}
+\index{tridi\_\-solver@{tridi\_\-solver}!matrix_solver@{matrix\_\-solver}}
+\subsubsection[{tridi\_\-solver}]{\setlength{\rightskip}{0pt plus 5cm}subroutine matrix\_\-solver.tridi\_\-solver (real(stm\_\-real),dimension(ncell),intent(in) {\em center\_\-diag}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em up\_\-diag}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em down\_\-diag}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em right\_\-hand\_\-side}, \/  real(stm\_\-real),dimension(ncell),intent(out) {\em conc}, \/  integer,intent(in) {\em ncell})}}
+\label{a00066_f8a75322afb36d15bb848db092161abd}
+
+
+Solves a tridiagonal system. This sub-routine was taken from the Numerical Recipes in Fortran, page 43 (Edition of 1992). 
+
+\mbox{[}B1,C1,00,00,00\mbox{]} \mbox{[}X1,X2,...\mbox{]} \mbox{[}A2,B2,C2,00,00\mbox{]} = \mbox{[}D1,D2,....\mbox{]} \mbox{[}00,A3,B3,C3,00\mbox{]} \mbox{[}00,00,A4,B4,C4\mbox{]} \mbox{[}00,00,00,A5,B5\mbox{]}
+
+Variables:
+
+A(i): Values of the coefficients below diagonal in matrix B(i): Values of the coefficients at the diagonal in matrix C(i): Values of the coefficients above diagonal in matrix D(i): Values of the right hand side vector X(i): Values of the computed solution \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em center\_\-diag}]Values of the coefficients at the diagonal in matrix\item[{\em up\_\-diag}]Values of the coefficients above the diagonal in matrix\item[{\em down\_\-diag}]Values of the coefficients below diagonal in matrix\item[{\em right\_\-hand\_\-side}]Values of the right hand side vector\item[{\em conc}]Values of the computed solution\item[{\em ncell}]Number of volumes \end{description}
+\end{Desc}

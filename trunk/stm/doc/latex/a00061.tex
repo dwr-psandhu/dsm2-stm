@@ -1,0 +1,50 @@
+\hypertarget{a00061}{
+\section{Package gradient}
+\label{a00061}\index{gradient@{gradient}}
+}
+Module containing routines for calculating differences and limiters.  
+
+
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00061_2f6957a265ee8b99b78bb9a27a0e64ab}{difference} (grad\_\-lo, grad\_\-hi, grad\_\-center, vals, ncell, nvar)
+\begin{CompactList}\small\item\em Calculate the undivided lo, hi, and centered differences. \item\end{CompactList}\item 
+subroutine \hyperlink{a00061_64ad308bd281dd6315a927bf0f9721da}{limiter} (grad\_\-lim, grad\_\-lo, grad\_\-hi, grad\_\-center, ncell, nvar)
+\begin{CompactList}\small\item\em Apply a flux limiter (van Leer) given one-sided and centered differences. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Module containing routines for calculating differences and limiters. 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00061_2f6957a265ee8b99b78bb9a27a0e64ab}{
+\index{gradient@{gradient}!difference@{difference}}
+\index{difference@{difference}!gradient@{gradient}}
+\subsubsection[{difference}]{\setlength{\rightskip}{0pt plus 5cm}subroutine gradient.difference (real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em grad\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em grad\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em grad\_\-center}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em vals}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar})}}
+\label{a00061_2f6957a265ee8b99b78bb9a27a0e64ab}
+
+
+Calculate the undivided lo, hi, and centered differences. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em grad\_\-lo}]Difference on lo side, LARGEREAL in first index\item[{\em grad\_\-hi}]Difference on hi side (n+1) minus (n) LARGEREAL for last index\item[{\em grad\_\-center}]Dentered diff, LARGEREAL for undefined boundary cells\item[{\em vals}]Data to be differenced\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables \end{description}
+\end{Desc}
+\hypertarget{a00061_64ad308bd281dd6315a927bf0f9721da}{
+\index{gradient@{gradient}!limiter@{limiter}}
+\index{limiter@{limiter}!gradient@{gradient}}
+\subsubsection[{limiter}]{\setlength{\rightskip}{0pt plus 5cm}subroutine gradient.limiter (real(stm\_\-real),dimension(ncell,nvar),intent(out) {\em grad\_\-lim}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em grad\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em grad\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em grad\_\-center}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar})}}
+\label{a00061_64ad308bd281dd6315a927bf0f9721da}
+
+
+Apply a flux limiter (van Leer) given one-sided and centered differences. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em grad\_\-lim}]limited difference\item[{\em grad\_\-lo}]difference on lo side, LARGEREAL in first index\item[{\em grad\_\-hi}]difference on hi side (n+1) minus (n) LARGEREAL for last index\item[{\em grad\_\-center}]centered difference, LARGEREAL for undefined boundary cells \item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables \end{description}
+\end{Desc}

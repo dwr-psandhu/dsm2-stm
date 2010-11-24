@@ -1,0 +1,59 @@
+\hypertarget{a00098}{
+\section{transport}
+\label{a00098}\index{transport@{transport}}
+}
+\subsection*{Packages}
+\begin{CompactItemize}
+\item 
+package \hyperlink{a00052}{advection}
+\begin{CompactList}\small\item\em Module orchestrating the \hyperlink{a00052}{advection} scheme. The main routine in the module is advection(). \item\end{CompactList}
+
+\item 
+package \hyperlink{a00053}{boundary\_\-advection\_\-module}
+\begin{CompactList}\small\item\em boundary \hyperlink{a00052}{advection} \hyperlink{a00004}{interface} to be fulfilled by driver or application \item\end{CompactList}
+
+\item 
+package \hyperlink{a00054}{boundary\_\-diffusion}
+\begin{CompactList}\small\item\em boundary diffusive flux interface to be fulfilled by driver or application \item\end{CompactList}
+
+\item 
+package \hyperlink{a00055}{boundary\_\-diffusion\_\-matrix\_\-module}
+\begin{CompactList}\small\item\em boundary diffusive matrix \hyperlink{a00003}{interface} to be fulfilled by driver or application \item\end{CompactList}
+
+\item 
+package \hyperlink{a00056}{diffusion}
+\begin{CompactList}\small\item\em Module orchestrating the \hyperlink{a00056}{diffusion} scheme. The main routine in the module is \hyperlink{a00056_b108f04e81c5fda27fe18ee2aa18086c}{diffuse()}. Explicit and implicit \hyperlink{a00056}{diffusion} operators are included here. \item\end{CompactList}
+
+\item 
+package \hyperlink{a00061}{gradient}
+\begin{CompactList}\small\item\em Module containing routines for calculating differences and limiters. \item\end{CompactList}
+
+\item 
+package \hyperlink{a00063}{hydro\_\-data}
+\begin{CompactList}\small\item\em Hydrodynamics \hyperlink{a00001}{interface} to be fulfilled by driver or application. \item\end{CompactList}
+
+\item 
+package \hyperlink{a00067}{primitive\_\-variable\_\-conversion}
+\begin{CompactList}\small\item\em Module containing routines for converting mass to concentraion, and concentration to mass. \item\end{CompactList}
+
+\item 
+package \hyperlink{a00068}{reaction}
+\begin{CompactList}\small\item\em Module orchestrating the \hyperlink{a00068}{reaction} scheme. The main routine in the module is \hyperlink{a00068_ce059846828705ce745ad6a3549d3d8a}{react()}. \item\end{CompactList}
+
+\item 
+package \hyperlink{a00069}{source\_\-sink}
+\begin{CompactList}\small\item\em Source \hyperlink{a00002}{interface} to be fulfilled by driver or application Specifically, the user must set the \char`\"{}source\char`\"{} pointer (a variable in this module) to a subroutine that meets the compute\_\-source \hyperlink{a00002}{interface}. \item\end{CompactList}
+
+\item 
+package \hyperlink{a00070}{state\_\-variables}
+\begin{CompactList}\small\item\em Defines state variables for the transport problem as well as functions to allocate them. \item\end{CompactList}
+
+\item 
+package \hyperlink{a00071}{stm\_\-precision}
+\begin{CompactList}\small\item\em Definition of model precision, precision-related constants and special values. \item\end{CompactList}
+
+\item 
+package \hyperlink{a00072}{stm\_\-type}
+\begin{CompactList}\small\item\em Definition of model types. \item\end{CompactList}
+
+\end{CompactItemize}

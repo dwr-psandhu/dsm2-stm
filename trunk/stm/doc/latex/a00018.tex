@@ -1,0 +1,26 @@
+\hypertarget{a00018}{
+\section{D:/delta/trunk/stm/src/transport/source.f90 File Reference}
+\label{a00018}\index{D:/delta/trunk/stm/src/transport/source.f90@{D:/delta/trunk/stm/src/transport/source.f90}}
+}
+\subsection*{Data Types}
+\begin{CompactItemize}
+\item 
+interface \hyperlink{a00001}{source\_\-module.compute\_\-source}
+\begin{CompactList}\small\item\em Calculate source. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Packages}
+\begin{CompactItemize}
+\item 
+package \hyperlink{a00065}{source\_\-module}
+\begin{CompactList}\small\item\em Source interface to be fulfilled by driver or application Specifically, the user must set the \char`\"{}source\char`\"{} pointer (a variable in this module) to a subroutine that meets the \hyperlink{a00001}{compute\_\-source} interface. \item\end{CompactList}
+
+\end{CompactItemize}
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00065_e608c06c729047268f62b8d3a15eec2b}{source\_\-module.no\_\-source} (source, conc, area, flow, ncell, nvar, time)
+\begin{CompactList}\small\item\em Zero source implementation. This source term adds nothing (e.g., for conservative constituents). \item\end{CompactList}\item 
+subroutine \hyperlink{a00065_48ea3b4a3d61af2fbf974185fad9d5ce}{source\_\-module.linear\_\-decay\_\-source} (source, conc, area, flow, ncell, nvar, time)
+\begin{CompactList}\small\item\em linear source (decay) implementation. dC/dt = K \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}

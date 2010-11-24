@@ -1,0 +1,55 @@
+\hypertarget{a00053}{
+\section{Package boundary\_\-advection\_\-module}
+\label{a00053}\index{boundary\_\-advection\_\-module@{boundary\_\-advection\_\-module}}
+}
+boundary \hyperlink{a00052}{advection} \hyperlink{a00004}{interface} to be fulfilled by driver or application  
+
+
+\subsection*{Data Types}
+\begin{CompactItemize}
+\item 
+interface \hyperlink{a00004}{interface}
+\begin{CompactList}\small\item\em Calculate boundary \hyperlink{a00052}{advection}. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00053_26eb82e9a6eae1dd87145fafd01bd2ae}{uninitialized\_\-advection\_\-bc} (flux\_\-lo, flux\_\-hi, conc\_\-lo, conc\_\-hi, flow\_\-lo, flow\_\-hi, ncell, nvar, time, dt, dx)
+\begin{CompactList}\small\item\em This pointer should be set by the driver or client code to specify the treatment at the \hyperlink{a00052}{advection} boundary condition. \item\end{CompactList}\item 
+subroutine \hyperlink{a00053_be28f15b0eabbed1d1f745d2e27cbdc7}{neumann\_\-advective\_\-flux} (flux\_\-lo, flux\_\-hi, conc\_\-lo, conc\_\-hi, flow\_\-lo, flow\_\-hi, ncell, nvar, time, dt, dx)
+\begin{CompactList}\small\item\em Example advective flux that imposes Neumann boundaries with zero flux at both ends of the channel. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+boundary \hyperlink{a00052}{advection} \hyperlink{a00004}{interface} to be fulfilled by driver or application 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00053_be28f15b0eabbed1d1f745d2e27cbdc7}{
+\index{boundary\_\-advection\_\-module@{boundary\_\-advection\_\-module}!neumann\_\-advective\_\-flux@{neumann\_\-advective\_\-flux}}
+\index{neumann\_\-advective\_\-flux@{neumann\_\-advective\_\-flux}!boundary_advection_module@{boundary\_\-advection\_\-module}}
+\subsubsection[{neumann\_\-advective\_\-flux}]{\setlength{\rightskip}{0pt plus 5cm}subroutine boundary\_\-advection\_\-module.neumann\_\-advective\_\-flux (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em flux\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em flux\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc\_\-hi}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em flow\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em flow\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time}, \/  real(stm\_\-real),intent(in) {\em dt}, \/  real(stm\_\-real),intent(in) {\em dx})}}
+\label{a00053_be28f15b0eabbed1d1f745d2e27cbdc7}
+
+
+Example advective flux that imposes Neumann boundaries with zero flux at both ends of the channel. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em flux\_\-lo}]flux on lo side of cell, time centered\item[{\em flux\_\-hi}]flux on hi side of cell, time centered\item[{\em conc\_\-lo}]concentration extrapolated to lo face\item[{\em conc\_\-hi}]concentration extrapolated to hi face\item[{\em flow\_\-lo}]flow on lo side of cells centered in time\item[{\em flow\_\-hi}]flow on hi side of cells centered in time\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]Current time\item[{\em dt}]Time step \item[{\em dx}]Spatial step \end{description}
+\end{Desc}
+\hypertarget{a00053_26eb82e9a6eae1dd87145fafd01bd2ae}{
+\index{boundary\_\-advection\_\-module@{boundary\_\-advection\_\-module}!uninitialized\_\-advection\_\-bc@{uninitialized\_\-advection\_\-bc}}
+\index{uninitialized\_\-advection\_\-bc@{uninitialized\_\-advection\_\-bc}!boundary_advection_module@{boundary\_\-advection\_\-module}}
+\subsubsection[{uninitialized\_\-advection\_\-bc}]{\setlength{\rightskip}{0pt plus 5cm}subroutine boundary\_\-advection\_\-module.uninitialized\_\-advection\_\-bc (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em flux\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em flux\_\-hi}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc\_\-lo}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc\_\-hi}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em flow\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em flow\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time}, \/  real(stm\_\-real),intent(in) {\em dt}, \/  real(stm\_\-real),intent(in) {\em dx})}}
+\label{a00053_26eb82e9a6eae1dd87145fafd01bd2ae}
+
+
+This pointer should be set by the driver or client code to specify the treatment at the \hyperlink{a00052}{advection} boundary condition. 
+
+Example uninitialize that prints an error and bails \begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em flux\_\-lo}]flux on lo side of cell, time centered\item[{\em flux\_\-hi}]flux on hi side of cell, time centered\item[{\em conc\_\-lo}]concentration extrapolated to lo face\item[{\em conc\_\-hi}]concentration extrapolated to hi face\item[{\em flow\_\-lo}]flow on lo side of cells centered in time\item[{\em flow\_\-hi}]flow on hi side of cells centered in time\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]Current time\item[{\em dt}]Time step \item[{\em dx}]Spatial step \end{description}
+\end{Desc}

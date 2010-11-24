@@ -1,0 +1,37 @@
+\hypertarget{a00001}{
+\section{hydro\_\-data.interface Interface Reference}
+\label{a00001}\index{hydro\_\-data::interface@{hydro\_\-data::interface}}
+}
+Generic \hyperlink{a00001}{interface} for fetching hydrodynamic data.  
+
+
+\subsection*{Public Member Functions}
+\begin{CompactItemize}
+\item 
+subroutine \hyperlink{a00001_5a0e84de2b65341622690c563dbda3b9}{hydro\_\-data\_\-if} (flow, flow\_\-lo, flow\_\-hi, area, area\_\-lo, area\_\-hi, ncell, time, dx, dt)
+\begin{CompactList}\small\item\em Fill in hydrodynamic data. This data might be calculated from a function or provided by another module Note that continuity must be satisfied between time steps. The implementation must be provided by the driver or application. \item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Generic \hyperlink{a00001}{interface} for fetching hydrodynamic data. 
+
+\subsection{Member Function/Subroutine Documentation}
+\hypertarget{a00001_5a0e84de2b65341622690c563dbda3b9}{
+\index{hydro\_\-data::interface@{hydro\_\-data::interface}!hydro\_\-data\_\-if@{hydro\_\-data\_\-if}}
+\index{hydro\_\-data\_\-if@{hydro\_\-data\_\-if}!hydro_data::interface@{hydro\_\-data::interface}}
+\subsubsection[{hydro\_\-data\_\-if}]{\setlength{\rightskip}{0pt plus 5cm}subroutine hydro\_\-data.interface.hydro\_\-data\_\-if (real(stm\_\-real),dimension(ncell),intent(out) {\em flow}, \/  real(stm\_\-real),dimension(ncell),intent(out) {\em flow\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(out) {\em flow\_\-hi}, \/  real(stm\_\-real),dimension(ncell),intent(out) {\em area}, \/  real(stm\_\-real),dimension(ncell),intent(out) {\em area\_\-lo}, \/  real(stm\_\-real),dimension(ncell),intent(out) {\em area\_\-hi}, \/  integer,intent(in) {\em ncell}, \/  real(stm\_\-real),intent(in) {\em time}, \/  real(stm\_\-real),intent(in) {\em dx}, \/  real(stm\_\-real),intent(in) {\em dt})}}
+\label{a00001_5a0e84de2b65341622690c563dbda3b9}
+
+
+Fill in hydrodynamic data. This data might be calculated from a function or provided by another module Note that continuity must be satisfied between time steps. The implementation must be provided by the driver or application. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em flow}]Cell and time centered flow\item[{\em flow\_\-lo}]Lo face flow, time centered\item[{\em flow\_\-hi}]Hi face flow, time centered\item[{\em area}]Cell center area, old time\item[{\em area\_\-lo}]Area lo face, time centered\item[{\em area\_\-hi}]Area hi face, time centered\item[{\em ncell}]Number of cells\item[{\em time}]Time of request \char`\"{}old time\char`\"{}\item[{\em dx}]Spatial step \item[{\em dt}]Time step \end{description}
+\end{Desc}
+
+
+The documentation for this interface was generated from the following file:\begin{CompactItemize}
+\item 
+D:/delta/trunk/stm/src/transport/hydro\_\-data.f90\end{CompactItemize}

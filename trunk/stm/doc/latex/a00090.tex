@@ -1,0 +1,60 @@
+\hypertarget{a00090}{
+\section{Package test\_\-liner\_\-reaction}
+\label{a00090}\index{test\_\-liner\_\-reaction@{test\_\-liner\_\-reaction}}
+}
+Test of mass transport convergence in uniform flow.  
+
+
+\subsection*{Functions/Subroutines}
+\begin{CompactItemize}
+\item 
+\hypertarget{a00090_cd325397f8ef1373766626c9bcb76af8}{
+subroutine \hyperlink{a00090_cd325397f8ef1373766626c9bcb76af8}{test\_\-reaction\_\-decay\_\-convergence} (verbose)}
+\label{a00090_cd325397f8ef1373766626c9bcb76af8}
+
+\begin{CompactList}\small\item\em Subroutine that runs a small \hyperlink{a00068}{reaction} simulation. \item\end{CompactList}\item 
+subroutine \hyperlink{a00090_ca5e60e57bdca174389beb43b8bc5db7}{linear\_\-decay\_\-source} (source, conc, area, flow, ncell, nvar, time)
+\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+\hypertarget{a00090_476c4d9f665f09ebb571fe1f1d41cddc}{
+integer, parameter \textbf{nstep\_\-base} = 40}
+\label{a00090_476c4d9f665f09ebb571fe1f1d41cddc}
+
+\item 
+\hypertarget{a00090_71f7abddf3fc1507115af11d8836f3c2}{
+integer, parameter \textbf{nvar} = 2}
+\label{a00090_71f7abddf3fc1507115af11d8836f3c2}
+
+\item 
+\hypertarget{a00090_871af4398e8f123cafa86413f7fc6deb}{
+real(stm\_\-real), parameter \textbf{total\_\-time} = 160.d0}
+\label{a00090_871af4398e8f123cafa86413f7fc6deb}
+
+\item 
+\hypertarget{a00090_bcc69fd5405de5bade24207ff257f786}{
+real(stm\_\-real), parameter \textbf{decay\_\-coef} = 0.004d0}
+\label{a00090_bcc69fd5405de5bade24207ff257f786}
+
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Test of mass transport convergence in uniform flow. 
+
+
+
+\subsection{Function/Subroutine Documentation}
+\hypertarget{a00090_ca5e60e57bdca174389beb43b8bc5db7}{
+\index{test\_\-liner\_\-reaction@{test\_\-liner\_\-reaction}!linear\_\-decay\_\-source@{linear\_\-decay\_\-source}}
+\index{linear\_\-decay\_\-source@{linear\_\-decay\_\-source}!test_liner_reaction@{test\_\-liner\_\-reaction}}
+\subsubsection[{linear\_\-decay\_\-source}]{\setlength{\rightskip}{0pt plus 5cm}subroutine test\_\-liner\_\-reaction.linear\_\-decay\_\-source (real(stm\_\-real),dimension(ncell,nvar),intent(inout) {\em source}, \/  real(stm\_\-real),dimension(ncell,nvar),intent(in) {\em conc}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em area}, \/  real(stm\_\-real),dimension(ncell),intent(in) {\em flow}, \/  integer,intent(in) {\em ncell}, \/  integer,intent(in) {\em nvar}, \/  real(stm\_\-real),intent(in) {\em time})}}
+\label{a00090_ca5e60e57bdca174389beb43b8bc5db7}
+
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em source}]cell centered source \item[{\em conc}]Concentration\item[{\em area}]area at source \item[{\em flow}]flow at source location\item[{\em ncell}]Number of cells\item[{\em nvar}]Number of variables\item[{\em time}]time \end{description}
+\end{Desc}
