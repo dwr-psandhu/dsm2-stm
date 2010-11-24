@@ -56,6 +56,7 @@ use boundary_diffusion
 use dispersion_coefficient
 use source_sink
 use test_convergence_transport
+use single_channel_boundary
     
 implicit none
 procedure(hydro_data_if),pointer :: zoppou_hydro          !< The pointer points to the test's flow data
@@ -67,7 +68,7 @@ real(stm_real) :: domain_length
 real(stm_real) :: total_time
 character(LEN=64) :: label 
  
-zoppou_hydro=> zoppou_flow        ! this flow generator is mass conservative
+       ! this flow generator is mass conservative
 
 ! todo: use test_convergence_transport_uniform as a model. You will be using dirichlet
 !       (probably). Use code similar to the stuff around line 204. You will be using the
@@ -75,12 +76,13 @@ zoppou_hydro=> zoppou_flow        ! this flow generator is mass conservative
 !       for zoppou. This is needed for both advection and dispersion. You will also need 
 !       to use the proper API for setting dispersion.
 
-
-!advection_boundary_flux => zoppou_advective_flux 
-!boundary_diffusion_flux => zoppou_diffusive_flux
-!boundary_diffusion_matrix => zoppou_diffusion_matrix
+zoppou_hydro=> zoppou_flow 
+advection_boundary_flux => zoppou_advective_flux 
+boundary_diffusion_flux => zoppou_diffusive_flux
+boundary_diffusion_matrix => zoppou_diffusion_matrix
 compute_source => no_source
-!const_dispersion = zero
+dispersion_coef => zoppou_disp_coef
+
 
 label = 'advection_dispersion_zoppou' 
 domain_length = xl - x0
@@ -101,15 +103,21 @@ call initial_fine_solution_zoppou(fine_initial_condition, &
                                   start_time,             &
                                   end_time)
                                       
+                                      
+!                                      
+!call set_single_channel_boundary(dirichlet_advective_flux_lo, left_bc_dirichlet_zoppou, &
+!                                 dirichlet_advective_flux_hi, right_bc_dirichlet_zoppou, &
+!                                 dirichlet_diffusive_flux_lo, left_bc_dirichlet_zoppou, &
+!                                 dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data )
 
 !> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
 !> compute the norms, after each step coarsen the values and repeat computation.
 !> at the end  calculates the ratio of the norms and prints a log 
 call test_convergence(label,                  &
-                      zoppou_hydro ,           &
-                      zero_advective_flux,    &
-                      no_diffusion_flux,      &
-                      no_diffusion_matrix,    &
+                      zoppou_hydro ,          &
+                      zoppou_advective_flux,  &
+                      zoppou_diffusive_flux,  &
+                      zoppou_diffusion_matrix,&
                       no_source,              &
                       domain_length,          &
                       total_time,             &
@@ -221,16 +229,16 @@ return
 end subroutine
 !///////////////////////////////////
 !> tidal flow and area for a rectangular basin with periodic forcing in the finite volume form
-subroutine zoppou_flow (flow,    &
-                        flow_lo, &
-                        flow_hi, &
-                        area,    &
-                        area_lo, &
-                        area_hi, &
-                        ncell,   &
-                        time,    &
-                        dx,      &
-                        dt)
+subroutine zoppou_flow(flow,    &
+                       flow_lo, &
+                       flow_hi, &
+                       area,    &
+                       area_lo, &
+                       area_hi, &
+                       ncell,   &
+                       time,    &
+                       dx,      &
+                       dt)
                       
 implicit none
 integer, intent(in) :: ncell                   !< number of cells
@@ -268,143 +276,200 @@ end do
 return
 end subroutine
 
-!subroutine zoppou_advective_flux(flux_lo,    &
-!                              flux_hi,    &
-!                              conc_lo,    &
-!                              conc_hi,    &
-!                              flow_lo,    &
-!                              flow_hi,    &
-!                              ncell,      &
-!                              nvar,       &
-!                              time,       &
-!                              dt,         &
-!                              dx)
-!     
-!     use stm_precision
-!     use error_handling
-!     implicit none
-!      !--- args          
-!     integer,intent(in)  :: ncell  !< Number of cells
-!     integer,intent(in)  :: nvar   !< Number of variables
-!     ! todo: check the intents
-!     real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
-!     real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
-!     real(stm_real),intent(in)    :: flow_lo(ncell)          !< flow on lo side of cells centered in time
-!     real(stm_real),intent(in)    :: flow_hi(ncell)          !< flow on hi side of cells centered in time
-!     real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
-!     real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
-!     real(stm_real),intent(in)    :: time                    !< Current time
-!     real(stm_real),intent(in)    :: dx                      !< Spatial step  
-!     real(stm_real),intent(in)    :: dt                      !< Time step    
-!     
-!     flux_lo(1,:) = zero
-!     flux_hi(ncell,:) = zero
-!     return
-! end subroutine
-! 
-! subroutine zoppou_diffusive_flux(diffusive_flux_lo, &
-!                                           diffusive_flux_hi, &
-!                                           conc,              &
-!                                           area_lo,           &
-!                                           area_hi,           &
-!                                           disp_coef_lo,      &  
-!                                           disp_coef_hi,      &
-!                                           ncell,             &
-!                                           nvar,              &
-!                                           time,              &
-!                                           dx,                &
-!                                           dt)
-!    use stm_precision
-!    implicit none
-!    !--- args
-!    integer, intent(in)  :: ncell                                   !< number of cells
-!    integer, intent(in)  :: nvar                                    !< number of variables
-!    real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
-!    real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-!    real(stm_real), intent (in)   :: area_lo(ncell)        !< Low side area centered at time
-!    real(stm_real), intent (in)   :: area_hi(ncell)        !< High side area centered at time
-!    real(stm_real), intent (in)   :: time                           !< time
-!    real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
-!    real(stm_real), intent (in)   :: disp_coef_lo(ncell)      !< Low side constituent dispersion coef.
-!    real(stm_real), intent (in)   :: disp_coef_hi(ncell)      !< High side constituent dispersion coef.
-!    real(stm_real), intent (in)   :: dt
-!    real(stm_real), intent (in)   :: dx
-!    
-!    diffusive_flux_lo(1,:) = zero
-!    diffusive_flux_hi(ncell,:) = zero
-!    
-!       
-!    return
-! end subroutine
-!   
-!subroutine zoppou_diffusion_matrix(center_diag ,       &
-!                                   up_diag,            &     
-!                                   down_diag,          &
-!                                   right_hand_side,    & 
-!                                   conc,               &
-!                                   explicit_diffuse_op,&
-!                                   area,               &
-!                                   area_lo,            &
-!                                   area_hi,            &          
-!                                   disp_coef_lo,       &
-!                                   disp_coef_hi,       &
-!                                   theta_stm,          &
-!                                   ncell,              &
-!                                   time,               & 
-!                                   nvar,               & 
-!                                   dx,                 &
-!                                   dt)
-!     use stm_precision
-!     implicit none
-!         !--- args
-!                                       
-!     integer, intent (in) :: ncell                                               !< Number of cells
-!     integer, intent (in) :: nvar                                                !< Number of variables
-!     real(stm_real),intent (inout):: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
-!     real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
-!     real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
-!     real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right hand side vector
-!     real(stm_real), intent (in)  :: conc(ncell,nvar)
-!     real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar) 
-!     real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
-!     real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
-!     real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
-!     real(stm_real), intent (in)  :: disp_coef_lo(ncell)                        !< Low side constituent dispersion coef. at new time
-!     real(stm_real), intent (in)  :: disp_coef_hi(ncell)                        !< High side constituent dispersion coef. at new time
-!     real(stm_real), intent (in)  :: time                                        !< Current time
-!     real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
-!     real(stm_real), intent (in)  :: dx                                          !< Spatial step  
-!     real(stm_real), intent (in)  :: dt                                          !< Time step     
-!      
-!        !---local
-! 
-!     real(stm_real) :: dt_by_dxsq
-!     real(stm_real) :: xstart
-!     real(stm_real) :: xend  
-!     real(stm_real) :: flux_start(nvar)
-!     real(stm_real) :: flux_end (nvar)
-!    
-!    dt_by_dxsq = dt/(dx*dx)
-!    xstart = 0.1d0
-!    xend = one 
-!    ! area is new?!? 
-!    !todo: call flux
-!    !todo: which is dirchlet?
-!    flux_start(:) = - area_lo(1)*disp_coef_lo(1)*(two-two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1)*pi*pi*time/four)) 
-!    flux_end(:) = - area_hi(ncell)*disp_coef_hi(ncell)*(two-two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell)*pi*pi*time/four))
-!         
-!    center_diag(1,:)= area(1)+ theta_stm*dt_by_dxsq* area_hi(1)*disp_coef_hi(1)  
-!    right_hand_side(1,:) = right_hand_side(1,:) &
-!                                + theta_stm*(dt/dx)*flux_start(:)
-!    
-!    !todo: disp_coef_lo???
-!    center_diag(ncell,:)= area(ncell)+ theta_stm*dt_by_dxsq* area_lo(ncell)*disp_coef_lo(1)
-!    right_hand_side(ncell,:)= right_hand_side(ncell,:) &
-!                                   - theta_stm*(dt/dx)*flux_end(:)
-!      
-!    return
-!end subroutine
-subroutine left_bc_didirchlet_zoppou(left_bc_value_zoppou, &
+subroutine zoppou_advective_flux(flux_lo,    &
+                              flux_hi,    &
+                              conc_lo,    &
+                              conc_hi,    &
+                              flow_lo,    &
+                              flow_hi,    &
+                              ncell,      &
+                              nvar,       &
+                              time,       &
+                              dt,         &
+                              dx)
+     
+     use stm_precision
+     use error_handling
+     implicit none
+      !--- args          
+     integer,intent(in)  :: ncell  !< Number of cells
+     integer,intent(in)  :: nvar   !< Number of variables
+     ! todo: check the intents
+     real(stm_real),intent(inout) :: flux_lo(ncell,nvar)     !< flux on lo side of cell, time centered
+     real(stm_real),intent(inout) :: flux_hi(ncell,nvar)     !< flux on hi side of cell, time centered
+     real(stm_real),intent(in)    :: flow_lo(ncell)          !< flow on lo side of cells centered in time
+     real(stm_real),intent(in)    :: flow_hi(ncell)          !< flow on hi side of cells centered in time
+     real(stm_real),intent(in)    :: conc_lo(ncell,nvar)     !< concentration extrapolated to lo face
+     real(stm_real),intent(in)    :: conc_hi(ncell,nvar)     !< concentration extrapolated to hi face
+     real(stm_real),intent(in)    :: time                    !< Current time
+     real(stm_real),intent(in)    :: dx                      !< Spatial step  
+     real(stm_real),intent(in)    :: dt                      !< Time step    
+     
+     flux_lo(1,:) = zero
+     flux_hi(ncell,:) = zero
+     return
+ end subroutine
+ 
+ subroutine zoppou_diffusive_flux(diffusive_flux_lo, &
+                                           diffusive_flux_hi, &
+                                           conc,              &
+                                           area_lo,           &
+                                           area_hi,           &
+                                           disp_coef_lo,      &  
+                                           disp_coef_hi,      &
+                                           ncell,             &
+                                           nvar,              &
+                                           time,              &
+                                           dx,                &
+                                           dt)
+    use stm_precision
+    implicit none
+    !--- args
+    integer, intent(in)  :: ncell                                   !< number of cells
+    integer, intent(in)  :: nvar                                    !< number of variables
+    real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
+    real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+    real(stm_real), intent (in)   :: area_lo(ncell)        !< Low side area centered at time
+    real(stm_real), intent (in)   :: area_hi(ncell)        !< High side area centered at time
+    real(stm_real), intent (in)   :: time                           !< time
+    real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
+    real(stm_real), intent (in)   :: disp_coef_lo(ncell)      !< Low side constituent dispersion coef.
+    real(stm_real), intent (in)   :: disp_coef_hi(ncell)      !< High side constituent dispersion coef.
+    real(stm_real), intent (in)   :: dt
+    real(stm_real), intent (in)   :: dx
+    
+    diffusive_flux_lo(1,:) = zero
+    diffusive_flux_hi(ncell,:) = zero
+    
+       
+    return
+ end subroutine
+   
+subroutine zoppou_diffusion_matrix(center_diag ,       &
+                                   up_diag,            &     
+                                   down_diag,          &
+                                   right_hand_side,    & 
+                                   conc,               &
+                                   explicit_diffuse_op,&
+                                   area,               &
+                                   area_lo,            &
+                                   area_hi,            &          
+                                   disp_coef_lo,       &
+                                   disp_coef_hi,       &
+                                   theta_stm,          &
+                                   ncell,              &
+                                   time,               & 
+                                   nvar,               & 
+                                   dx,                 &
+                                   dt)
+     use stm_precision
+     implicit none
+         !--- args
+                                       
+     integer, intent (in) :: ncell                                               !< Number of cells
+     integer, intent (in) :: nvar                                                !< Number of variables
+     real(stm_real),intent (inout):: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
+     real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
+     real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
+     real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right hand side vector
+     real(stm_real), intent (in)  :: conc(ncell,nvar)
+     real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar) 
+     real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
+     real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
+     real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
+     real(stm_real), intent (in)  :: disp_coef_lo(ncell)                        !< Low side constituent dispersion coef. at new time
+     real(stm_real), intent (in)  :: disp_coef_hi(ncell)                        !< High side constituent dispersion coef. at new time
+     real(stm_real), intent (in)  :: time                                        !< Current time
+     real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+     real(stm_real), intent (in)  :: dx                                          !< Spatial step  
+     real(stm_real), intent (in)  :: dt                                          !< Time step     
+      
+        !---local
+ 
+     real(stm_real) :: dt_by_dxsq
+     real(stm_real) :: xstart
+     real(stm_real) :: xend  
+     real(stm_real) :: flux_start(nvar)
+     real(stm_real) :: flux_end (nvar)
+    
+    dt_by_dxsq = dt/(dx*dx)
+    xstart = 0.1d0
+    xend = one 
+    ! area is new?!? 
+    !todo: call flux
+    !todo: which is dirchlet?
+    flux_start(:) = - area_lo(1)*disp_coef_lo(1)*(two-two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1)*pi*pi*time/four)) 
+    flux_end(:) = - area_hi(ncell)*disp_coef_hi(ncell)*(two-two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell)*pi*pi*time/four))
+         
+    center_diag(1,:)= area(1)+ theta_stm*dt_by_dxsq* area_hi(1)*disp_coef_hi(1)  
+    right_hand_side(1,:) = right_hand_side(1,:) &
+                                + theta_stm*(dt/dx)*flux_start(:)
+    
+    !todo: disp_coef_lo???
+    center_diag(ncell,:)= area(ncell)+ theta_stm*dt_by_dxsq* area_lo(ncell)*disp_coef_lo(1)
+    right_hand_side(ncell,:)= right_hand_side(ncell,:) &
+                                   - theta_stm*(dt/dx)*flux_end(:)
+      
+    return
+end subroutine
+
+subroutine zoppou_disp_coef(disp_coef,            &
+                            disp_coef_lo,         &
+                            disp_coef_hi,         &
+                            flow,                 &
+                            flow_lo,              &
+                            flow_hi,              &
+                            time,                 &
+                            dx,                   &
+                            dt,                   &
+                            origin,               &
+                            ncell,                &
+                            nvar,                 &
+                            const_disp_coef)  
+     
+     use stm_precision
+         
+     implicit none
+      !--- args          
+    integer,intent(in)  :: ncell                         !< Number of cells
+    integer,intent(in)  :: nvar                          !< Number of variables   
+    real(stm_real),intent(in) :: time                    !< Current time
+    real(stm_real),intent(in) :: dx                      !< Spatial step  
+    real(stm_real),intent(in) :: dt                      !< Time step 
+    real(stm_real),intent(in) :: origin                  !< Left side of the channel
+    real(stm_real),intent(in) :: flow_lo(ncell)          !< flow on lo side of cells centered in time
+    real(stm_real),intent(in) :: flow_hi(ncell)          !< flow on hi side of cells centered in time       
+    real(stm_real),intent(in) :: flow(ncell)             !< flow on center of cells 
+    real(stm_real),intent(out):: disp_coef(ncell,nvar)   !< center constituent dispersion coef. at new time
+    real(stm_real),intent(out):: disp_coef_lo(ncell,nvar)!< Low side constituent dispersion coef. at new time
+    real(stm_real),intent(out):: disp_coef_hi(ncell,nvar)!< High side constituent dispersion coef. at new time
+    real(stm_real),intent(in),optional :: const_disp_coef(nvar)!< Constant value of dispersion coef. 
+    !--
+    integer :: ivar
+    integer :: icell
+    real(stm_real) :: xpos
+    real(stm_real) :: xpos_lo
+    real(stm_real) :: xpos_hi
+    
+    do ivar = 1,nconc
+        do icell = 1,ncell
+        xpos_lo = x0 + dble(icell-1)*dx
+        xpos_hi = x0 + dble(icell)*dx
+        xpos    = x0 +(dble(icell)-half)*dx
+        
+        end do
+    end do
+                
+    disp_coef = LARGEREAL
+    disp_coef_lo = LARGEREAL
+    disp_coef_hi = LARGEREAL
+    
+        
+     return
+ end subroutine
+
+
+subroutine left_bc_dirichlet_zoppou(left_bc_value_zoppou, &
                                      nconc,                  &
                                      c0,                     &
                                      u0,                     &
@@ -442,7 +507,7 @@ real(stm_real):: c_term2
 return
 end subroutine
 
-subroutine left_bc_didirchlet_zoppou(right_bc_value_zoppou, &
+subroutine right_bc_dirichlet_zoppou(right_bc_value_zoppou, &
                                      nconc,                  &
                                      c0,                     &
                                      u0,                     &
@@ -473,7 +538,7 @@ real(stm_real):: c_term2
 
   c_term1 =  erfc((log(x0/xl)-(u0-d0)*time)/(two*sqrt(d0*time)))
   c_term2 =  erfc((log(x0/xl)+(u0-d0)*time)/(two*sqrt(d0*time)))*exp(u0*log(x0/xl)/d0)
-  left_bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
+  right_bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
   
   right_bc_value_zoppou(2) = right_bc_value_zoppou(1)
   
