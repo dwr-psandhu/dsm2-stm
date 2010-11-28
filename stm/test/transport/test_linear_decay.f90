@@ -90,7 +90,7 @@ call test_convergence(label,                  &
                       nstep_base,             &
                       nx_base,                &
                       nconc,                  &
-                      verbose)
+                      verbose,.true.)
 
 end subroutine
 
