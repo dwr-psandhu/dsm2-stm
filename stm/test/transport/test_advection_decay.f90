@@ -24,12 +24,12 @@ module test_linear_decay_const_flow
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 128
-integer, parameter  :: nx_base = 512*2
+integer, parameter  :: nstep_base = 64
+integer, parameter  :: nx_base = 512
 integer, parameter  :: nconc = 2
 real(stm_real), parameter :: total_time = 600.d0
 real(stm_real), parameter :: start_time = zero           !< starts at zero
-real(stm_real), parameter :: decay_rate = 0.01d0
+real(stm_real), parameter :: decay_rate = 0.003d0
 real(stm_real), parameter :: constant_flow = sixteen
 real(stm_real), parameter :: constant_area = two
 
@@ -103,7 +103,7 @@ call test_convergence(label,                  &
                       nstep_base,             &
                       nx_base,                &
                       nconc,                  &
-                      verbose)
+                      verbose,.true.)
 
 end subroutine
 !=========================
