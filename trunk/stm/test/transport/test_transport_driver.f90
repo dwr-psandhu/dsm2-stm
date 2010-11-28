@@ -82,16 +82,17 @@ call init_fruit
 !call test_coarsen
 !!!!!////// reaction
 !call  test_linear_decay_convergence(verbose)
-!call  test_advection_decay_convergence(verbose)
+! todo: it uses old still of reporting log
 !call  test_reaction_decay_convergence_rk3(verbose)
 !!!!////// diffusion
 !call test_diffusion_convergence_fletcher(verbose)
 !!!A-R
+!!todo: we need to set an automatic check for hitting the boundary in COARSER meshes
 !call test_tidal_advection_reaction(verbose)
+call  test_advection_decay_convergence(verbose)
 !!!/////A-D
-call test_zoppou_flow()
+!call test_zoppou_flow()
 !call test_advection_diffusion_zoppou(verbose)
-
 !!!!/// ADR 
 !call  test_advect_diffuse_reaction_neumann(verbose)
 !//////// 
