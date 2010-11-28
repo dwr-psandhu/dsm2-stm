@@ -27,6 +27,8 @@ module test_diffusion_fletcher
 contains
 
 !> Subroutine that checks the error convergence ratio for diffusion routine 
+! todo: the printout of the result of this test needs to shift 0.1 forward 
+! (now it starts at x=0.0 but it should starts at x=0.1) 
 subroutine test_diffusion_convergence_fletcher(verbose)
 use test_convergence_transport
 use stm_precision
@@ -131,7 +133,7 @@ call test_convergence(label,                     &
                       nstep_base,             &
                       nx_base,                &
                       nconc,                  &
-                      verbose)
+                      verbose,.true.)
 
 
 !=====Neumann 
