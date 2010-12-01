@@ -102,7 +102,7 @@ module source_sink
 
 
  !> Sets the decay rate and sets the source term to linear decay
-subroutine set_linear_decay(rates, nvar)
+subroutine set_linear_decay(rates,nvar)
    use stm_precision
    use error_handling
    real(stm_real), dimension(nvar) :: rates
@@ -145,7 +145,6 @@ real(stm_real),intent(in)  :: flow(ncell)         !< flow at source location
 real(stm_real),intent(in)  :: time                !< time 
 
 ! source must be in primitive variable 
-
 
 do ivar = 1,nvar
   source(:,ivar) = -linear_decay(ivar)*conc(:,ivar)

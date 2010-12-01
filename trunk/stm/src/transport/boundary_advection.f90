@@ -66,16 +66,16 @@ module boundary_advection
   !> Example advective flux that imposes Neumann boundaries with zero flux at
  !> both ends of the channel.
  subroutine zero_advective_flux(flux_lo,    &
-                              flux_hi,    &
-                              conc_lo,    &
-                              conc_hi,    &
-                              flow_lo,    &
-                              flow_hi,    &
-                              ncell,      &
-                              nvar,       &
-                              time,       &
-                              dt,         &
-                              dx)
+                                flux_hi,    &
+                                conc_lo,    &
+                                conc_hi,    &
+                                flow_lo,    &
+                                flow_hi,    &
+                                ncell,      &
+                                nvar,       &
+                                time,       &
+                                dt,         &
+                                dx)
      
      use stm_precision
      use error_handling
