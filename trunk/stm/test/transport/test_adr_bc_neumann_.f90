@@ -67,13 +67,13 @@ use logging
 
 implicit none
 
-procedure(hydro_data_if),pointer:: hydro_adr                  !< This pointer, points to uniform flow data
-character(LEN=64) :: label                                      !< unique label for test
-logical :: verbose                                              !< whether to output convergence results
+procedure(hydro_data_if),pointer:: hydro_adr                 !< This pointer, points to uniform flow data
+character(LEN=64) :: label                                   !< unique label for test
+logical :: verbose                                           !< whether to output convergence results
 
-real(stm_real) :: fine_initial_condition(nx_base,nconc)              !< initial condition f concentration at finest resolution
-real(stm_real) :: fine_initial_mass(nx_base,nconc)              !< initial condition of mass at finest resolution
-real(stm_real) :: fine_solution(nx_base,nconc)             !< reference solution at finest resolution
+real(stm_real) :: fine_initial_condition(nx_base,nconc)      !< initial condition f concentration at finest resolution
+real(stm_real) :: fine_initial_mass(nx_base,nconc)           !< initial condition of mass at finest resolution
+real(stm_real) :: fine_solution(nx_base,nconc)               !< reference solution at finest resolution
 
 !---local
 integer, parameter :: nrefine = 3
@@ -89,8 +89,8 @@ logical, parameter :: limit_slope = .false.
 
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
-real(stm_real), allocatable :: disp_coef_lo(:)       !< Low side constituent dispersion coef. at new time
-real(stm_real), allocatable :: disp_coef_hi(:)       !< High side constituent dispersion coef. at new time
+real(stm_real), allocatable :: disp_coef_lo(:)        !< Low side constituent dispersion coef. at new time
+real(stm_real), allocatable :: disp_coef_hi(:)        !< High side constituent dispersion coef. at new time
 real(stm_real), allocatable :: disp_coef_lo_prev(:)   !< Low side constituent dispersion coef. at old time
 real(stm_real) ,allocatable :: disp_coef_hi_prev(:)   !< High side constituent dispersion coef. at old time
 real(stm_real) :: dt              ! seconds

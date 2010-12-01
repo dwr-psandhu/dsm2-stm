@@ -43,15 +43,15 @@ contains
 !todo: Discovery about source term
 !> parameterized test driver for uniform flow
 subroutine test_converge_transport_uniform(verbose)
-use stm_precision
+
 implicit none
+
 logical, intent(in) :: verbose
+logical, parameter :: remote = .true.
+logical, parameter :: do_detail = .true.
 real(stm_real), parameter :: constant_flow = 600.d0
 real(stm_real), parameter :: constant_decay = 5.d-5
 real(stm_real), parameter :: constant_diffuse = sixteen
-logical,parameter :: remote = .true.
-logical,parameter :: do_detail = .true.
-
 real(stm_real) :: flow
 real(stm_real) :: diffuse
 real(stm_real) :: decay
@@ -59,40 +59,41 @@ real(stm_real) :: decay
 flow   = constant_flow
 diffuse= zero
 decay  = zero
+
 call converge_transport_uniform(verbose,"uniform_advect",flow,diffuse,decay)
-call converge_transport_uniform(verbose,"uniform_advect_remote_bc",flow,diffuse,decay,remote)
+call converge_transport_uniform(verbose,"uniform_advect_remote_bc",flow,diffuse,decay,boundary_remote=remote)
 
 flow   = zero
 diffuse= constant_diffuse
 decay  = zero
 call converge_transport_uniform(verbose,"uniform_diffuse",flow,diffuse,decay)
-call converge_transport_uniform(verbose,"uniform_diffuse_remote_bc",flow,diffuse,decay,remote)
+call converge_transport_uniform(verbose,"uniform_diffuse_remote_bc",flow,diffuse,decay,boundary_remote=remote)
 
 
 flow   = zero
 diffuse= zero
 decay  = constant_decay
 call converge_transport_uniform(verbose,"uniform_react",flow,diffuse,decay)
-call converge_transport_uniform(verbose,"uniform_react_remote_bc",flow,diffuse,decay,remote)
+call converge_transport_uniform(verbose,"uniform_react_remote_bc",flow,diffuse,decay,boundary_remote=remote)
 
 flow   = constant_flow
 diffuse= constant_diffuse
 decay  = zero
 call converge_transport_uniform(verbose,"uniform_advect_diffuse",flow,diffuse,decay,detail_result=do_detail)
-call converge_transport_uniform(verbose,"uniform_advect_diffuse_remote_bc",flow,diffuse,decay,remote)
+call converge_transport_uniform(verbose,"uniform_advect_diffuse_remote_bc",flow,diffuse,decay,boundary_remote=remote)
 
 flow   = constant_flow
 diffuse= zero
 decay  = constant_decay
 call converge_transport_uniform(verbose,"uniform_advect_react",flow,diffuse,decay)
-call converge_transport_uniform(verbose,"uniform_advect_react_remote_bc",flow,diffuse,decay,remote)
+call converge_transport_uniform(verbose,"uniform_advect_react_remote_bc",flow,diffuse,decay,boundary_remote=remote)
 
 
 flow   = constant_flow
 diffuse= constant_diffuse
 decay  = constant_decay
 call converge_transport_uniform(verbose,"uniform_advect_diffuse_react",flow,diffuse,decay)
-call converge_transport_uniform(verbose,"uniform_advect_diffuse_react_remote_bc",flow,diffuse,decay,remote)
+call converge_transport_uniform(verbose,"uniform_advect_diffuse_react_remote_bc",flow,diffuse,decay,boundary_remote=remote)
 
 return
 end subroutine
@@ -140,7 +141,7 @@ integer, parameter  :: nstep_base = 256
 real(stm_real), parameter :: total_time = 38400.d0
 real(stm_real), parameter :: start_time = zero
 real(stm_real), parameter :: constant_area = 1000.d0 
-
+! todo: what about diffusion included test?
 real(stm_real), parameter :: reverse_time = total_time/two
 real(stm_real), parameter :: ic_gaussian_sd = base_domain_length/32.d0
 !real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd
@@ -155,7 +156,6 @@ procedure(source_if), pointer :: test_source => null()
 procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
 procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
 procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
-! todo: add
 procedure(diffusion_coef_if),pointer :: diff_coef  => null()
 
 logical :: details = .false.
@@ -189,7 +189,6 @@ call set_uniform_flow_area(test_flow,constant_area)
 uniform_hydro=> uniform_flow_area
 const_velocity = test_flow/constant_area
 
-
 ! source
 decay_rate = test_decay
 rates = decay_rate
@@ -205,7 +204,7 @@ else
 end if
 
 if (test_diffuse .eq. zero) then
-    const_disp_coef = one
+    const_disp_coef = one !todo: why one?
     call set_single_channel_boundary(dirichlet_advective_flux_lo, gaussian_data, &
                                      dirichlet_advective_flux_hi, gaussian_data, &
                                      dirichlet_diffusive_flux_lo, extrapolate_hi_boundary_data, &
@@ -265,20 +264,19 @@ deallocate(fine_initial_conc,fine_solution)
 return
 end subroutine
 
-
 !===========
 !> produce fine initial condition and reference solution 
 subroutine initial_final_solution_uniform(fine_initial_conc,     &
-                                  fine_solution_conc,    &
-                                  ic_center,             &
-                                  ic_peak,               &
-                                  const_velocity,        &
-                                  decay_rate,            &
-                                  total_time,            &
-                                  origin,                &
-                                  domain_length,         &
-                                  nx_base,               &
-                                  nconc)
+                                          fine_solution_conc,    &
+                                          ic_center,             &
+                                          ic_peak,               &
+                                          const_velocity,        &
+                                          decay_rate,            &
+                                          total_time,            &
+                                          origin,                &
+                                          domain_length,         &
+                                          nx_base,               &
+                                          nconc)
                                   
 use gaussian_init_boundary_condition
 use diffusion
@@ -432,8 +430,11 @@ subroutine extrapolate_hi_boundary_data(bc_data,           &
     real(stm_real), intent (in)   :: dt
     real(stm_real), intent (in)   :: dx
     
-    bc_data=conc(ncell,:) + (conc(ncell,:) - conc(ncell-1,:))/two
+    ! zero order approximation
     bc_data = conc(ncell,:)
+    ! fist order approximation
+    ! bc_data = conc(ncell,:) + (conc(ncell,:) - conc(ncell-1,:))/two
+    
 return
 end subroutine
 
