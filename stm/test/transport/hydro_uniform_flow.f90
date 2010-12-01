@@ -44,9 +44,9 @@ if (present(reverse_time)) then
 else
   reversal_time = LARGEREAL
 end if
+
 return 
 end subroutine
-
 
 !>Simple hydrodynamic interface for constant area and constant flow
 subroutine uniform_flow_area(flow,    &

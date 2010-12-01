@@ -78,17 +78,18 @@ procedure(boundary_data_if),pointer :: diffusion_data_hi  => null()
 
 contains
 
-subroutine set_single_channel_boundary(advect_bc_lo, advect_data_lo, &
-                                       advect_bc_hi, advect_data_hi, &
+subroutine set_single_channel_boundary(advect_bc_lo, advect_data_lo,   &
+                                       advect_bc_hi, advect_data_hi,   &
                                        diffuse_bc_lo, diffuse_data_lo, &
                                        diffuse_bc_hi, diffuse_data_hi)
    use error_handling
    implicit none
 
-    procedure(boundary_advective_flux_if),  pointer :: advect_bc_lo
-    procedure(boundary_advective_flux_if),  pointer :: advect_bc_hi
-    procedure(boundary_diffusive_flux_if),  pointer :: diffuse_bc_lo
-    procedure(boundary_diffusive_flux_if),  pointer :: diffuse_bc_hi
+    procedure(boundary_advective_flux_if), pointer :: advect_bc_lo
+    procedure(boundary_advective_flux_if), pointer :: advect_bc_hi
+    
+    procedure(boundary_diffusive_flux_if), pointer :: diffuse_bc_lo
+    procedure(boundary_diffusive_flux_if), pointer :: diffuse_bc_hi
 
     procedure(boundary_data_if),pointer :: advect_data_lo
     procedure(boundary_data_if),pointer :: advect_data_hi
@@ -97,8 +98,8 @@ subroutine set_single_channel_boundary(advect_bc_lo, advect_data_lo, &
 
     advective_flux_lo => advect_bc_lo
     advective_flux_hi => advect_bc_hi
-    diffusion_flux_lo  => diffuse_bc_lo
-    diffusion_flux_hi  => diffuse_bc_hi
+    diffusion_flux_lo => diffuse_bc_lo
+    diffusion_flux_hi => diffuse_bc_hi
 
     advection_data_lo => advect_data_lo
     advection_data_hi => advect_data_hi

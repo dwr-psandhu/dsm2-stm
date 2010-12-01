@@ -42,15 +42,14 @@ use boundary_advection
 use boundary_diffusion
 use gaussian_init_boundary_condition
 
-
 implicit none
-procedure(hydro_data_if),pointer :: uniform_hydro
 
+procedure(hydro_data_if),pointer :: uniform_hydro
 integer, parameter  :: nconc = 2
 logical  :: verbose
 
-real(stm_real)   ,parameter :: domain_length = 25600.d0
-real(stm_real)   ,parameter :: origin =zero
+real(stm_real), parameter :: domain_length = 25600.d0
+real(stm_real), parameter :: origin =zero
 real(stm_real), parameter :: constant_flow = 600.d0
 real(stm_real), parameter :: constant_area = 1000.d0 
 real(stm_real), parameter :: reverse_time = total_time/two
@@ -59,17 +58,14 @@ real(stm_real), parameter :: ic_peak = one
 real(stm_real), parameter :: ic_gaussian_sd = domain_length/32.d0
 real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd
 real(stm_real) :: solution_center = ic_center
-
-!real(stm_real), parameter :: length_scale = 2000.0d0 ! the hump of mass length at the start time
-
-
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
 
-
 character(LEN=*),parameter :: label = "advection_uniform_dirichlet"
+
 call set_uniform_flow_area(constant_flow,constant_area,reverse_time)
 ! todo: force these to be set so they aren't just left over from last test
+! reverse_time is optional
 advection_boundary_flux => zero_advective_flux
 uniform_hydro=> uniform_flow_area
 compute_source => no_source
@@ -90,7 +86,7 @@ call initial_fine_solution_uniform(fine_initial_condition, &
 
 call test_convergence(label,                  &
                       uniform_hydro,          &
-                      zero_advective_flux, &
+                      zero_advective_flux,    &
                       no_diffusion_flux,      &
                       no_diffusion_matrix,    &
                       no_source,              &
@@ -102,7 +98,8 @@ call test_convergence(label,                  &
                       nstep_base,             &
                       nx_base,                &
                       nconc,                  &
-                      verbose,.true.)
+                      verbose,                &
+                      detail_printout =.true.)
 
 end subroutine
 

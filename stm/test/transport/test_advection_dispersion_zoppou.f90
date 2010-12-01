@@ -18,13 +18,8 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Testing advection of mass which is subjected to a tidal boundary
+!> Testing advection and diffusion with spacially variable coefficents vs. analytical solution
 !>@ingroup test
-
-!todo: this test fixes test_advection_covergence_tidal by having a mass
-! conserving hydro interface. We need to do housekeeping and also compare them carefullly
-! to make sure the fix is correct (things like dx and other parameters)
-
 
 module test_zoppou_advection_dispersion
 use stm_precision

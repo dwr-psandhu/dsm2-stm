@@ -58,7 +58,8 @@ logical :: verbose = .true.
 
 call init_fruit
 
-!call test_converge_transport_uniform(verbose)
+!! todo: we have 6 pointers, [2 diff + 1 adv + 1 source + 1 hydro + 1 disp_coef]
+!! can we right nullify( the six pointer) after each test?  
 !!!//////// Advection routines
 !call test_gradient_calc
 !call test_limiter
@@ -89,12 +90,14 @@ call init_fruit
 !!!A-R
 !!todo: we need to set an automatic check for hitting the boundary in COARSER meshes
 !call test_tidal_advection_reaction(verbose)
-call  test_advection_decay_convergence(verbose)
+!call  test_advection_decay_convergence(verbose)
 !!!/////A-D
 !call test_zoppou_flow()
 !call test_advection_diffusion_zoppou(verbose)
 !!!!/// ADR 
-!call  test_advect_diffuse_reaction_neumann(verbose)
+!call test_advect_diffuse_reaction_neumann(verbose)
+!!!/// ADR uniform singel channel
+call test_converge_transport_uniform(verbose)
 !//////// 
 call fruit_summary
 
