@@ -36,7 +36,7 @@ use test_interior_coef_matrix
 use test_construct_r_h_s
 use source_sink
 
-use test_tidal_flow
+use test_hydro
 use test_advection_tidal
 use test_coarsening
 use test_uniform_flow
@@ -47,7 +47,10 @@ use test_linear_decay_no_flow
 use test_linear_decay_const_flow
 use test_rk3
 use test_adr_neumann
-use test_convergence_transport_uniform
+!&&&&&&&&&&&&&&&&&&&
+use test_convergence_transport_uniform_backup
+use test_convergence_transport_uniform_working
+!&&&&&&&&&&&&&&&&&&
 use test_advection_reaction_tidal
 use test_zoppou_advection_dispersion
 
@@ -68,7 +71,7 @@ call init_fruit
 !call test_extrapolation
 !call test_tidal_hydro
 !!!///////// advection
-call test_tidal_advection_convergence(verbose)
+!call test_tidal_advection_convergence(verbose)
 !call test_uniform_advection_convergence(verbose)
 !!!!!!/////// Diffusion routine
 !call test_tridi_solver
@@ -95,6 +98,8 @@ call test_tidal_advection_convergence(verbose)
 !call test_advect_diffuse_reaction_neumann(verbose)
 !!!/// ADR uniform singel channel
 !call test_converge_transport_uniform(verbose)
+call test_converge_transport_uniform_backup(verbose)
+call test_converge_transport_uniform_working(verbose)
 !//////// 
 call fruit_summary
 

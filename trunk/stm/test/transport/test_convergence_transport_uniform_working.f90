@@ -21,7 +21,7 @@
 !> Test advection diffusion and reaction in a single channel with uniform flow
 !>@ingroup test
 
-module test_convergence_transport_uniform_backup
+module test_convergence_transport_uniform_working
 use stm_precision
 
 ! These variables are needed at the module level for things like boundary conditions
@@ -42,7 +42,7 @@ contains
 !todo: Diffusion is still not in predictor step
 !todo: Discovery about source term
 !> parameterized test driver for uniform flow
-subroutine test_converge_transport_uniform_backup(verbose)
+subroutine test_converge_transport_uniform_working(verbose)
 
 implicit none
 

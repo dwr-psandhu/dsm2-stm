@@ -20,7 +20,7 @@
 
 !> Testing the subroutine which provides the hydrodynamics of the tidal flow
 !>@ingroup test
-module test_tidal_flow
+module test_hydro
 
 use stm_precision
 use test_advection_tidal
