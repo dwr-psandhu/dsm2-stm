@@ -37,7 +37,6 @@ use test_construct_r_h_s
 use source_sink
 
 use test_tidal_flow
-use test_advection_tidal
 use test_advection_tidal_experience
 use test_coarsening
 use test_uniform_flow
@@ -69,9 +68,7 @@ call init_fruit
 !call test_extrapolation
 !call test_tidal_hydro
 !!!///////// advection
-!!!todo: this test should remove
-!!call test_tidal_advection_convergence(verbose)
-!call test_tidal_advection_convergence_experience(verbose)
+call test_tidal_advection_convergence_experience(verbose)
 !call test_uniform_advection_convergence(verbose)
 !!!!!!/////// Diffusion routine
 !call test_tridi_solver
@@ -97,7 +94,7 @@ call init_fruit
 !!!!/// ADR 
 !call test_advect_diffuse_reaction_neumann(verbose)
 !!!/// ADR uniform singel channel
-call test_converge_transport_uniform(verbose)
+!call test_converge_transport_uniform(verbose)
 !//////// 
 call fruit_summary
 
