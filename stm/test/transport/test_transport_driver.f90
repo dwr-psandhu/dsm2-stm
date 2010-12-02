@@ -37,7 +37,7 @@ use test_construct_r_h_s
 use source_sink
 
 use test_tidal_flow
-use test_advection_tidal_experience
+use test_advection_tidal
 use test_coarsening
 use test_uniform_flow
 use test_prim_increment_to_cons
@@ -68,7 +68,7 @@ call init_fruit
 !call test_extrapolation
 !call test_tidal_hydro
 !!!///////// advection
-call test_tidal_advection_convergence_experience(verbose)
+call test_tidal_advection_convergence(verbose)
 !call test_uniform_advection_convergence(verbose)
 !!!!!!/////// Diffusion routine
 !call test_tridi_solver

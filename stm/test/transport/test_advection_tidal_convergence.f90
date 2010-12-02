@@ -26,7 +26,7 @@
 ! to make sure the fix is correct (things like dx and other parameters)
 
 
-module test_advection_tidal_experience
+module test_advection_tidal
 use stm_precision
 !----- module variables
 ! todo: make the names more meaningful
@@ -58,7 +58,7 @@ contains
 
 
 !> Tests the convergence of error rate in advection of mass which is exposed a tidal boundary 
-subroutine test_tidal_advection_convergence_experience(verbose)
+subroutine test_tidal_advection_convergence(verbose)
 
 use hydro_data
 use boundary_advection
