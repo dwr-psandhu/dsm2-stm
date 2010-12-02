@@ -23,7 +23,7 @@
 module test_tidal_flow
 
 use stm_precision
-use test_advection_tidal_experience
+use test_advection_tidal
 use hydro_data
 use fruit
 use error_metric
