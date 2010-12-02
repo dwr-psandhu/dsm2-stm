@@ -49,9 +49,9 @@ implicit none
 logical, intent(in) :: verbose
 logical, parameter :: remote = .true.
 logical, parameter :: do_detail = .true.
-real(stm_real), parameter :: constant_flow = 600.d0
+real(stm_real), parameter :: constant_flow = 600.d0 ! todo 600
 real(stm_real), parameter :: constant_decay = 5.d-5
-real(stm_real), parameter :: constant_diffuse = sixteen
+real(stm_real), parameter :: constant_diffuse = sixteen ! todo:
 real(stm_real) :: flow
 real(stm_real) :: diffuse
 real(stm_real) :: decay
@@ -138,9 +138,9 @@ logical, intent(in), optional :: boundary_remote
 integer, parameter  :: nx_base_standard = 256
 integer :: nx_base = nx_base_standard
 integer, parameter  :: nstep_base = 256
-real(stm_real), parameter :: total_time = 38400.d0
+real(stm_real), parameter :: total_time = 38400.d0 ! todo 
 real(stm_real), parameter :: start_time = zero
-real(stm_real), parameter :: constant_area = 1000.d0 
+real(stm_real), parameter :: constant_area = 1000.d0 ! todo 1000
 ! todo: what about diffusion included test?
 real(stm_real), parameter :: reverse_time = total_time/two
 real(stm_real), parameter :: ic_gaussian_sd = base_domain_length/32.d0
@@ -204,11 +204,11 @@ else
 end if
 
 if (test_diffuse .eq. zero) then
-    const_disp_coef = one !todo: why one?
+    const_disp_coef = one !for production of initial and final solution
     call set_single_channel_boundary(dirichlet_advective_flux_lo, gaussian_data, &
                                      dirichlet_advective_flux_hi, gaussian_data, &
                                      dirichlet_diffusive_flux_lo, extrapolate_hi_boundary_data, &
-                                     dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data )
+                                     dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data ) !todo: are these intentionally set here as out flow?
    boundary_diffusion_flux => no_diffusion_flux         ! todo: improve set_single_channel_boundary to avoid this
    boundary_diffusion_matrix => no_diffusion_matrix
 else
@@ -431,9 +431,9 @@ subroutine extrapolate_hi_boundary_data(bc_data,           &
     real(stm_real), intent (in)   :: dx
     
     ! zero order approximation
-    bc_data = conc(ncell,:)
+    !bc_data = conc(ncell,:)
     ! fist order approximation
-    ! bc_data = conc(ncell,:) + (conc(ncell,:) - conc(ncell-1,:))/two
+    bc_data = conc(ncell,:) + (conc(ncell,:) - conc(ncell-1,:))/two
     
 return
 end subroutine
