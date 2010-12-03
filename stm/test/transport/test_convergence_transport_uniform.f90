@@ -422,17 +422,17 @@ subroutine extrapolate_hi_boundary_data(bc_data,           &
     !--- args
     integer, intent(in)  :: ncell                                    !< Number of cells
     integer, intent(in)  :: nvar                                     !< Number of variables
-    real(stm_real), intent(out)   :: bc_data(nvar)                   !< concentration or gradient data
-    real(stm_real), intent(in)    :: xloc                            !< location where data is requested
-    real(stm_real), intent (in)   :: time                            !< Time
-    real(stm_real), intent (in)   :: origin                          !< Space origin
-    real(stm_real), intent (in)   :: conc(ncell,nvar)                !< Concentration 
-    real(stm_real), intent (in)   :: dt
-    real(stm_real), intent (in)   :: dx
+    real(stm_real), intent(out) :: bc_data(nvar)                   !< concentration or gradient data
+    real(stm_real), intent(in)  :: xloc                            !< location where data is requested
+    real(stm_real), intent(in)  :: time                            !< Time
+    real(stm_real), intent(in)  :: origin                          !< Space origin
+    real(stm_real), intent(in)  :: conc(ncell,nvar)                !< Concentration 
+    real(stm_real), intent(in)  :: dt
+    real(stm_real), intent(in)  :: dx
     
     ! zero order approximation
     !bc_data = conc(ncell,:)
-    ! fist order approximation
+    ! first order approximation
     bc_data = conc(ncell,:) + (conc(ncell,:) - conc(ncell-1,:))/two
     
 return
