@@ -62,7 +62,7 @@ subroutine diffuse(conc,              &
                    disp_coef_hi_prev, &
                    ncell,             &
                    nvar,              &
-                   time,              &
+                   time_new,          &
                    theta_stm,         &
                    dt,                &
                    dx)
@@ -90,7 +90,7 @@ real(stm_real), intent (in) :: disp_coef_lo (ncell,nvar)     !< Low side constit
 real(stm_real), intent (in) :: disp_coef_hi (ncell,nvar)     !< High side constituent dispersion coef. at new time
 real(stm_real), intent (in) :: disp_coef_lo_prev(ncell,nvar) !< Low side constituent dispersion coef. at old time
 real(stm_real), intent (in) :: disp_coef_hi_prev(ncell,nvar) !< High side constituent dispersion coef. at old time
-real(stm_real), intent (in) :: time                          !< instantaneous time
+real(stm_real), intent (in) :: time_new                      !< Instantaneous "new" time to which we are advancing
 real(stm_real), intent (in) :: theta_stm                     !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real), intent (in) :: dt                            !< Time step   
 real(stm_real), intent (in) :: dx                            !< Spacial step 
@@ -102,7 +102,7 @@ real(stm_real) :: center_diag(ncell,nvar)                     !< Values of the c
 real(stm_real) :: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
 real(stm_real) :: right_hand_side(ncell,nvar)                 !< Right hand side vector
 real(stm_real) :: time_prev                                   !< old time
-real(stm_real) :: time_new                                    !< new time
+
 
 ! This routine gives the effects of diffusion fluxes on each cell
 ! for a single time step (ie, explicit). This is needed for the advection step.
@@ -113,8 +113,8 @@ real(stm_real) :: time_new                                    !< new time
 ! sends them for modification for boundaries and then differences the fluxes
 ! to get the operator d/dx(Ad/dx). 
 ! instantaneous function
-time_prev = time - dt
-time_new = time 
+time_prev = time_new - dt
+
 
 call explicit_diffusion_operator(explicit_diffuse_op,&
                                  conc_prev,          &
@@ -175,7 +175,7 @@ call boundary_diffusion_matrix(center_diag ,       &
                                disp_coef_hi,       &
                                theta_stm,          &
                                ncell,              &
-                               time,               & 
+                               time_new,           & 
                                nvar,               & 
                                dx,                 &
                                dt)
