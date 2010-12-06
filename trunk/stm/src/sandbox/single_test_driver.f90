@@ -25,15 +25,11 @@ program single_test_driver
 use fruit
 
 use test_convergence_transport_uniform
-!use test_advection_reaction_tidal
-!use test_zoppou_advection_dispersion
 
 implicit none
-
 logical :: verbose = .true.
 
 call init_fruit
-
 call test_converge_transport_uniform(verbose)
 call fruit_summary
 
