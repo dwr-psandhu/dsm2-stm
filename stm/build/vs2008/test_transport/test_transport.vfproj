@@ -31,7 +31,6 @@
 		<File RelativePath="..\..\..\test\transport\coarsen.f90"/>
 		<File RelativePath="..\..\..\test\transport\error_metric.f90"/>
 		<File RelativePath="..\..\..\test\transport\hydro_uniform_flow.f90"/>
-		<File RelativePath="..\..\..\test\transport\initial_boundary_condition_examples.f90"/>
 		<File RelativePath="..\..\..\test\transport\initial_boundary_condition_guassian.f90"/>
 		<File RelativePath="..\..\..\test\transport\log_convergence.f90"/>
 		<File RelativePath="..\..\..\test\transport\single_channel_boundary.f90"/>
@@ -48,7 +47,6 @@
 		<File RelativePath="..\..\..\test\transport\test_convergence_transport_uniform.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_convergence_transport_uniform_working.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_fletcher.f90"/>
-		<File RelativePath="..\..\..\test\example\test_example_initial_conditions.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_explicit_diffusion_operator.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_extrapolate.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_gradient.f90"/>

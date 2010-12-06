@@ -28,7 +28,6 @@ use test_extrapolate
 use test_prim_cons_conversion
 use test_uniform_flow
 use test_matrix_solver
-use example_initial_conditions
 use test_boundary_diffusion
 use test_diffusive_flux
 use test_explicit_diffusion_operator
@@ -69,7 +68,6 @@ call test_gradient_calc
 call test_limiter
 call test_prim_cons_convert
 call test_prim_increment2cons
-call test_example_initial_conditions
 call test_extrapolation
 call test_tidal_hydro
 
