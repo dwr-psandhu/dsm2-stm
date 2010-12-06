@@ -28,59 +28,7 @@ use stm_precision
 
 contains
 
-!> Fill array with rectanglar values
-!> This routine expects a 1D array, so multi-constituents
-!> have to be initialized separately
-subroutine fill_rectangular(array,x,nloc,xlo,xhi,fill,fill_else)
-    use stm_precision
-    implicit none
-    integer,        intent(in)  :: nloc         !< Size of array
-    real(stm_real), intent(out) :: array(nloc)  !< Array to be filled
-    real(stm_real), intent(in)  :: x(nloc)      !< Cell-centered x coordinate
-    real(stm_real), intent(in)  :: xlo          !< Lo side boundary of fill
-    real(stm_real), intent(in)  :: xhi          !< Hi side boundary of fill
-    real(stm_real), intent(in)  :: fill         !< Filled value between xlo and xhi
-    real(stm_real), intent(in)  :: fill_else    !< Filled value if not between xlo and xhi
-            
-    array = fill_else
-    
-    where (x > xlo .and. x< xhi)
-        array = fill
-    end where
-    
-    return
-end subroutine
-
-    
-!> Fill array with symetric triangular shape (isosceles triangle)
-!> This routine expects a 1D array, so multi-constituents
-!> have to be initialized separately
-! todo: it seems incorrect needs test
-subroutine fill_triangular(array,xpos,nloc,xlo,xhi,vertex_hight,fill_else)
-    use stm_precision
-    implicit none
-    integer,        intent(in)  :: nloc         !< Size of array
-    real(stm_real), intent(out) :: array(nloc)  !< Array to be filled
-    real(stm_real), intent(in)  :: xpos(nloc)   !< Cell-centered x coordinate
-    real(stm_real), intent(in)  :: xlo          !< Lo side boundary of fill
-    real(stm_real), intent(in)  :: xhi          !< Hi side boundary of fill
-    real(stm_real), intent(in)  :: vertex_hight !< Filled value of the toppest point
-    real(stm_real), intent(in)  :: fill_else    !< Filled value if not between xlo and xhi
-    !---loc
-    real(stm_real) :: xcenter 
-    real(stm_real) :: length
-    xcenter = half*(xhi-xlo)+xlo
-    length = xhi-xlo
-            
-    array = fill_else
-    where (xpos > xlo .and. (xpos < (half*length)))
-        array = array + (xpos - xlo)*vertex_hight/(half*length)
-    elsewhere (xpos < xhi .and. (xpos > (half*length)))
-        array = array + vertex_hight - (xpos - xcenter)*vertex_hight/(half*length)
-    end where
-        
-    return
-end subroutine     
+  
 
 !> todo: Initialize the concentration fields with a step function
 subroutine fill_discontinuity(vals,nloc,origin,dx,x0,value_lo,value_hi)
