@@ -42,7 +42,6 @@ use diffusion
 use hydro_data
 use source_sink
 use log_convergence
-use example_initial_conditions
 use error_metric
 use error_handling
 use fruit
