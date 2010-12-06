@@ -87,7 +87,7 @@ boundary_diffusion_matrix => no_diffusion_matrix
 compute_source => no_source
 const_dispersion = zero
 
-label = 'advection_tidal_gaussian_experience' 
+label = 'advection_tidal_gaussian' 
 
 !> load the initial values and reference final values to feed the test routine
 call initial_fine_solution_tidal_gaussian(fine_initial_condition, &
@@ -121,7 +121,7 @@ call test_convergence(label,                  &
                       verbose,                &
                       detail_printout=.true.)
                       
-label = "advection_tidal_sinusoidal_experience" 
+label = "advection_tidal_sinusoidal" 
 !> load the initial values and reference final values to feed the test routine
 call initial_fine_solution_tidal_sinusoidal(fine_initial_condition, &
                                             fine_solution,          &

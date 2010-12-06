@@ -46,7 +46,7 @@ subroutine test_flow_continuity(ncell,        &
 
 implicit none
 
-! it must be equal to test_advection_tidal_experience
+!> todo: this must be coordinated with test_advection_tidal, better if it were automatic
 integer,intent(in) :: ncell      !< number of cells
 integer,intent(in) :: nstep      !< number of time 
 
@@ -129,9 +129,9 @@ call assert_true (maxval(max_mass_diff) < weak_eps ,'water mass balance error in
 return
 end subroutine
 
-!< Test the continuity of mass for water for tidal example flow
-!<todo: coordinate this with test_advection_tidal_experience, or rather test_advection_tidal (once we get rid of the _experience part)
-!<todo: a lot of this is redundant with the general continuity test. 
+!> Test the continuity of mass for water for tidal example flow
+!>todo: coordinate this with test_advection_tidal
+!>todo: a lot of this is redundant with the general continuity test. 
 subroutine test_tidal_hydro
 
 implicit none
