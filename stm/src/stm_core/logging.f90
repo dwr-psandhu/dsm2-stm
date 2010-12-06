@@ -43,10 +43,10 @@ module logging
 !=================================
     !> Set the name of the directory in which file-based logs files are kept
     subroutine set_log_directory(name)
-    use error_handling
+    
     implicit none
     character(len=*), intent(in) :: name !< New name for log directory
-    if (len(name) .gt. LOG_DIR_LEN) call stm_fatal("Log directory name is too long. Try relative path?")
+    !if (len(name) .gt. LOG_DIR_LEN) call stm_fatal("Log directory name is too long. Try relative path?")
     log_directory = " "
     log_directory = trim(name)
     return
@@ -54,13 +54,12 @@ module logging
 
     !> Set the name of the directory to which logging files are kept
     subroutine prepend_log_directory(name)
-    use error_handling
     implicit none
     character(len=*), intent(inout) :: name !< New name for log directory
     character(len=len(name)) :: temp_name
     temp_name = name
     if ((len_trim(log_directory) + len_trim(name))  .gt. len(name)) then
-       call stm_fatal("Log directory name is too long. Try relative path?")
+       !call stm_fatal("Log directory name is too long. Try relative path?")
     end if
     temp_name = name
     write(name,'(a,a,a)')trim(log_directory),"/",trim(name)

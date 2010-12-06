@@ -40,7 +40,6 @@ subroutine test_advection_convergence(label,                &
                                       verbose)
                              
 use hydro_data
-use boundary_advection_module
 use stm_precision
 use state_variables
 use primitive_variable_conversion 
