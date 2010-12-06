@@ -1,0 +1,1 @@
+This directory contains common tools such as logging and precision definitions.
