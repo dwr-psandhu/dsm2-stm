@@ -148,7 +148,6 @@ real(stm_real):: flow_hi(ncell)  !< hi face flow
 real(stm_real):: area(ncell)     !< cell center area
 real(stm_real):: area_lo(ncell)  !< area lo face
 real(stm_real):: area_hi(ncell)  !< area hi face
-real(stm_real):: domain_length
 procedure(hydro_data_if),pointer :: tidal_hydro          !< The pointer points to tidal flow data
 
 !--- local
@@ -165,6 +164,8 @@ real(stm_real):: l1_mass_diff(nstep)
 real(stm_real):: l2_mass_diff(nstep)
 integer       :: which_cell
 real(stm_real):: all_zero(ncell)
+! todo: it is hardwired here
+real(stm_real),parameter :: domain_length = 204800.d0/two     !< Domain Length in meter
 
 ! todo: this seems like a temporary name
 tidal_hydro=> tidal_flow_modified
