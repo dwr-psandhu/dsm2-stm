@@ -48,7 +48,6 @@ use test_linear_decay_const_flow
 use test_rk3
 use test_adr_neumann
 !&&&&&&&&&&&&&&&&&&&
-use test_convergence_transport_uniform_backup
 use test_convergence_transport_uniform_working
 !&&&&&&&&&&&&&&&&&&
 use test_advection_reaction_tidal
@@ -98,7 +97,7 @@ call init_fruit
 !call test_advect_diffuse_reaction_neumann(verbose)
 !!!/// ADR uniform singel channel
 !call test_converge_transport_uniform(verbose)
-call test_converge_transport_uniform_backup(verbose)
+
 call test_converge_transport_uniform_working(verbose)
 !//////// 
 call fruit_summary
