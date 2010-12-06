@@ -45,7 +45,6 @@
 		<File RelativePath="..\..\..\test\transport\test_construct_rhs.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_convergence_transport.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_convergence_transport_uniform.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_convergence_transport_uniform_backup.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_convergence_transport_uniform_working.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_diffusion_fletcher.f90"/>
 		<File RelativePath="..\..\..\test\example\test_example_initial_conditions.f90"/>
