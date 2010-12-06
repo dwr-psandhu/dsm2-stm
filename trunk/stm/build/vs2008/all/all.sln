@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "test_transport", "..\test_transport\test_transport.vfproj", "{18C6C5B1-9FE4-457D-BB54-0ECA6ED19EED}"
+Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "test_transport_driver", "..\test_transport\test_transport_driver.vfproj", "{18C6C5B1-9FE4-457D-BB54-0ECA6ED19EED}"
 	ProjectSection(ProjectDependencies) = postProject
 		{60C0982F-68F9-499E-92FD-2BC71D98A315} = {60C0982F-68F9-499E-92FD-2BC71D98A315}
 		{B049716D-FD50-4796-B030-6EACE77F2518} = {B049716D-FD50-4796-B030-6EACE77F2518}
