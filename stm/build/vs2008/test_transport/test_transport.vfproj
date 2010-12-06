@@ -4,7 +4,8 @@
 		<Platform Name="Win32"/></Platforms>
 	<Configurations>
 		<Configuration Name="Debug|Win32" ConfigurationType="typeStaticLibrary">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" Interfaces="true" WarnInterfaces="true" Traceback="true" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" DebugInformationFormat="debugEnabled" Optimization="optimizeDisabled" AdditionalIncludeDirectories="$(ProjectDir)\..\include\$(ConfigurationName)" Interfaces="true" WarnInterfaces="true" ModulePath="$(ProjectDir)\..\include\$(ConfigurationName)" Traceback="true" BoundsCheck="true" RuntimeLibrary="rtMultiThreadedDebug"/>
+				<Tool Name="VFLinkerTool" SuppressStartupBanner="true"/>
 				<Tool Name="VFLibrarianTool"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
@@ -14,7 +15,7 @@
 				<Tool Name="VFPostBuildEventTool"/>
 				<Tool Name="VFManifestTool" SuppressStartupBanner="true"/></Configuration>
 		<Configuration Name="Release|Win32" ConfigurationType="typeStaticLibrary">
-				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true"/>
+				<Tool Name="VFFortranCompilerTool" SuppressStartupBanner="true" AdditionalIncludeDirectories="$(ProjectDir)\..\include\$(ConfigurationName)" ModulePath="$(ProjectDir)\..\include\$(ConfigurationName)"/>
 				<Tool Name="VFLibrarianTool"/>
 				<Tool Name="VFResourceCompilerTool"/>
 				<Tool Name="VFMidlTool" SuppressStartupBanner="true"/>
@@ -26,5 +27,37 @@
 	<Files>
 		<Filter Name="Header Files" Filter="fi;fd"/>
 		<Filter Name="Resource Files" Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"/>
-		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl"/></Files>
+		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
+		<File RelativePath="..\..\..\test\transport\coarsen.f90"/>
+		<File RelativePath="..\..\..\test\transport\error_metric.f90"/>
+		<File RelativePath="..\..\..\test\transport\hydro_uniform_flow.f90"/>
+		<File RelativePath="..\..\..\test\transport\initial_boundary_condition_examples.f90"/>
+		<File RelativePath="..\..\..\test\transport\initial_boundary_condition_guassian.f90"/>
+		<File RelativePath="..\..\..\test\transport\log_convergence.f90"/>
+		<File RelativePath="..\..\..\test\transport\single_channel_boundary.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_adr_bc_neumann_.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_advection_convergence_uniform.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_advection_decay.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_advection_dispersion_zoppou.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_advection_reaction_tidal.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_advection_tidal_convergence.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_boundary_diffusive_flux.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_coarsen.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_construct_rhs.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_convergence_transport.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_convergence_transport_uniform.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_convergence_transport_uniform_working.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_diffusion_fletcher.f90"/>
+		<File RelativePath="..\..\..\test\example\test_example_initial_conditions.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_explicit_diffusion_operator.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_extrapolate.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_gradient.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_hydro.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_interior_coef_matrix.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_interior_diffusive_flux.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_linear_decay.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_matrix_solver.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_prim_increment_to_cons.f90"/>
+		<File RelativePath="..\..\..\test\transport\test_reaction_rk3.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>
