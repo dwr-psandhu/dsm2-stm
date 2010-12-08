@@ -135,7 +135,8 @@ call test_convergence(label,                     &
                       nstep_base,             &
                       nx_base,                &
                       nconc,                  &
-                      verbose)
+                      verbose,                &
+                      detail_printout=.true.)
 
 return
 end subroutine 

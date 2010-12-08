@@ -60,7 +60,7 @@ flow   = constant_flow
 diffuse= zero
 decay  = zero
 
-call converge_transport_uniform(verbose,"uniform_advect",flow,diffuse,decay)
+call converge_transport_uniform(verbose,"uniform_advect",flow,diffuse,decay,detail_result=do_detail)
 call converge_transport_uniform(verbose,"uniform_advect_remote_bc",flow,diffuse,decay,boundary_remote=remote)
 
 flow   = zero
@@ -79,7 +79,7 @@ call converge_transport_uniform(verbose,"uniform_react_remote_bc",flow,diffuse,d
 flow   = constant_flow
 diffuse= constant_diffuse
 decay  = zero
-call converge_transport_uniform(verbose,"uniform_advect_diffuse",flow,diffuse,decay,detail_result=do_detail)
+call converge_transport_uniform(verbose,"uniform_advect_diffuse",flow,diffuse,decay)
 call converge_transport_uniform(verbose,"uniform_advect_diffuse_remote_bc",flow,diffuse,decay,boundary_remote=remote)
 
 flow   = constant_flow

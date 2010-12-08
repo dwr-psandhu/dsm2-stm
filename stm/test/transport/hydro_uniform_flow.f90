@@ -19,7 +19,8 @@
 !</license>
 
 
-
+!> Interfaces for user to provide flow and area. Replaces the connectivity with HYDRO
+!> at this point 
 module hydro_uniform_flow
 use stm_precision
 
