@@ -25,16 +25,13 @@ program single_test_driver
 use fruit
 
 use test_uniform_flow
-!use test_convergence_transport_uniform
 
 implicit none
 logical :: verbose = .true.
 
 call init_fruit
 
-call test_uniform_advection_convergence(verbose)
-!call test_converge_transport_uniform(verbose)
-
+call test_uniform_adv_biidirectional_convergence(verbose)
 
 call fruit_summary
 

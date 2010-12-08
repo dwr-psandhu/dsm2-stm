@@ -79,7 +79,7 @@ call test_converge_transport_uniform_working(verbose)
 
 !///////// Advection convergence
 call test_tidal_advection_convergence(verbose)
-call test_uniform_adv_unidirectional_convergence(verbose)
+call test_uniform_adv_bidirectional_convergence(verbose)
 
 !/////// Diffusion unit tests
 call test_tridi_solver
