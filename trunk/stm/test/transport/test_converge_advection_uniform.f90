@@ -31,7 +31,7 @@ real(stm_real), parameter :: start_time = zero           !< starts at zero
 
 contains
 !> Subroutine that runs a small advective simulation
-subroutine test_uniform_advection_convergence(verbose)
+subroutine test_uniform_adv_unidirectional_convergence(verbose)
 
 use test_convergence_transport
 use hydro_data
@@ -50,9 +50,9 @@ logical  :: verbose
 
 real(stm_real), parameter :: domain_length = 25600.d0
 real(stm_real), parameter :: origin =zero
-real(stm_real), parameter :: constant_flow = 600.d0
+real(stm_real), parameter :: constant_flow = 300.d0
 real(stm_real), parameter :: constant_area = 1000.d0 
-real(stm_real), parameter :: reverse_time = total_time/two
+real(stm_real), parameter :: reverse_time = total_time     ! todo: total_time /two
 real(stm_real), parameter :: ic_center = origin + domain_length/three
 real(stm_real), parameter :: ic_peak = one
 real(stm_real), parameter :: ic_gaussian_sd = domain_length/32.d0
@@ -61,7 +61,7 @@ real(stm_real) :: solution_center = ic_center
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
 
-character(LEN=*),parameter :: label = "advection_uniform_dirichlet"
+character(LEN=*),parameter :: label = "advection_unidirectional_uniform_dirichlet"
 
 call set_uniform_flow_area(constant_flow,constant_area,reverse_time)
 ! todo: force these to be set so they aren't just left over from last test
@@ -69,6 +69,8 @@ call set_uniform_flow_area(constant_flow,constant_area,reverse_time)
 advection_boundary_flux => zero_advective_flux
 uniform_hydro=> uniform_flow_area
 compute_source => no_source
+
+solution_center = ic_center + total_time* (constant_flow/constant_area)
 
 !> Subroutine which generates fine initial values and reference values to compare with 
 !> and feed the covvergence test subroutine.
