@@ -133,7 +133,7 @@ end subroutine
 subroutine test_tidal_hydro
 use stm_precision
 use hydro_data
-use test_advection_tidal   
+use test_advection_reaction_tidal   
 use fruit        ! todo: not needed when general test is used
 use test_utility ! todo: not needed when general test is used
 
