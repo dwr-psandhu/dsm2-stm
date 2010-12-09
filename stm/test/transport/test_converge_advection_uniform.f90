@@ -120,7 +120,6 @@ subroutine initial_fine_solution_uniform(fine_initial_condition, &
                                    
 use gaussian_init_boundary_condition
 use stm_precision
-use grid_refinement
 implicit none
 
 integer,intent(in) :: nconc 

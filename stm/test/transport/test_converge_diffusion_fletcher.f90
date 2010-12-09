@@ -41,8 +41,7 @@ use gaussian_init_boundary_condition
 use diffusion
 use hydro_data
 use source_sink
-use log_convergence
-use error_metric
+use test_utility
 use error_handling
 use fruit
 use logging

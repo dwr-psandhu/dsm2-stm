@@ -109,7 +109,6 @@ subroutine converge_transport_uniform(verbose,         &
 
 use test_convergence_transport
 use fruit
-use error_metric
 use advection
 use diffusion
 use boundary_advection
@@ -118,7 +117,6 @@ use single_channel_boundary
 use primitive_variable_conversion
 use hydro_data
 use source_sink
-use log_convergence
 use test_utility
 use state_variables
 use logging
