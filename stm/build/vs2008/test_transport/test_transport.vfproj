@@ -37,8 +37,6 @@
 		<File RelativePath="..\..\..\test\transport\test_boundary_diffusive_flux.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_coarsen.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_construct_rhs.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_converge_adr_neumann_uniform.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_converge_advection_decay.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_converge_advection_dispersion_zoppou.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_converge_advection_reaction_tidal.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_converge_advection_tidal.f90"/>
@@ -53,7 +51,6 @@
 		<File RelativePath="..\..\..\test\transport\test_hydro.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_interior_coef_matrix.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_interior_diffusive_flux.f90"/>
-		<File RelativePath="..\..\..\test\transport\test_linear_decay.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_matrix_solver.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_cons_conversion.f90"/>
 		<File RelativePath="..\..\..\test\transport\test_prim_increment_to_cons.f90"/>
