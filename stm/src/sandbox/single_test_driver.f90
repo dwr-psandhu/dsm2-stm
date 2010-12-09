@@ -23,16 +23,13 @@
 program single_test_driver
 
 use fruit
+use test_advection_reaction_tidal
 
-use test_uniform_flow
-
-implicit none
-logical :: verbose = .true.
+    implicit none
+    logical :: verbose = .true.
 
 call init_fruit
-
-call test_bidirectional_advection_convergence(verbose)
-
+call test_tidal_advection_reaction(verbose)
 call fruit_summary
 
 pause
