@@ -20,7 +20,7 @@
 
 !> Routines containing error metrics for assessing convergence or accuracy
 !>@ingroup test
-module error_metric
+module test_utilities
 
 contains
 

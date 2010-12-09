@@ -119,7 +119,7 @@ use primitive_variable_conversion
 use hydro_data
 use source_sink
 use log_convergence
-use grid_refinement
+use test_utility
 use state_variables
 use logging
 use hydro_uniform_flow
