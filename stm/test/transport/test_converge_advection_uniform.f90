@@ -18,7 +18,8 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Test of mass transport convergence in uniform flow
+!> Test of mass transport convergence in uniform flow that switches direction
+!> The purpose of this test is to check for some issues involving symmetry
 !>@ingroup test
 module test_uniform_flow
 
@@ -72,8 +73,8 @@ compute_source => no_source
 
 
 
-!> Subroutine which generates fine initial values and reference values to compare with 
-!> and feed the covvergence test subroutine.
+!> Subroutine whichs generates fine initial values and reference values to compare with 
+!> and feed the convergence test subroutine.
 call initial_fine_solution_uniform(fine_initial_condition, &
                                    fine_solution,          &
                                    nx_base,                &

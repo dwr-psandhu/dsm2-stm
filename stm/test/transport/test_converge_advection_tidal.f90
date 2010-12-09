@@ -25,6 +25,7 @@
 ! conserving hydro interface. We need to do housekeeping and also compare them carefullly
 ! to make sure the fix is correct (things like dx and other parameters)
 
+!todo: This could be combined with the test that adds a source term
 
 module test_advection_tidal
 use stm_precision
