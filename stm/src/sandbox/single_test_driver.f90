@@ -23,13 +23,13 @@
 program single_test_driver
 
 use fruit
-use test_advection_reaction_tidal
+use test_hydro
 
     implicit none
     logical :: verbose = .true.
 
 call init_fruit
-call test_tidal_advection_reaction(verbose)
+call test_tidal_hydro
 call fruit_summary
 
 pause
