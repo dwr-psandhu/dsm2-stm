@@ -31,7 +31,7 @@ logical :: verbose = .true.
 
 call init_fruit
 
-call test_uniform_adv_biidirectional_convergence(verbose)
+call test_bidirectional_advection_convergence(verbose)
 
 call fruit_summary
 
