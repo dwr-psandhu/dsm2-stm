@@ -36,7 +36,7 @@ use test_construct_r_h_s
 use source_sink
 
 use test_hydro
-use test_advection_tidal
+use test_advection_reaction_tidal
 use test_coarsening
 use test_uniform_flow
 use test_prim_increment_to_cons
@@ -47,7 +47,6 @@ use test_diffusion_fletcher
 use test_convergence_transport_uniform
 use test_convergence_transport_uniform_working
 !&&&&&&&&&&&&&&&&&&
-use test_advection_reaction_tidal
 use test_zoppou_advection_dispersion
 
 implicit none
@@ -75,7 +74,7 @@ call test_converge_transport_uniform_working(verbose)
 
 
 !///////// Advection convergence
-call test_tidal_advection_convergence(verbose)
+
 call test_bidirectional_advection_convergence(verbose)
 
 !/////// Diffusion unit tests
