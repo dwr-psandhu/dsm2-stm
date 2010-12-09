@@ -22,13 +22,6 @@
 !>@ingroup test
 module test_hydro
 
-use stm_precision
-use test_advection_tidal
-use hydro_data
-use fruit
-use error_metric
-
-
 contains
 
 !> Generic test for checking mass continuity of fluid flow 
@@ -42,6 +35,11 @@ subroutine test_flow_continuity(ncell,        &
                                 domain_length,&
                                 hydrodynamics,&
                                 label)
+use test_utility
+use stm_precision
+use hydro_data
+use fruit
+
 
 
 implicit none
@@ -133,6 +131,12 @@ end subroutine
 !>todo: coordinate this with test_advection_tidal
 !>todo: a lot of this is redundant with the general continuity test. 
 subroutine test_tidal_hydro
+use stm_precision
+use hydro_data
+use test_advection_tidal   
+use fruit        ! todo: not needed when general test is used
+use test_utility ! todo: not needed when general test is used
+
 
 implicit none
 
@@ -164,8 +168,6 @@ real(stm_real):: l1_mass_diff(nstep)
 real(stm_real):: l2_mass_diff(nstep)
 integer       :: which_cell
 real(stm_real):: all_zero(ncell)
-! todo: it is hardwired here
-real(stm_real),parameter :: domain_length = 204800.d0/two     !< Domain Length in meter
 
 ! todo: this seems like a temporary name
 tidal_hydro=> tidal_flow_modified
@@ -223,6 +225,8 @@ end subroutine
 ! ==================================================================================
 !> Mass continuity of fluid flow for the Zoppou test case
 subroutine test_zoppou_flow()
+use stm_precision
+use hydro_data
 
 use test_zoppou_advection_dispersion
 implicit none

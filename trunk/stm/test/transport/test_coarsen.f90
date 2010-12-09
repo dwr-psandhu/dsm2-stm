@@ -28,7 +28,7 @@ contains
 !> tests the coarsening subroutine
 subroutine test_coarsen
 use fruit
-use grid_refinement
+use test_utility
 use stm_precision
 implicit none
   

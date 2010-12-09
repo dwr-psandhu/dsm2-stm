@@ -30,8 +30,8 @@ real(stm_real), parameter :: total_time = 25600.d0
 real(stm_real), parameter :: start_time = zero           !< starts at zero
 
 contains
-!> Subroutine that runs a small advective simulation
-subroutine test_uniform_adv_biidirectional_convergence(verbose)
+!> Subroutine that runs a small advective simulation that reverses in direction
+subroutine test_bidirectional_advection_convergence(verbose)
 
 use test_convergence_transport
 use hydro_data

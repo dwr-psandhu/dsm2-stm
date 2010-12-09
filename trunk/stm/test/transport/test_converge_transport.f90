@@ -55,11 +55,9 @@ use advection
 use diffusion
 use boundary_diffusion
 use gaussian_init_boundary_condition
-use error_metric
 use fruit
 use logging
-use grid_refinement
-use log_convergence
+use test_utility
 use source_sink
 
 implicit none
