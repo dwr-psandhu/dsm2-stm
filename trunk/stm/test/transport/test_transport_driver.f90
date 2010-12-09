@@ -42,10 +42,7 @@ use test_uniform_flow
 use test_prim_increment_to_cons
 use test_gradient
 use test_diffusion_fletcher
-use test_linear_decay_no_flow
-use test_linear_decay_const_flow
-use test_rk3
-use test_adr_neumann
+
 !&&&&&&&&&&&&&&&&&&&
 use test_convergence_transport_uniform
 use test_convergence_transport_uniform_working
@@ -79,7 +76,7 @@ call test_converge_transport_uniform_working(verbose)
 
 !///////// Advection convergence
 call test_tidal_advection_convergence(verbose)
-call test_uniform_adv_bidirectional_convergence(verbose)
+call test_bidirectional_advection_convergence(verbose)
 
 !/////// Diffusion unit tests
 call test_tridi_solver
@@ -93,26 +90,17 @@ call test_coarsen
 !////// Diffusion convergence
 call test_diffusion_convergence_fletcher(verbose)
 
-!////// Reaction-only convergence
-call test_linear_decay_convergence(verbose)
-! todo: uses old reporting. why are we maintaining rk3? 
-! it is not used and rk3 does not robustify anything (zero concentration)
-call test_reaction_decay_convergence_rk3(verbose)
-
 
 ! Advection - reaction problems
 ! todo: need to set an automatic check for hitting the boundary with coarse meshes
 !       this frequently causes problems that are undetected without scrutiny
 call test_tidal_advection_reaction(verbose)
-call test_advection_decay_convergence(verbose)
 
 !/////Advection-Diffusion tests
 call test_zoppou_flow()    ! unit test that goes with convergence test
 call test_advection_diffusion_zoppou(verbose)
 
 !/// Advection-diffusion-reaction
-call test_advect_diffuse_reaction_neumann(verbose)
-
 
 call fruit_summary
 
