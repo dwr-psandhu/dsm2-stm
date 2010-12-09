@@ -47,7 +47,7 @@ real(stm_real),parameter :: ic_gaussian_sd = domain_length/32.d0   !< Standard d
 real(stm_real),parameter :: ic_center = domain_length/two     !< Center of initial condition
 real(stm_real),parameter :: total_time = m2_period            !< total time of the test
 real(stm_real),parameter :: start_time = zero                 !< starts at zero
-real(stm_real),parameter :: tidal_ar_decay_rate = 1.552749d-5 !< decay rate (set in a way it reduces half of the mass after one tidal period)
+real(stm_real),parameter :: const_tidal_decay_rate = 1.552749d-5 !< decay rate (set in a way it reduces half of the mass after one tidal period)
 contains
 
 !todo: this test could be much less weird-looking if the tidal excursion moved toward the domain
@@ -76,7 +76,8 @@ real(stm_real) :: fine_initial_condition(nx_base,nconc)   !< initial condition a
 real(stm_real) :: fine_solution(nx_base,nconc)            !< reference solution at finest resolution
 real(stm_real) :: solution_center = ic_center             !< Center of final solution 
 real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd  !< Standard deviation of final values
-character(LEN=64) :: label 
+real(stm_real) :: tidal_ar_decay_rate
+character(LEN=64) :: label
  
 tidal_hydro=> tidal_flow_modified ! this flow generator is mass conservative
 !tidal_hydro=> tidal_flow_cell_average ! this flow generator is NOT mass conservative but it is cell averaged
@@ -84,8 +85,83 @@ tidal_hydro=> tidal_flow_modified ! this flow generator is mass conservative
 advection_boundary_flux => zero_advective_flux !todo: move this so it isn't hardwired
 boundary_diffusion_flux => no_diffusion_flux
 boundary_diffusion_matrix => no_diffusion_matrix
-compute_source => tidal_reaction_source
 const_dispersion = zero
+!!!!!!!!!!!!!!!
+tidal_ar_decay_rate = zero
+compute_source => no_source
+
+label = 'advection_tidal_gaussian' 
+
+!> load the initial values and reference final values to feed the test routine
+call initial_fine_solution_tidal_gaussian(fine_initial_condition, &
+                                          fine_solution,          &
+                                          nx_base,                &
+                                          nconc,                  &
+                                          origin,                 &
+                                          domain_length,          &
+                                          ic_gaussian_sd,         &
+                                          solution_gaussian_sd,    &
+                                          ic_center,              &
+                                          solution_center,        &        
+                                          tidal_ar_decay_rate)
+
+!> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
+!> compute the norms, after each step coarsen the values and repeat computation.
+!> at the end  calculates the ratio of the norms and prints a log 
+call test_convergence(label,                  &
+                      tidal_hydro ,           &
+                      zero_advective_flux,    &
+                      no_diffusion_flux,      &
+                      no_diffusion_matrix,    &
+                      no_source,              &
+                      domain_length,          &
+                      total_time,             &
+                      start_time,             &
+                      fine_initial_condition, &
+                      fine_solution,          &            
+                      nstep_base,             &
+                      nx_base,                &
+                      nconc,                  &
+                      verbose,                &
+                      detail_printout=.true.)
+                      
+label = "advection_tidal_sinusoidal" 
+!> load the initial values and reference final values to feed the test routine
+call initial_fine_solution_tidal_sinusoidal(fine_initial_condition, &
+                                            fine_solution,          &
+                                            nx_base,                &
+                                            nconc,                  &
+                                            domain_length,          &
+                                            dye_center,             &
+                                            dye_length,             &
+                                            tidal_ar_decay_rate)
+
+!> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
+!> compute the norms, after each step coarsen the values and repeat computation.
+!> at the end  calculates the ratio of the norms and prints a log 
+call test_convergence(label,                  &
+                      tidal_hydro ,           &
+                      zero_advective_flux,    &
+                      no_diffusion_flux,      &
+                      no_diffusion_matrix,    &
+                      no_source,              &
+                      domain_length,          &
+                      total_time,             &
+                      start_time,             &
+                      fine_initial_condition, &
+                      fine_solution,          &            
+                      nstep_base,             &
+                      nx_base,                &
+                      nconc,                  &
+                      verbose,                &
+                      detail_printout=.true.)
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!
+tidal_ar_decay_rate = const_tidal_decay_rate
+compute_source => tidal_reaction_source
+
 
 label = 'advection_reaction_tidal_gaussian' 
 
@@ -97,9 +173,10 @@ call initial_fine_solution_tidal_gaussian(fine_initial_condition, &
                                           origin,                 &
                                           domain_length,          &
                                           ic_gaussian_sd,         &
-                                          solution_gaussian_sd,   &
+                                          solution_gaussian_sd,    &
                                           ic_center,              &
-                                          solution_center)
+                                          solution_center,        &        
+                                          tidal_ar_decay_rate)
 
 !> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
 !> compute the norms, after each step coarsen the values and repeat computation.
@@ -129,7 +206,8 @@ call initial_fine_solution_tidal_sinusoidal(fine_initial_condition, &
                                             nconc,                  &
                                             domain_length,          &
                                             dye_center,             &
-                                            dye_length)
+                                            dye_length,             &
+                                            tidal_ar_decay_rate)
 
 !> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
 !> compute the norms, after each step coarsen the values and repeat computation.
@@ -163,7 +241,8 @@ subroutine initial_fine_solution_tidal_gaussian(fine_initial_condition, &
                                                 ic_gaussian_sd,         &
                                                 solution_gaussin_sd,    &
                                                 ic_center,              &
-                                                solution_center)
+                                                solution_center,        &        
+                                                tidal_ar_decay_rate)
 
 use gaussian_init_boundary_condition
 use stm_precision
@@ -180,7 +259,7 @@ real(stm_real),intent(in)  :: ic_gaussian_sd                        !< Standard 
 real(stm_real),intent(in)  :: solution_gaussin_sd                   !< Standard deviation of solution 
 real(stm_real),intent(in)  :: origin                                !< Left hand side of the channel
 real(stm_real),intent(in)  :: domain_length                         !< Domain length
-
+real(stm_real),intent(in)  ::  tidal_ar_decay_rate                  !< Decay rate
 !----local
 real(stm_real):: dx
 real(stm_real):: xposition(nx_base)
@@ -213,7 +292,8 @@ subroutine initial_fine_solution_tidal_sinusoidal(fine_initial_condition, &
                                                   nconc,                  &
                                                   domain_length,          &
                                                   dye_center,             &
-                                                  dye_length)
+                                                  dye_length,             &
+                                                  tidal_ar_decay_rate)
                                        
 
 
@@ -229,6 +309,7 @@ real(stm_real),intent(out) :: fine_solution(nx_base,nconc)          !< reference
 real(stm_real),intent(in)  :: domain_length                         !< Domain length
 real(stm_real),intent(in)  :: dye_center                            !< center of sinusoidal mass
 real(stm_real),intent(in)  :: dye_length                            !< length of mass at the middle of the domain
+real(stm_real),intent(in)  ::  tidal_ar_decay_rate                  !< Decay rate
 !----local
 real(stm_real):: dx
 real(stm_real):: xposition
@@ -442,13 +523,14 @@ end do
 return
 end subroutine 
 
-subroutine tidal_reaction_source(source, & 
-                                 conc,   &
-                                 area,   &
-                                 flow,   &
-                                 ncell,  &
-                                 nvar,   &
+subroutine tidal_reaction_source(source,             & 
+                                 conc,               &
+                                 area,               &
+                                 flow,               &
+                                 ncell,              &
+                                 nvar,               &
                                  time)
+                               
                                      
 
  use  primitive_variable_conversion
@@ -464,7 +546,7 @@ real(stm_real),intent(in)   :: flow(ncell)        !< flow at source location
 real(stm_real),intent(in)   :: time               !< time 
 
 ! source must be in primitive variable 
-source = -tidal_ar_decay_rate*conc
+source = -const_tidal_decay_rate*conc
   
 return
 end subroutine 
