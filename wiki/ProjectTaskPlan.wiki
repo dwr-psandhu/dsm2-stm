@@ -7,8 +7,8 @@ This document is the larger scope To Do List for the DSM2 Sediment and Transport
 
 The document will be frequently modified by the project participants to
    * help plan the project direction
-   * break project goals into small tasks that can be tracked as [Issues]
-   * keep everyone informed of progress
+   * break project goals into components the subtasks of which can be tracked as [Issues]. The issue tags that should be used to associate tasks with components are given below.
+
 
 = Status =
 Currently, the transport module is largely ready for single channels except for some details involving boundaries... even there it is fairly accurate and usable, it just has issues with formal convergence with small step sizes and complex active boundaries.
