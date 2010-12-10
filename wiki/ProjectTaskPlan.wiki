@@ -10,7 +10,7 @@ The document will be frequently modified by the project participants to
    * break project goals into small tasks that can be tracked as [Issues]
    * keep everyone informed of progress
 
-Future tasks can be listed in broad terms at first and then later refined to smaller tasks.
+Currently, the transport module is largely ready for single channels except for some details involving boundaries... even there it is fairly accurate and usable, it just has issues with formal convergence with small step sizes and complex active boundaries.
 
 = Details =
 The main areas for STM Single Channel Model are shown below
