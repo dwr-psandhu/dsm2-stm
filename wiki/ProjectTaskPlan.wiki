@@ -3,60 +3,37 @@
 
 = Introduction =
 
-This document an evolving To Do List for the DSM2 Sediment and Transport Module (STM) project.
+This document is the larger scope To Do List for the DSM2 Sediment and Transport Module (STM) project.
 
-The To Do Lists indicate tasks, work assignments, and status.
-
-It is intended that this To Do List will be frequently modified by the project participants to
+The document will be frequently modified by the project participants to
    * help plan the project direction
-   * break project goals into small tasks
-   * determine work assignments 
-   * prioritize tasks
+   * break project goals into small tasks that can be tracked as [Issues]
    * keep everyone informed of progress
 
 Future tasks can be listed in broad terms at first and then later refined to smaller tasks.
 
-
 = Details =
 The main areas for STM Single Channel Model are shown below
 
-==Diffusion==
- * [http://code.google.com/p/dsm2-stm/issues/detail?id=1 Issue 1: ] Implement code tests as pass/fail tests for common scenarios and cases that could "break" the model 
- ** [http://code.google.com/p/dsm2-stm/issues/detail?id=2 Issue 2: ] Explicit diffusion operator subroutine unit tests
- ** [http://code.google.com/p/dsm2-stm/issues/detail?id=3 Issue 3: ] Interior diffusive flux subroutine unit tests
- ** [http://code.google.com/p/dsm2-stm/issues/detail?id=4 Issue 4: ] Boundary diffusive flux subroutine unit tests
- ** [http://code.google.com/p/dsm2-stm/issues/detail?id=5 Issue 5: ] Construct right hand side subroutine unit tests 
- ** [http://code.google.com/p/dsm2-stm/issues/detail?id=6 Issue 6: ] Construct diffusion matrix subroutine unit tests
- ** [http://code.google.com/p/dsm2-stm/issues/detail?id=7 Issue 7: ] Tri-diagonal matrix solver subroutine unit tests and analytical tests
- * [http://code.google.com/p/dsm2-stm/issues/detail?id=8 Issue 8: ] Adapt analytical tests to STM testing code framework
+== 1D Transport Solver ==
+The development of a 1D transport solver is largely complete with the exception of some boundary management with operator splitting on problems with active boundaries. 
 
-==Advection==
- * Determine what needs to be done to complete this module
- * Complete any code tests, if applicable
- * Implement analytical tests in code test framework
+Issues relating to the transport solver should be marked Component-Solver
 
-==Input==
- * Adapt input library from DSM2 or create simple input to later be replaced with DSM2 library
 
-==Output==
- * Determine how information will initially be written out from model
+== Sediment ==
+Sediment is a separate module in STM. Within the transport code it takes the form of a source term, albeit a complex one. This job is currently the responsibility of the UCD group. 
 
-==Boundary Conditions==
- * Implement Neuman boundary condition
- * Implement Dirichlet boundary condition
-     ** have discussions on this topic
-     ** make appropriate changes in how to construct right hand side 
-     ** make appropriate changes in how to construct the diffusion matrix
-     ** adapt code tests if necessary
+Issue tag: Component-Sediment
 
-==Step through time==
- * Write wrapper that steps through time, reads input, calls advection, then diffusion
+== Example Driver for Single Channel ==
+There is interest in creating a standalone driver to go along with flume experiments. This could be based on DSM2 or very simple Fortran reads. The DSM2-compatible driver should be done from inside DSM2, not from this project.
 
-==Source/Reaction==
- * Have discussions on developing this module
+Issue tag: Please do not tag things with this category until a preliminary design is ready.
 
-==Test Reports==
- * Create report generator for code and analytical tests
-   ** run STM tests
-   ** create plots
-   ** create PDF report with test description, expected outcome and plots
+== Tests ==
+We have two categories of tests: unit tests for transport and sediment and a suite of convergence tests at the system level.
+
+Test reports are generated automatically from code, but getting them into spreadsheets for presentations is a manual cut-and-paste operation. Hence these reports rapidly get out of date.
+
+Issue tag: Component-Tests
