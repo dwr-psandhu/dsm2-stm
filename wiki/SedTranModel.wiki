@@ -6,4 +6,4 @@
 
 = Details =
 
- The [ProjectTaskPlan project plan] is under development.
+See the latest version of the [ProjectTaskPlan project plan].
