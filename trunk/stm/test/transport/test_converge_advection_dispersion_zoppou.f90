@@ -322,28 +322,28 @@ subroutine zoppou_disp_coef(disp_coef_lo,         &
 
 
 subroutine left_bc_dirichlet_zoppou(left_bc_value_zoppou, &
-                                    nconc,                &
-                                    c0,                   &
-                                    u0,                   &
-                                    d0,                   &  
-                                    a0,                   &
                                     x0,                   &
-                                    xl,                   &
+                                    conc,                 &
+                                    nx_base,              &
+                                    nconc,                &
+                                    origin,               &
                                     time,                 &
-                                    dt)
-                                       
+                                    dx,                   &
+                                    dt)                
+                                    
+use stm_precision                                       
 implicit none
 
 integer,intent(in) :: nconc 
+integer,intent(in) :: nx_base 
 real(stm_real),intent(out):: left_bc_value_zoppou(nconc)           !< Dirichlet initial condition at left side of channel
-real(stm_real),intent(in) :: a0                                    !< constant of area A=A0*(x^-1)
-real(stm_real),intent(in) :: c0                                    !< constant concentration
-real(stm_real),intent(in) :: d0                                    !< constant of dispersion coefficent D=D0*(x^2)
-real(stm_real),intent(in) :: u0                                    !< constant of velocity U=u0*x
-real(stm_real),intent(in) :: x0                                    !< beginning of the channel
-real(stm_real),intent(in) :: xl                                    !< end of the channel
-real(stm_real),intent(in) :: time
-real(stm_real),intent(in) :: dt  
+real(stm_real),intent(in) :: x0                                    !< Location where data is requested here x0
+real(stm_real),intent(in) :: time                                  !< Time
+real(stm_real),intent(in) :: dt                                    !< Time step
+real(stm_real),intent(in) :: dx                                    !< Spacial mesh size
+real(stm_real), intent (in)   :: conc(nx_base,nconc)               !< Concentration 
+real(stm_real), intent (in)   :: origin                            !< Space origin
+
 !----local
 real(stm_real):: c_term1
 real(stm_real):: c_term2
@@ -352,35 +352,35 @@ real(stm_real):: c_term2
   c_term2 =  erfc((log(x0/x0)+(u0-d0)*time)/(two*sqrt(d0*time)))*exp(u0*log(x0/x0)/d0)
   left_bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
   
-  left_bc_value_zoppou(2) = left_bc_value_zoppou(1)
+  left_bc_value_zoppou(:) = left_bc_value_zoppou(1)
   
 return
 end subroutine
 
-subroutine right_bc_dirichlet_zoppou(right_bc_value_zoppou, &
-                                     nconc,                 &
-                                     c0,                    &
-                                     u0,                    &
-                                     d0,                    &  
-                                     a0,                    &
-                                     x0,                    &
-                                     xl,                    &
-                                     time,                  &
-                                     dt)
+subroutine right_bc_dirichlet_zoppou(right_bc_value_zoppou,&
+                                     xl,                   &
+                                     conc,                 &
+                                     nx_base,              & ! todo for Eli:  We do not use it here I just set it to be same signiture as "single_channel_boundaty"
+                                     nconc,                &
+                                     origin,               &
+                                     time,                 &
+                                     dx,                   &
+                                     dt)   
                     
 
+use stm_precision                                       
 implicit none
 
 integer,intent(in) :: nconc 
+integer,intent(in) :: nx_base 
 real(stm_real),intent(out):: right_bc_value_zoppou(nconc)          !< Dirichlet initial condition at right side of channel
-real(stm_real),intent(in) :: a0                                    !< constant of area A=A0*(x^-1)
-real(stm_real),intent(in) :: c0                                    !< constant concentration
-real(stm_real),intent(in) :: d0                                    !< constant of dispersion coefficent D=D0*(x^2)
-real(stm_real),intent(in) :: u0                                    !< constant of velocity U=u0*x
-real(stm_real),intent(in) :: x0                                    !< beginning of the channel
-real(stm_real),intent(in) :: xl                                    !< end of the channel
-real(stm_real),intent(in) :: time
-real(stm_real),intent(in) :: dt  
+real(stm_real),intent(in) :: xl                                    !< Location where data is requested here xL
+real(stm_real),intent(in) :: time                                  !< Time
+real(stm_real),intent(in) :: dt                                    !< Time step
+real(stm_real),intent(in) :: dx                                    !< Spacial mesh size
+real(stm_real), intent (in)   :: conc(nx_base,nconc)               !< Concentration 
+real(stm_real), intent (in)   :: origin                            !< Space origin
+
 !----local
 real(stm_real):: c_term1
 real(stm_real):: c_term2
@@ -389,7 +389,7 @@ real(stm_real):: c_term2
   c_term2 =  erfc((log(x0/xl)+(u0-d0)*time)/(two*sqrt(d0*time)))*exp(u0*log(x0/xl)/d0)
   right_bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
   
-  right_bc_value_zoppou(2) = right_bc_value_zoppou(1)
+  right_bc_value_zoppou(:) = right_bc_value_zoppou(1)
   
 return
 end subroutine
