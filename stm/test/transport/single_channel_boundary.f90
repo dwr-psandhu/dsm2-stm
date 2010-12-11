@@ -59,8 +59,8 @@ subroutine boundary_data_if(bc_data,           &
     !--- args
     integer, intent(in)  :: ncell                                    !< Number of cells
     integer, intent(in)  :: nvar                                     !< Number of variables
-    real(stm_real), intent(out)   :: bc_data(nvar)                   !< concentration or gradient data
-    real(stm_real), intent(in)    :: xloc                            !< location where data is requested
+    real(stm_real), intent (out)  :: bc_data(nvar)                   !< concentration or gradient data
+    real(stm_real), intent (in)   :: xloc                            !< location where data is requested
     real(stm_real), intent (in)   :: time                            !< Time
     real(stm_real), intent (in)   :: origin                          !< Space origin
     real(stm_real), intent (in)   :: conc(ncell,nvar)                !< Concentration 
