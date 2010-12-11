@@ -380,7 +380,7 @@ real(stm_real),intent(in) :: dt                                    !< Time step
 real(stm_real),intent(in) :: dx                                    !< Spacial mesh size
 real(stm_real), intent (in)   :: conc(nx_base,nconc)               !< Concentration 
 real(stm_real), intent (in)   :: origin                            !< Space origin
-
+!  x0 here comes from the initialization before the contains on the top 
 !----local
 real(stm_real):: c_term1
 real(stm_real):: c_term2
