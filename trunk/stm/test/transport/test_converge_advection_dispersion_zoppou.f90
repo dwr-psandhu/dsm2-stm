@@ -360,7 +360,7 @@ end subroutine
 subroutine right_bc_dirichlet_zoppou(right_bc_value_zoppou,&
                                      xl,                   &
                                      conc,                 &
-                                     nx_base,              & ! todo for Eli:  We do not use it here I just set it to be same signiture as "single_channel_boundaty"
+                                     nx_base,              & ! todo for Eli:  We do not use it here I just set it to be same signature as "single_channel_boundaty"
                                      nconc,                &
                                      origin,               &
                                      time,                 &
