@@ -37,6 +37,7 @@ use primitive_variable_conversion
 use boundary_diffusion
 use boundary_advection
 use hydro_uniform_flow
+use dispersion_coefficient
 use gaussian_init_boundary_condition
 use diffusion
 use hydro_data
@@ -100,8 +101,7 @@ boundary_diffusion_matrix  => dirichlet_test_diffusion_matrix
 boundary_diffusion_flux    => dirichlet_test_diffusive_flux
 advection_boundary_flux   => zero_advective_flux
 compute_source            => no_source
-const_dispersion = disp_coef
-
+call set_constant_dispersion(disp_coef)
 
 
 
