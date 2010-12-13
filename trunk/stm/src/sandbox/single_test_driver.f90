@@ -23,13 +23,15 @@
 program single_test_driver
 
 use fruit
-use test_hydro
+use test_zoppou_advection_dispersion
 
-    implicit none
-    logical :: verbose = .true.
+implicit none
+logical :: verbose = .true.
 
 call init_fruit
-call test_tidal_hydro
+
+
+call test_advection_diffusion_zoppou(verbose)
 call fruit_summary
 
 pause

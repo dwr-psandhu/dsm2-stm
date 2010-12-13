@@ -21,8 +21,6 @@
 !> Generic convergence test with advection, diffusion and source terms
 !>@ingroup test
 module test_convergence_transport
-use stm_precision, only: stm_real,zero
-real(stm_real) :: const_dispersion = zero   !< used for constant dispersion
 
 contains
 
@@ -59,6 +57,7 @@ use fruit
 use logging
 use test_utility
 use source_sink
+use dispersion_coefficient
 
 implicit none
 
@@ -180,14 +179,25 @@ do icoarse = 1,nrefine
     area_hi_prev = area_hi
     area_lo_prev = area_lo
     
-    call get_dispersion_coef(disp_coef_lo, &
-                             disp_coef_hi, &
-                             ncell,  &
-                             time)
-    
+    if (use_diffusion())then
+      call dispersion_coef(disp_coef_lo, &
+                           disp_coef_hi, &
+                           flow,                 &
+                           flow_lo,              &
+                           flow_hi,              &
+                           time,                 &
+                           dx,                   &
+                           dt,                   &
+                           ncell,                &
+                           nvar) 
+    else
+      disp_coef_lo = LARGEREAL
+      disp_coef_hi = LARGEREAL            
+    end if
     disp_coef_lo_prev = disp_coef_lo
     disp_coef_hi_prev = disp_coef_hi    
-            
+    
+
     if (icoarse == 1)then
         call prim2cons(fine_initial_mass,fine_initial_conc,area,nx,nconc)
     end if
@@ -245,10 +255,16 @@ do icoarse = 1,nrefine
       conc_prev = conc
       
       if(use_diffusion()) then
-        call get_dispersion_coef(disp_coef_lo, &
-                                 disp_coef_hi, &
-                                 ncell, &
-                                 time)
+        call dispersion_coef(disp_coef_lo,     &
+                         disp_coef_hi, &
+                         flow,                 &
+                         flow_lo,              &
+                         flow_hi,              &
+                         time,                 &
+                         dx,                   &
+                         dt,                   &
+                         ncell,                &
+                         nvar) 
                                   
         call diffuse(conc,              &
                      conc_prev,         &
@@ -384,27 +400,5 @@ end if
 return
 end subroutine
 
-
-
-
-!< Fill dispersion coefficients
-!< Implementation is currently only for constant dispersion coeffients
-subroutine get_dispersion_coef(disp_coef_lo,disp_coef_hi,ncell,time)
-use stm_precision
-use diffusion
-implicit none
-real(stm_real) :: disp_coef_lo(ncell)    !< dispersion at lo face of cell
-real(stm_real) :: disp_coef_hi(ncell)    !< dispersion at hi face of cell
-real(stm_real), intent(in)  :: time  !< time at which dispersion coefs are requested
-integer        :: ncell              !< number of cells
-
-if (use_diffusion())then
-  disp_coef_lo(:) = const_dispersion
-  disp_coef_hi(:) = const_dispersion
-else
-  disp_coef_lo(:) = LARGEREAL
-  disp_coef_hi(:) = LARGEREAL
-end if
-end subroutine
 
 end module

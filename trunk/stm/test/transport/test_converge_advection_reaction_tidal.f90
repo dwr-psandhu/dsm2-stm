@@ -67,7 +67,8 @@ use gaussian_init_boundary_condition
 use source_sink
 use test_convergence_transport
 use diffusion
-    
+use dispersion_coefficient
+  
 implicit none
 procedure(hydro_data_if),pointer :: tidal_hydro          !< The pointer points to tidal flow data
 logical :: verbose
@@ -85,7 +86,9 @@ tidal_hydro=> tidal_flow_modified ! this flow generator is mass conservative
 advection_boundary_flux => zero_advective_flux !todo: move this so it isn't hardwired
 boundary_diffusion_flux => no_diffusion_flux
 boundary_diffusion_matrix => no_diffusion_matrix
-const_dispersion = zero
+
+call set_constant_dispersion(zero)
+
 !!!!!!!!!!!!!!!
 tidal_ar_decay_rate = zero
 compute_source => no_source

@@ -51,32 +51,38 @@ use boundary_diffusion
 use dispersion_coefficient
 use source_sink
 use test_convergence_transport
+use test_convergence_transport_uniform
 use single_channel_boundary
-    
+use dispersion_coefficient
+
 implicit none
 procedure(hydro_data_if),pointer :: zoppou_hydro          !< The pointer points to the test's flow data
 logical :: verbose
 logical :: detail_printout=.true.
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)            !< reference solution at finest resolution
-real(stm_real) :: domain_length
+!real(stm_real) :: domain_length
 real(stm_real) :: total_time
 character(LEN=64) :: label 
+procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
+procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
+procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
  
-       ! this flow generator is mass conservative
-
+ 
+ 
+! this flow generator is mass conservative
 ! todo: use test_convergence_transport_uniform as a model. You will be using dirichlet
 !       (probably). Use code similar to the stuff around line 204. You will be using the
 !       existing single_channel boundary conditions, but providing data that is appropriate
 !       for zoppou. This is needed for both advection and dispersion. You will also need 
 !       to use the proper API for setting dispersion.
 
-!zoppou_hydro=> zoppou_flow 
+zoppou_hydro=> zoppou_flow 
 !advection_boundary_flux => zoppou_advective_flux 
 !boundary_diffusion_flux => zoppou_diffusive_flux
 !boundary_diffusion_matrix => zoppou_diffusion_matrix
-!compute_source => no_source
-!dispersion_coef => zoppou_disp_coef
+compute_source => no_source
+dispersion_coef => zoppou_disp_coef
 
 
 label = 'advection_dispersion_zoppou' 
@@ -99,35 +105,35 @@ call initial_fine_solution_zoppou(fine_initial_condition, &
                                   end_time)
                                       
                                       
-!                                      
-!call set_single_channel_boundary(dirichlet_advective_flux_lo, left_bc_dirichlet_zoppou, &
-!                                 dirichlet_advective_flux_hi, right_bc_dirichlet_zoppou, &
-!                                 dirichlet_diffusive_flux_lo, left_bc_dirichlet_zoppou, &
-!                                 dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data )
+                                      
+call set_single_channel_boundary(dirichlet_advective_flux_lo, left_bc_data_zoppou, &
+                                 dirichlet_advective_flux_hi, right_bc_data_zoppou, &
+                                 dirichlet_diffusive_flux_lo, left_bc_data_zoppou, &
+                                 dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data )
 
-!set_dispersion => zoppou_dispersion
+boundary_diffusion_flux => single_channel_boundary_diffusive_flux
+boundary_diffusion_matrix => single_channel_boundary_diffusive_matrix
 
 !> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
 !> compute the norms, after each step coarsen the values and repeat computation.
 !> at the end  calculates the ratio of the norms and prints a log 
-!call test_convergence(label,                  &
-!                      zoppou_hydro ,          &
-!                      zoppou_dispersion,       &
-!                      zoppou_advective_flux,  &
-!                      zoppou_diffusive_flux,  &
-!                      zoppou_diffusion_matrix,&
-!                      no_source,              &
-!                      domain_length,          &
-!                      total_time,             &
-!                      start_time,             &
-!                      fine_initial_condition, &
-!                      fine_solution,          &            
-!                      nstep_base,             &
-!                      nx_base,                &
-!                      nconc,                  &
-!                      verbose,                &
-!                      detail_printout=.true.)
-!                      
+call test_convergence(label,                  &
+                      zoppou_hydro ,          &
+                      single_channel_boundary_advective_flux,   &
+                      bc_diff_flux,           &
+                      bc_diff_matrix,         &
+                      no_source,              &
+                      domain_length,          &
+                      total_time,             &
+                      start_time,             &
+                      fine_initial_condition, &
+                      fine_solution,          &            
+                      nstep_base,             &
+                      nx_base,                &
+                      nconc,                  &
+                      verbose,                &
+                      detail_printout=.true.)
+                      
 return                      
 end subroutine
 
@@ -273,6 +279,7 @@ return
 end subroutine
 
 
+
 subroutine zoppou_disp_coef(disp_coef_lo,         &
                             disp_coef_hi,         &
                             flow,                 &
@@ -281,27 +288,24 @@ subroutine zoppou_disp_coef(disp_coef_lo,         &
                             time,                 &
                             dx,                   &
                             dt,                   &
-                            origin,               &
                             ncell,                &
-                            nvar,                 &
-                            const_disp_coef)  
+                            nvar)  
      
      use stm_precision
          
      implicit none
       !--- args          
+    real(stm_real),intent(out):: disp_coef_lo(ncell)     !< Low side constituent dispersion coef
+    real(stm_real),intent(out):: disp_coef_hi(ncell)     !< High side constituent dispersion coef      
     integer,intent(in)  :: ncell                         !< Number of cells
     integer,intent(in)  :: nvar                          !< Number of variables   
     real(stm_real),intent(in) :: time                    !< Current time
     real(stm_real),intent(in) :: dx                      !< Spatial step  
     real(stm_real),intent(in) :: dt                      !< Time step 
-    real(stm_real),intent(in) :: origin                  !< Left side of the channel
     real(stm_real),intent(in) :: flow_lo(ncell)          !< flow on lo side of cells centered in time
     real(stm_real),intent(in) :: flow_hi(ncell)          !< flow on hi side of cells centered in time       
     real(stm_real),intent(in) :: flow(ncell)             !< flow on center of cells 
-    real(stm_real),intent(out):: disp_coef_lo(ncell,nvar)!< Low side constituent dispersion coef. at new time
-    real(stm_real),intent(out):: disp_coef_hi(ncell,nvar)!< High side constituent dispersion coef. at new time
-    real(stm_real),intent(in) :: const_disp_coef(nvar)!< Constant value of dispersion coef. 
+
     !--
     integer :: ivar
     integer :: icell
@@ -313,17 +317,17 @@ subroutine zoppou_disp_coef(disp_coef_lo,         &
         xpos_lo = x0 + dble(icell-1)*dx
         xpos_hi = x0 + dble(icell  )*dx
       
-        disp_coef_lo(icell,:) = d0*xpos_lo**two 
-        disp_coef_hi(icell,:) = d0*xpos_hi**two 
+        disp_coef_lo(icell) = d0*xpos_lo**two 
+        disp_coef_hi(icell) = d0*xpos_hi**two 
         end do
                 
      return
  end subroutine
 
 
-subroutine left_bc_dirichlet_zoppou(left_bc_value_zoppou, &
-                                    x0,                   &
-                                    conc,                 &
+subroutine left_bc_data_zoppou(left_bc_value_zoppou, &
+                               x0,                   &
+                               conc,                 &
                                     nx_base,              &
                                     nconc,                &
                                     origin,               &
@@ -357,7 +361,7 @@ real(stm_real):: c_term2
 return
 end subroutine
 
-subroutine right_bc_dirichlet_zoppou(right_bc_value_zoppou,&
+subroutine right_bc_data_zoppou(right_bc_value_zoppou,&
                                      xl,                   &
                                      conc,                 &
                                      nx_base,              & ! todo for Eli:  We do not use it here I just set it to be same signature as "single_channel_boundaty"

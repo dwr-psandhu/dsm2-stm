@@ -201,8 +201,9 @@ else
     compute_source => no_source
 end if
 
-if (test_diffuse .eq. zero) then
+if (test_diffuse .eq. zero) then    
     const_disp_coef = one !for production of initial and final solution
+    call set_constant_dispersion(zero)
     call set_single_channel_boundary(dirichlet_advective_flux_lo, gaussian_data, &
                                      dirichlet_advective_flux_hi, gaussian_data, &
                                      dirichlet_diffusive_flux_lo, extrapolate_hi_boundary_data, &
@@ -211,6 +212,7 @@ if (test_diffuse .eq. zero) then
    boundary_diffusion_matrix => no_diffusion_matrix
 else
     const_disp_coef =  test_diffuse
+    call set_constant_dispersion(const_disp_coef)
     call set_single_channel_boundary(dirichlet_advective_flux_lo, gaussian_data, &
                                      dirichlet_advective_flux_hi, gaussian_data, &
                                      dirichlet_diffusive_flux_lo, gaussian_data, &
