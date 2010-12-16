@@ -25,19 +25,20 @@ module test_zoppou_advection_dispersion
 use stm_precision
 !----- module variables
 ! todo: make the names more meaningful
+! NOTE: the parameters here should not change, the have been chosen in a range to be 
+! meaningful 
 integer, parameter  :: nconc = 2                              !< Number of constituents
 integer, parameter  :: nstep_base = 128                       !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 256                       !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero                     !< origin
 real(stm_real),parameter :: x0 = 10000.0d0                    !< left hand side of the channel
-real(stm_real),parameter :: xl = 12048.0d0                    !< right hand side of the channel
-real(stm_real),parameter :: start_time = zero                 !< starts at zero (second)
-real(stm_real),parameter :: end_time = 2000.0d0               !< ends at 2000 (second)
+real(stm_real),parameter :: xl = 25000.0d0                    !< right hand side of the channel
+real(stm_real),parameter :: start_time = 100000.0d0           !< starts at 100000 sec (second)
+real(stm_real),parameter :: end_time = 120000.0d0             !< ends at 120000 (second)
 real(stm_real),parameter :: a0 = 1.0d7                        !< constant of area A=A0*(x^-1)
 real(stm_real),parameter :: c0 = three                        !< constant concentration
 real(stm_real),parameter :: d0 = 5.0d-7                       !< constant of dispersion coefficent D=D0*(x^2)
 real(stm_real),parameter :: u0 = 1.0d-4                       !< constant of velocity U=u0*x
-
 
 contains
 
@@ -60,14 +61,13 @@ procedure(hydro_data_if),pointer :: zoppou_hydro          !< The pointer points 
 logical :: verbose
 logical :: detail_printout=.true.
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
-real(stm_real) :: fine_solution(nx_base,nconc)            !< reference solution at finest resolution
+real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
 !real(stm_real) :: domain_length
 real(stm_real) :: total_time
 character(LEN=64) :: label 
 procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
 procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
 procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
- 
  
  
 ! this flow generator is mass conservative
@@ -77,7 +77,7 @@ procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
 !       for zoppou. This is needed for both advection and dispersion. You will also need 
 !       to use the proper API for setting dispersion.
 
-zoppou_hydro=> zoppou_flow 
+zoppou_hydro => zoppou_flow 
 !advection_boundary_flux => zoppou_advective_flux 
 !boundary_diffusion_flux => zoppou_diffusive_flux
 !boundary_diffusion_matrix => zoppou_diffusion_matrix
@@ -328,12 +328,12 @@ subroutine zoppou_disp_coef(disp_coef_lo,         &
 subroutine left_bc_data_zoppou(left_bc_value_zoppou, &
                                x0,                   &
                                conc,                 &
-                                    nx_base,              &
-                                    nconc,                &
-                                    origin,               &
-                                    time,                 &
-                                    dx,                   &
-                                    dt)                
+                               nx_base,              &
+                               nconc,                &
+                               origin,               &
+                               time,                 &
+                               dx,                   &
+                               dt)                
                                     
 use stm_precision                                       
 implicit none
