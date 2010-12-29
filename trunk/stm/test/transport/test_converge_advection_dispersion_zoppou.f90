@@ -37,7 +37,7 @@ real(stm_real),parameter :: start_time = 100000.0d0           !< starts at 10000
 real(stm_real),parameter :: end_time = 120000.0d0             !< ends at 120000 (second)
 real(stm_real),parameter :: a0 = 1.0d7                        !< constant of area A=A0*(x^-1)
 real(stm_real),parameter :: c0 = three                        !< constant concentration
-real(stm_real),parameter :: d0 = 5.0d-7                       !< constant of dispersion coefficent D=D0*(x^2)
+real(stm_real),parameter :: d0 = 5.0d-4 ! todo 5.0d-7                       !< constant of dispersion coefficent D=D0*(x^2)
 real(stm_real),parameter :: u0 = 1.0d-4                       !< constant of velocity U=u0*x
 
 contains
@@ -62,14 +62,13 @@ logical :: verbose
 logical :: detail_printout=.true.
 real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
-!real(stm_real) :: domain_length
+real(stm_real) :: test_domain_length
 real(stm_real) :: total_time
 character(LEN=64) :: label 
 procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
 procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
 procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
- 
- 
+  
 ! this flow generator is mass conservative
 ! todo: use test_convergence_transport_uniform as a model. You will be using dirichlet
 !       (probably). Use code similar to the stuff around line 204. You will be using the
@@ -86,7 +85,7 @@ dispersion_coef => zoppou_disp_coef
 
 
 label = 'advection_dispersion_zoppou' 
-domain_length = xl - x0
+test_domain_length = xl - x0
 total_time = end_time - start_time
 
 !> load the initial values and reference final values to feed the test routine
@@ -123,7 +122,7 @@ call test_convergence(label,                  &
                       bc_diff_flux,           &
                       bc_diff_matrix,         &
                       no_source,              &
-                      domain_length,          &
+                      test_domain_length,          &
                       total_time,             &
                       start_time,             &
                       fine_initial_condition, &
@@ -175,16 +174,18 @@ real(stm_real):: dx
 real(stm_real):: xpos
 real(stm_real):: x_lo
 real(stm_real):: x_hi
-real(stm_real):: domain_length
+real(stm_real):: test_domain_length
 real(stm_real):: c_term1
 real(stm_real):: c_term2
 real(stm_real):: xpos_hi
 real(stm_real):: xpos_lo
 real(stm_real):: time
+real(stm_real):: coef_term_2_hi
+real(stm_real):: coef_term_2_lo
 integer :: icell
 
-domain_length = xl - x0
-dx = domain_length/nx_base
+test_domain_length = xl - x0
+dx = test_domain_length/nx_base
 
 do icell=1,nx_base
   xpos_lo = x0 + dble(icell-1)*dx
@@ -194,36 +195,46 @@ do icell=1,nx_base
   time = start_time
   
            ! f(x_hi)
-  c_term1 = x0*exp((2d0-u0)*time)* erf((log(x0/xpos_hi)+(three*d0-u0)*time)/(two*sqrt(d0*time)))  &
-            + xpos_hi*erfc(((d0-u0)*time+log(x0/xpos_hi))/(two*sqrt(d0*time)))                    &
+  c_term1 = half*c0*x0*sqrt(d0*time)*(two/sqrt(pi))*exp(-((log(x0/xpos_hi)-u0*time)**two)/(four*d0*time)) &
+          + half*c0*x0*(log(x0/xpos_hi)-u0*time)*erfc((log(x0/xpos_hi)-u0*time)/(two*sqrt(d0*time))) &            
             ! - f(x_lo)
-            -x0*exp((2d0-u0)*time)* erf((log(x0/xpos_lo)+(three*d0-u0)*time)/(two*sqrt(d0*time))) &
-            - xpos_lo*erfc(((d0-u0)*time+log(x0/xpos_lo))/(two*sqrt(d0*time)))
-             ! f(x_hi) 
-  c_term2 = (one/(d0-u0))*d0*x0*erf(((d0-u0)*time+log(x0/xpos_hi))/(two*sqrt(d0*time)))                   &
-            + d0*xpos_hi*((x0/xpos_hi)**(d0/u0))*erfc(((d0-u0)*time+log(x0/xpos_hi))/(two*sqrt(d0*time))) &
-            ! -f(x_lo)
-            -(one/(d0-u0))*d0*x0*erf(((d0-u0)*time+log(x0/xpos_lo))/(two*sqrt(d0*time)))                  &
-            - d0*xpos_lo*((x0/xpos_lo)**(d0/u0))*erfc(((d0-u0)*time+log(x0/xpos_lo))/(two*sqrt(d0*time))) 
- 
-  fine_initial_condition(icell,1) = (c0*half/dx)*(c_term1 + c_term2)
+          - half*c0*x0*sqrt(d0*time)*(two/sqrt(pi))*exp(-((log(x0/xpos_lo)-u0*time)**two)/(four*d0*time)) &
+          - half*c0*x0*(log(x0/xpos_lo)-u0*time)*erfc((log(x0/xpos_lo)-u0*time)/(two*sqrt(d0*time)))            
+  ! f(x_hi)
+  c_term2 = &
+          (c0*d0/(two*(d0-u0)))*((x0/xpos_hi)**(u0/d0))*(          &              
+          (xpos_hi**(u0/d0))*exp((d0-u0)*(d0*time+log(x0))/d0)*erf((two*d0*time-time*u0+log(x0/xpos_hi))/(two*sqrt(d0*time))) &
+          + xpos_hi*erfc((time*u0+log(x0/xpos_hi))/(two*sqrt(d0*time))))    &        
+  ! - f(x_lo)  
+          - (c0*d0/(two*(d0-u0)))*((x0/xpos_lo)**(u0/d0))*(          &             
+          (xpos_lo**(u0/d0))*exp((d0-u0)*(d0*time+log(x0))/d0)*erf((two*d0*time-time*u0+log(x0/xpos_lo))/(two*sqrt(d0*time))) &
+          + xpos_lo*erfc((time*u0+log(x0/xpos_lo))/(two*sqrt(d0*time))))
+          
+print *,icell, c_term1  , c_term2 
+           
+  fine_initial_condition(icell,1) = (c_term1 + c_term2)/dx
   
-  ! final
-  time = end_time
-            ! f(x_hi)
-  c_term1 = x0*exp((2d0-u0)*time)* erf((log(x0/xpos_hi)+(three*d0-u0)*time)/(two*sqrt(d0*time)))  &
-            + xpos_hi*erfc(((d0-u0)*time+log(x0/xpos_hi))/(two*sqrt(d0*time)))                    &
-            ! - f(x_lo)
-            -x0*exp((2d0-u0)*time)* erf((log(x0/xpos_lo)+(three*d0-u0)*time)/(two*sqrt(d0*time))) &
-            - xpos_lo*erfc(((d0-u0)*time+log(x0/xpos_lo))/(two*sqrt(d0*time)))
-             ! f(x_hi) 
-  c_term2 = (one/(d0-u0))*d0*x0*erf(((d0-u0)*time+log(x0/xpos_hi))/(two*sqrt(d0*time)))   &
-            + d0*xpos_hi*((x0/xpos_hi)**(d0/u0))*erfc(((d0-u0)*time+log(x0/xpos_hi))/(two*sqrt(d0*time))) &
-            ! -f(x_lo)
-            -(one/(d0-u0))*d0*x0*erf(((d0-u0)*time+log(x0/xpos_lo))/(two*sqrt(d0*time)))   &
-            - d0*xpos_lo*((x0/xpos_lo)**(d0/u0))*erfc(((d0-u0)*time+log(x0/xpos_lo))/(two*sqrt(d0*time))) 
- 
-  fine_solution(icell,1) = (c0*half/dx)*(c_term1 + c_term2)
+!  ! final
+!  time = end_time
+!  
+!           ! f(x_hi)
+!  c_term1 = half*c0*x0*sqrt(d0*time)*(two/pi)*exp(-((log(x0/xpos_hi)-u0*time)**two)/(four*d0*time)) &
+!          + half*c0*x0*(log(x0/xpos_hi)-u0*time)*erfc((log(x0/xpos_hi)-u0*time)/(two*sqrt(d0*time))) &            
+!            ! - f(x_lo)
+!          - half*c0*x0*sqrt(d0*time)*(two/pi)*exp(-((log(x0/xpos_lo)-u0*time)**two)/(four*d0*time)) &
+!          - half*c0*x0*(log(x0/xpos_lo)-u0*time)*erfc((log(x0/xpos_lo)-u0*time)/(two*sqrt(d0*time)))            
+!  ! f(x_hi)
+!  c_term2 = &
+!          (c0*d0/(two*(d0-u0)))*(x0/xpos_hi)*(          &              
+!          (xpos_hi**(u0/d0))*exp((d0-u0)*(d0*time+log(x0))/d0)*erfc((two*d0*time-time*u0+log(x0/xpos_hi))/(two*sqrt(d0*time))) &
+!          + xpos_hi*erfc((time*u0+log(x0/xpos_hi))/(two*sqrt(d0*time))))    &        
+!  ! - f(x_lo)  
+!          - (c0*d0/(two*(d0-u0)))*(x0/xpos_lo)*(          &              
+!          (xpos_lo**(u0/d0))*exp((d0-u0)*(d0*time+log(x0))/d0)*erfc((two*d0*time-time*u0+log(x0/xpos_lo))/(two*sqrt(d0*time))) &
+!          + xpos_lo*erfc((time*u0+log(x0/xpos_lo))/(two*sqrt(d0*time)))) 
+!  
+!  fine_solution(icell,1) = (c_term1 + c_term2)/dx
+  
 end do
 
 fine_initial_condition(:,2)=fine_initial_condition(:,1)
