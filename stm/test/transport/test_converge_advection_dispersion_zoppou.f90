@@ -28,16 +28,16 @@ use stm_precision
 ! NOTE: the parameters here should not change, the have been chosen in a range to be 
 ! meaningful 
 integer, parameter  :: nconc = 2                              !< Number of constituents
-integer, parameter  :: nstep_base = 128                       !< Number of time steps in finer discritization
+integer, parameter  :: nstep_base = 4096*2                    !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 256                       !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero                     !< origin
 real(stm_real),parameter :: x0 = 10000.0d0                    !< left hand side of the channel
-real(stm_real),parameter :: xl = 25000.0d0                    !< right hand side of the channel
+real(stm_real),parameter :: xl = 15000.0d0                    !< right hand side of the channel
 real(stm_real),parameter :: start_time = 100000.0d0           !< starts at 100000 sec (second)
-real(stm_real),parameter :: end_time = 120000.0d0             !< ends at 120000 (second)
+real(stm_real),parameter :: end_time = 190000.0d0             !< ends at 120000 (second)
 real(stm_real),parameter :: a0 = 1.0d7                        !< constant of area A=A0*(x^-1)
-real(stm_real),parameter :: c0 = three                        !< constant concentration
-real(stm_real),parameter :: d0 = 5.0d-4 ! todo 5.0d-7                       !< constant of dispersion coefficent D=D0*(x^2)
+real(stm_real),parameter :: c0 = sixteen                        !< constant concentration
+real(stm_real),parameter :: d0 = 5.0d-7                       !< constant of dispersion coefficent D=D0*(x^2)
 real(stm_real),parameter :: u0 = 1.0d-4                       !< constant of velocity U=u0*x
 
 contains
@@ -102,6 +102,10 @@ call initial_fine_solution_zoppou(fine_initial_condition, &
                                   xl,                     &
                                   start_time,             &
                                   end_time)
+                                  
+                                  
+print *, fine_initial_condition(:,1)-fine_solution(:,1)
+pause
                                       
                                       
                                       
@@ -180,8 +184,6 @@ real(stm_real):: c_term2
 real(stm_real):: xpos_hi
 real(stm_real):: xpos_lo
 real(stm_real):: time
-real(stm_real):: coef_term_2_hi
-real(stm_real):: coef_term_2_lo
 integer :: icell
 
 test_domain_length = xl - x0
@@ -195,45 +197,36 @@ do icell=1,nx_base
   time = start_time
   
            ! f(x_hi)
-  c_term1 = half*c0*x0*sqrt(d0*time)*(two/sqrt(pi))*exp(-((log(x0/xpos_hi)-u0*time)**two)/(four*d0*time)) &
-          + half*c0*x0*(log(x0/xpos_hi)-u0*time)*erfc((log(x0/xpos_hi)-u0*time)/(two*sqrt(d0*time))) &            
-            ! - f(x_lo)
-          - half*c0*x0*sqrt(d0*time)*(two/sqrt(pi))*exp(-((log(x0/xpos_lo)-u0*time)**two)/(four*d0*time)) &
-          - half*c0*x0*(log(x0/xpos_lo)-u0*time)*erfc((log(x0/xpos_lo)-u0*time)/(two*sqrt(d0*time)))            
-  ! f(x_hi)
-  c_term2 = &
-          (c0*d0/(two*(d0-u0)))*((x0/xpos_hi)**(u0/d0))*(          &              
-          (xpos_hi**(u0/d0))*exp((d0-u0)*(d0*time+log(x0))/d0)*erf((two*d0*time-time*u0+log(x0/xpos_hi))/(two*sqrt(d0*time))) &
-          + xpos_hi*erfc((time*u0+log(x0/xpos_hi))/(two*sqrt(d0*time))))    &        
-  ! - f(x_lo)  
-          - (c0*d0/(two*(d0-u0)))*((x0/xpos_lo)**(u0/d0))*(          &             
-          (xpos_lo**(u0/d0))*exp((d0-u0)*(d0*time+log(x0))/d0)*erf((two*d0*time-time*u0+log(x0/xpos_lo))/(two*sqrt(d0*time))) &
-          + xpos_lo*erfc((time*u0+log(x0/xpos_lo))/(two*sqrt(d0*time))))
-          
-print *,icell, c_term1  , c_term2 
+  c_term1 = half*c0*x0*((log(xpos_hi/x0)-time*u0)*erfc((log(xpos_hi/x0)-time*u0)/(two*sqrt(d0*time)))  &
+           - (two*sqrt(d0*time)*exp(-((log(xpos_hi/x0)-time*u0)**two))/(four*d0*time))/sqrt(pi)) &
+           ! - f(x_lo)
+           - half*c0*x0*((log(xpos_lo/x0)-time*u0)*erfc((log(xpos_lo/x0)-time*u0)/(two*sqrt(d0*time))) &
+           + (two*sqrt(d0*time)*exp(-((log(xpos_lo/x0)-time*u0)**two))/(four*d0*time))/sqrt(pi))
+           ! f(x_hi)
+  c_term2 =(half*c0*d0/(d0+u0))*(xpos_hi*((xpos_hi/x0)**(u0/d0))*erfc((time*u0+log(xpos_hi/x0))/(two*sqrt(d0*time)))  &
+            - x0*exp(time*(d0+u0))*erf((time*(two*d0+u0)-log(xpos_hi/x0))/(two*sqrt(d0*time)))  ) &
+           ! -f(x_lo)
+           - (half*c0*d0/(d0+u0))*(xpos_lo*((xpos_lo/x0)**(u0/d0))*erfc((time*u0+log(xpos_lo/x0))/(two*sqrt(d0*time)))  &
+            - x0*exp(time*(d0+u0))*erf((time*(two*d0+u0)-log(xpos_lo/x0))/(two*sqrt(d0*time))) )
            
   fine_initial_condition(icell,1) = (c_term1 + c_term2)/dx
   
-!  ! final
-!  time = end_time
-!  
-!           ! f(x_hi)
-!  c_term1 = half*c0*x0*sqrt(d0*time)*(two/pi)*exp(-((log(x0/xpos_hi)-u0*time)**two)/(four*d0*time)) &
-!          + half*c0*x0*(log(x0/xpos_hi)-u0*time)*erfc((log(x0/xpos_hi)-u0*time)/(two*sqrt(d0*time))) &            
-!            ! - f(x_lo)
-!          - half*c0*x0*sqrt(d0*time)*(two/pi)*exp(-((log(x0/xpos_lo)-u0*time)**two)/(four*d0*time)) &
-!          - half*c0*x0*(log(x0/xpos_lo)-u0*time)*erfc((log(x0/xpos_lo)-u0*time)/(two*sqrt(d0*time)))            
-!  ! f(x_hi)
-!  c_term2 = &
-!          (c0*d0/(two*(d0-u0)))*(x0/xpos_hi)*(          &              
-!          (xpos_hi**(u0/d0))*exp((d0-u0)*(d0*time+log(x0))/d0)*erfc((two*d0*time-time*u0+log(x0/xpos_hi))/(two*sqrt(d0*time))) &
-!          + xpos_hi*erfc((time*u0+log(x0/xpos_hi))/(two*sqrt(d0*time))))    &        
-!  ! - f(x_lo)  
-!          - (c0*d0/(two*(d0-u0)))*(x0/xpos_lo)*(          &              
-!          (xpos_lo**(u0/d0))*exp((d0-u0)*(d0*time+log(x0))/d0)*erfc((two*d0*time-time*u0+log(x0/xpos_lo))/(two*sqrt(d0*time))) &
-!          + xpos_lo*erfc((time*u0+log(x0/xpos_lo))/(two*sqrt(d0*time)))) 
-!  
-!  fine_solution(icell,1) = (c_term1 + c_term2)/dx
+  ! final
+  time = end_time
+          ! f(x_hi)
+  c_term1 = half*c0*x0*((log(xpos_hi/x0)-time*u0)*erfc((log(xpos_hi/x0)-time*u0)/(two*sqrt(d0*time)))  &
+           - (two*sqrt(d0*time)*exp(-((log(xpos_hi/x0)-time*u0)**two))/(four*d0*time))/sqrt(pi)) &
+           ! - f(x_lo)
+           - half*c0*x0*((log(xpos_lo/x0)-time*u0)*erfc((log(xpos_lo/x0)-time*u0)/(two*sqrt(d0*time))) &
+           + (two*sqrt(d0*time)*exp(-((log(xpos_lo/x0)-time*u0)**two))/(four*d0*time))/sqrt(pi))
+           ! f(x_hi)
+  c_term2 =(half*c0*d0/(d0+u0))*(xpos_hi*((xpos_hi/x0)**(u0/d0))*erfc((time*u0+log(xpos_hi/x0))/(two*sqrt(d0*time)))  &
+            - x0*exp(time*(d0+u0))*erf((time*(two*d0+u0)-log(xpos_hi/x0))/(two*sqrt(d0*time)))  ) &
+           ! -f(x_lo)
+           - (half*c0*d0/(d0+u0))*(xpos_lo*((xpos_lo/x0)**(u0/d0))*erfc((time*u0+log(xpos_lo/x0))/(two*sqrt(d0*time)))  &
+            - x0*exp(time*(d0+u0))*erf((time*(two*d0+u0)-log(xpos_lo/x0))/(two*sqrt(d0*time))) )
+
+ fine_solution(icell,1) = (c_term1 + c_term2)/dx
   
 end do
 
@@ -243,7 +236,7 @@ fine_solution(:,2) = fine_solution(:,1)
 return
 end subroutine
 !///////////////////////////////////
-!> tidal flow and area for a rectangular basin with periodic forcing in the finite volume form
+!> zoppou flow and area in the finite volume form
 subroutine zoppou_flow(flow,    &
                        flow_lo, &
                        flow_hi, &
@@ -289,8 +282,6 @@ end do
 return
 end subroutine
 
-
-
 subroutine zoppou_disp_coef(disp_coef_lo,         &
                             disp_coef_hi,         &
                             flow,                 &
@@ -316,7 +307,6 @@ subroutine zoppou_disp_coef(disp_coef_lo,         &
     real(stm_real),intent(in) :: flow_lo(ncell)          !< flow on lo side of cells centered in time
     real(stm_real),intent(in) :: flow_hi(ncell)          !< flow on hi side of cells centered in time       
     real(stm_real),intent(in) :: flow(ncell)             !< flow on center of cells 
-
     !--
     integer :: ivar
     integer :: icell
@@ -356,17 +346,20 @@ real(stm_real),intent(in) :: x0                                    !< Location w
 real(stm_real),intent(in) :: time                                  !< Time
 real(stm_real),intent(in) :: dt                                    !< Time step
 real(stm_real),intent(in) :: dx                                    !< Spacial mesh size
-real(stm_real), intent (in)   :: conc(nx_base,nconc)               !< Concentration 
-real(stm_real), intent (in)   :: origin                            !< Space origin
+real(stm_real),intent(in) :: conc(nx_base,nconc)                   !< Concentration 
+real(stm_real),intent(in) :: origin                                !< Space origin
 
 !----local
 real(stm_real):: c_term1
 real(stm_real):: c_term2
+real(stm_real):: xpos
 
-  c_term1 =  erfc((log(x0/x0)-(u0-d0)*time)/(two*sqrt(d0*time)))
-  c_term2 =  erfc((log(x0/x0)+(u0-d0)*time)/(two*sqrt(d0*time)))*exp(u0*log(x0/x0)/d0)
-  left_bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
+xpos = x0
+
+  c_term1 =  erfc((log(xpos/x0)-u0*time)/(two*sqrt(d0*time)))
+  c_term2 =  erfc((log(xpos/x0)+u0*time)/(two*sqrt(d0*time)))*exp(u0*log(xpos/x0)/d0)
   
+  left_bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
   left_bc_value_zoppou(:) = left_bc_value_zoppou(1)
   
 return
@@ -399,11 +392,14 @@ real(stm_real), intent (in)   :: origin                            !< Space orig
 !----local
 real(stm_real):: c_term1
 real(stm_real):: c_term2
+real(stm_real):: xpos
 
-  c_term1 =  erfc((log(x0/xl)-(u0-d0)*time)/(two*sqrt(d0*time)))
-  c_term2 =  erfc((log(x0/xl)+(u0-d0)*time)/(two*sqrt(d0*time)))*exp(u0*log(x0/xl)/d0)
-  right_bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
+xpos = xl
+
+  c_term1 =  erfc((log(xpos/x0)-u0*time)/(two*sqrt(d0*time)))
+  c_term2 =  erfc((log(xpos/x0)+u0*time)/(two*sqrt(d0*time)))*exp(u0*log(xpos/x0)/d0)
   
+  right_bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
   right_bc_value_zoppou(:) = right_bc_value_zoppou(1)
   
 return
