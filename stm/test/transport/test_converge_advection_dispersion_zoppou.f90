@@ -29,17 +29,17 @@ use stm_precision
 ! meaningful 
 ! the problem here was with CFL larger than one r
 integer, parameter  :: nconc = 2                              !< Number of constituents
-integer, parameter  :: nstep_base = 1024                  !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 256                       !< Number of spatial discritization in finer mesh 
+integer, parameter  :: nstep_base = 512                  !< Number of time steps in finer discritization
+integer, parameter  :: nx_base    = 128                       !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero                     !< origin
-real(stm_real),parameter :: x0 = 4096.0d0                    !< left hand side of the channel
-real(stm_real),parameter :: xl = x0 + 2048.0d0               !< right hand side of the channel
-real(stm_real),parameter :: start_time = 4096.0d0           !< starts at   (second)
-real(stm_real),parameter :: end_time = 4096.0d0+ start_time      !< ends at  (second)
+real(stm_real),parameter :: x0 = 10000.0d0                    !< left hand side of the channel
+real(stm_real),parameter :: xl = 15000.0d0                    !< right hand side of the channel
+real(stm_real),parameter :: start_time = 2000.0d0             !< starts at 100000 sec (second)
+real(stm_real),parameter :: end_time = 8000.0d0              !< ends at 190000 (second)
 real(stm_real),parameter :: a0 = 1.0d7                        !< constant of area A=A0*(x^-1)
-real(stm_real),parameter :: c0 = three                      !< constant concentration
-real(stm_real),parameter :: d0 = 1.0d-4                       !< constant of dispersion coefficent D=D0*(x^2)
-real(stm_real),parameter :: u0 = 0.3d-3                       !< constant of velocity U=u0*x
+real(stm_real),parameter :: c0 = sixteen                       !< constant concentration
+real(stm_real),parameter :: d0 = 5.0d-7                       !< constant of dispersion coefficent D=D0*(x^2)
+real(stm_real),parameter :: u0 = 1.0d-4                       !< constant of velocity U=u0*x
 
 contains
 
@@ -56,7 +56,6 @@ use test_convergence_transport
 use test_convergence_transport_uniform
 use single_channel_boundary
 use dispersion_coefficient
-use error_handling
 
 implicit none
 procedure(hydro_data_if),pointer :: zoppou_hydro          !< The pointer points to the test's flow data
@@ -66,7 +65,6 @@ real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
 real(stm_real) :: test_domain_length
 real(stm_real) :: total_time
-real(stm_real) :: cfl_number
 character(LEN=64) :: label 
 procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
 procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
@@ -88,26 +86,12 @@ label = 'advection_dispersion_zoppou'
 test_domain_length = xl - x0
 total_time = end_time - start_time
 
-cfl_number = u0*xl*total_time*nx_base/nstep_base/test_domain_length
-
-if (cfl_number > one) then
-   call stm_fatal('Courant Number Larger Than One, Zoppou Test!') 
-end if
-
 !> load the initial values and reference final values to feed the test routine
 call initial_fine_solution_zoppou(fine_initial_condition, &
                                   fine_solution,          &
                                   nx_base,                &
                                   nstep_base,             &
-                                  nconc,                  &
-                                  c0,                     &
-                                  u0,                     &
-                                  d0,                     &  
-                                  a0,                     &
-                                  x0,                     &
-                                  xl,                     &
-                                  start_time,             &
-                                  end_time)                  
+                                  nconc)                  
                                     
                                       
 call set_single_channel_boundary(dirichlet_advective_flux_lo, bc_data_zoppou, &
@@ -142,21 +126,38 @@ call test_convergence(label,                  &
 return                      
 end subroutine
 
+subroutine zoppou_solution(value_zoppou, &
+                           xpos,         &
+                           time)                
+                                    
+use stm_precision                                       
+implicit none
+
+real(stm_real),intent(out):: value_zoppou           !< Dirichlet initial condition at left side of channel
+real(stm_real),intent(in) :: xpos                   !< Location where data is requested
+real(stm_real),intent(in) :: time                   !< Time
+
+!----local
+real(stm_real):: c_term1
+real(stm_real):: c_term2
+
+c_term1 =  (x0/xpos)*erfc((log(xpos/x0)-u0*time)/(two*sqrt(d0*time)))
+c_term2 =  erfc((log(xpos/x0)+u0*time)/(two*sqrt(d0*time)))*exp(u0*log(xpos/x0)/d0)
+
+value_zoppou = (c0*half)*(c_term1 + c_term2)
+
+return
+end subroutine
+
+
+
 !-------------------------------------------
 !> Generates a fine initial and final solution of analytical mass distribution 
 subroutine initial_fine_solution_zoppou(fine_initial_condition, &
                                         fine_solution,          &
                                         nx_base,                &
                                         nstep_base,             &
-                                        nconc,                  &
-                                        c0,                     &
-                                        u0,                     &
-                                        d0,                     &  
-                                        a0,                     &
-                                        x0,                     &
-                                        xl,                     &
-                                        start_time,             &
-                                        end_time)
+                                        nconc)
                                        
 
 
@@ -167,73 +168,21 @@ integer,intent(in) :: nx_base
 integer,intent(in) :: nstep_base 
 real(stm_real),intent(out):: fine_initial_condition(nx_base,nconc) !< initial condition at finest resolution
 real(stm_real),intent(out):: fine_solution(nx_base,nconc)          !< reference solution at finest resolution
-real(stm_real),intent(in) :: a0                                    !< constant of area A=A0*(x^-1)
-real(stm_real),intent(in) :: c0                                    !< constant concentration
-real(stm_real),intent(in) :: d0                                    !< constant of dispersion coefficent D=D0*(x^2)
-real(stm_real),intent(in) :: u0                                    !< constant of velocity U=u0*x
-real(stm_real),intent(in) :: x0                                    !< beginning of the channel
-real(stm_real),intent(in) :: xl                                    !< end of the channel
-real(stm_real),intent(in) :: start_time
-real(stm_real),intent(in) :: end_time
 !----local
 real(stm_real):: dx
 real(stm_real):: xpos
-real(stm_real):: x_lo
-real(stm_real):: x_hi
 real(stm_real):: test_domain_length
-real(stm_real):: c_term1
-real(stm_real):: c_term2
-real(stm_real):: xpos_hi
-real(stm_real):: xpos_lo
-real(stm_real):: time
+real(stm_real):: point_value
 integer :: icell
 
-test_domain_length = xl - x0
-dx = test_domain_length/nx_base
-
+dx = (xl - x0)/dble(nx_base)
 do icell=1,nx_base
-  xpos_lo = x0 + dble(icell-1)*dx
-  xpos_hi = x0 + dble(icell)*dx
   xpos    = x0 +(dble(icell)-half)*dx
-  ! initial
-  time = start_time
-  
-           ! f(x_hi)
-  c_term1 = half*c0*x0*((log(xpos_hi/x0)-time*u0)*erfc((log(xpos_hi/x0)-time*u0)/(two*sqrt(d0*time)))  &
-           - (two*sqrt(d0*time)*exp(-((log(xpos_hi/x0)-time*u0)**two))/(four*d0*time))/sqrt(pi)) &
-           ! - f(x_lo)
-           - half*c0*x0*((log(xpos_lo/x0)-time*u0)*erfc((log(xpos_lo/x0)-time*u0)/(two*sqrt(d0*time))) &
-           + (two*sqrt(d0*time)*exp(-((log(xpos_lo/x0)-time*u0)**two))/(four*d0*time))/sqrt(pi))
-           ! f(x_hi)
-  c_term2 =(half*c0*d0/(d0+u0))*(xpos_hi*((xpos_hi/x0)**(u0/d0))*erfc((time*u0+log(xpos_hi/x0))/(two*sqrt(d0*time)))  &
-            - x0*exp(time*(d0+u0))*erf((time*(two*d0+u0)-log(xpos_hi/x0))/(two*sqrt(d0*time)))  ) &
-           ! -f(x_lo)
-           - (half*c0*d0/(d0+u0))*(xpos_lo*((xpos_lo/x0)**(u0/d0))*erfc((time*u0+log(xpos_lo/x0))/(two*sqrt(d0*time)))  &
-            - x0*exp(time*(d0+u0))*erf((time*(two*d0+u0)-log(xpos_lo/x0))/(two*sqrt(d0*time))) )
-           
-  fine_initial_condition(icell,1) = (c_term1 + c_term2)/dx
-  
-  ! final
-  time = end_time
-          ! f(x_hi)
-  c_term1 = half*c0*x0*((log(xpos_hi/x0)-time*u0)*erfc((log(xpos_hi/x0)-time*u0)/(two*sqrt(d0*time)))  &
-           - (two*sqrt(d0*time)*exp(-((log(xpos_hi/x0)-time*u0)**two))/(four*d0*time))/sqrt(pi)) &
-           ! - f(x_lo)
-           - half*c0*x0*((log(xpos_lo/x0)-time*u0)*erfc((log(xpos_lo/x0)-time*u0)/(two*sqrt(d0*time))) &
-           + (two*sqrt(d0*time)*exp(-((log(xpos_lo/x0)-time*u0)**two))/(four*d0*time))/sqrt(pi))
-           ! f(x_hi)
-  c_term2 =(half*c0*d0/(d0+u0))*(xpos_hi*((xpos_hi/x0)**(u0/d0))*erfc((time*u0+log(xpos_hi/x0))/(two*sqrt(d0*time)))  &
-            - x0*exp(time*(d0+u0))*erf((time*(two*d0+u0)-log(xpos_hi/x0))/(two*sqrt(d0*time)))  ) &
-           ! -f(x_lo)
-           - (half*c0*d0/(d0+u0))*(xpos_lo*((xpos_lo/x0)**(u0/d0))*erfc((time*u0+log(xpos_lo/x0))/(two*sqrt(d0*time)))  &
-            - x0*exp(time*(d0+u0))*erf((time*(two*d0+u0)-log(xpos_lo/x0))/(two*sqrt(d0*time))) )
-
- fine_solution(icell,1) = (c_term1 + c_term2)/dx
-  
+  call zoppou_solution(point_value,xpos,start_time)
+  fine_initial_condition(icell,:) = point_value
+  call zoppou_solution(point_value,xpos,end_time)
+  fine_solution(icell,:) = point_value
 end do
-
-fine_initial_condition(:,2)=fine_initial_condition(:,1)
-fine_solution(:,2) = fine_solution(:,1)
 
 return
 end subroutine
@@ -327,6 +276,8 @@ subroutine zoppou_disp_coef(disp_coef_lo,         &
  end subroutine
 
 
+
+
 subroutine bc_data_zoppou(bc_value_zoppou, &
                            xloc,           &
                            conc,           &
@@ -342,26 +293,24 @@ implicit none
 
 integer,intent(in) :: nconc 
 integer,intent(in) :: nx_base 
-real(stm_real),intent(out):: bc_value_zoppou(nconc)           !< Dirichlet initial condition at left side of channel
-real(stm_real),intent(in) :: xloc                                  !< Location where data is requested here x0
-real(stm_real),intent(in) :: time                                  !< Time
-real(stm_real),intent(in) :: dt                                    !< Time step
-real(stm_real),intent(in) :: dx                                    !< Spacial mesh size
-real(stm_real),intent(in) :: conc(nx_base,nconc)                   !< Concentration 
-real(stm_real),intent(in) :: origin                                !< Space origin
+real(stm_real),intent(out):: bc_value_zoppou(nconc)     !< Dirichlet initial condition at left side of channel
+real(stm_real),intent(in) :: xloc                       !< Location where data is requested
+real(stm_real),intent(in) :: time                       !< Time
+real(stm_real),intent(in) :: dt                         !< Time step
+real(stm_real),intent(in) :: dx                         !< Spacial mesh size
+real(stm_real),intent(in) :: conc(nx_base,nconc)        !< Concentration 
+real(stm_real),intent(in) :: origin                     !< Space origin
 
 !----local
 real(stm_real):: c_term1
 real(stm_real):: c_term2
 real(stm_real):: xpos
+real(stm_real):: point_value
 
-xpos = xloc + x0
+xpos = xloc + x0  ! value comes in relative to zero origin right now
+call zoppou_solution(point_value,xpos,time)
+bc_value_zoppou(:) = point_value
 
-c_term1 =  (x0/xpos)*erfc((log(xpos/x0)-u0*time)/(two*sqrt(d0*time)))
-c_term2 =  erfc((log(xpos/x0)+u0*time)/(two*sqrt(d0*time)))*exp(u0*log(xpos/x0)/d0)
-
-bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
-bc_value_zoppou(:) = bc_value_zoppou(1)
 return
 end subroutine
 
