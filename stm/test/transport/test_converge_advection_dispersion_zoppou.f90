@@ -27,16 +27,17 @@ use stm_precision
 ! todo: make the names more meaningful
 ! NOTE: the parameters here should not change, the have been chosen in a range to be 
 ! meaningful 
+! the problem here was with CFL larger than one r
 integer, parameter  :: nconc = 2                              !< Number of constituents
-integer, parameter  :: nstep_base = 4096*2                    !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 256                       !< Number of spatial discritization in finer mesh 
+integer, parameter  :: nstep_base = 4096                  !< Number of time steps in finer discritization
+integer, parameter  :: nx_base    = 128                       !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero                     !< origin
 real(stm_real),parameter :: x0 = 10000.0d0                    !< left hand side of the channel
 real(stm_real),parameter :: xl = 15000.0d0                    !< right hand side of the channel
 real(stm_real),parameter :: start_time = 100000.0d0           !< starts at 100000 sec (second)
-real(stm_real),parameter :: end_time = 190000.0d0             !< ends at 120000 (second)
+real(stm_real),parameter :: end_time = 190000.0d0             !< ends at 190000 (second)
 real(stm_real),parameter :: a0 = 1.0d7                        !< constant of area A=A0*(x^-1)
-real(stm_real),parameter :: c0 = sixteen                        !< constant concentration
+real(stm_real),parameter :: c0 = sixteen                       !< constant concentration
 real(stm_real),parameter :: d0 = 5.0d-7                       !< constant of dispersion coefficent D=D0*(x^2)
 real(stm_real),parameter :: u0 = 1.0d-4                       !< constant of velocity U=u0*x
 
@@ -103,16 +104,17 @@ call initial_fine_solution_zoppou(fine_initial_condition, &
                                   start_time,             &
                                   end_time)
                                   
-                                  
-print *, fine_initial_condition(:,1)-fine_solution(:,1)
-pause
-                                      
-                                      
+    ! todo: check to be non- trivial                             
+!print *, fine_initial_condition(:,1)-fine_solution(:,1)
+!pause
+                  
+                                    
                                       
 call set_single_channel_boundary(dirichlet_advective_flux_lo, left_bc_data_zoppou, &
                                  dirichlet_advective_flux_hi, right_bc_data_zoppou, &
                                  dirichlet_diffusive_flux_lo, left_bc_data_zoppou, &
-                                 dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data )
+                                 dirichlet_diffusive_flux_hi, right_bc_data_zoppou )
+                                 ! todo: I am not get the extarpolate here
 
 boundary_diffusion_flux => single_channel_boundary_diffusive_flux
 boundary_diffusion_matrix => single_channel_boundary_diffusive_matrix
@@ -123,10 +125,10 @@ boundary_diffusion_matrix => single_channel_boundary_diffusive_matrix
 call test_convergence(label,                  &
                       zoppou_hydro ,          &
                       single_channel_boundary_advective_flux,   &
-                      bc_diff_flux,           &
-                      bc_diff_matrix,         &
+                      boundary_diffusion_flux,&
+                      boundary_diffusion_matrix,&
                       no_source,              &
-                      test_domain_length,          &
+                      test_domain_length,     &
                       total_time,             &
                       start_time,             &
                       fine_initial_condition, &
@@ -388,7 +390,7 @@ real(stm_real),intent(in) :: dt                                    !< Time step
 real(stm_real),intent(in) :: dx                                    !< Spacial mesh size
 real(stm_real), intent (in)   :: conc(nx_base,nconc)               !< Concentration 
 real(stm_real), intent (in)   :: origin                            !< Space origin
-!  x0 here comes from the initialization before the contains on the top 
+ 
 !----local
 real(stm_real):: c_term1
 real(stm_real):: c_term2
