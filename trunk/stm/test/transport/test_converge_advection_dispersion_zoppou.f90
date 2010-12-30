@@ -30,16 +30,16 @@ use stm_precision
 ! the problem here was with CFL larger than one r
 integer, parameter  :: nconc = 2                              !< Number of constituents
 integer, parameter  :: nstep_base = 1024                  !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 128                       !< Number of spatial discritization in finer mesh 
+integer, parameter  :: nx_base    = 256                       !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero                     !< origin
-real(stm_real),parameter :: x0 = 10000.0d0                    !< left hand side of the channel
-real(stm_real),parameter :: xl = 15000.0d0                    !< right hand side of the channel
-real(stm_real),parameter :: start_time = 16000.0d0           !< starts at 100000 sec (second)
-real(stm_real),parameter :: end_time = 32000.0d0             !< ends at 190000 (second)
+real(stm_real),parameter :: x0 = 4096.0d0                    !< left hand side of the channel
+real(stm_real),parameter :: xl = x0 + 2048.0d0               !< right hand side of the channel
+real(stm_real),parameter :: start_time = 4096.0d0           !< starts at   (second)
+real(stm_real),parameter :: end_time = 4096.0d0+ start_time      !< ends at  (second)
 real(stm_real),parameter :: a0 = 1.0d7                        !< constant of area A=A0*(x^-1)
-real(stm_real),parameter :: c0 = sixteen                       !< constant concentration
-real(stm_real),parameter :: d0 = 5.0d-7                       !< constant of dispersion coefficent D=D0*(x^2)
-real(stm_real),parameter :: u0 = 1.0d-4                       !< constant of velocity U=u0*x
+real(stm_real),parameter :: c0 = three                      !< constant concentration
+real(stm_real),parameter :: d0 = 1.0d-4                       !< constant of dispersion coefficent D=D0*(x^2)
+real(stm_real),parameter :: u0 = 0.3d-3                       !< constant of velocity U=u0*x
 
 contains
 
@@ -56,6 +56,7 @@ use test_convergence_transport
 use test_convergence_transport_uniform
 use single_channel_boundary
 use dispersion_coefficient
+use error_handling
 
 implicit none
 procedure(hydro_data_if),pointer :: zoppou_hydro          !< The pointer points to the test's flow data
@@ -65,6 +66,7 @@ real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at
 real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
 real(stm_real) :: test_domain_length
 real(stm_real) :: total_time
+real(stm_real) :: cfl_number
 character(LEN=64) :: label 
 procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
 procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
@@ -85,6 +87,12 @@ dispersion_coef => zoppou_disp_coef
 label = 'advection_dispersion_zoppou' 
 test_domain_length = xl - x0
 total_time = end_time - start_time
+
+cfl_number = u0*xl*total_time*nx_base/nstep_base/test_domain_length
+
+if (cfl_number > one) then
+   call stm_fatal('Courant Number Larger Than One, Zoppou Test!') 
+end if
 
 !> load the initial values and reference final values to feed the test routine
 call initial_fine_solution_zoppou(fine_initial_condition, &
