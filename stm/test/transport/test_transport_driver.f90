@@ -45,7 +45,6 @@ use test_diffusion_fletcher
 
 !&&&&&&&&&&&&&&&&&&&
 use test_convergence_transport_uniform
-use test_convergence_transport_uniform_working
 !&&&&&&&&&&&&&&&&&&
 use test_zoppou_advection_dispersion
 
@@ -70,8 +69,6 @@ call test_tidal_hydro
 !/// Advection-diffusion-reaction convergence in uniform flow,
 !    operators are layered in successively
 call test_converge_transport_uniform(verbose)
-call test_converge_transport_uniform_working(verbose)
-
 
 !///////// Advection convergence
 
