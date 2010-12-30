@@ -29,13 +29,13 @@ use stm_precision
 ! meaningful 
 ! the problem here was with CFL larger than one r
 integer, parameter  :: nconc = 2                              !< Number of constituents
-integer, parameter  :: nstep_base = 4096                  !< Number of time steps in finer discritization
+integer, parameter  :: nstep_base = 1024                  !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 128                       !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero                     !< origin
 real(stm_real),parameter :: x0 = 10000.0d0                    !< left hand side of the channel
 real(stm_real),parameter :: xl = 15000.0d0                    !< right hand side of the channel
-real(stm_real),parameter :: start_time = 100000.0d0           !< starts at 100000 sec (second)
-real(stm_real),parameter :: end_time = 190000.0d0             !< ends at 190000 (second)
+real(stm_real),parameter :: start_time = 16000.0d0           !< starts at 100000 sec (second)
+real(stm_real),parameter :: end_time = 32000.0d0             !< ends at 190000 (second)
 real(stm_real),parameter :: a0 = 1.0d7                        !< constant of area A=A0*(x^-1)
 real(stm_real),parameter :: c0 = sixteen                       !< constant concentration
 real(stm_real),parameter :: d0 = 5.0d-7                       !< constant of dispersion coefficent D=D0*(x^2)
@@ -78,9 +78,6 @@ procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
 !       to use the proper API for setting dispersion.
 
 zoppou_hydro => zoppou_flow 
-!advection_boundary_flux => zoppou_advective_flux 
-!boundary_diffusion_flux => zoppou_diffusive_flux
-!boundary_diffusion_matrix => zoppou_diffusion_matrix
 compute_source => no_source
 dispersion_coef => zoppou_disp_coef
 
@@ -102,19 +99,14 @@ call initial_fine_solution_zoppou(fine_initial_condition, &
                                   x0,                     &
                                   xl,                     &
                                   start_time,             &
-                                  end_time)
-                                  
-    ! todo: check to be non- trivial                             
-!print *, fine_initial_condition(:,1)-fine_solution(:,1)
-!pause
-                  
+                                  end_time)                  
                                     
                                       
-call set_single_channel_boundary(dirichlet_advective_flux_lo, left_bc_data_zoppou, &
-                                 dirichlet_advective_flux_hi, right_bc_data_zoppou, &
-                                 dirichlet_diffusive_flux_lo, left_bc_data_zoppou, &
-                                 dirichlet_diffusive_flux_hi, right_bc_data_zoppou )
-                                 ! todo: I am not get the extarpolate here
+call set_single_channel_boundary(dirichlet_advective_flux_lo, bc_data_zoppou, &
+                                 dirichlet_advective_flux_hi, bc_data_zoppou, &
+                                 dirichlet_diffusive_flux_lo, bc_data_zoppou, &
+                                 dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data )
+                                 ! todo: I do not get the extrapolate here
 
 boundary_diffusion_flux => single_channel_boundary_diffusive_flux
 boundary_diffusion_matrix => single_channel_boundary_diffusive_matrix
@@ -316,35 +308,34 @@ subroutine zoppou_disp_coef(disp_coef_lo,         &
     real(stm_real) :: xpos_lo
     real(stm_real) :: xpos_hi
         
-        do icell = 1,ncell
-        xpos_lo = x0 + dble(icell-1)*dx
-        xpos_hi = x0 + dble(icell  )*dx
-      
-        disp_coef_lo(icell) = d0*xpos_lo**two 
-        disp_coef_hi(icell) = d0*xpos_hi**two 
-        end do
+    do icell = 1,ncell
+      xpos_lo = x0 + dble(icell-1)*dx
+      xpos_hi = x0 + dble(icell  )*dx
+      disp_coef_lo(icell) = d0*xpos_lo**two 
+      disp_coef_hi(icell) = d0*xpos_hi**two 
+    end do
                 
      return
  end subroutine
 
 
-subroutine left_bc_data_zoppou(left_bc_value_zoppou, &
-                               x0,                   &
-                               conc,                 &
-                               nx_base,              &
-                               nconc,                &
-                               origin,               &
-                               time,                 &
-                               dx,                   &
-                               dt)                
+subroutine bc_data_zoppou(bc_value_zoppou, &
+                           xloc,           &
+                           conc,           &
+                           nx_base,        &
+                           nconc,          &
+                           origin,         &
+                           time,           &
+                           dx,             &
+                           dt)                
                                     
 use stm_precision                                       
 implicit none
 
 integer,intent(in) :: nconc 
 integer,intent(in) :: nx_base 
-real(stm_real),intent(out):: left_bc_value_zoppou(nconc)           !< Dirichlet initial condition at left side of channel
-real(stm_real),intent(in) :: x0                                    !< Location where data is requested here x0
+real(stm_real),intent(out):: bc_value_zoppou(nconc)           !< Dirichlet initial condition at left side of channel
+real(stm_real),intent(in) :: xloc                                  !< Location where data is requested here x0
 real(stm_real),intent(in) :: time                                  !< Time
 real(stm_real),intent(in) :: dt                                    !< Time step
 real(stm_real),intent(in) :: dx                                    !< Spacial mesh size
@@ -356,54 +347,13 @@ real(stm_real):: c_term1
 real(stm_real):: c_term2
 real(stm_real):: xpos
 
-xpos = x0
+xpos = xloc + x0
 
-  c_term1 =  erfc((log(xpos/x0)-u0*time)/(two*sqrt(d0*time)))
-  c_term2 =  erfc((log(xpos/x0)+u0*time)/(two*sqrt(d0*time)))*exp(u0*log(xpos/x0)/d0)
-  
-  left_bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
-  left_bc_value_zoppou(:) = left_bc_value_zoppou(1)
-  
-return
-end subroutine
+c_term1 =  (x0/xpos)*erfc((log(xpos/x0)-u0*time)/(two*sqrt(d0*time)))
+c_term2 =  erfc((log(xpos/x0)+u0*time)/(two*sqrt(d0*time)))*exp(u0*log(xpos/x0)/d0)
 
-subroutine right_bc_data_zoppou(right_bc_value_zoppou,&
-                                     xl,                   &
-                                     conc,                 &
-                                     nx_base,              & ! todo for Eli:  We do not use it here I just set it to be same signature as "single_channel_boundaty"
-                                     nconc,                &
-                                     origin,               &
-                                     time,                 &
-                                     dx,                   &
-                                     dt)   
-                    
-
-use stm_precision                                       
-implicit none
-
-integer,intent(in) :: nconc 
-integer,intent(in) :: nx_base 
-real(stm_real),intent(out):: right_bc_value_zoppou(nconc)          !< Dirichlet initial condition at right side of channel
-real(stm_real),intent(in) :: xl                                    !< Location where data is requested here xL
-real(stm_real),intent(in) :: time                                  !< Time
-real(stm_real),intent(in) :: dt                                    !< Time step
-real(stm_real),intent(in) :: dx                                    !< Spacial mesh size
-real(stm_real), intent (in)   :: conc(nx_base,nconc)               !< Concentration 
-real(stm_real), intent (in)   :: origin                            !< Space origin
- 
-!----local
-real(stm_real):: c_term1
-real(stm_real):: c_term2
-real(stm_real):: xpos
-
-xpos = xl
-
-  c_term1 =  erfc((log(xpos/x0)-u0*time)/(two*sqrt(d0*time)))
-  c_term2 =  erfc((log(xpos/x0)+u0*time)/(two*sqrt(d0*time)))*exp(u0*log(xpos/x0)/d0)
-  
-  right_bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
-  right_bc_value_zoppou(:) = right_bc_value_zoppou(1)
-  
+bc_value_zoppou(1) = (c0*half)*(c_term1 + c_term2)
+bc_value_zoppou(:) = bc_value_zoppou(1)
 return
 end subroutine
 

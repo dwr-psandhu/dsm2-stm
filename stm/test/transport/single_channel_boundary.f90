@@ -410,7 +410,7 @@ subroutine dirichlet_advective_flux_hi(flux_lo,    &
     real(stm_real) :: xloc
     real(stm_real) :: origin = zero !todo: HARDWIRE
 
-    xloc = origin
+    xloc = origin + dble(ncell)*dx
     call advection_data_hi( bc_data,           &
                             xloc,              &
                             conc_hi,           &
@@ -590,7 +590,6 @@ subroutine dirichlet_diffusive_matrix_lo(center_diag ,           &
  
  
  dt_by_dxsq = dt/(dx*dx)
- xloc = origin
 ! todo: one part of center diag is based on old time and other part new time
 !       is this really true?
  center_diag(1,:)= center_diag(1,:)+theta_stm*dt_by_dxsq*(area_lo(1)*disp_coef_lo(1))                  
