@@ -86,6 +86,11 @@ label = 'advection_dispersion_zoppou'
 test_domain_length = xl - x0
 total_time = end_time - start_time
 
+cfl_number = u0*xl*total_time*nx_base/nstep_base/test_domain_length
+
+if (cfl_number > one) then
+   call stm_fatal('Courant Number Larger Than One, Zoppou Test!') 
+end if
 !> load the initial values and reference final values to feed the test routine
 call initial_fine_solution_zoppou(fine_initial_condition, &
                                   fine_solution,          &
