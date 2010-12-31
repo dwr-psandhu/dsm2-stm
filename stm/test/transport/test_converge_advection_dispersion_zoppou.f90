@@ -50,6 +50,7 @@ subroutine test_advection_diffusion_zoppou(verbose)
 use hydro_data
 use boundary_advection
 use boundary_diffusion
+use error_handling
 use dispersion_coefficient
 use source_sink
 use test_convergence_transport
@@ -66,9 +67,14 @@ real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution a
 real(stm_real) :: test_domain_length
 real(stm_real) :: total_time
 character(LEN=64) :: label 
+real(stm_real) :: cfl_number
+real(stm_real) :: point_value
 procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
 procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
 procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
+
+
+
   
 ! this flow generator is mass conservative
 ! todo: use test_convergence_transport_uniform as a model. You will be using dirichlet
@@ -103,7 +109,6 @@ call set_single_channel_boundary(dirichlet_advective_flux_lo, bc_data_zoppou, &
                                  dirichlet_advective_flux_hi, bc_data_zoppou, &
                                  dirichlet_diffusive_flux_lo, bc_data_zoppou, &
                                  dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data )
-                                 ! todo: I do not get the extrapolate here
 
 boundary_diffusion_flux => single_channel_boundary_diffusive_flux
 boundary_diffusion_matrix => single_channel_boundary_diffusive_matrix
@@ -313,6 +318,7 @@ real(stm_real):: xpos
 real(stm_real):: point_value
 
 xpos = xloc + x0  ! value comes in relative to zero origin right now
+
 call zoppou_solution(point_value,xpos,time)
 bc_value_zoppou(:) = point_value
 
