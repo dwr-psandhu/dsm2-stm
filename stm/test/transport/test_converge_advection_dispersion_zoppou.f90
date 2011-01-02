@@ -29,16 +29,16 @@ use stm_precision
 ! meaningful 
 ! the problem here was with CFL larger than one r
 integer, parameter  :: nconc = 2                              !< Number of constituents
-integer, parameter  :: nstep_base = 512                  !< Number of time steps in finer discritization
+integer, parameter  :: nstep_base = 128                       !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 128                       !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero                     !< origin
 real(stm_real),parameter :: x0 = 10000.0d0                    !< left hand side of the channel
 real(stm_real),parameter :: xl = 15000.0d0                    !< right hand side of the channel
 real(stm_real),parameter :: start_time = 2000.0d0             !< starts at 100000 sec (second)
-real(stm_real),parameter :: end_time = 8000.0d0              !< ends at 190000 (second)
+real(stm_real),parameter :: end_time = 4000.0d0              !< ends at 190000 (second)
 real(stm_real),parameter :: a0 = 1.0d7                        !< constant of area A=A0*(x^-1)
 real(stm_real),parameter :: c0 = sixteen                       !< constant concentration
-real(stm_real),parameter :: d0 = 5.0d-7                       !< constant of dispersion coefficent D=D0*(x^2)
+real(stm_real),parameter :: d0 = 1.0d-6                       !< constant of dispersion coefficent D=D0*(x^2)
 real(stm_real),parameter :: u0 = 1.0d-4                       !< constant of velocity U=u0*x
 
 contains
@@ -151,8 +151,8 @@ real(stm_real),intent(in) :: time                   !< Time
 real(stm_real):: c_term1
 real(stm_real):: c_term2
 
-c_term1 =  (x0/xpos)*erfc((log(xpos/x0)-u0*time)/(two*sqrt(d0*time)))
-c_term2 =  erfc((log(xpos/x0)+u0*time)/(two*sqrt(d0*time)))*exp(u0*log(xpos/x0)/d0)
+c_term1 =  erfc((log(xpos/x0)-(u0-d0)*time)/(two*sqrt(d0*time)))
+c_term2 =  erfc((log(xpos/x0)+(u0-d0)*time)/(two*sqrt(d0*time)))*exp((u0-d0)*log(xpos/x0)/d0)
 
 value_zoppou = (c0*half)*(c_term1 + c_term2)
 
