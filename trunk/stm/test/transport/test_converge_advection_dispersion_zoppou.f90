@@ -192,6 +192,9 @@ do icell=1,nx_base
   call zoppou_solution(point_value,xpos,end_time)
   fine_solution(icell,:) = point_value
   
+  
+  ! todo: this part is broken
+  
     ! Cell average
 !    x_lo = x0 + dble(icell-1)*dx
 !    x_hi = x0 + dble(icell)  *dx 
