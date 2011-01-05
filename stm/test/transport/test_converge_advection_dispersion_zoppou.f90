@@ -34,10 +34,10 @@ integer, parameter  :: nx_base    = 128                       !< Number of spati
 real(stm_real),parameter :: origin = zero                     !< origin
 real(stm_real),parameter :: x0 = 10000.0d0                    !< left hand side of the channel
 real(stm_real),parameter :: xl = 15000.0d0                    !< right hand side of the channel
-real(stm_real),parameter :: start_time = 2000.0d0             !< starts at 100000 sec (second)
-real(stm_real),parameter :: end_time = 4000.0d0              !< ends at 190000 (second)
+real(stm_real),parameter :: start_time = 2000.0d0             !< start time (second)
+real(stm_real),parameter :: end_time = 4000.0d0               !< end time (second)
 real(stm_real),parameter :: a0 = 1.0d7                        !< constant of area A=A0*(x^-1)
-real(stm_real),parameter :: c0 = sixteen                       !< constant concentration
+real(stm_real),parameter :: c0 = sixteen                      !< constant concentration
 real(stm_real),parameter :: d0 = 1.0d-6                       !< constant of dispersion coefficent D=D0*(x^2)
 real(stm_real),parameter :: u0 = 1.0d-4                       !< constant of velocity U=u0*x
 
@@ -69,24 +69,14 @@ real(stm_real) :: total_time
 character(LEN=64) :: label 
 real(stm_real) :: cfl_number
 real(stm_real) :: point_value
-procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
-procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
+procedure(boundary_advective_flux_if),  pointer :: bc_advect_flux => null()
+procedure(boundary_diffusive_flux_if),  pointer :: bc_diff_flux   => null()
 procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
-
-
-
   
 ! this flow generator is mass conservative
-! todo: use test_convergence_transport_uniform as a model. You will be using dirichlet
-!       (probably). Use code similar to the stuff around line 204. You will be using the
-!       existing single_channel boundary conditions, but providing data that is appropriate
-!       for zoppou. This is needed for both advection and dispersion. You will also need 
-!       to use the proper API for setting dispersion.
-
 zoppou_hydro => zoppou_flow 
 compute_source => no_source
 dispersion_coef => zoppou_disp_coef
-
 
 label = 'advection_dispersion_zoppou' 
 test_domain_length = xl - x0
@@ -159,8 +149,6 @@ value_zoppou = (c0*half)*(c_term1 + c_term2)
 return
 end subroutine
 
-
-
 !-------------------------------------------
 !> Generates a fine initial and final solution of analytical mass distribution 
 subroutine initial_fine_solution_zoppou(fine_initial_condition, &
@@ -183,15 +171,55 @@ real(stm_real):: dx
 real(stm_real):: xpos
 real(stm_real):: test_domain_length
 real(stm_real):: point_value
+real(stm_real):: x_lo
+real(stm_real):: x_hi
+real(stm_real):: c_1_hi
+real(stm_real):: c_2_hi
+real(stm_real):: c_1_lo
+real(stm_real):: c_2_lo
+real(stm_real):: time
 integer :: icell
 
 dx = (xl - x0)/dble(nx_base)
+
+
 do icell=1,nx_base
+ 
+    ! Pointwise (FDM) 
   xpos    = x0 +(dble(icell)-half)*dx
   call zoppou_solution(point_value,xpos,start_time)
   fine_initial_condition(icell,:) = point_value
   call zoppou_solution(point_value,xpos,end_time)
   fine_solution(icell,:) = point_value
+  
+    ! Cell average
+!    x_lo = x0 + dble(icell-1)*dx
+!    x_hi = x0 + dble(icell)  *dx 
+!
+!    time = start_time   
+!
+!c_1_hi = (x_hi+(d0*x0*(x_hi/x0)**(u0/d0))/u0)*erfc((time*(d0-u0)+log(x_hi/x0))/(two*sqrt(d0*time)))
+!
+!c_2_hi = -x0*exp(time*u0)*(one + d0/u0)*erf((time*(d0+u0)-log(x_hi/x0))/(two*sqrt(d0*time)))
+!
+!c_1_lo = (x_lo+(d0*x0*(x_lo/x0)**(u0/d0))/u0)*erfc((time*(d0-u0)+log(x_lo/x0))/(two*sqrt(d0*time)))
+!
+!c_2_lo = -x0*exp(time*u0)*(one + d0/u0)*erf((time*(d0+u0)-log(x_lo/x0))/(two*sqrt(d0*time)))
+!
+!    fine_initial_condition(icell,:) = (c0*half/dx)*(c_1_hi + c_2_hi - c_1_lo - c_2_lo )
+!  
+!    time = end_time   
+!
+!c_1_hi = (x_hi+(d0*x0*(x_hi/x0)**(u0/d0))/u0)*erfc((time*(d0-u0)+log(x_hi/x0))/(two*sqrt(d0*time)))
+!
+!c_2_hi = -x0*exp(time*u0)*(one + d0/u0)*erf((time*(d0+u0)-log(x_hi/x0))/(two*sqrt(d0*time)))
+!
+!c_1_lo = (x_lo+(d0*x0*(x_lo/x0)**(u0/d0))/u0)*erfc((time*(d0-u0)+log(x_lo/x0))/(two*sqrt(d0*time)))
+!
+!c_2_lo = -x0*exp(time*u0)*(one + d0/u0)*erf((time*(d0+u0)-log(x_lo/x0))/(two*sqrt(d0*time)))
+!
+!    fine_solution(icell,:) = (c0*half/dx)*(c_1_hi + c_2_hi - c_1_lo - c_2_lo )
+  
 end do
 
 return
@@ -210,7 +238,7 @@ subroutine zoppou_flow(flow,    &
                        dt)
                       
 implicit none
-integer, intent(in) :: ncell                   !< number of cells
+integer, intent(in) :: ncell                  !< number of cells
 real(stm_real), intent(in) :: time            !< time of request
 real(stm_real), intent(in) :: dx              !< spatial step 
 real(stm_real), intent(in) :: dt              !< time step 
