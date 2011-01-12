@@ -185,7 +185,7 @@ dx = (xl - x0)/dble(nx_base)
 
 do icell=1,nx_base
  
-    ! Pointwise (FDM) 
+    ! Pointwise (Here we used point values instead of cell average values) 
   xpos    = x0 +(dble(icell)-half)*dx
   call zoppou_solution(point_value,xpos,start_time)
   fine_initial_condition(icell,:) = point_value
