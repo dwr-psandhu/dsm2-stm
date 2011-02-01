@@ -161,7 +161,7 @@ end subroutine
 
 !-------------------------------------------
 !> Generates a fine initial and final solution of analytical mass distribution 
-!> The cell averaging is done by composite Simpson's rule 1/12 *(F1+ 4*F2 + 2*F3 + 4*F4 + F5)
+!> The cell averaging is done by the Composite Simpson's rule 1/12 *(F1+ 4*F2 + 2*F3 + 4*F4 + F5)
 subroutine initial_fine_solution_zoppou(fine_initial_condition, &
                                         fine_solution,          &
                                         nx_base,                &
