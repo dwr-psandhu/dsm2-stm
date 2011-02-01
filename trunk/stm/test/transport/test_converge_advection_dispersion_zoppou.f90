@@ -29,13 +29,13 @@ use stm_precision
 ! meaningful 
 ! the problem here was with CFL larger than one r
 integer, parameter  :: nconc = 2                      !< Number of constituents
-integer, parameter  :: nstep_base = 256               !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 256               !< Number of spatial discritization in finer mesh 
+integer, parameter  :: nstep_base = 128              !< Number of time steps in finer discritization
+integer, parameter  :: nx_base    = 256              !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero             !< origin
 real(stm_real),parameter :: x0 = 15000.0d0            ! Location of the initial condition discontinuity
 real(stm_real),parameter :: x_left = 20000.0d0        !< left hand side of the channel
-real(stm_real),parameter :: x_right = 140000.0d0       !< right hand side of the channel
-real(stm_real),parameter :: start_time = 8000.0d0    !< starts at 100000 sec (second)
+real(stm_real),parameter :: x_right = 140000.0d0      !< right hand side of the channel
+real(stm_real),parameter :: start_time = 8000.0d0     !< starts at 100000 sec (second)
 real(stm_real),parameter :: end_time = 12000.0d0      !< ends at 190000 (second)
 real(stm_real),parameter :: a0 = 1.0d7                !< constant of area A=A0*(x^-1)
 real(stm_real),parameter :: c0 = sixteen              !< constant concentration
@@ -73,10 +73,7 @@ real(stm_real) :: point_value
 procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
 procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
 procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
-
-
-
-  
+ 
 ! this flow generator is mass conservative
 ! todo: use test_convergence_transport_uniform as a model. You will be using dirichlet
 !       (probably). Use code similar to the stuff around line 204. You will be using the
@@ -164,6 +161,7 @@ end subroutine
 
 !-------------------------------------------
 !> Generates a fine initial and final solution of analytical mass distribution 
+!> The cell averaging is done by simple simpsone rule 1/6 ( Left value + 4* center value + right value)
 subroutine initial_fine_solution_zoppou(fine_initial_condition, &
                                         fine_solution,          &
                                         nx_base,                &
@@ -192,21 +190,21 @@ fine_initial_condition = zero
 do icell=1,nx_base
   xpos    = x_left +(dble(icell)-half)*dx
   call zoppou_solution(point_value,xpos,start_time)
-  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + half*point_value
+  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (four/six)*point_value
   call zoppou_solution(point_value,xpos,end_time)
-  fine_solution(icell,:) = fine_solution(icell,:) + half*point_value
+  fine_solution(icell,:) = fine_solution(icell,:) + (four/six)*point_value
 
   xpos    = x_left +(dble(icell-1))*dx
   call zoppou_solution(point_value,xpos,start_time)
-  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + fourth*point_value
+  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (one/six)*point_value
   call zoppou_solution(point_value,xpos,end_time)
-  fine_solution(icell,:) = fine_solution(icell,:) + fourth*point_value
+  fine_solution(icell,:) = fine_solution(icell,:) + (one/six)*point_value
 
   xpos    = x_left +(dble(icell))*dx
   call zoppou_solution(point_value,xpos,start_time)
-  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + fourth*point_value
+  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (one/six)*point_value
   call zoppou_solution(point_value,xpos,end_time)
-  fine_solution(icell,:) = fine_solution(icell,:) + fourth*point_value
+  fine_solution(icell,:) = fine_solution(icell,:) + (one/six)*point_value
 end do
 
 return
