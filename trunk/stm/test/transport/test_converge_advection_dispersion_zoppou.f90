@@ -29,7 +29,7 @@ use stm_precision
 ! meaningful 
 ! the problem here was with CFL larger than one r
 integer, parameter  :: nconc = 2                      !< Number of constituents
-integer, parameter  :: nstep_base = 128              !< Number of time steps in finer discritization
+integer, parameter  :: nstep_base = 256              !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 256              !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero             !< origin
 real(stm_real),parameter :: x0 = 15000.0d0            ! Location of the initial condition discontinuity
@@ -161,7 +161,7 @@ end subroutine
 
 !-------------------------------------------
 !> Generates a fine initial and final solution of analytical mass distribution 
-!> The cell averaging is done by simple simpsone rule 1/6 ( Left value + 4* center value + right value)
+!> The cell averaging is done by composite Simpson's rule 1/12 *(F1+ 4*F2 + 2*F3 + 4*F4 + F5)
 subroutine initial_fine_solution_zoppou(fine_initial_condition, &
                                         fine_solution,          &
                                         nx_base,                &
@@ -179,6 +179,7 @@ real(stm_real),intent(out):: fine_initial_condition(nx_base,nconc) !< initial co
 real(stm_real),intent(out):: fine_solution(nx_base,nconc)          !< reference solution at finest resolution
 !----local
 real(stm_real):: dx
+real(stm_real):: dxby2
 real(stm_real):: xpos
 real(stm_real):: test_domain_length
 real(stm_real):: point_value
@@ -187,24 +188,44 @@ integer :: icell
 dx = (x_right - x_left)/dble(nx_base)
 fine_solution = zero
 fine_initial_condition = zero
-do icell=1,nx_base
-  xpos    = x_left +(dble(icell)-half)*dx
-  call zoppou_solution(point_value,xpos,start_time)
-  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (four/six)*point_value
-  call zoppou_solution(point_value,xpos,end_time)
-  fine_solution(icell,:) = fine_solution(icell,:) + (four/six)*point_value
 
-  xpos    = x_left +(dble(icell-1))*dx
+
+do icell=1,nx_base
+  ! x = x0
+  xpos    = x_left +(dble(icell)-one)*dx
+  call zoppou_solution(point_value,xpos,start_time)
+  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (half/six)*point_value
+  call zoppou_solution(point_value,xpos,end_time)
+  fine_solution(icell,:) = fine_solution(icell,:) + (half/six)*point_value
+
+  ! x = x0 + 1/4L
+  xpos    = x_left +(dble(icell)- three/four)*dx
+  call zoppou_solution(point_value,xpos,start_time)
+  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (two/six)*point_value
+  call zoppou_solution(point_value,xpos,end_time)
+  fine_solution(icell,:) = fine_solution(icell,:) + (two/six)*point_value
+  
+  ! x = x0 + 2/4L
+  xpos    = x_left +(dble(icell)- half)*dx
   call zoppou_solution(point_value,xpos,start_time)
   fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (one/six)*point_value
   call zoppou_solution(point_value,xpos,end_time)
   fine_solution(icell,:) = fine_solution(icell,:) + (one/six)*point_value
-
+  
+  ! x = x0 + 3/4L
+  xpos    = x_left +(dble(icell)- fourth)*dx
+  call zoppou_solution(point_value,xpos,start_time)
+  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (two/six)*point_value
+  call zoppou_solution(point_value,xpos,end_time)
+  fine_solution(icell,:) = fine_solution(icell,:) + (two/six)*point_value
+  
+  ! x = x0 + 4/4L = x_right
   xpos    = x_left +(dble(icell))*dx
   call zoppou_solution(point_value,xpos,start_time)
-  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (one/six)*point_value
+  fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (half/six)*point_value
   call zoppou_solution(point_value,xpos,end_time)
-  fine_solution(icell,:) = fine_solution(icell,:) + (one/six)*point_value
+  fine_solution(icell,:) = fine_solution(icell,:) + (half/six)*point_value
+  
 end do
 
 return
