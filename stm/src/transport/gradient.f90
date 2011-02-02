@@ -41,7 +41,6 @@ real(stm_real),intent(out) :: grad_center(ncell,nvar) !< Dentered diff, LARGEREA
 !----local
 integer :: ivar
 
-
 do ivar = 1, nvar
   grad_center(2:(ncell-1),ivar) = (vals(3:ncell,ivar) - vals(1:(ncell-2),ivar))/two
   grad_center(1,ivar)=LARGEREAL
@@ -65,16 +64,15 @@ implicit none
 !--- args
 integer,intent(in)  :: ncell                         !< Number of cells
 integer,intent(in)  :: nvar                          !< Number of variables
-real(stm_real),intent(in) :: grad_lo(ncell,nvar)     !< difference on lo side, LARGEREAL in first index
-real(stm_real),intent(in) :: grad_hi(ncell,nvar)     !< difference on hi side (n+1) minus (n) LARGEREAL for last index
-real(stm_real),intent(in) :: grad_center(ncell,nvar) !< centered difference, LARGEREAL for undefined boundary cells 
-real(stm_real),intent(out) :: grad_lim(ncell,nvar)   !< limited difference
+real(stm_real),intent(in) :: grad_lo(ncell,nvar)     !< Difference on lo side, LARGEREAL in first index
+real(stm_real),intent(in) :: grad_hi(ncell,nvar)     !< Difference on hi side (n+1) minus (n) LARGEREAL for last index
+real(stm_real),intent(in) :: grad_center(ncell,nvar) !< Centered difference, LARGEREAL for undefined boundary cells 
+real(stm_real),intent(out) :: grad_lim(ncell,nvar)   !< Limited difference
 
 !---locals
-
-real(stm_real) :: delta_limit(ncell,nvar) ! intermediate quantity
-real(stm_real) :: sign
-integer        :: ivar, icell             ! counting variables
+real(stm_real) :: delta_limit(ncell,nvar) ! Intermediate quantity
+real(stm_real) :: sign                           
+integer        :: ivar, icell             ! Counting variables
 
 do ivar = 1,nvar
     do icell = 1,ncell
