@@ -76,7 +76,7 @@ real(stm_real),intent(in)  :: flow_hi(ncell)        !< flow on hi side of cells 
 real(stm_real),intent(in)  :: area_prev(ncell)      !< cell-centered area at old time. not used in algorithm?
 real(stm_real),intent(in)  :: area(ncell)           !< cell-centered area at new time. not used in algorithm?
 
-! todo: area_lo is time centered here?  I think currently it is correct for advection only.
+! todo: area_lo is time centered here? I think currently it is correct for advection only.
 !       however, area_lo is also needed for diffusion at old time and new time.
 !       including being needed here if we want to include explicit diffusion op (though strictly speaking,
 !       it may be adequately accurate to have a first order estimate and the half time estimate is first order)
@@ -115,7 +115,7 @@ if (present(use_limiter))then
 else
     limit_slope = .true.
 end if
-! converts the conservative variable (mass) to the primitive variable (concentration)
+! Converts the conservative variable (mass) to the primitive variable (concentration)
 call cons2prim(conc_prev,&
                mass_prev,&
                area_prev,&
@@ -131,7 +131,7 @@ call difference(grad_lo,    &
                 nvar)
 
 if (limit_slope)then
-! applies flux-limeter on high resolution gradient 
+! Applies flux-limeter on high resolution gradient 
     call limiter(grad_lim,   &
                  grad_lo,    &
                  grad_hi,    &
@@ -150,7 +150,7 @@ call adjust_differences(grad,    &
                         grad_hi, &
                         ncell,   &
                         nvar)
-
+! Compute sources and sinks for each constituent
 call compute_source(source_prev, & 
                     conc_prev,   &
                     area_prev,   &
@@ -158,7 +158,7 @@ call compute_source(source_prev, &
                     ncell,       &
                     nvar,        &
                     old_time)
-
+! Extrapolate primitive data from cell center at the old time
 call extrapolate(conc_lo,     &
                  conc_hi,     & 
                  conc_prev,   &
@@ -189,6 +189,7 @@ call compute_flux(flux_lo,  &
 !!!!!
 !todo: boundary flux half_time?
 !!!!!
+! Imposes the advection boundary flux
 call advection_boundary_flux(flux_lo,     &
                              flux_hi,     &
                              conc_lo,     &
@@ -211,7 +212,7 @@ call compute_divergence(div_flux,   &
                         ncell,      &
                         nvar)
 
-!conservative update including source. 
+!Conservative update including source. 
 call update_conservative(mass,      &
                          mass_prev, &
                          div_flux,  &
@@ -250,8 +251,8 @@ pure subroutine extrapolate(conc_lo,  &
 use stm_precision
 implicit none
 !--- args
-integer,intent(in)  :: ncell  !< Number of cells
-integer,intent(in)  :: nvar   !< Number of variables
+integer,intent(in)  :: ncell                     !< Number of cells
+integer,intent(in)  :: nvar                      !< Number of variables
 real(stm_real),intent(out):: conc_lo(ncell,nvar) !< estimate from this cell extrapolated to lo face at half time
 real(stm_real),intent(out):: conc_hi(ncell,nvar) !< estimate from this cell extrapolated to hi face at half time
 real(stm_real),intent(in) :: conc(ncell,nvar)    !< cell centered conc at old time
@@ -264,7 +265,7 @@ real(stm_real),intent(in) :: dt                  !< length of current time step 
 real(stm_real),intent(in) :: dx                  !< spatial step
 !----- locals
 integer        :: ivar
-real(stm_real) :: vel(ncell)                     !< cell-centered flow at old time
+real(stm_real) :: vel(ncell)                     !< cell-centered flow at old time - todo: velocity or flow?
 real(stm_real) :: dtbydx
 !--------------------
 vel=flow/area
@@ -281,7 +282,6 @@ end do
 
 return
 end subroutine
-
 
 !> Compute the upwinded fluxes 
 !> The calculation here does not include tributaries, boundaries or special objects
@@ -338,7 +338,6 @@ end do
 return
 end subroutine
 
-
 !> Compute the divergence of fluxes.
 ! todo: At present, this is undivided...which may be not what we want.
 subroutine compute_divergence(div_flux, &
@@ -351,12 +350,12 @@ use stm_precision
 implicit none
 
 !--- args
-integer,intent(in)  :: ncell  !< Number of cells
-integer,intent(in)  :: nvar   !< Number of variables
+integer,intent(in)  :: ncell                      !< Number of cells
+integer,intent(in)  :: nvar                       !< Number of variables
 real(stm_real),intent(out) :: div_flux(ncell,nvar)!< Cell centered flux divergence, time centered
 real(stm_real),intent(in)  :: flux_lo(ncell,nvar) !< Flux on lo side of cell, time centered
 real(stm_real),intent(in)  :: flux_hi(ncell,nvar) !< Flux on hi side of cell, time centered 
-!--
+
 div_flux = (flux_hi - flux_lo)
 
 return
@@ -393,7 +392,7 @@ real(stm_real),intent(in)  :: area(ncell)            !< Area of cells
 real(stm_real),intent(in)  :: area_prev(ncell)       !< Area of cells at old time step
 real(stm_real),intent(in)  :: source_prev(ncell,nvar)!< Old time source term
 real(stm_real),intent(in)  :: div_flux(ncell,nvar)   !< Flux divergence, time centered
-real(stm_real),intent(in)  :: time                   !< current (new) time
+real(stm_real),intent(in)  :: time                   !< Current (new) time
 real(stm_real),intent(in)  :: dt                     !< Length of current time step
 real(stm_real),intent(in)  :: dx                     !< Spatial step
 
@@ -401,7 +400,7 @@ real(stm_real),intent(in)  :: dx                     !< Spatial step
 real(stm_real) :: dtbydx
 real(stm_real) :: source(ncell,nvar)                 !< New time source term
 real(stm_real) :: conc(ncell,nvar)                   !< Concentration
-real(stm_real) :: flow(ncell)                        !< cell centered flow 
+real(stm_real) :: flow(ncell)                        !< Cell centered flow 
 integer :: ivar
 !--------------------
 dtbydx = dt/dx
@@ -409,6 +408,7 @@ dtbydx = dt/dx
 !todo: kaveh, this is major. Up to now flow has been just an uninitialized, essentially random number
 !      I did this to make it safer. However, I doubt that we will be able to use flow in a source term
 !      at multiple time steps
+!todo: Eli, what do you mean by 'we will be able to use flow in a source term...'?
 flow = LARGEREAL
 
 ! obtain a guess at the new state (predictor part of Huen) using the flux divergence and source evaluated at the
@@ -461,7 +461,7 @@ integer,intent(in)  :: ncell                       !< Number of cells
 integer,intent(in)  :: nvar                        !< Number of variables
 
 real(stm_real),intent(in)  :: grad_lo(ncell,nvar)  !< Difference based on lo side difference
-real(stm_real),intent(in)  :: grad_hi(ncell,nvar)  !< difference based on hi side difference
+real(stm_real),intent(in)  :: grad_hi(ncell,nvar)  !< Difference based on hi side difference
 real(stm_real),intent(in)  :: grad_lim(ncell,nvar) !< Limited cell centered difference
 real(stm_real),intent(out) :: grad(ncell,nvar)     !< Cell centered difference adjusted for boundaries and hydraulic devices
 !---------
