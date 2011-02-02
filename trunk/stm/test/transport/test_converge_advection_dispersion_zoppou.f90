@@ -169,7 +169,6 @@ subroutine initial_fine_solution_zoppou(fine_initial_condition, &
                                         nconc)
                                        
 
-
 implicit none
 
 integer,intent(in) :: nconc 
