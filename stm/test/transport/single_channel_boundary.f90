@@ -239,7 +239,6 @@ subroutine single_channel_boundary_diffusive_flux(diffusive_flux_lo, &
 return
 end subroutine
 
-
 !> Matrix boundary condition, delagates to an implementation at each end
 subroutine single_channel_boundary_diffusive_matrix(center_diag ,           &
                                                     up_diag,                &     
@@ -319,10 +318,6 @@ subroutine single_channel_boundary_diffusive_matrix(center_diag ,           &
                           dt)                          
 return
 end subroutine 
-
-
-
-
 
 
 !> Example advective flux that imposes dirichlet boundaries on lo side
@@ -601,7 +596,6 @@ subroutine dirichlet_diffusive_matrix_lo(center_diag ,           &
 return
 end subroutine
 
-
 !> Matrix boundary condition for dirichlet, only operates on hi end
 subroutine dirichlet_diffusive_matrix_hi(center_diag ,           &
                                          up_diag,                &     
@@ -670,10 +664,6 @@ subroutine dirichlet_diffusive_matrix_hi(center_diag ,           &
 
 return
 end subroutine
-
-
-!=============================================================================================
-
 
 
  !> Example advective flux that imposes Neumann boundaries on lo side of channel

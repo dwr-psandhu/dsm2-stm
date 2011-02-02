@@ -325,9 +325,6 @@ subroutine dirichlet_test_diffusion_matrix(center_diag ,       &
    return
  end subroutine
 
-
-
-
 subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
                                    diffusive_flux_hi, &
                                    conc,              &
@@ -450,9 +447,4 @@ subroutine dirichlet_test_diffusive_flux(diffusive_flux_lo, &
     return
  end subroutine
  
-
-
-
-
-
 end module
