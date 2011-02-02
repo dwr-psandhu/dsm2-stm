@@ -20,14 +20,13 @@
 
 !> Matrix solver module for the system of linear equations.
 !> The solvers include:
-!>   - Tri-diagonal solver using todo:? algorithm
+!>   - Tri-diagonal solver using todo:? Thomas algorithm
 !>   - Penta-diagonal solver using todo:? algorithm
 !>   - Sparse matrix solver 
 !>@ingroup matrix_solver
 module matrix_solver
 
 use stm_precision
-
 
 contains
 
@@ -55,7 +54,6 @@ pure subroutine tridi_solver(center_diag,          &
                              ncell)
 
     ! --- args
-
     integer,intent (in) :: ncell                          !< Number of volumes 
     real(stm_real),intent (out) :: conc(ncell)            !< Values of the computed solution
     real(stm_real),intent (in)  :: down_diag(ncell)       !< Values of the coefficients below diagonal in matrix
@@ -91,6 +89,6 @@ pure subroutine tridi_solver(center_diag,          &
     end do
 
     return
-    end subroutine tridi_solver
+    end subroutine 
     
-end module matrix_solver   
+end module  

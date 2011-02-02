@@ -84,9 +84,9 @@ pure subroutine prim_increment_to_cons(mass,conc,area,nloc,nvar,scale)
     ! todo: here is a compiler bug and the fortran forums told it would be fixed 
     ! change the scale intent to just (in)
     ! todo: should we change scale to scale(nvar)?
-    real(stm_real),intent(in)    :: scale          !< Scale factor
-    integer,intent(in)  :: nloc                    !< Number of cells or faces
-    integer,intent(in)  :: nvar                    !< Number of variables
+    real(stm_real),intent(in)    :: scale           !< Scale factor
+    integer,intent(in)  :: nloc                     !< Number of cells or faces
+    integer,intent(in)  :: nvar                     !< Number of variables
     !--- locals
     integer :: ivar
 

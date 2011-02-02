@@ -53,7 +53,7 @@ module source_sink
      real(stm_real),intent(in)  :: area(ncell)          !< Cell centered area at source     
      real(stm_real),intent(in)  :: flow(ncell)          !< flow at source location
      real(stm_real),intent(in)  :: time                 !< time
-   end subroutine source_if
+   end subroutine 
  end interface
  
  !>\file
@@ -87,9 +87,9 @@ module source_sink
                
          implicit none
      !--- args
-     integer,intent(in)  :: ncell                      !< Number of cells
-     integer,intent(in)  :: nvar                       !< Number of variables
-     real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
+     integer,intent(in)  :: ncell                        !< Number of cells
+     integer,intent(in)  :: nvar                         !< Number of variables
+     real(stm_real),intent(inout) :: source(ncell,nvar)  !< cell centered source 
      real(stm_real),intent(in)    :: conc(ncell,nvar)    !< Concentration
      real(stm_real),intent(in)    :: area(ncell)         !< area at source     
      real(stm_real),intent(in)    :: flow(ncell)         !< flow at source location
@@ -137,7 +137,7 @@ subroutine linear_decay_source(source, &
 integer,intent(in)  :: ncell                      !< Number of cells
 integer,intent(in)  :: nvar                       !< Number of variables
 !---local
-integer :: ivar
+integer :: ivar                                   !< Counter on constituents
 real(stm_real),intent(inout) :: source(ncell,nvar)!< cell centered source 
 real(stm_real),intent(in)  :: conc(ncell,nvar)    !< Concentration
 real(stm_real),intent(in)  :: area(ncell)         !< area at source     
