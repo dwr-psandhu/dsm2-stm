@@ -24,7 +24,6 @@
 !>@ingroup transport
 module diffusion
 
-
 contains
 
 logical function use_diffusion()
@@ -96,7 +95,7 @@ real(stm_real), intent (in) :: dt                            !< Time step
 real(stm_real), intent (in) :: dx                            !< Spacial step 
 
 ! ---- locals
-real(stm_real) :: explicit_diffuse_op(ncell,nvar)             !< explicit diffusive operator
+real(stm_real) :: explicit_diffuse_op(ncell,nvar)             !< Explicit diffusive operator
 real(stm_real) :: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
 real(stm_real) :: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
 real(stm_real) :: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
@@ -114,7 +113,6 @@ real(stm_real) :: time_prev                                   !< old time
 ! to get the operator d/dx(Ad/dx). 
 ! instantaneous function
 time_prev = time_new - dt
-
 
 call explicit_diffusion_operator(explicit_diffuse_op,&
                                  conc_prev,          &
@@ -214,17 +212,17 @@ use boundary_diffusion
 
 implicit none 
 !----args
-integer, intent (in) :: ncell                                               !< Number of cells
-integer, intent (in) :: nvar                                                !< Number of variables
-real(stm_real), intent (out) :: explicit_diffuse_op(ncell,nvar)             !< Explicit diffusion operator
-real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration at old time
-real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at old time
-real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at old time 
-real(stm_real), intent (in)  :: disp_coef_lo(ncell)                         !< Low side constituent dispersion coef. at old time
-real(stm_real), intent (in)  :: disp_coef_hi(ncell)                         !< High side constituent dispersion coef. at old time
-real(stm_real), intent (in)  :: time                                        !< Current time
-real(stm_real), intent (in)  :: dx                                          !< Spacial step  
-real(stm_real), intent (in)  :: dt
+integer,intent(in) :: ncell                                 !< Number of cells
+integer,intent(in) :: nvar                                  !< Number of variables
+real(stm_real),intent(out):: explicit_diffuse_op(ncell,nvar)!< Explicit diffusion operator
+real(stm_real),intent(in) :: conc(ncell,nvar)               !< Concentration at old time
+real(stm_real),intent(in) :: area_lo(ncell)                 !< Low side area at old time
+real(stm_real),intent(in) :: area_hi(ncell)                 !< High side area at old time 
+real(stm_real),intent(in) :: disp_coef_lo(ncell)            !< Low side constituent dispersion coef. at old time
+real(stm_real),intent(in) :: disp_coef_hi(ncell)            !< High side constituent dispersion coef. at old time
+real(stm_real),intent(in) :: time                           !< Current time
+real(stm_real),intent(in) :: dx                             !< Spacial step  
+real(stm_real),intent(in) :: dt                             !< Time step
 !--- locals
 integer :: ivar
 integer :: icell
@@ -271,19 +269,19 @@ use boundary_diffusion
 
 ! --- args
                                              
-integer, intent (in) :: ncell                                               !< Number of cells
-integer, intent (in) :: nvar                                                !< Number of variables
+integer, intent (in) :: ncell                                            !< Number of cells
+integer, intent (in) :: nvar                                             !< Number of variables
 
-real(stm_real), intent (out) :: diffusive_flux_hi(ncell,nvar)               !< Explicit diffusive flux high side
-real(stm_real), intent (out) :: diffusive_flux_lo(ncell,nvar)               !< Explicit diffusive flux low side
-real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration at old time
-real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at old time
-real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at old time 
-real(stm_real), intent (in)  :: disp_coef_lo(ncell)                         !< Low side constituent dispersion coef. at old time
-real(stm_real), intent (in)  :: disp_coef_hi(ncell)                         !< High side constituent dispersion coef. at old time
-real(stm_real), intent (in)  :: time                                        !< Current time
-real(stm_real), intent (in)  :: dx                                          !< Spatial step   
-real(stm_real), intent (in)  :: dt
+real(stm_real),intent(out):: diffusive_flux_hi(ncell,nvar)               !< Explicit diffusive flux high side
+real(stm_real),intent(out):: diffusive_flux_lo(ncell,nvar)               !< Explicit diffusive flux low side
+real(stm_real),intent(in) :: conc(ncell,nvar)                            !< Concentration at old time
+real(stm_real),intent(in) :: area_lo(ncell)                              !< Low side area at old time
+real(stm_real),intent(in) :: area_hi(ncell)                              !< High side area at old time 
+real(stm_real),intent(in) :: disp_coef_lo(ncell)                         !< Low side constituent dispersion coef. at old time
+real(stm_real),intent(in) :: disp_coef_hi(ncell)                         !< High side constituent dispersion coef. at old time
+real(stm_real),intent(in) :: time                                        !< Current time
+real(stm_real),intent(in) :: dx                                          !< Spatial step   
+real(stm_real),intent(in) :: dt                                          !< Time step
 
 !--- local
 integer :: icell 
@@ -338,20 +336,20 @@ pure subroutine construct_right_hand_side(right_hand_side,       &
                                           dt)
 use stm_precision   
   ! ---args                                
-integer, intent (in) :: ncell                                               !< Number of cells
-integer, intent (in) :: nvar                                                !< Number of variables
-real(stm_real), intent (out) :: right_hand_side(ncell,nvar)                 !< The right hand side vector
-real(stm_real), intent (in)  :: explicit_diffuse_op (ncell,nvar)            !< Explicit diffusion operator
-real(stm_real), intent (in)  :: area_prev (ncell)                           !< Cell centered area at old time 
-real(stm_real), intent (in)  :: conc_prev(ncell,nvar)                       !< Concentration at old time
-real(stm_real), intent (in)  :: area_lo_prev (ncell)                        !< Low side area at old time
-real(stm_real), intent (in)  :: area_hi_prev (ncell)                        !< High side area at old time 
-real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)              !< Low side constituent dispersion coef. at old time
-real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
-real(stm_real), intent (in)  :: time                                        !< Current time
-real(stm_real), intent (in)  :: theta                                       !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
-real(stm_real), intent (in)  :: dx                                          !< Spatial step  
-real(stm_real), intent (in)  :: dt                                          !< Time step 
+integer, intent (in) :: ncell                                     !< Number of cells
+integer, intent (in) :: nvar                                      !< Number of variables
+real(stm_real), intent (out) :: right_hand_side(ncell,nvar)       !< The right hand side vector
+real(stm_real), intent (in)  :: explicit_diffuse_op (ncell,nvar)  !< Explicit diffusion operator
+real(stm_real), intent (in)  :: area_prev (ncell)                 !< Cell centered area at old time 
+real(stm_real), intent (in)  :: conc_prev(ncell,nvar)             !< Concentration at old time
+real(stm_real), intent (in)  :: area_lo_prev (ncell)              !< Low side area at old time
+real(stm_real), intent (in)  :: area_hi_prev (ncell)              !< High side area at old time 
+real(stm_real), intent (in)  :: disp_coef_lo_prev (ncell,nvar)    !< Low side constituent dispersion coef. at old time
+real(stm_real), intent (in)  :: disp_coef_hi_prev (ncell,nvar)    !< High side constituent dispersion coef. at old time
+real(stm_real), intent (in)  :: time                              !< Current time
+real(stm_real), intent (in)  :: theta                             !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+real(stm_real), intent (in)  :: dx                                !< Spatial step  
+real(stm_real), intent (in)  :: dt                                !< Time step 
   
 !---- locals
 integer :: ivar
@@ -386,23 +384,23 @@ subroutine construct_diffusion_matrix(center_diag ,     &
 use stm_precision
                                   
  ! ---args                                
-integer, intent (in) :: ncell                                               !< Number of cells
-integer, intent (in) :: nvar                                                !< Number of variables
-real(stm_real), intent (out) :: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
-real(stm_real), intent (out) :: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
-real(stm_real), intent (out) :: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
-real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
-real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
-real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
-real(stm_real), intent (in)  :: disp_coef_lo(ncell)                         !< Low side constituent dispersion coef. at new time
-real(stm_real), intent (in)  :: disp_coef_hi(ncell)                         !< High side constituent dispersion coef. at new time
-real(stm_real), intent (in)  :: time                                        !< Current time
-real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
-real(stm_real), intent (in)  :: dx                                          !< Spatial step  
-real(stm_real), intent (in)  :: dt                                          !< Time step                                   
+integer, intent (in) :: ncell                            !< Number of cells
+integer, intent (in) :: nvar                             !< Number of variables
+real(stm_real), intent (out) :: down_diag(ncell,nvar)    !< Values of the coefficients below diagonal in matrix
+real(stm_real), intent (out) :: center_diag(ncell,nvar)  !< Values of the coefficients at the diagonal in matrix
+real(stm_real), intent (out) :: up_diag(ncell,nvar)      !< Values of the coefficients above the diagonal in matrix
+real(stm_real), intent (in)  :: area (ncell)             !< Cell centered area at new time 
+real(stm_real), intent (in)  :: area_lo(ncell)           !< Low side area at new time
+real(stm_real), intent (in)  :: area_hi(ncell)           !< High side area at new time 
+real(stm_real), intent (in)  :: disp_coef_lo(ncell)      !< Low side constituent dispersion coef. at new time
+real(stm_real), intent (in)  :: disp_coef_hi(ncell)      !< High side constituent dispersion coef. at new time
+real(stm_real), intent (in)  :: time                     !< Current time
+real(stm_real), intent (in)  :: theta_stm                !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
+real(stm_real), intent (in)  :: dx                       !< Spatial step  
+real(stm_real), intent (in)  :: dt                       !< Time step                                   
                                   
 !---local                                  
-real(stm_real) :: explicit_diffuse_op (ncell,nvar)                          !< Explicit diffusion operator
+real(stm_real) :: explicit_diffuse_op (ncell,nvar)       !< Explicit diffusion operator
 real(stm_real) :: dt_by_dxsq
 
 integer :: icell
@@ -444,15 +442,15 @@ real(stm_real),intent (out) :: conc(ncell,nvar)            !< Values of the comp
 
 ! --- local
 integer :: ivar
-do ivar = 1 ,nvar
-    call tridi_solver(center_diag(:,ivar),    &
-                      up_diag(:,ivar),        &     
-                      down_diag(:,ivar),      &
-                      right_hand_side(:,ivar),&
-                      conc(:,ivar),           &
-                      ncell)
-end do
+    do ivar = 1 ,nvar
+        call tridi_solver(center_diag(:,ivar),    &
+                          up_diag(:,ivar),        &     
+                          down_diag(:,ivar),      &
+                          right_hand_side(:,ivar),&
+                          conc(:,ivar),           &
+                          ncell)
+    end do
 return
 end subroutine 
 
-end module diffusion    
+end module 
