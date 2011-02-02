@@ -18,13 +18,13 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> dispersion coefficient interface to be fulfilled by driver or application
+!>Dispersion coefficient interface to be fulfilled by driver or application
 !>@ingroup transport
-
 module dispersion_coefficient
 use stm_precision, only: stm_real
 
 interface
+    ! todo: comment 
     subroutine diffusion_coef_if(disp_coef_lo,         &
                                  disp_coef_hi,         &
                                  flow,                 &
@@ -49,7 +49,7 @@ interface
     real(stm_real),intent(in) :: flow_lo(ncell)          !< flow on lo side of cells centered in time
     real(stm_real),intent(in) :: flow_hi(ncell)          !< flow on hi side of cells centered in time       
     real(stm_real),intent(in) :: flow(ncell)             !< flow on center of cells            
-    end subroutine diffusion_coef_if
+    end subroutine 
 end interface
 
 !> This pointer should be set by the driver or client code to specify the 
@@ -72,7 +72,7 @@ dispersion_coef => constant_dispersion_coef
 return
 end subroutine
 
-!< Implementation of diffusion_coef_if that sets dipsersion to a constant over space and time
+!> Implementation of diffusion_coef_if that sets dipsersion to a constant over space and time
 subroutine constant_dispersion_coef(disp_coef_lo,         &
                                     disp_coef_hi,         &
                                     flow,                 &
@@ -107,6 +107,5 @@ subroutine constant_dispersion_coef(disp_coef_lo,         &
         
     return
  end subroutine
-
 
 end module
