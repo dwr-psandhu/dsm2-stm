@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Routines containing error metrics for assessing convergence or accuracy
+!> Routine sends the error message to logging routine 
 !>@ingroup test
 module error_handling
 
@@ -40,6 +40,4 @@ module error_handling
     return
     end subroutine
     
-
-
 end module

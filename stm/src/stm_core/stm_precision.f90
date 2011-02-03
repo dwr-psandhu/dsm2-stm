@@ -54,6 +54,9 @@ real(stm_real), parameter :: eps = 1.d-15
 !> Weaker epsilon for testing approximate equality or algorithms
 real(stm_real), parameter :: weak_eps = 1.d-9
 
+! todo: add G = 9.80 
+! todo: add kapa = 0.41 here or in sed variables
+
 end module
 
 

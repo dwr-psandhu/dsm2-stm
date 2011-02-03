@@ -18,7 +18,7 @@
 !    along with DSM2. If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Main program unit for testing teransport
+!> Main program unit for testing a single test in transport
 !>@ingroup test
 program single_test_driver
 
@@ -30,8 +30,8 @@ logical :: verbose = .true.
 
 call init_fruit
 
-
 call test_advection_diffusion_zoppou(verbose)
+
 call fruit_summary
 
 pause
