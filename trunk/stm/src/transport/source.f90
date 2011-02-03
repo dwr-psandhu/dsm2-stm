@@ -98,8 +98,6 @@ module source_sink
      
      return
  end subroutine 
- !==================================
-
 
  !> Sets the decay rate and sets the source term to linear decay
 subroutine set_linear_decay(rates,nvar)

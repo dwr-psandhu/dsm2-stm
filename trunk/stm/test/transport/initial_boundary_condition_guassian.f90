@@ -56,10 +56,10 @@ subroutine fill_gaussian(vals,nloc,origin,dx,mean,sd,scale)
     real(stm_real), intent(in)  :: sd             !< Standard deviation (Sigma)
     real(stm_real), intent(in), optional :: scale !< scale
     !-----locals
-    real(stm_real) :: xlo
-    real(stm_real) :: xhi
-    integer        :: iloc
-    real(stm_real) :: actual_scale
+    real(stm_real) :: xlo                         !< Low side position
+    real(stm_real) :: xhi                         !< High side position
+    integer        :: iloc                        !< Cell counter
+    real(stm_real) :: actual_scale                !< Scale 
    
     if (present(scale))then
         actual_scale = scale*sqrt(two*pi*sd*sd)
@@ -88,9 +88,9 @@ subroutine gaussian(val,xposition,center,sd,scale)
     implicit none
     real(stm_real), intent(out) :: val            !< value to be produced
     real(stm_real), intent(in)  :: xposition      !< X
-    real(stm_real), intent(in)  :: center         !< center of gaussian shape
+    real(stm_real), intent(in)  :: center         !< Center of gaussian shape
     real(stm_real), intent(in)  :: sd             !< Standard deviation (Sigma)
-    real(stm_real), intent(in)  :: scale !< scale
+    real(stm_real), intent(in)  :: scale          !< scale
     !---locals
    
     val = scale*exp(-(xposition-center)**2/(two*sd*sd)) 
@@ -101,17 +101,18 @@ end subroutine
 
 !> Compute the slope of gaussian shape, base on sigma, center 
 !> of shape, scale factor and distance from the center
+!> derivative_gaussian(OUTPUT or df/dx,x,center or miu,sigma,scale or a)  
+!> f(x) = a*exp(-(x-b)^2/(2c^2)) , [c is sigma]   
+!> df(x)/dx = -a*2*(x-b)/(2c^2)*exp(-(x-b)^2/(2c^2))
 subroutine derivative_gaussian(val,xposition,center,sd,scale)
-    ! derivative_gaussian(OUTPUT or df/dx,x,center or miu,sigma,scale or a)  
-    ! f(x) = a*exp(-(x-b)^2/(2c^2)) , [c is sigma]   
-    ! df(x)/dx = -a*2*(x-b)/(2c^2)*exp(-(x-b)^2/(2c^2))
+    
     use stm_precision
     implicit none
     real(stm_real), intent(out) :: val            !< value to be produced
     real(stm_real), intent(in)  :: xposition      !< X
     real(stm_real), intent(in)  :: center         !< center of gaussian shape
     real(stm_real), intent(in)  :: sd             !< Standard deviation (Sigma)
-    real(stm_real), intent(in)  :: scale !< scale
+    real(stm_real), intent(in)  :: scale          !< Scale
     !---locals
    
     val = -(scale*(xposition - center)/(sd*sd))*exp(-(xposition-center)**2/(two*sd*sd)) 
@@ -121,7 +122,7 @@ end subroutine
 
 !> Example diffusive flux that imposes Neumann boundaries with zero flux at
 !> both ends of the channel.
-!todo: make sure this is generic for all neumann bc
+!todo: make sure this is generic for all Neumann bc
 subroutine neumann_diffusion_matrix(center_diag ,       &
                                      up_diag,            &     
                                      down_diag,          &
@@ -149,8 +150,8 @@ subroutine neumann_diffusion_matrix(center_diag ,       &
     real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
     real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
     real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of the right hand side
-    real(stm_real), intent (in)  :: conc(ncell,nvar)
-    real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar)
+    real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration
+    real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar)             !< Explicit diffusive operator
     real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
     real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
     real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
@@ -165,8 +166,7 @@ subroutine neumann_diffusion_matrix(center_diag ,       &
     real(stm_real) :: flux_start(nvar)
     real(stm_real) :: flux_end(nvar)
          
-     
-    ! todo: these must control for area or area_prev 
+     ! todo: these must control for area or area_prev 
          
     real(stm_real) :: xend =51200d0/two
     dt_by_dxsq = dt/(dx*dx) 
@@ -187,6 +187,8 @@ subroutine neumann_diffusion_matrix(center_diag ,       &
     return
 end subroutine
  
+!> Example diffusion matrix values imposes Dirichlet and Nuemann boundaries at
+!> the ends of the channel
 subroutine n_d_test_diffusion_matrix(center_diag ,       &
                                        up_diag,            &     
                                        down_diag,          &
@@ -214,13 +216,13 @@ subroutine n_d_test_diffusion_matrix(center_diag ,       &
      real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
      real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
      real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right hand side vector
-     real(stm_real), intent (in)  :: conc(ncell,nvar)
-     real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar) 
+     real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration 
+     real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar)             !< Explicit diffusive operator
      real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
      real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
      real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
-     real(stm_real), intent (in)  :: disp_coef_lo(ncell)                        !< Low side constituent dispersion coef. at new time
-     real(stm_real), intent (in)  :: disp_coef_hi(ncell)                        !< High side constituent dispersion coef. at new time
+     real(stm_real), intent (in)  :: disp_coef_lo(ncell)                         !< Low side constituent dispersion coef. at new time
+     real(stm_real), intent (in)  :: disp_coef_hi(ncell)                         !< High side constituent dispersion coef. at new time
      real(stm_real), intent (in)  :: time                                        !< Current time
      real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
      real(stm_real), intent (in)  :: dx                                          !< Spatial step  
@@ -246,8 +248,6 @@ subroutine n_d_test_diffusion_matrix(center_diag ,       &
     center_diag(1,:)= area(1)+ theta_stm*dt_by_dxsq* area_hi(1)*disp_coef_hi(1)  
     right_hand_side(1,:) = right_hand_side(1,:) &
                                 + theta_stm*(dt/dx)*flux_start(:)
-    
-    !todo: disp_coef_lo???
     center_diag(ncell,:)= area(ncell)+ theta_stm*dt_by_dxsq* area_lo(ncell)*disp_coef_lo(1)
     right_hand_side(ncell,:)= right_hand_side(ncell,:) &
                                    - theta_stm*(dt/dx)*flux_end(:)
@@ -255,6 +255,8 @@ subroutine n_d_test_diffusion_matrix(center_diag ,       &
     return
 end subroutine
  
+!> Example diffusion matrix values imposes Dirichlet boundaries at
+!> both ends of the channel. 
 subroutine dirichlet_test_diffusion_matrix(center_diag ,       &
                                            up_diag,            &     
                                            down_diag,          &
@@ -278,25 +280,23 @@ subroutine dirichlet_test_diffusion_matrix(center_diag ,       &
                                   
    integer, intent (in) :: ncell                                               !< Number of cells
    integer, intent (in) :: nvar                                                !< Number of variables
-
    real(stm_real),intent (inout):: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
    real(stm_real),intent (inout):: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix
    real(stm_real),intent (inout):: up_diag(ncell,nvar)                         !< Values of the coefficients above the diagonal in matrix
    real(stm_real),intent (inout):: right_hand_side(ncell,nvar)                 !< Values of the coefficients of right hand side vector
-   real(stm_real),intent   (in):: conc(ncell,nvar)
-   real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar) 
+   real(stm_real), intent (in)  :: conc(ncell,nvar)                            !< Concentration 
+   real(stm_real), intent (in)  :: explicit_diffuse_op(ncell,nvar)             !< Explicit diffusive operator
    real(stm_real), intent (in)  :: area (ncell)                                !< Cell centered area at new time 
    real(stm_real), intent (in)  :: area_lo(ncell)                              !< Low side area at new time
    real(stm_real), intent (in)  :: area_hi(ncell)                              !< High side area at new time 
-   real(stm_real), intent (in)  :: disp_coef_lo(ncell)                   !< Low side constituent dispersion coef. at new time
-   real(stm_real), intent (in)  :: disp_coef_hi(ncell)                   !< High side constituent dispersion coef. at new time
+   real(stm_real), intent (in)  :: disp_coef_lo(ncell)                         !< Low side constituent dispersion coef. at new time
+   real(stm_real), intent (in)  :: disp_coef_hi(ncell)                         !< High side constituent dispersion coef. at new time
    real(stm_real), intent (in)  :: time                                        !< Current time
    real(stm_real), intent (in)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
    real(stm_real), intent (in)  :: dx                                          !< Spatial step  
    real(stm_real), intent (in)  :: dt                                          !< Time step     
    
    !---local
-
    real(stm_real) :: dt_by_dxsq
    real(stm_real) :: xstart
    real(stm_real) :: xend  
@@ -310,7 +310,6 @@ subroutine dirichlet_test_diffusion_matrix(center_diag ,       &
    conc_end = two
    conc_start = two*xstart + four*cos(pi*xstart/two)*exp(-disp_coef_lo(1)*time*pi*pi/four)
    ! todo: one part of center diag is based on old time and other part new time
-   ! todo: what does this mean?
    center_diag(1,:)=  center_diag(1,:) &
                          + theta_stm*dt_by_dxsq*(area_lo(1)*disp_coef_lo(1))                  
    right_hand_side(1,:) = right_hand_side(1,:)&
@@ -324,7 +323,8 @@ subroutine dirichlet_test_diffusion_matrix(center_diag ,       &
    
    return
  end subroutine
-
+!> Example diffusive flux that imposes Neumann boundary at one end and Dirichlet boundary at
+!> the other end of the channel.
 subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
                                    diffusive_flux_hi, &
                                    conc,              &
@@ -340,18 +340,18 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     use stm_precision
     implicit none
     !--- args
-    integer, intent(in)  :: ncell                                   !< number of cells
-    integer, intent(in)  :: nvar                                    !< number of variables
-    real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
-    real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
+    integer, intent(in)  :: ncell                                   !< Number of cells
+    integer, intent(in)  :: nvar                                    !< Number of variables
+    real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< Face flux, lo side
+    real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< Face flux, hi side
     real(stm_real), intent (in)   :: area_lo(ncell)                 !< Low side area centered at time
     real(stm_real), intent (in)   :: area_hi(ncell)                 !< High side area centered at time
-    real(stm_real), intent (in)   :: time                           !< time
-    real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
+    real(stm_real), intent (in)   :: time                           !< Time
+    real(stm_real), intent (in)   :: conc(ncell,nvar)               !< Concentration 
     real(stm_real), intent (in)   :: disp_coef_lo(ncell)            !< Low side constituent dispersion coef.
     real(stm_real), intent (in)   :: disp_coef_hi(ncell)            !< High side constituent dispersion coef.
-    real(stm_real), intent (in)   :: dt
-    real(stm_real), intent (in)   :: dx
+    real(stm_real), intent (in)   :: dt                             !< Spatial step
+    real(stm_real), intent (in)   :: dx                             !< Time step   
     !--local
     real(stm_real) :: xstart = 0.1d0
     real(stm_real) :: xend = one
@@ -361,7 +361,9 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     
     return
  end subroutine
-  
+
+!> Example diffusive flux that imposes Dirichlet boundaries at
+!> both ends of the channel.  
 subroutine dirichlet_test_diffusive_flux(diffusive_flux_lo, &
                                          diffusive_flux_hi, &
                                          conc,              &
@@ -377,18 +379,18 @@ subroutine dirichlet_test_diffusive_flux(diffusive_flux_lo, &
     use stm_precision
     implicit none
     !--- args
-    integer, intent(in)  :: ncell                                   !< number of cells
-    integer, intent(in)  :: nvar                                    !< number of variables
-    real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
-    real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-    real(stm_real), intent (in)   :: area_lo(ncell)        !< Low side area centered at time
-    real(stm_real), intent (in)   :: area_hi(ncell)        !< High side area centered at time
-    real(stm_real), intent (in)   :: time                           !< time
-    real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
-    real(stm_real), intent (in)   :: disp_coef_lo (ncell)      !< Low side constituent dispersion coef.
-    real(stm_real), intent (in)   :: disp_coef_hi (ncell)      !< High side constituent dispersion coef.
-    real(stm_real), intent (in)   :: dt
-    real(stm_real), intent (in)   :: dx
+    integer, intent(in)  :: ncell                                   !< Number of cells
+    integer, intent(in)  :: nvar                                    !< Number of variables
+    real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< Face flux, lo side
+    real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< Face flux, hi side
+    real(stm_real), intent (in)   :: area_lo(ncell)                 !< Low side area centered at time
+    real(stm_real), intent (in)   :: area_hi(ncell)                 !< High side area centered at time
+    real(stm_real), intent (in)   :: time                           !< Time
+    real(stm_real), intent (in)   :: conc(ncell,nvar)               !< Concentration 
+    real(stm_real), intent (in)   :: disp_coef_lo (ncell)           !< Low side constituent dispersion coef.
+    real(stm_real), intent (in)   :: disp_coef_hi (ncell)           !< High side constituent dispersion coef.
+    real(stm_real), intent (in)   :: dt                             !< Time step  
+    real(stm_real), intent (in)   :: dx                             !< Spatial step
     !--local
     
     real(stm_real) :: conc_start(nvar)
@@ -425,18 +427,18 @@ subroutine dirichlet_test_diffusive_flux(diffusive_flux_lo, &
     use stm_precision
     implicit none
     !--- args
-    integer, intent(in)  :: ncell                                   !< number of cells
-    integer, intent(in)  :: nvar                                    !< number of variables
-    real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< face flux, lo side
-    real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< face flux, hi side
-    real(stm_real), intent (in)   :: area_lo(ncell)        !< Low side area centered at time
-    real(stm_real), intent (in)   :: area_hi(ncell)        !< High side area centered at time
-    real(stm_real), intent (in)   :: time                           !< time
-    real(stm_real), intent (in)   :: conc(ncell,nvar)               !< concentration 
-    real(stm_real), intent (in)   :: disp_coef_lo(ncell)           !< Low side constituent dispersion coef.
-    real(stm_real), intent (in)   :: disp_coef_hi(ncell)           !< High side constituent dispersion coef.
-    real(stm_real), intent (in)   :: dt
-    real(stm_real), intent (in)   :: dx
+    integer, intent(in)  :: ncell                                   !< Number of cells
+    integer, intent(in)  :: nvar                                    !< Number of variables
+    real(stm_real), intent (inout):: diffusive_flux_lo(ncell,nvar)  !< Face flux, lo side
+    real(stm_real), intent (inout):: diffusive_flux_hi(ncell,nvar)  !< Face flux, hi side
+    real(stm_real), intent (in)   :: area_lo(ncell)                 !< Low side area centered at time
+    real(stm_real), intent (in)   :: area_hi(ncell)                 !< High side area centered at time
+    real(stm_real), intent (in)   :: time                           !< Time
+    real(stm_real), intent (in)   :: conc(ncell,nvar)               !< Concentration 
+    real(stm_real), intent (in)   :: disp_coef_lo(ncell)            !< Low side constituent dispersion coef.
+    real(stm_real), intent (in)   :: disp_coef_hi(ncell)            !< High side constituent dispersion coef.
+    real(stm_real), intent (in)   :: dt                             !< Time step  
+    real(stm_real), intent (in)   :: dx                             !< Spatial step
     real(stm_real) :: xend  
     xend = 51200d0/two
     diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1)*(1/sqrt(four*pi*disp_coef_lo(1)))* &

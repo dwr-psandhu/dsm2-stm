@@ -228,8 +228,6 @@ call update_conservative(mass,      &
 return
 end subroutine
 
-!///////////////////////////////////////////////////////////////////////
-!///////////////////////////////////////////////////////////////////////
 
 !> Extrapolate primitive data from cell center at the old time
 !> to cell edges at the half time. The extrapolation is done by 
@@ -310,7 +308,6 @@ real(stm_real),intent(in)  :: flow_hi(ncell)      !< time-centered flow at hi fa
 integer :: ivar
 integer :: icell
 
-!--------------------
 ! For each constitutuent, go through the cells and calculate the upwinded flux
 ! todo: make sure this tests OK for the variables
 ! todo: this could cause problems in mass conservation. kevin
@@ -445,7 +442,6 @@ end subroutine
 
 end module
 
-!//////////////////////////////
 !> Adjust differences to account for special cases (boundaries, structures, junctions, flow reversals)
 !> Currently implementation only accounts for two boundaries at ends of channel
 subroutine adjust_differences(grad,     &

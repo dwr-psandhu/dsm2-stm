@@ -18,7 +18,8 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Routines containing error metrics for assessing convergence or accuracy
+!> Routines for bookkeeping and print out the logs
+! todo: check THE ABOVE! 
 !>@ingroup test
 module logging
 
@@ -36,8 +37,7 @@ module logging
     interface printout
         module procedure printout
     end interface
-    
-    
+        
     contains
 
 !=================================
@@ -56,7 +56,7 @@ module logging
     subroutine prepend_log_directory(name)
     implicit none
     character(len=*), intent(inout) :: name !< New name for log directory
-    character(len=len(name)) :: temp_name
+    character(len=len(name)) :: temp_name   !< Temporary name for log directory
     temp_name = name
     if ((len_trim(log_directory) + len_trim(name))  .gt. len(name)) then
        !call stm_fatal("Log directory name is too long. Try relative path?")
@@ -66,15 +66,14 @@ module logging
 
     return
     end subroutine    
-
-! =================================    
+ 
     !> Prints the error message and the level of occured error
     subroutine stm_log(level,message)
         implicit none
         ! todo: This name does not have a type, and must have an explicit type
         ! I added something just to compile
-        integer :: level                !< Level of error
-        character(LEN=*) :: message     !< Message triggered by the error 
+        integer, intent(in) :: level                !< Level of error
+        character(LEN=*), intent(in) :: message     !< Message triggered by the error 
         !todo: do real logging
         print*,message
     return
@@ -89,8 +88,8 @@ module logging
         character(LEN=*)          :: filename       !< Name of file to write
         
         !--local
-        integer                   :: icell
-        integer                   :: nx
+        integer                   :: icell          !< Counter
+        integer                   :: nx             !< Number of cells
         
         nx = size(arr)
         open(unit = 11, file = filename)
