@@ -69,20 +69,20 @@ time =LARGEREAL
 
    !--theta =1 
    
-call construct_right_hand_side( right_hand_side,         & 
-                                  explicit_diffuse_op,   & 
-                                  area_prev,             &
-                                  area_lo_prev,          &
-                                  area_hi_prev,          &
-                                  disp_coef_lo_prev,     &
-                                  disp_coef_hi_prev,     &
-                                  conc_prev,             &
-                                  theta_stm,             &
-                                  ncell,                 &
-                                  time,                  &
-                                  nvar,                  &  
-                                  dx,                    &
-                                  dt)
+call construct_right_hand_side(right_hand_side,       & 
+                               explicit_diffuse_op,   & 
+                               area_prev,             &
+                               area_lo_prev,          &
+                               area_hi_prev,          &
+                               disp_coef_lo_prev,     &
+                               disp_coef_hi_prev,     &
+                               conc_prev,             &
+                               theta_stm,             &
+                               ncell,                 &
+                               time,                  &
+                               nvar,                  &  
+                               dx,                    &
+                               dt)
                                   
                                   
   call assertEquals (right_hand_side(2,1),29585d0,weak_eps,"Error in r_h_s vector 2 ,theta=1")
@@ -91,20 +91,20 @@ call construct_right_hand_side( right_hand_side,         &
      !--theta =0.6 
      theta_stm = 0.6d0 
    
-call construct_right_hand_side( right_hand_side,         & 
-                                  explicit_diffuse_op,   & 
-                                  area_prev,             &
-                                  area_lo_prev,          &
-                                  area_hi_prev,          &
-                                  disp_coef_lo_prev,     &
-                                  disp_coef_hi_prev,     &
-                                  conc_prev,             &
-                                  theta_stm,             &
-                                  ncell,                 &
-                                  time,                  &
-                                  nvar,                  &  
-                                  dx,                    &
-                                  dt)
+call construct_right_hand_side(right_hand_side,       & 
+                               explicit_diffuse_op,   & 
+                               area_prev,             &
+                               area_lo_prev,          &
+                               area_hi_prev,          &
+                               disp_coef_lo_prev,     &
+                               disp_coef_hi_prev,     &
+                               conc_prev,             &
+                               theta_stm,             &
+                               ncell,                 &
+                               time,                  &
+                               nvar,                  &  
+                               dx,                    &
+                               dt)
                                   
                                   
   call assertEquals (right_hand_side(2,1),29494.72d0,weak_eps,"Error in r_h_s vector 2 ,theta = 0.6")
@@ -113,20 +113,20 @@ call construct_right_hand_side( right_hand_side,         &
   !--theta =0.1 
      theta_stm = 0.1d0 
    
-call construct_right_hand_side( right_hand_side,         & 
-                                  explicit_diffuse_op,   & 
-                                  area_prev,             &
-                                  area_lo_prev,          &
-                                  area_hi_prev,          &
-                                  disp_coef_lo_prev,     &
-                                  disp_coef_hi_prev,     &
-                                  conc_prev,             &
-                                  theta_stm,             &
-                                  ncell,                 &
-                                  time,                  &
-                                  nvar,                  &  
-                                  dx,                    &
-                                  dt)
+call construct_right_hand_side(right_hand_side,       & 
+                               explicit_diffuse_op,   & 
+                               area_prev,             &
+                               area_lo_prev,          &
+                               area_hi_prev,          &
+                               disp_coef_lo_prev,     &
+                               disp_coef_hi_prev,     &
+                               conc_prev,             &
+                               theta_stm,             &
+                               ncell,                 &
+                               time,                  &
+                               nvar,                  &  
+                               dx,                    &
+                               dt)
                                   
                                   
   call assertEquals (right_hand_side(1,1),29598.57d0,weak_eps,"Error in r_h_s vector 1,theta = 0.1")

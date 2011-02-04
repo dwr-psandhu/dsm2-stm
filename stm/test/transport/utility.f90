@@ -49,7 +49,7 @@ integer :: icell                                                !< Counter
 integer :: i_coarse                                             !< Counter
 
 !> Check if the coarsening factor is an integer and if not it bails.
-if ( mod(ncell_fine , ncell_coarse) /= 0) then
+if (mod(ncell_fine , ncell_coarse) /= 0) then
     call stm_fatal("Coarsening factor is not an integer!")  
 else
     coarsen_factor = ncell_fine/ncell_coarse

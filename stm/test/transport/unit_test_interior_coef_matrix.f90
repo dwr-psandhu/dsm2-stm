@@ -59,20 +59,20 @@ dt = 0.001d0
 
  !---check for theta = 0.9
  
-call construct_diffusion_matrix( center_diag ,      &
-                                  up_diag,          &     
-                                  down_diag,        &
-                                  area,             &
-                                  area_lo,          &
-                                  area_hi,          &
-                                  disp_coef_lo,     &
-                                  disp_coef_hi,     &
-                                  theta_stm,        &
-                                  ncell,            &
-                                  time,             & 
-                                  nvar,             & 
-                                  dx,               &
-                                  dt)
+call construct_diffusion_matrix(center_diag,      &
+                                up_diag,          &     
+                                down_diag,        &
+                                area,             &
+                                area_lo,          &
+                                area_hi,          &
+                                disp_coef_lo,     &
+                                disp_coef_hi,     &
+                                theta_stm,        &
+                                ncell,            &
+                                time,             & 
+                                nvar,             & 
+                                dx,               &
+                                dt)
                                             
       !--- centeral                                       
     call assertEquals (center_diag(2,1),1.044444444d0,weak_eps,"BigK(2,2) theta=0.9 Error!")
@@ -92,20 +92,20 @@ call construct_diffusion_matrix( center_diag ,      &
     
      theta_stm = 0.5d0
 
-call construct_diffusion_matrix( center_diag ,      &
-                                  up_diag,          &     
-                                  down_diag,        &
-                                  area,             &
-                                  area_lo,          &
-                                  area_hi,          &
-                                  disp_coef_lo,     &
-                                  disp_coef_hi,     &
-                                  theta_stm,        &
-                                  ncell,            &
-                                  time,             & 
-                                  nvar,             & 
-                                  dx,               &
-                                  dt)
+call construct_diffusion_matrix(center_diag ,     &
+                                up_diag,          &     
+                                down_diag,        &
+                                area,             &
+                                area_lo,          &
+                                area_hi,          &
+                                disp_coef_lo,     &
+                                disp_coef_hi,     &
+                                theta_stm,        &
+                                ncell,            &
+                                time,             & 
+                                nvar,             & 
+                                dx,               &
+                                dt)
                                             
       !--- centeral                                       
     call assertEquals (center_diag(2,1),1.02469135802469d0,weak_eps,"BigK(2,2) theta=0.5 Error!")
@@ -125,20 +125,20 @@ call construct_diffusion_matrix( center_diag ,      &
     
      theta_stm = 0.1d0
 
-call construct_diffusion_matrix( center_diag ,      &
-                                  up_diag,          &     
-                                  down_diag,        &
-                                  area,             &
-                                  area_lo,          &
-                                  area_hi,          &
-                                  disp_coef_lo,     &
-                                  disp_coef_hi,     &
-                                  theta_stm,        &
-                                  ncell,            &
-                                  time,             & 
-                                  nvar,             & 
-                                  dx,               &
-                                  dt)
+call construct_diffusion_matrix(center_diag,      &
+                                up_diag,          &     
+                                down_diag,        &
+                                area,             &
+                                area_lo,          &
+                                area_hi,          &
+                                disp_coef_lo,     &
+                                disp_coef_hi,     &
+                                theta_stm,        &
+                                ncell,            &
+                                time,             & 
+                                nvar,             & 
+                                dx,               &
+                                dt)
                                             
       !--- centeral                                       
     call assertEquals (center_diag(2,1),1.004938272d0,weak_eps,"BigK(2,2) theta=0.1 Error!")

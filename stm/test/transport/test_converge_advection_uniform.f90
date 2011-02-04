@@ -25,10 +25,10 @@ module test_uniform_flow
 
 use stm_precision
 
-integer, parameter  :: nstep_base = 256
-integer, parameter  :: nx_base = 256
-real(stm_real), parameter :: total_time = 25600.d0
-real(stm_real), parameter :: start_time = zero           !< starts at zero
+integer, parameter  :: nstep_base = 256                  !< Number of time steps at finest gird
+integer, parameter  :: nx_base = 256                     !< Number of cells in finest grid
+real(stm_real), parameter :: total_time = 25600.d0       !< Total time of test 
+real(stm_real), parameter :: start_time = zero           !< Starts at zero
 
 contains
 !> Subroutine that runs a small advective simulation that reverses in direction
@@ -45,22 +45,21 @@ use gaussian_init_boundary_condition
 
 implicit none
 
-procedure(hydro_data_if),pointer :: uniform_hydro
-integer, parameter  :: nconc = 2
-logical  :: verbose
-
-real(stm_real), parameter :: domain_length = 25600.d0
-real(stm_real), parameter :: origin =zero
-real(stm_real), parameter :: constant_flow = 600.d0
-real(stm_real), parameter :: constant_area = 1000.d0 
-real(stm_real), parameter :: reverse_time =  total_time /two
-real(stm_real), parameter :: ic_center = origin + domain_length/three
-real(stm_real), parameter :: ic_peak = one
-real(stm_real), parameter :: ic_gaussian_sd = domain_length/32.d0
-real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd
-real(stm_real) :: solution_center = ic_center
-real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
-real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
+procedure(hydro_data_if),pointer :: uniform_hydro                      !< Hydrodynamic pointer to be filled by the driver
+integer, parameter  :: nconc = 2                                       !< Number of constituents
+logical  :: verbose                                                    !< Flag for detail printout    
+real(stm_real), parameter :: domain_length = 25600.d0                  !< Domain length
+real(stm_real), parameter :: origin = zero                             !< Domain origin X0
+real(stm_real), parameter :: constant_flow = 600.d0                    !< Constant flow
+real(stm_real), parameter :: constant_area = 1000.d0                   !< Constant Area 
+real(stm_real), parameter :: reverse_time = total_time /two            !< The time when direction of flow reversed
+real(stm_real), parameter :: ic_center = origin + domain_length/three  !< Initial condition center of mass
+real(stm_real), parameter :: ic_peak = one                             !< Initial condition hight
+real(stm_real), parameter :: ic_gaussian_sd = domain_length/32.d0      !< Initial condition standard deviation  
+real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd                !< Solution's standard deviation
+real(stm_real) :: solution_center = ic_center                          !< Solution's center of mass
+real(stm_real) :: fine_initial_condition(nx_base,nconc)                !< Initial condition at finest resolution
+real(stm_real) :: fine_solution(nx_base,nconc)                         !< Reference solution at finest resolution
 
 character(LEN=*),parameter :: label = "advection_bidirectional_uniform_dirichlet"
 
@@ -68,13 +67,13 @@ call set_uniform_flow_area(constant_flow,constant_area,reverse_time)
 ! todo: force these to be set so they aren't just left over from last test
 ! reverse_time is optional
 advection_boundary_flux => zero_advective_flux
-uniform_hydro=> uniform_flow_area
-compute_source => no_source
+uniform_hydro           => uniform_flow_area
+compute_source          => no_source
 
 
 
-!> Subroutine whichs generates fine initial values and reference values to compare with 
-!> and feed the convergence test subroutine.
+! Subroutine whichs generates fine initial values and reference values to compare with 
+! and feed the convergence test subroutine.
 call initial_fine_solution_uniform(fine_initial_condition, &
                                    fine_solution,          &
                                    nx_base,                &
@@ -123,18 +122,16 @@ use gaussian_init_boundary_condition
 use stm_precision
 implicit none
 
-integer,intent(in) :: nconc 
-integer,intent(in) :: nx_base 
-
-real(stm_real),intent(out) :: fine_initial_condition(nx_base,nconc)!< initial condition at finest resolution
-real(stm_real),intent(out) :: fine_solution(nx_base,nconc)         !< reference solution at finest resolution
-
-real(stm_real),intent(in)  :: ic_center
-real(stm_real),intent(in)  :: solution_center
-real(stm_real),intent(in)  :: ic_gaussian_sd
-real(stm_real),intent(in)  :: solution_gaussian_sd
-real(stm_real),intent(in)  :: origin 
-real(stm_real),intent(in)  :: domain_length  
+integer,intent(in) :: nconc                                        !< Number of time steps at finest gird
+integer,intent(in) :: nx_base                                      !< Number of cells in finest grid
+real(stm_real),intent(out) :: fine_initial_condition(nx_base,nconc)!< Initial condition at finest resolution
+real(stm_real),intent(out) :: fine_solution(nx_base,nconc)         !< Reference solution at finest resolution
+real(stm_real),intent(in)  :: ic_center                            !< Initial condition center of mass
+real(stm_real),intent(in)  :: solution_center                      !< Solution's center of mass
+real(stm_real),intent(in)  :: ic_gaussian_sd                       !< Initial condition standard deviation 
+real(stm_real),intent(in)  :: solution_gaussian_sd                 !< Solution's standard deviation 
+real(stm_real),intent(in)  :: origin                               !< Origin               
+real(stm_real),intent(in)  :: domain_length                        !< Domain length
 !----local
 real(stm_real):: dx
 

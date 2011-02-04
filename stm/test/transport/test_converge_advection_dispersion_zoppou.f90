@@ -20,7 +20,6 @@
 
 !> Testing advection and diffusion with spacially variable coefficents vs. analytical solution
 !>@ingroup test
-
 module test_zoppou_advection_dispersion
 use stm_precision
 !----- module variables
@@ -29,18 +28,18 @@ use stm_precision
 ! meaningful 
 ! the problem here was with CFL larger than one r
 integer, parameter  :: nconc = 2                      !< Number of constituents
-integer, parameter  :: nstep_base = 256              !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 256              !< Number of spatial discritization in finer mesh 
-real(stm_real),parameter :: origin = zero             !< origin
-real(stm_real),parameter :: x0 = 15000.0d0            ! Location of the initial condition discontinuity
-real(stm_real),parameter :: x_left = 20000.0d0        !< left hand side of the channel
-real(stm_real),parameter :: x_right = 140000.0d0      !< right hand side of the channel
-real(stm_real),parameter :: start_time = 8000.0d0     !< starts at 100000 sec (second)
-real(stm_real),parameter :: end_time = 12000.0d0      !< ends at 190000 (second)
-real(stm_real),parameter :: a0 = 1.0d7                !< constant of area A=A0*(x^-1)
-real(stm_real),parameter :: c0 = sixteen              !< constant concentration
-real(stm_real),parameter :: d0 = 1.0d-6               !< constant of dispersion coefficent D=D0*(x^2)
-real(stm_real),parameter :: u0 = 1.0d-4               !< constant of velocity U=u0*x
+integer, parameter  :: nstep_base = 256               !< Number of time steps in finer discritization
+integer, parameter  :: nx_base    = 256               !< Number of spatial discritization in finer mesh 
+real(stm_real),parameter :: origin = zero             !< Origin
+real(stm_real),parameter :: x0 = 15000.0d0            !< Location of the initial condition discontinuity
+real(stm_real),parameter :: x_left = 20000.0d0        !< Left hand side of the channel
+real(stm_real),parameter :: x_right = 140000.0d0      !< Right hand side of the channel
+real(stm_real),parameter :: start_time = 8000.0d0     !< Starts at 100000 sec (second)
+real(stm_real),parameter :: end_time = 12000.0d0      !< Ends at 190000 (second)
+real(stm_real),parameter :: a0 = 1.0d7                !< Constant of area A=A0*(x^-1)
+real(stm_real),parameter :: c0 = sixteen              !< Constant concentration
+real(stm_real),parameter :: d0 = 1.0d-6               !< Constant of dispersion coefficent D=D0*(x^2)
+real(stm_real),parameter :: u0 = 1.0d-4               !< Constant of velocity U=u0*x
 
 contains
 
@@ -61,18 +60,19 @@ use dispersion_coefficient
 
 implicit none
 procedure(hydro_data_if),pointer :: zoppou_hydro          !< The pointer points to the test's flow data
-logical :: verbose
-logical :: detail_printout=.true.
-real(stm_real) :: fine_initial_condition(nx_base,nconc)  !< initial condition at finest resolution
-real(stm_real) :: fine_solution(nx_base,nconc)           !< reference solution at finest resolution
-real(stm_real) :: test_domain_length
-real(stm_real) :: total_time
-character(LEN=64) :: label 
-real(stm_real) :: cfl_number
-real(stm_real) :: point_value
-procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
-procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
-procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
+logical :: verbose                                        !< The flag for showing the details on the screen
+logical :: detail_printout=.true.                         !< The flag for printing out the details
+real(stm_real) :: fine_initial_condition(nx_base,nconc)   !< initial condition at finest resolution
+real(stm_real) :: fine_solution(nx_base,nconc)            !< reference solution at finest resolution
+real(stm_real) :: test_domain_length                      !< Domain length
+real(stm_real) :: total_time                              !< Total time of testing  
+character(LEN=64) :: label                                !< Test's name label
+real(stm_real) :: cfl_number                              !< Courant number
+real(stm_real) :: point_value                             !< Point value of the analytical solution or solution on boundary
+
+procedure(boundary_advective_flux_if),  pointer :: bc_advect_flux => null() !< Pointer for boundary advective flux to be filled by driver
+procedure(boundary_diffusive_flux_if),  pointer :: bc_diff_flux   => null() !< Pointer for boundary diffusive flux to be filled by driver
+procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null() !< Pointer for boundary diffusin matrix to be filled by driver
  
 ! this flow generator is mass conservative
 ! todo: use test_convergence_transport_uniform as a model. You will be using dirichlet
@@ -85,7 +85,6 @@ zoppou_hydro => zoppou_flow
 compute_source => no_source
 dispersion_coef => zoppou_disp_coef
 
-
 label = 'advection_dispersion_zoppou' 
 test_domain_length = x_right - x_left
 total_time = end_time - start_time
@@ -95,6 +94,7 @@ cfl_number = u0*x_right*total_time*nx_base/nstep_base/test_domain_length
 if (cfl_number > one) then
    call stm_fatal('Courant Number Larger Than One, Zoppou Test!') 
 end if
+! remove ">"
 !> load the initial values and reference final values to feed the test routine
 call initial_fine_solution_zoppou(fine_initial_condition, &
                                   fine_solution,          &
@@ -111,6 +111,7 @@ call set_single_channel_boundary(dirichlet_advective_flux_lo, bc_data_zoppou, &
 boundary_diffusion_flux => single_channel_boundary_diffusive_flux
 boundary_diffusion_matrix => single_channel_boundary_diffusive_matrix
 
+! todo: doxygen comment remove
 !> The general subroutine which gets the fine initial and reference values from the privious subroutine and 
 !> compute the norms, after each step coarsen the values and repeat computation.
 !> at the end  calculates the ratio of the norms and prints a log 
@@ -141,9 +142,9 @@ subroutine zoppou_solution(value_zoppou, &
 use stm_precision                                       
 implicit none
 
-real(stm_real),intent(out):: value_zoppou           !< Dirichlet initial condition at left side of channel
-real(stm_real),intent(in) :: xpos                   !< Location where data is requested
-real(stm_real),intent(in) :: time                   !< Time
+real(stm_real),intent(out):: value_zoppou   !< Dirichlet initial condition at left side of channel
+real(stm_real),intent(in) :: xpos           !< Location where data is requested
+real(stm_real),intent(in) :: time           !< Time
 
 !----local
 real(stm_real):: c_term1
@@ -157,25 +158,23 @@ value_zoppou = (c0*half)*(c_term1 + c_term2)
 return
 end subroutine
 
-
-
 !-------------------------------------------
 !> Generates a fine initial and final solution of analytical mass distribution 
-!> The cell averaging is done by the Composite Simpson's rule 1/12 *(F1+ 4*F2 + 2*F3 + 4*F4 + F5)
+!> The cell averaging is done by the Composite Simpson's rule 
+!> int (f,a,b) = 1/12 *(Fa+ 4*F2 + 2*F3 + 4*F4 + Fb)
 subroutine initial_fine_solution_zoppou(fine_initial_condition, &
                                         fine_solution,          &
                                         nx_base,                &
                                         nstep_base,             &
                                         nconc)
                                        
-
 implicit none
 
-integer,intent(in) :: nconc 
-integer,intent(in) :: nx_base
-integer,intent(in) :: nstep_base 
-real(stm_real),intent(out):: fine_initial_condition(nx_base,nconc) !< initial condition at finest resolution
-real(stm_real),intent(out):: fine_solution(nx_base,nconc)          !< reference solution at finest resolution
+integer,intent(in) :: nconc                                        !< Number of variables 
+integer,intent(in) :: nx_base                                      !< Number of cells at finest grid
+integer,intent(in) :: nstep_base                                   !< Number of time steps at finest grid
+real(stm_real),intent(out):: fine_initial_condition(nx_base,nconc) !< Initial condition at finest resolution
+real(stm_real),intent(out):: fine_solution(nx_base,nconc)          !< Reference solution at finest resolution
 !----local
 real(stm_real):: dx
 real(stm_real):: dxby2
@@ -187,7 +186,6 @@ integer :: icell
 dx = (x_right - x_left)/dble(nx_base)
 fine_solution = zero
 fine_initial_condition = zero
-
 
 do icell=1,nx_base
   ! x = x0
@@ -243,16 +241,16 @@ subroutine zoppou_flow(flow,    &
                        dt)
                       
 implicit none
-integer, intent(in) :: ncell                   !< number of cells
-real(stm_real), intent(in) :: time            !< time of request
-real(stm_real), intent(in) :: dx              !< spatial step 
-real(stm_real), intent(in) :: dt              !< time step 
-real(stm_real), intent(out):: flow(ncell)     !< cell centered flow
-real(stm_real), intent(out):: flow_lo(ncell)  !< lo face flow
-real(stm_real), intent(out):: flow_hi(ncell)  !< hi face flow
-real(stm_real), intent(out):: area(ncell)     !< cell center area
-real(stm_real), intent(out):: area_lo(ncell)  !< area lo face
-real(stm_real), intent(out):: area_hi(ncell)  !< area hi face
+integer, intent(in) :: ncell                  !< Number of cells
+real(stm_real), intent(in) :: time            !< Time of request
+real(stm_real), intent(in) :: dx              !< Spatial step 
+real(stm_real), intent(in) :: dt              !< Time step 
+real(stm_real), intent(out):: flow(ncell)     !< Cell centered flow
+real(stm_real), intent(out):: flow_lo(ncell)  !< Low face flow
+real(stm_real), intent(out):: flow_hi(ncell)  !< High face flow
+real(stm_real), intent(out):: area(ncell)     !< Cell center area
+real(stm_real), intent(out):: area_lo(ncell)  !< Area low face
+real(stm_real), intent(out):: area_hi(ncell)  !< Area high face
 
 !--- local
 real(stm_real) :: xpos_lo
@@ -298,9 +296,9 @@ subroutine zoppou_disp_coef(disp_coef_lo,         &
     real(stm_real),intent(in) :: time                    !< Current time
     real(stm_real),intent(in) :: dx                      !< Spatial step  
     real(stm_real),intent(in) :: dt                      !< Time step 
-    real(stm_real),intent(in) :: flow_lo(ncell)          !< flow on lo side of cells centered in time
-    real(stm_real),intent(in) :: flow_hi(ncell)          !< flow on hi side of cells centered in time       
-    real(stm_real),intent(in) :: flow(ncell)             !< flow on center of cells 
+    real(stm_real),intent(in) :: flow_lo(ncell)          !< Flow on lo side of cells centered in time
+    real(stm_real),intent(in) :: flow_hi(ncell)          !< Flow on hi side of cells centered in time       
+    real(stm_real),intent(in) :: flow(ncell)             !< Flow on center of cells 
     !--
     integer :: ivar
     integer :: icell

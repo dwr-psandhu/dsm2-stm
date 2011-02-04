@@ -143,8 +143,8 @@ implicit none
   flow_hi(3) = -4.D0
   
 ! todo: check documentation here
- !> Compute upwind value of fluxes. This is a naive guess based on the extrapolated states
- !> It doesn't include any node-based sources or reservoirs or the like.
+ ! Compute upwind value of fluxes. This is a naive guess based on the extrapolated states
+ ! It doesn't include any node-based sources or reservoirs or the like.
  call compute_flux(flux_lo,  &
                    flux_hi,  &
                    conc_lo,  &

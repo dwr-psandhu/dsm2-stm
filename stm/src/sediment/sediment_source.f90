@@ -86,7 +86,7 @@
 ! !> This pointer should be set by the driver or client code to specify the 
 ! !> treatment of deposition
 ! ! todo: 
-! procedure( deposition_if),pointer :: deposition_sink  => null()
+! procedure(deposition_if),pointer :: deposition_sink  => null()
 !!===============================================================
 !abstract interface 
 !  subroutine cohesive_source_if(cohesive_source, & 
