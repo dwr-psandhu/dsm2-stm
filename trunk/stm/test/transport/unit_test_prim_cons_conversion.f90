@@ -52,7 +52,7 @@ implicit none
   area(2) = zero
   area(3) = four  
   call prim2cons(mass,conc,area,nx,nconst)
-  call assertEquals(mass(1,1),128.D0,"Conversion(1,1)")
+  call assertEquals(mass(1,1),128.d0,"Conversion(1,1)")
   call assertEquals(mass(2,1),zero,"Conversion(1,1)")
   call assertEquals(mass(3,1),four,"Conversion(1,1)")
   ! check multiple constituents

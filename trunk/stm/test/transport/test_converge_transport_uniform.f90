@@ -227,8 +227,8 @@ diffuse_start_time  = ic_gaussian_sd**two/(const_disp_coef*two)
 advection_boundary_flux => single_channel_boundary_advective_flux
 
 allocate(fine_initial_conc(nx_base,nconc),fine_solution(nx_base,nconc))
-!> Subroutine which generates fine initial values and reference values to compare with 
-!> and feed the covvergence test subroutine.
+! Subroutine which generates fine initial values and reference values to compare with 
+! and feed the covvergence test subroutine.
 call initial_final_solution_uniform(fine_initial_conc,   &
                                     fine_solution,         &
                                     ic_center,             &

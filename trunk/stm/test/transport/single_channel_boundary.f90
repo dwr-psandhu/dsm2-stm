@@ -355,15 +355,15 @@ subroutine dirichlet_advective_flux_lo(flux_lo,    &
     real(stm_real) :: origin = zero !todo: HARDWIRE
     real(stm_real) :: multiplier(nvar)
     xloc = origin
-    call advection_data_lo( bc_data,           &
-                            xloc,              &
-                            conc_lo,           &
-                            ncell,             &
-                            nvar,              &
-                            origin,            &
-                            time,              &
-                            dx,                &
-                            dt)
+    call advection_data_lo(bc_data,           &
+                           xloc,              &
+                           conc_lo,           &
+                           ncell,             &
+                           nvar,              &
+                           origin,            &
+                           time,              &
+                           dx,                &
+                           dt)
    if (flow_lo(1) .ge. zero)then
      multiplier = one
      if(allocated(linear_decay))multiplier=exp(linear_decay*half*dt)
@@ -405,15 +405,15 @@ subroutine dirichlet_advective_flux_hi(flux_lo,    &
     real(stm_real) :: origin = zero !todo: HARDWIRE
 
     xloc = origin + dble(ncell)*dx
-    call advection_data_hi( bc_data,           &
-                            xloc,              &
-                            conc_hi,           &
-                            ncell,             &
-                            nvar,              &
-                            origin,            &
-                            time,              &
-                            dx,                &
-                            dt)
+    call advection_data_hi(bc_data,           &
+                           xloc,              &
+                           conc_hi,           &
+                           ncell,             &
+                           nvar,              &
+                           origin,            &
+                           time,              &
+                           dx,                &
+                           dt)
     if (flow_hi(ncell) .le. zero) then
        flux_hi(ncell,:)=bc_data*flow_hi(ncell)
     end if
@@ -456,15 +456,15 @@ subroutine dirichlet_diffusive_flux_lo(diffusive_flux_lo, &
     real(stm_real) :: origin = zero !todo: HARDWIRE
 
     xloc = origin
-    call diffusion_data_lo( bc_data,           &
-                            xloc,              &
-                            conc,              &
-                            ncell,             &
-                            nvar,              &
-                            origin,            &
-                            time,              &
-                            dx,                &
-                            dt)
+    call diffusion_data_lo(bc_data,           &
+                           xloc,              &
+                           conc,              &
+                           ncell,             &
+                           nvar,              &
+                           origin,            &
+                           time,              &
+                           dx,                &
+                           dt)
     
    diffusive_flux_lo(1,:)=-two*area_lo(1)*disp_coef_lo(1)*(conc(1,:)-bc_data(:))/dx
    
@@ -507,15 +507,15 @@ subroutine dirichlet_diffusive_flux_hi(diffusive_flux_lo, &
     real(stm_real) :: origin = zero !todo: HARDWIRE
 
     xloc = origin + dx*dble(ncell)
-    call diffusion_data_hi( bc_data,           &
-                            xloc,              &
-                            conc,              &
-                            ncell,             &
-                            nvar,              &
-                            origin,            &
-                            time,              &
-                            dx,                &
-                            dt)
+    call diffusion_data_hi(bc_data,           &
+                           xloc,              &
+                           conc,              &
+                           ncell,             &
+                           nvar,              &
+                           origin,            &
+                           time,              &
+                           dx,                &
+                           dt)
     
    diffusive_flux_hi(ncell,:)=-two*area_hi(ncell)*disp_coef_hi(ncell)*(bc_data(:)-conc(ncell,:))/dx
 
@@ -572,15 +572,15 @@ subroutine dirichlet_diffusive_matrix_lo(center_diag ,           &
  real(stm_real) :: origin = zero !todo: HARDWIRE
 
  xloc = origin
- call diffusion_data_lo( bc_data,           &
-                         xloc,              &
-                         conc,              &
-                         ncell,             &
-                         nvar,              &
-                         origin,            &
-                         time,              &
-                         dx,                &
-                         dt)
+ call diffusion_data_lo(bc_data,           &
+                        xloc,              &
+                        conc,              &
+                        ncell,             &
+                        nvar,              &
+                        origin,            &
+                        time,              &
+                        dx,                &
+                        dt)
  
  
  dt_by_dxsq = dt/(dx*dx)
@@ -643,15 +643,15 @@ subroutine dirichlet_diffusive_matrix_hi(center_diag ,           &
 
  dt_by_dxsq = dt/(dx*dx)
  xloc = origin + dx*dble(ncell)
- call diffusion_data_hi( bc_data,           &
-                         xloc,              &
-                         conc,              &
-                         ncell,             &
-                         nvar,              &
-                         origin,            &
-                         time,              &
-                         dx,                &
-                         dt)
+ call diffusion_data_hi(bc_data,           &
+                        xloc,              &
+                        conc,              &
+                        ncell,             &
+                        nvar,              &
+                        origin,            &
+                        time,              &
+                        dx,                &
+                        dt)
  
  ! todo: one part of center diag is based on old time and other part new time?
  ! todo: is this really true?
@@ -769,15 +769,15 @@ subroutine neumann_diffusive_flux_lo(diffusive_flux_lo, &
     real(stm_real) :: origin = zero !todo: HARDWIRE
 
     xloc = origin
-    call diffusion_data_lo( bc_data,           &
-                         xloc,              &
-                         conc,              &
-                         ncell,             &
-                         nvar,              &
-                         origin,            &
-                         time,              &
-                         dx,                &
-                         dt)    
+    call diffusion_data_lo(bc_data,           &
+                           xloc,              &
+                           conc,              &
+                           ncell,             &
+                           nvar,              &
+                           origin,            &
+                           time,              &
+                           dx,                &
+                           dt)    
     
         
     diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1)*bc_data
@@ -823,15 +823,16 @@ subroutine neumann_diffusive_flux_hi(diffusive_flux_lo, &
 
  dt_by_dxsq = dt/(dx*dx)
  xloc = origin + dx*dble(ncell)
- call diffusion_data_hi( bc_data,           &
-                         xloc,              &
-                         conc,              &
-                         ncell,             &
-                         nvar,              &
-                         origin,            &
-                         time,              &
-                         dx,                &
-                         dt)
+ 
+ call diffusion_data_hi(bc_data,           &
+                        xloc,              &
+                        conc,              &
+                        ncell,             &
+                        nvar,              &
+                        origin,            &
+                        time,              &
+                        dx,                &
+                        dt)
     
   diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell)*bc_data
 
@@ -889,15 +890,15 @@ subroutine neumann_diffusive_matrix_lo(center_diag ,           &
  real(stm_real) :: flux(nvar)
  dt_by_dxsq = dt/(dx*dx) 
  xloc = origin
- call diffusion_data_lo( bc_data,           &
-                         xloc,              &
-                         conc,              &
-                         ncell,             &
-                         nvar,              &
-                         origin,            &
-                         time,              &
-                         dx,                &
-                         dt)
+ call diffusion_data_lo(bc_data,           &
+                        xloc,              &
+                        conc,              &
+                        ncell,             &
+                        nvar,              &
+                        origin,            &
+                        time,              &
+                        dx,                &
+                        dt)
  
  
      ! todo: there may be an issue of area vs area previous    
@@ -961,15 +962,15 @@ subroutine neumann_diffusive_matrix_hi(center_diag ,           &
  real(stm_real) :: flux(nvar)
  dt_by_dxsq = dt/(dx*dx) 
  xloc = origin + dx*dble(ncell)
- call diffusion_data_hi( bc_data,           &
-                         xloc,              &
-                         conc,              &
-                         ncell,             &
-                         nvar,              &
-                         origin,            &
-                         time,              &
-                         dx,                &
-                         dt)
+ call diffusion_data_hi(bc_data,           &
+                        xloc,              &
+                        conc,              &
+                        ncell,             &
+                        nvar,              &
+                        origin,            &
+                        time,              &
+                        dx,                &
+                        dt)
  
  
      ! todo: there may be an issue of area vs area previous    

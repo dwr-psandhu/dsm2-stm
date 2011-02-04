@@ -55,7 +55,7 @@ logical :: verbose = .true.
 call init_fruit
 
 ! todo: we have 6 pointers, [2 diff + 1 adv + 1 source + 1 hydro + 1 disp_coef]
-! can we right nullify( the six pointer) after each test?  
+! can we right nullify(the six pointer) after each test?  
 
 
 !//////// Advection unit tests

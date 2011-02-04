@@ -92,8 +92,8 @@ do istep =1,nstep
                                  dt)
                                 
             
-    reference_lo = two * cos( pi* time / three)               !Just for test 
-    reference_hi = five * sin ( pi * time / seven)                         
+    reference_lo = two * cos(pi* time / three)               !Just for test 
+    reference_hi = five * sin (pi * time / seven)                         
     
     time = time + dt 
     

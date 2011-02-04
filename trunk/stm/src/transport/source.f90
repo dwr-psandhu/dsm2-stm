@@ -104,7 +104,7 @@ subroutine set_linear_decay(rates,nvar)
    use stm_precision
    use error_handling
    real(stm_real), dimension(nvar) :: rates
-   if ( allocated(linear_decay)) then
+   if (allocated(linear_decay)) then
      deallocate(linear_decay)
    end if
    allocate(linear_decay(nvar))

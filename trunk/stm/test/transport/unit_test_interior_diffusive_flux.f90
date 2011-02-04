@@ -53,7 +53,7 @@ area_hi_prev(:) = (/98d0,96d0,94d0,92d0,90d0,88d0/)
 disp_coef_lo_prev(:,1) = (/0.9d0,0.92d0,0.94d0,0.96d0,0.98d0,1d0/)
 disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1d0,1.02d0/)
 dx = 2.0d0 
-time =LARGEREAL ! todo do we need this?
+time =LARGEREAL 
  
 call diffusive_flux(diffusive_flux_lo, &
                          diffusive_flux_hi, &
@@ -71,7 +71,6 @@ call diffusive_flux(diffusive_flux_lo, &
                                             
 !----diffusive_flux_interior_lo
 
- 
   call assertEquals (diffusive_flux_lo(2,1),-225.4d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 2")
   call assertEquals (diffusive_flux_lo(3,1),-676.8d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 3")
   call assertEquals (diffusive_flux_lo(4,1),-451.2d0 ,weak_eps,"Error in diffusive_flux_interior_lo cell 4")
