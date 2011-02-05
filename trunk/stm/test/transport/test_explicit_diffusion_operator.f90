@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Tests for explicit diffusion operator subroutine
+!> Unit test for explicit diffusion operator subroutine
 !>@ingroup test
 module test_explicit_diffusion_operator
 
@@ -27,7 +27,7 @@ use fruit
 use stm_precision
 
 contains
-!> Test explicit diffusion operator versus pre calculated values 
+!> Test explicit diffusion operator versus pre-calculated values 
 subroutine test_explicit_interior_diffusion_op
   use diffusion 
   implicit none
@@ -45,7 +45,7 @@ real(stm_real) :: time                                        !< Current time
 real(stm_real) :: dx                                          !< Spacial step  
 real(stm_real) :: dt                                          !< Time step  
 
-!-- set the values and known answer
+!-- set the values and the known answer
 conc_prev(:,1)  = (/300d0,305d0,320d0,330d0,340d0,350d0/)
 area_lo_prev(:) = (/100d0,98d0,96d0,94d0,92d0,90d0/)
 area_hi_prev(:) = (/98d0,96d0,94d0,92d0,90d0,88d0/)
