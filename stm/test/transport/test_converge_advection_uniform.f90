@@ -71,7 +71,7 @@ uniform_hydro           => uniform_flow_area
 compute_source          => no_source
 
 
-
+! todo: doxygen comment  moves to subroutine 
 ! Subroutine whichs generates fine initial values and reference values to compare with 
 ! and feed the convergence test subroutine.
 call initial_fine_solution_uniform(fine_initial_condition, &

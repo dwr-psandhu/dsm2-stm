@@ -25,15 +25,15 @@ module test_convergence_transport_uniform
 use stm_precision
 
 ! These variables are needed at the module level for things like boundary conditions
-real(stm_real) :: const_disp_coef = one
-real(stm_real), parameter :: origin =zero
-real(stm_real), parameter :: base_domain_length = 25600.d0
-real(stm_real) :: domain_length = base_domain_length
-real(stm_real) :: ic_center = LARGEREAL 
-real(stm_real), parameter :: ic_peak = one
-real(stm_real) :: const_velocity
-real(stm_real) :: diffuse_start_time
-real(stm_real) :: diffuse_end_time
+real(stm_real) :: const_disp_coef = one                       !< Constant dispersion coefficient
+real(stm_real), parameter :: origin =zero                     !< Origin
+real(stm_real), parameter :: base_domain_length = 25600.d0    !< Domain length for start (todo: is it correct)
+real(stm_real) :: domain_length = base_domain_length          !< Domain length
+real(stm_real) :: ic_center = LARGEREAL                       ! -------initialization to a number which trigers whenit is not initiated   
+real(stm_real), parameter :: ic_peak = one                    !< Gaussian hight
+real(stm_real) :: const_velocity                              !< Constant velocity 
+real(stm_real) :: diffuse_start_time                          !< Diffusion start time
+real(stm_real) :: diffuse_end_time                            !< Diffusion end time
 
 contains
 
@@ -46,15 +46,15 @@ subroutine test_converge_transport_uniform(verbose)
 
 implicit none
 
-logical, intent(in) :: verbose
-logical, parameter :: remote = .true.
-logical, parameter :: do_detail = .true.
-real(stm_real), parameter :: constant_flow = 600.d0 ! todo 600
+logical, intent(in) :: verbose                      !< Flag to show the details 
+logical, parameter :: remote = .true.               !< Flag to switch remote boundray on 
+logical, parameter :: do_detail = .true.            !< Flag to printout the details 
+real(stm_real), parameter :: constant_flow  = 600.d0 ! todo 600
 real(stm_real), parameter :: constant_decay = 5.d-5
-real(stm_real), parameter :: constant_diffuse = sixteen ! todo:
-real(stm_real) :: flow
-real(stm_real) :: diffuse
-real(stm_real) :: decay
+real(stm_real), parameter :: constant_diffuse = sixteen ! todo: not smaller than 1 
+real(stm_real) :: flow                          !< Flag to switch on the advection test routine
+real(stm_real) :: diffuse                       !< Flag to switch on the diffusion test routine
+real(stm_real) :: decay                         !< Flag to switch on the decay test routine
 
 flow   = constant_flow
 diffuse= zero
@@ -136,28 +136,28 @@ logical, intent(in), optional :: boundary_remote
 integer, parameter  :: nx_base_standard = 256
 integer :: nx_base = nx_base_standard
 integer, parameter  :: nstep_base = 256
-real(stm_real), parameter :: total_time = 38400.d0 ! todo 
-real(stm_real), parameter :: start_time = zero
+real(stm_real), parameter :: total_time = 38400.d0 ! todo 38400
+real(stm_real), parameter :: start_time = zero 
 real(stm_real), parameter :: constant_area = 1000.d0 ! todo 1000
 ! todo: what about diffusion included test?
-real(stm_real), parameter :: reverse_time = total_time/two
-real(stm_real), parameter :: ic_gaussian_sd = base_domain_length/32.d0
+real(stm_real), parameter :: reverse_time = total_time/two             !< Time the flow dirction switches back
+real(stm_real), parameter :: ic_gaussian_sd = base_domain_length/32.d0 !< Initial center for the Gaussian hump of mass
 !real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd
 
 integer, parameter :: nconc = 2
 real(stm_real) :: decay_rate = zero
-real(stm_real), dimension(nconc) :: rates
-real(stm_real),allocatable :: fine_initial_conc(:,:)  !< initial condition at finest resolution
-real(stm_real),allocatable :: fine_solution(:,:)      !< reference solution at finest resolution
-procedure(hydro_data_if), pointer :: uniform_hydro => null()
-procedure(source_if), pointer :: test_source => null()
-procedure(boundary_advective_flux_if),pointer :: bc_advect_flux => null()
-procedure(boundary_diffusive_flux_if),pointer :: bc_diff_flux => null()
-procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null()
-procedure(diffusion_coef_if),pointer :: diff_coef  => null()
+real(stm_real), dimension(nconc) :: rates 
+real(stm_real),allocatable :: fine_initial_conc(:,:)         !< Initial condition at finest resolution
+real(stm_real),allocatable :: fine_solution(:,:)             !< Reference solution at finest resolution
+procedure(hydro_data_if),               pointer :: uniform_hydro   => null()
+procedure(source_if),                   pointer :: test_source     => null()
+procedure(boundary_advective_flux_if),  pointer :: bc_advect_flux  => null()
+procedure(boundary_diffusive_flux_if),  pointer :: bc_diff_flux    => null()
+procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix  => null()
+procedure(diffusion_coef_if),           pointer :: diff_coef       => null()
 
 logical :: details = .false.
-logical :: remote = .false.
+logical :: remote  = .false.
 
 if (present(detail_result))then
     details = detail_result
@@ -204,11 +204,11 @@ end if
 if (test_diffuse .eq. zero) then    
     const_disp_coef = one !for production of initial and final solution
     call set_constant_dispersion(zero)
-    call set_single_channel_boundary(dirichlet_advective_flux_lo, gaussian_data, &
-                                     dirichlet_advective_flux_hi, gaussian_data, &
+    call set_single_channel_boundary(dirichlet_advective_flux_lo, gaussian_data,                 &
+                                     dirichlet_advective_flux_hi, gaussian_data,                &
                                      dirichlet_diffusive_flux_lo, extrapolate_hi_boundary_data, &
                                      dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data ) !todo: are these intentionally set here as out flow?
-   boundary_diffusion_flux => no_diffusion_flux         ! todo: improve set_single_channel_boundary to avoid this
+   boundary_diffusion_flux   => no_diffusion_flux         ! todo: improve set_single_channel_boundary to avoid this
    boundary_diffusion_matrix => no_diffusion_matrix
 else
     const_disp_coef =  test_diffuse
@@ -229,7 +229,7 @@ advection_boundary_flux => single_channel_boundary_advective_flux
 allocate(fine_initial_conc(nx_base,nconc),fine_solution(nx_base,nconc))
 ! Subroutine which generates fine initial values and reference values to compare with 
 ! and feed the covvergence test subroutine.
-call initial_final_solution_uniform(fine_initial_conc,   &
+call initial_final_solution_uniform(fine_initial_conc,     &
                                     fine_solution,         &
                                     ic_center,             &
                                     ic_peak,               &
@@ -243,21 +243,21 @@ call initial_final_solution_uniform(fine_initial_conc,   &
 
 
 
-call test_convergence(label,                 &
-                      uniform_hydro,         &
-                      single_channel_boundary_advective_flux,   &
-                      bc_diff_flux,           &
-                      bc_diff_matrix,         &
-                      test_source,            &
-                      domain_length,          &
-                      total_time,             &
-                      start_time,             &
-                      fine_initial_conc,      &
-                      fine_solution,          &            
-                      nstep_base,             &
-                      nx_base,                &
-                      nconc,                  &
-                      verbose,                &
+call test_convergence(label,                                     &
+                      uniform_hydro,                             &
+                      single_channel_boundary_advective_flux,    &
+                      bc_diff_flux,                              &
+                      bc_diff_matrix,                            &
+                      test_source,                               &
+                      domain_length,                             &
+                      total_time,                                &
+                      start_time,                                &
+                      fine_initial_conc,                         &
+                      fine_solution,                             &            
+                      nstep_base,                                &
+                      nx_base,                                   &
+                      nconc,                                     &
+                      verbose,                                   &
                       details)
                       
 deallocate(fine_initial_conc,fine_solution)
@@ -294,8 +294,8 @@ real(stm_real),intent(in)  :: origin
 real(stm_real),intent(in)  :: domain_length
 !--local
 integer :: ivar
-real(stm_real) :: dx
-real(stm_real) :: diffuse_end_time = LARGEREAL
+real(stm_real) :: dx                                  !< Spacial step
+real(stm_real) :: diffuse_end_time = LARGEREAL        
 real(stm_real) :: final_center
 dx = domain_length/nx_base
 
@@ -342,8 +342,8 @@ subroutine gaussian_data(bc_data,           &
     real(stm_real), intent (in)   :: time                            !< Time
     real(stm_real), intent (in)   :: origin                          !< Space origin
     real(stm_real), intent (in)   :: conc(ncell,nvar)                !< Concentration 
-    real(stm_real), intent (in)   :: dt
-    real(stm_real), intent (in)   :: dx
+    real(stm_real), intent (in)   :: dt                              !< Time step
+    real(stm_real), intent (in)   :: dx                              !< Spacial step
     
     !--- local
     real(stm_real) :: val
@@ -383,8 +383,8 @@ subroutine gaussian_gradient_data(bc_data,           &
     real(stm_real), intent (in)   :: time                            !< Time
     real(stm_real), intent (in)   :: origin                          !< Space origin
     real(stm_real), intent (in)   :: conc(ncell,nvar)                !< Concentration 
-    real(stm_real), intent (in)   :: dt
-    real(stm_real), intent (in)   :: dx
+    real(stm_real), intent (in)   :: dt                              !< Time step
+    real(stm_real), intent (in)   :: dx                              !< Spacial step
     
     !--- local
     real(stm_real) :: val
@@ -422,13 +422,13 @@ subroutine extrapolate_hi_boundary_data(bc_data,           &
     !--- args
     integer, intent(in)  :: ncell                                    !< Number of cells
     integer, intent(in)  :: nvar                                     !< Number of variables
-    real(stm_real), intent(out) :: bc_data(nvar)                   !< concentration or gradient data
-    real(stm_real), intent(in)  :: xloc                            !< location where data is requested
-    real(stm_real), intent(in)  :: time                            !< Time
-    real(stm_real), intent(in)  :: origin                          !< Space origin
-    real(stm_real), intent(in)  :: conc(ncell,nvar)                !< Concentration 
-    real(stm_real), intent(in)  :: dt
-    real(stm_real), intent(in)  :: dx
+    real(stm_real), intent(out) :: bc_data(nvar)                     !< concentration or gradient data
+    real(stm_real), intent(in)  :: xloc                              !< location where data is requested
+    real(stm_real), intent(in)  :: time                              !< Time
+    real(stm_real), intent(in)  :: origin                            !< Space origin
+    real(stm_real), intent(in)  :: conc(ncell,nvar)                  !< Concentration 
+    real(stm_real), intent(in)  :: dt                                !< Time step
+    real(stm_real), intent(in)  :: dx                                !< Spacial step
     
     ! zero order approximation
      bc_data = conc(ncell,:)
