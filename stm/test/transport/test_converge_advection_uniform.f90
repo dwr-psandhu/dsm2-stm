@@ -128,7 +128,7 @@ real(stm_real),intent(out) :: fine_initial_condition(nx_base,nconc)!< Initial co
 real(stm_real),intent(out) :: fine_solution(nx_base,nconc)         !< Reference solution at finest resolution
 real(stm_real),intent(in)  :: ic_center                            !< Initial condition center of mass
 real(stm_real),intent(in)  :: solution_center                      !< Solution's center of mass
-real(stm_real),intent(in)  :: ic_gaussian_sd                       !< Initial condition standard deviation 
+real(stm_real),intent(in)  :: ic_gaussian_sd                       !< Initial condition's standard deviation 
 real(stm_real),intent(in)  :: solution_gaussian_sd                 !< Solution's standard deviation 
 real(stm_real),intent(in)  :: origin                               !< Origin               
 real(stm_real),intent(in)  :: domain_length                        !< Domain length
