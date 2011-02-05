@@ -69,25 +69,25 @@ procedure(boundary_diffusive_matrix_if),pointer, intent(in) :: bc_diffusive_matr
 procedure(source_if),pointer, intent(in)                    :: source_term          !< Source term 
 
 
-character(LEN=*),intent(in) :: label                            !< unique label for test
-logical,intent(in) :: verbose                                   !< whether to output convergence results
-integer, intent(in) :: nconc                                    !< number of constituents
-integer, intent(in) :: nstep_base                               !< number of steps at finest resolution
-integer, intent(in) :: nx_base                                  !< number of cells at finest resolution
-real(stm_real), intent(in) :: fine_initial_conc(nx_base,nconc)  !< initial condition at finest resolution
-real(stm_real), intent(in) :: fine_solution(nx_base,nconc)      !< reference solution at finest resolution
-real(stm_real), intent(in) :: total_time                        !< total time of simulation
-real(stm_real), intent(in) :: start_time                        !< start time of simulation
-real(stm_real), intent(in) :: domain_length                     !< length of domain
-logical, intent(in),optional :: detail_printout                 !< whether to produce detailed printouts
+character(LEN=*),intent(in) :: label                            !< Unique label for test
+logical,intent(in) :: verbose                                   !< Whether to output convergence results
+integer, intent(in) :: nconc                                    !< Number of constituents
+integer, intent(in) :: nstep_base                               !< Number of steps at finest resolution
+integer, intent(in) :: nx_base                                  !< Number of cells at finest resolution
+real(stm_real), intent(in) :: fine_initial_conc(nx_base,nconc)  !< Initial condition at finest resolution
+real(stm_real), intent(in) :: fine_solution(nx_base,nconc)      !< Reference solution at finest resolution
+real(stm_real), intent(in) :: total_time                        !< Total time of simulation
+real(stm_real), intent(in) :: start_time                        !< Start time of simulation
+real(stm_real), intent(in) :: domain_length                     !< Length of domain
+logical, intent(in),optional :: detail_printout                 !< Whether to produce detailed printouts
 
 !---local
-logical :: detailed_printout= .true. 
-integer, parameter :: nrefine = 3
-integer, parameter :: coarsen_factor = 2                 ! coarsening factor used for convergence test
-integer :: itime
-integer :: icell 
-integer :: icoarse 
+logical :: detailed_printout= .true.                            !< Printout Falg
+integer, parameter :: nrefine = 3                               !< Number of refinements 
+integer, parameter :: coarsen_factor = 2                        !< Coarsening factor used for convergence test
+integer :: itime                                                !< Counter (time)
+integer :: icell                                                !< Counter (cell)
+integer :: icoarse                                              !< Counter (coarsening)
 integer :: nstep
 integer :: nx
 integer :: which_cell(nrefine)
@@ -98,24 +98,22 @@ logical, parameter :: limit_slope = .false.
 real(stm_real), allocatable :: solution_mass(:,:)
 real(stm_real), allocatable :: reference(:,:)
 real(stm_real), allocatable :: x_center(:)
-real(stm_real), allocatable :: velocity (:)
-real(stm_real), allocatable :: disp_coef_lo(:)     !< Low side constituent dispersion coef. at new time
-real(stm_real), allocatable :: disp_coef_hi(:)     !< High side constituent dispersion coef. at new time
+real(stm_real), allocatable :: velocity (:)         !< Velocity
+real(stm_real), allocatable :: disp_coef_lo(:)      !< Low side constituent dispersion coef. at new time
+real(stm_real), allocatable :: disp_coef_hi(:)      !< High side constituent dispersion coef. at new time
 real(stm_real), allocatable :: disp_coef_lo_prev(:) !< Low side constituent dispersion coef. at old time
 real(stm_real) ,allocatable :: disp_coef_hi_prev(:) !< High side constituent dispersion coef. at old time
-real(stm_real) :: theta = half  
-real(stm_real) :: ratio
+real(stm_real) :: theta = half                      !< Crank-Nicolson implicitness coeficient
+real(stm_real) :: ratio                             !< Norms ration
+real(stm_real) :: max_velocity                      !< Maximum Velocity
+real(stm_real) :: min_conc                          !< Minimum concentration   
+real(stm_real) :: fine_initial_mass(nx_base,nconc)  !< initial condition at finest resolution
+real(stm_real) :: fine_solution_mass(nx_base,nconc) !< reference solution at finest resolution
 
-real(stm_real) :: max_velocity 
-real(stm_real) :: min_conc
-
-real(stm_real) :: fine_initial_mass(nx_base,nconc)   !< initial condition at finest resolution
-real(stm_real) :: fine_solution_mass(nx_base,nconc)  !< reference solution at finest resolution
-
-real(stm_real) :: dt              ! seconds
-real(stm_real) :: dx              ! meters
-real(stm_real) :: time
-real(stm_real) :: norm_error(3,nrefine)
+real(stm_real) :: dt                                !< Time step in seconds
+real(stm_real) :: dx                                !< Spacial step in meters
+real(stm_real) :: time                              !< Current time
+real(stm_real) :: norm_error(3,nrefine)             !< Norm of error
 
 if (present(detail_printout))then
     detailed_printout = detail_printout
@@ -150,8 +148,8 @@ do icoarse = 1,nrefine
     allocate(solution_mass(nx,nconc))
     allocate(velocity (nx))
 
-    allocate(disp_coef_lo(nx), &
-             disp_coef_hi(nx), &
+    allocate(disp_coef_lo(nx),      &
+             disp_coef_hi(nx),      &
              disp_coef_lo_prev(nx), &
              disp_coef_hi_prev(nx))
     
@@ -202,7 +200,7 @@ do icoarse = 1,nrefine
         call prim2cons(fine_initial_mass,fine_initial_conc,area,nx,nconc)
     end if
         
-    call coarsen(mass,fine_initial_mass,nx_base,nx, nconc)
+    call coarsen(mass,fine_initial_mass,nx_base,nx,nconc)
     call cons2prim(conc,mass,area,nx,nconc)
     if (detailed_printout)then
         write(filename, "(a,'_init_',i4.4,'.txt')") trim(label), nx        
@@ -245,7 +243,7 @@ do icoarse = 1,nrefine
                   area_lo,  &
                   area_hi,  &
                   nx,       &
-                  nconc,     &
+                  nconc,    &
                   time,     &
                   dt,       &
                   dx,       &
@@ -255,16 +253,16 @@ do icoarse = 1,nrefine
       conc_prev = conc
       
       if(use_diffusion()) then
-        call dispersion_coef(disp_coef_lo,     &
-                         disp_coef_hi, &
-                         flow,                 &
-                         flow_lo,              &
-                         flow_hi,              &
-                         time,                 &
-                         dx,                   &
-                         dt,                   &
-                         ncell,                &
-                         nvar) 
+        call dispersion_coef(disp_coef_lo,         &
+                             disp_coef_hi,         &
+                             flow,                 &
+                             flow_lo,              &
+                             flow_hi,              &
+                             time,                 &
+                             dx,                   &
+                             dt,                   &
+                             ncell,                &
+                             nvar) 
                                   
         call diffuse(conc,              &
                      conc_prev,         &
@@ -394,7 +392,6 @@ end if
 !source => null()
 !or 
 !call unset_interfaces()
-
 
 
 return

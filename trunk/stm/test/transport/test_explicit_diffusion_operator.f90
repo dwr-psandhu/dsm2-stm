@@ -32,8 +32,8 @@ subroutine test_explicit_interior_diffusion_op
   use diffusion 
   implicit none
   
-  integer, parameter :: ncell= 6 !< Number of cells
-integer, parameter :: nvar =1 !< Number of variables
+integer, parameter :: ncell = 6 !< Number of cells
+integer, parameter :: nvar =1   !< Number of variables
 
 real(stm_real) :: explicit_diffuse_op(ncell,nvar)             !< Explicit diffusion operator
 real(stm_real) :: conc_prev(ncell,nvar)                       !< Concentration at old time
@@ -43,7 +43,9 @@ real(stm_real) :: disp_coef_lo_prev (ncell,nvar)              !< Low side consti
 real(stm_real) :: disp_coef_hi_prev (ncell,nvar)              !< High side constituent dispersion coef. at old time
 real(stm_real) :: time                                        !< Current time
 real(stm_real) :: dx                                          !< Spacial step  
-real(stm_real) :: dt
+real(stm_real) :: dt                                          !< Time step  
+
+!-- set the values and known answer
 conc_prev(:,1)  = (/300d0,305d0,320d0,330d0,340d0,350d0/)
 area_lo_prev(:) = (/100d0,98d0,96d0,94d0,92d0,90d0/)
 area_hi_prev(:) = (/98d0,96d0,94d0,92d0,90d0,88d0/)
@@ -52,17 +54,17 @@ disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1d0,1.02d0/)
 dx = 2.0d0 
 time =LARGEREAL 
                                             
-call explicit_diffusion_operator (explicit_diffuse_op,  &
-                                            conc_prev,        &
-                                            area_lo_prev,     &
-                                            area_hi_prev,     &
-                                            disp_coef_lo_prev,&  
-                                            disp_coef_hi_prev,&
-                                            ncell,            &
-                                            nvar,             &
-                                            time,             &
-                                            dx,               &
-                                            dt)                                                                     
+call explicit_diffusion_operator (explicit_diffuse_op,&
+                                  conc_prev,          &
+                                  area_lo_prev,       &
+                                  area_hi_prev,       &
+                                  disp_coef_lo_prev,  &  
+                                  disp_coef_hi_prev,  &
+                                  ncell,              &
+                                  nvar,               &
+                                  time,               &
+                                  dx,                 s&
+                                  dt)                                                                     
   
   call assertEquals (explicit_diffuse_op(2,nvar),-225.7d0,weak_eps,"Error in explicit diffusive flux operator 2")
   call assertEquals (explicit_diffuse_op(3,nvar),112.8d0,weak_eps,"Error in explicit diffusive flux operator 3")

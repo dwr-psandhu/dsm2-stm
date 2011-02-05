@@ -43,29 +43,29 @@ use fruit
 implicit none
 
 !> todo: this must be coordinated with test_advection_tidal, better if it were automatic
-integer,intent(in) :: ncell      !< number of cells
-integer,intent(in) :: nstep      !< number of time 
-real(stm_real),intent(in):: total_time             !< total time
-real(stm_real),intent(in):: start_time             !< start time
-real(stm_real),intent(in):: domain_length          !< domain_length
-character(LEN=*),intent(in) :: label               !< label for test
+integer,intent(in) :: ncell                        !< Number of cells
+integer,intent(in) :: nstep                        !< Number of time 
+real(stm_real),intent(in):: total_time             !< Total time
+real(stm_real),intent(in):: start_time             !< Start time
+real(stm_real),intent(in):: domain_length          !< Domain_length
+character(LEN=*),intent(in) :: label               !< Label for test
 procedure(hydro_data_if), pointer, intent(in) :: hydrodynamics !< hydrodynamics interface to be tested
 !--- local
-integer :: itime
-integer :: icell
-integer :: which_cell
-real(stm_real):: time           !< time of request
-real(stm_real):: flow(ncell)     !< cell centered flow
-real(stm_real):: flow_lo(ncell)  !< lo face flow
-real(stm_real):: flow_hi(ncell)  !< hi face flow
-real(stm_real):: area(ncell)     !< cell center area
-real(stm_real):: area_lo(ncell)  !< area lo face
-real(stm_real):: area_hi(ncell)  !< area hi face
-real(stm_real):: flow_new(ncell)     !< cell centered flow at time n+1
-real(stm_real):: flow_hi_half(ncell)  !< high side flow at time n+1/2
-real(stm_real):: flow_lo_half(ncell)  !< low side flow at time n+1/2
-real(stm_real):: area_new(ncell)     !< cell centered area at time n+1
-real(stm_real):: area_old(ncell)     !< cell centered area at time n
+integer :: itime                         !< Time counter
+integer :: icell                         !< Cell counter 
+integer :: which_cell                    !< Cell number with worst error
+real(stm_real):: time                    !< Time of request
+real(stm_real):: flow(ncell)             !< Cell centered flow
+real(stm_real):: flow_lo(ncell)          !< Low face flow
+real(stm_real):: flow_hi(ncell)          !< High face flow
+real(stm_real):: area(ncell)             !< Cell center area
+real(stm_real):: area_lo(ncell)          !< Area lo face
+real(stm_real):: area_hi(ncell)          !< Area hi face
+real(stm_real):: flow_new(ncell)         !< Cell centered flow at time n+1
+real(stm_real):: flow_hi_half(ncell)     !< High side flow at time n+1/2
+real(stm_real):: flow_lo_half(ncell)     !< Low side flow at time n+1/2
+real(stm_real):: area_new(ncell)         !< Cell centered area at time n+1
+real(stm_real):: area_old(ncell)         !< Cell centered area at time n
 real(stm_real):: mass_difference(ncell)
 real(stm_real):: max_mass_diff(nstep)
 real(stm_real):: l1_mass_diff(nstep)
