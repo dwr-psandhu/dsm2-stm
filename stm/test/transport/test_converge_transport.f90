@@ -88,16 +88,16 @@ integer, parameter :: coarsen_factor = 2                        !< Coarsening fa
 integer :: itime                                                !< Counter (time)
 integer :: icell                                                !< Counter (cell)
 integer :: icoarse                                              !< Counter (coarsening)
-integer :: nstep
-integer :: nx
-integer :: which_cell(nrefine)
-integer :: coarsening
-character(LEN=64)  ::  filename
+integer :: nstep                                                !< Number of steps  
+integer :: nx                                                   !< Number of cells
+integer :: which_cell(nrefine)                                  !< Number of the cell worst error occures at 
+integer :: coarsening                           
+character(LEN=64)  ::  filename                                  
 character(LEN=256) ::  converge_message
-logical, parameter :: limit_slope = .false.
-real(stm_real), allocatable :: solution_mass(:,:)
-real(stm_real), allocatable :: reference(:,:)
-real(stm_real), allocatable :: x_center(:)
+logical, parameter :: limit_slope = .false.         !< Flag to switch on/off slope limiter  
+real(stm_real), allocatable :: solution_mass(:,:)   !< Mass in the exact solution
+real(stm_real), allocatable :: reference(:,:)       !< Reference values
+real(stm_real), allocatable :: x_center(:)          !< Location of the centers of cells
 real(stm_real), allocatable :: velocity (:)         !< Velocity
 real(stm_real), allocatable :: disp_coef_lo(:)      !< Low side constituent dispersion coef. at new time
 real(stm_real), allocatable :: disp_coef_hi(:)      !< High side constituent dispersion coef. at new time
@@ -109,7 +109,6 @@ real(stm_real) :: max_velocity                      !< Maximum Velocity
 real(stm_real) :: min_conc                          !< Minimum concentration   
 real(stm_real) :: fine_initial_mass(nx_base,nconc)  !< initial condition at finest resolution
 real(stm_real) :: fine_solution_mass(nx_base,nconc) !< reference solution at finest resolution
-
 real(stm_real) :: dt                                !< Time step in seconds
 real(stm_real) :: dx                                !< Spacial step in meters
 real(stm_real) :: time                              !< Current time
@@ -178,8 +177,8 @@ do icoarse = 1,nrefine
     area_lo_prev = area_lo
     
     if (use_diffusion())then
-      call dispersion_coef(disp_coef_lo, &
-                           disp_coef_hi, &
+      call dispersion_coef(disp_coef_lo,         &
+                           disp_coef_hi,         &
                            flow,                 &
                            flow_lo,              &
                            flow_hi,              &
@@ -342,8 +341,8 @@ do icoarse = 1,nrefine
     deallocate(reference)
     deallocate(x_center)
     deallocate(velocity)
-    deallocate(disp_coef_lo, &
-               disp_coef_hi, &
+    deallocate(disp_coef_lo,      &
+               disp_coef_hi,      &
                disp_coef_lo_prev, &
                disp_coef_hi_prev)    
     call deallocate_state

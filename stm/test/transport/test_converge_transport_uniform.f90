@@ -46,11 +46,11 @@ subroutine test_converge_transport_uniform(verbose)
 
 implicit none
 
-logical, intent(in) :: verbose                      !< Flag to show the details 
-logical, parameter :: remote = .true.               !< Flag to switch remote boundray on 
-logical, parameter :: do_detail = .true.            !< Flag to printout the details 
+logical, intent(in) :: verbose                        !< Flag to show the details 
+logical, parameter :: remote = .true.                 !< Flag to switch remote boundray on 
+logical, parameter :: do_detail = .true.              !< Flag to printout the details 
 real(stm_real), parameter :: constant_flow  = 600.d0 ! todo 600
-real(stm_real), parameter :: constant_decay = 5.d-5
+real(stm_real), parameter :: constant_decay = 5.d-5   ! todo: 5.0d-5
 real(stm_real), parameter :: constant_diffuse = sixteen ! todo: not smaller than 1 
 real(stm_real) :: flow                          !< Flag to switch on the advection test routine
 real(stm_real) :: diffuse                       !< Flag to switch on the diffusion test routine
@@ -125,13 +125,13 @@ use dispersion_coefficient
 
 implicit none
 
-logical, intent(in) :: verbose
-real(stm_real), intent(in) :: test_flow
-real(stm_real), intent(in) :: test_diffuse
-real(stm_real), intent(in) :: test_decay
-character(LEN=*),intent(in) :: label
-logical, intent(in), optional :: detail_result
-logical, intent(in), optional :: boundary_remote
+logical, intent(in) :: verbose                   !< Switch for detailed show of the results
+real(stm_real), intent(in) :: test_flow          !< Flag for testing advection process 
+real(stm_real), intent(in) :: test_diffuse       !< Flag for testing diffusion process
+real(stm_real), intent(in) :: test_decay         !< Flag for testing decay process
+character(LEN=*),intent(in) :: label             !< Test's name  
+logical, intent(in), optional :: detail_result   !< Switch for detailed print of the results
+logical, intent(in), optional :: boundary_remote !< Switch for active boundary value testing vs zero (remote BC)
 
 integer, parameter  :: nx_base_standard = 256
 integer :: nx_base = nx_base_standard
@@ -147,8 +147,8 @@ real(stm_real), parameter :: ic_gaussian_sd = base_domain_length/32.d0 !< Initia
 integer, parameter :: nconc = 2
 real(stm_real) :: decay_rate = zero
 real(stm_real), dimension(nconc) :: rates 
-real(stm_real),allocatable :: fine_initial_conc(:,:)         !< Initial condition at finest resolution
-real(stm_real),allocatable :: fine_solution(:,:)             !< Reference solution at finest resolution
+real(stm_real),allocatable :: fine_initial_conc(:,:)          !< Initial condition at finest resolution
+real(stm_real),allocatable :: fine_solution(:,:)              !< Reference solution at finest resolution
 procedure(hydro_data_if),               pointer :: uniform_hydro   => null()
 procedure(source_if),                   pointer :: test_source     => null()
 procedure(boundary_advective_flux_if),  pointer :: bc_advect_flux  => null()
@@ -319,7 +319,6 @@ fine_solution_conc = fine_solution_conc * exp(-decay_rate*total_time)
 
 return
 end subroutine
-
 
 subroutine gaussian_data(bc_data,           &
                          xloc,              &
