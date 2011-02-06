@@ -144,20 +144,20 @@ real(stm_real), parameter :: reverse_time = total_time/two             !< Time t
 real(stm_real), parameter :: ic_gaussian_sd = base_domain_length/32.d0 !< Initial center for the Gaussian hump of mass
 !real(stm_real) :: solution_gaussian_sd = ic_gaussian_sd
 
-integer, parameter :: nconc = 2
-real(stm_real) :: decay_rate = zero
-real(stm_real), dimension(nconc) :: rates 
-real(stm_real),allocatable :: fine_initial_conc(:,:)          !< Initial condition at finest resolution
-real(stm_real),allocatable :: fine_solution(:,:)              !< Reference solution at finest resolution
-procedure(hydro_data_if),               pointer :: uniform_hydro   => null()
-procedure(source_if),                   pointer :: test_source     => null()
-procedure(boundary_advective_flux_if),  pointer :: bc_advect_flux  => null()
-procedure(boundary_diffusive_flux_if),  pointer :: bc_diff_flux    => null()
-procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix  => null()
-procedure(diffusion_coef_if),           pointer :: diff_coef       => null()
+integer, parameter :: nconc = 2                                             !< Number of variables
+real(stm_real) :: decay_rate = zero                                         !< Decay Rate
+real(stm_real), dimension(nconc) :: rates                                   !< todo: Norm of teh errors rate 
+real(stm_real),allocatable :: fine_initial_conc(:,:)                        !< Initial condition at finest resolution
+real(stm_real),allocatable :: fine_solution(:,:)                            !< Reference solution at finest resolution
+procedure(hydro_data_if),               pointer :: uniform_hydro   => null()!< Hydrodynamic data pointer
+procedure(source_if),                   pointer :: test_source     => null()!< Source term data pointer
+procedure(boundary_advective_flux_if),  pointer :: bc_advect_flux  => null()!< Boundary fluxes of advection pointer
+procedure(boundary_diffusive_flux_if),  pointer :: bc_diff_flux    => null()!< Boundary fluxes of diffusion pointer
+procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix  => null()!< Boundary values of diffusion matrix ponter
+procedure(diffusion_coef_if),           pointer :: diff_coef       => null()!< Dispersion coefficient values pointer
 
-logical :: details = .false.
-logical :: remote  = .false.
+logical :: details = .false.                                                !< Flag switch todo: ?
+logical :: remote  = .false.                                                !< Flag Switch todo: ?
 
 if (present(detail_result))then
     details = detail_result
@@ -194,7 +194,7 @@ call set_linear_decay(rates,2)
 if (test_decay .ne. zero)then
     rates = decay_rate
     call set_linear_decay(rates,2)
-    test_source => linear_decay_source
+    test_source    => linear_decay_source
     compute_source => linear_decay_source !todo: because of compiler problem
 else
     test_source => no_source
@@ -204,7 +204,7 @@ end if
 if (test_diffuse .eq. zero) then    
     const_disp_coef = one !for production of initial and final solution
     call set_constant_dispersion(zero)
-    call set_single_channel_boundary(dirichlet_advective_flux_lo, gaussian_data,                 &
+    call set_single_channel_boundary(dirichlet_advective_flux_lo, gaussian_data,                &
                                      dirichlet_advective_flux_hi, gaussian_data,                &
                                      dirichlet_diffusive_flux_lo, extrapolate_hi_boundary_data, &
                                      dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data ) !todo: are these intentionally set here as out flow?
@@ -283,20 +283,20 @@ use diffusion
 implicit none
 integer, intent(in) :: nx_base
 integer, intent(in) :: nconc
-real(stm_real),intent(out) :: fine_initial_conc(nx_base,nconc)     !< initial condition at finest resolution
-real(stm_real),intent(out) :: fine_solution_conc(nx_base,nconc)    !< reference solution at finest resolution
-real(stm_real),intent(in)  :: ic_center
-real(stm_real),intent(in)  :: ic_peak
-real(stm_real),intent(in)  :: const_velocity
-real(stm_real),intent(in)  :: decay_rate
-real(stm_real),intent(in)  :: total_time 
-real(stm_real),intent(in)  :: origin
-real(stm_real),intent(in)  :: domain_length
+real(stm_real),intent(out) :: fine_initial_conc(nx_base,nconc)     !< Initial condition at finest resolution
+real(stm_real),intent(out) :: fine_solution_conc(nx_base,nconc)    !< Reference solution at finest resolution
+real(stm_real),intent(in)  :: ic_center                            !< Initial condition center of mass location
+real(stm_real),intent(in)  :: ic_peak                              !< Peak hight of initial condition
+real(stm_real),intent(in)  :: const_velocity                       !< Constant velocity of flow
+real(stm_real),intent(in)  :: decay_rate                           !< Decay rate 
+real(stm_real),intent(in)  :: total_time                           !< Total time of test  
+real(stm_real),intent(in)  :: origin                               !< Origin location
+real(stm_real),intent(in)  :: domain_length                        !< Domain length
 !--local
-integer :: ivar
-real(stm_real) :: dx                                  !< Spacial step
-real(stm_real) :: diffuse_end_time = LARGEREAL        
-real(stm_real) :: final_center
+integer :: ivar                                                    !< Counter on constituent     
+real(stm_real) :: dx                                               !< Spacial step
+real(stm_real) :: diffuse_end_time = LARGEREAL                     !< End time of diffusion process initialized to LARGEREAL 
+real(stm_real) :: final_center                                     !< Solution center
 dx = domain_length/nx_base
 
 final_center = ic_center  + const_velocity * total_time
