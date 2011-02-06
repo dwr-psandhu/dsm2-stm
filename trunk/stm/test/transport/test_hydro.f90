@@ -43,13 +43,13 @@ use fruit
 implicit none
 
 !> todo: this must be coordinated with test_advection_tidal, better if it were automatic
-integer,intent(in) :: ncell                        !< Number of cells
-integer,intent(in) :: nstep                        !< Number of time 
-real(stm_real),intent(in):: total_time             !< Total time
-real(stm_real),intent(in):: start_time             !< Start time
-real(stm_real),intent(in):: domain_length          !< Domain_length
-character(LEN=*),intent(in) :: label               !< Label for test
-procedure(hydro_data_if), pointer, intent(in) :: hydrodynamics !< hydrodynamics interface to be tested
+integer,intent(in) :: ncell                                    !< Number of cells
+integer,intent(in) :: nstep                                    !< Number of time 
+real(stm_real),intent(in):: total_time                         !< Total time
+real(stm_real),intent(in):: start_time                         !< Start time
+real(stm_real),intent(in):: domain_length                      !< Domain_length
+character(LEN=*),intent(in) :: label                           !< Label for test
+procedure(hydro_data_if), pointer, intent(in) :: hydrodynamics !< Hydrodynamics interface to be tested
 !--- local
 integer :: itime                         !< Time counter
 integer :: icell                         !< Cell counter 
@@ -66,13 +66,13 @@ real(stm_real):: flow_hi_half(ncell)     !< High side flow at time n+1/2
 real(stm_real):: flow_lo_half(ncell)     !< Low side flow at time n+1/2
 real(stm_real):: area_new(ncell)         !< Cell centered area at time n+1
 real(stm_real):: area_old(ncell)         !< Cell centered area at time n
-real(stm_real):: mass_difference(ncell)
-real(stm_real):: max_mass_diff(nstep)
-real(stm_real):: l1_mass_diff(nstep)
-real(stm_real):: l2_mass_diff(nstep)
-real(stm_real):: all_zero(ncell)
-real(stm_real):: dt
-real(stm_real):: dx
+real(stm_real):: mass_difference(ncell)  !< Mass diffrence between results and analytical solution
+real(stm_real):: max_mass_diff(nstep)    !< Maximum of mass difference
+real(stm_real):: l1_mass_diff(nstep)     !< L1 norm for mass error
+real(stm_real):: l2_mass_diff(nstep)     !< L2 norm for mass error 
+real(stm_real):: all_zero(ncell)         !< All zero vector
+real(stm_real):: dt                      !< Time step size
+real(stm_real):: dx                      !< Spacial step size  
 
 time = start_time
 dt = total_time/dble(nstep)
@@ -80,15 +80,15 @@ dx = domain_length/dble(ncell)
 
 all_zero = zero
 
-call hydrodynamics(flow_new,&
+call hydrodynamics(flow_new,     &
                    flow_lo_half, &
                    flow_hi_half, &
-                   area_old,    &
-                   area_lo, &
-                   area_hi, &
-                   ncell,   &
-                   time,    &
-                   dx,      &                  
+                   area_old,     &
+                   area_lo,      &
+                   area_hi,      &
+                   ncell,        &
+                   time,         &
+                   dx,           &                  
                    dt)
 
 do itime=1,nstep
@@ -112,13 +112,13 @@ do itime=1,nstep
                    which_cell,            &
                    mass_difference,       &
                    all_zero,              &
-                   ncell,     &
+                   ncell,                 &
                    dx)  
   
    area_old = area_new
 end do
 
-call assert_true (maxval(max_mass_diff) < weak_eps ,'water mass balance error in flow generator'//label)
+call assert_true (maxval(max_mass_diff) < weak_eps ,'Water mass balance error in flow generator'//label)
 
 return
 end subroutine
@@ -132,10 +132,10 @@ use hydro_data
 use test_advection_reaction_tidal   
 
 implicit none
-integer :: ncell = 32                   !< number of cells
-integer :: nstep = 64                   !< number of time steps
+integer :: ncell = 32                             !< Number of cells
+integer :: nstep = 64                             !< Number of time steps
 procedure(hydro_data_if),pointer :: tidal_hydro   !< The pointer points to tidal flow data
-character (LEN=64) :: hydro_label
+character (LEN=64) :: hydro_label                 !< Name of the hydrodynamic data generator
 
 hydro_label = 'tidal_flow'
 tidal_hydro=> tidal_flow_modified
@@ -152,20 +152,20 @@ call test_flow_continuity(ncell,              &
 return
 end subroutine
 
-!> Mass continuity of fluid flow for the Zoppou test case
+!> Tests mass continuity of fluid flow for the Zoppou test
 subroutine test_zoppou_flow()
 use stm_precision
 use hydro_data
 
 use test_zoppou_advection_dispersion
 implicit none
-integer :: ncell
-integer :: nstep
-real(stm_real) :: start_t
-real(stm_real) :: total_time
-real(stm_real) :: domain_length
-procedure(hydro_data_if),pointer :: hydrodynamics => null()
-character (LEN=64) :: hydro_label
+integer :: ncell                                            !< Number of cells
+integer :: nstep                                            !< Number of time steps
+real(stm_real) :: start_t                                   !< Start time
+real(stm_real) :: total_time                                !< Total time
+real(stm_real) :: domain_length                             !< Domain length
+procedure(hydro_data_if),pointer :: hydrodynamics => null() !< Pointer of hydrodynamic values set to Zoppou hydro
+character (LEN=64) :: hydro_label                           !< Name of the hydrodynamic data generator  
 
 !todo: these numbers are hardwired 
 ncell = 256
