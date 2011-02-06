@@ -74,13 +74,13 @@ module source_sink
  
  !> Zero source implementation.
  !> This source term adds nothing (e.g., for conservative constituents)
- subroutine no_source(source,   & 
-                        conc,   &
-                        area,   &
-                        flow,   &
-                        ncell,  &
-                        nvar,   &
-                        time)
+ subroutine no_source(source, & 
+                      conc,   &
+                      area,   &
+                      flow,   &
+                      ncell,  &
+                      nvar,   &
+                      time)
                                          
      use stm_precision 
      use error_handling
@@ -101,8 +101,11 @@ module source_sink
 
  !> Sets the decay rate and sets the source term to linear decay
 subroutine set_linear_decay(rates,nvar)
+
    use stm_precision
    use error_handling
+   implicit none
+   integer:: nvar 
    real(stm_real), dimension(nvar) :: rates
    if (allocated(linear_decay)) then
      deallocate(linear_decay)

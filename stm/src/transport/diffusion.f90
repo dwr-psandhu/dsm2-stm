@@ -71,9 +71,7 @@ use primitive_variable_conversion
 use boundary_diffusion
 
 implicit none
-
 ! ---- args
-
 integer, intent (in) :: ncell                                !< Number of cells
 integer, intent (in) :: nvar                                 !< Number of variables
 
@@ -268,6 +266,7 @@ use stm_precision
 use boundary_diffusion
 
 ! --- args
+implicit none
                                              
 integer, intent (in) :: ncell                                            !< Number of cells
 integer, intent (in) :: nvar                                             !< Number of variables
@@ -289,7 +288,7 @@ integer :: ivar
 
 do ivar = 1,nvar
     diffusive_flux_lo(2:ncell,ivar) = &
-        -(area_lo(2:ncell)*disp_coef_lo(2:ncellr)* &
+        -(area_lo(2:ncell)*disp_coef_lo(2:ncell)* &
         (conc(2:ncell,ivar) - conc(1:(ncell-1),ivar)))/dx
                
     diffusive_flux_hi(1:(ncell-1),ivar) = &
@@ -335,7 +334,8 @@ pure subroutine construct_right_hand_side(right_hand_side,       &
                                           dx,                    &
                                           dt)
 use stm_precision   
-  ! ---args                                
+  ! ---args  
+  implicit none                              
 integer, intent (in) :: ncell                                     !< Number of cells
 integer, intent (in) :: nvar                                      !< Number of variables
 real(stm_real), intent (out) :: right_hand_side(ncell,nvar)       !< The right hand side vector
@@ -383,7 +383,8 @@ subroutine construct_diffusion_matrix(center_diag ,     &
 
 use stm_precision
                                   
- ! ---args                                
+ ! ---args    
+ implicit none                            
 integer, intent (in) :: ncell                            !< Number of cells
 integer, intent (in) :: nvar                             !< Number of variables
 real(stm_real), intent (out) :: down_diag(ncell,nvar)    !< Values of the coefficients below diagonal in matrix
@@ -432,6 +433,7 @@ use matrix_solver
                                                         
 ! ----- args
 use stm_precision
+implicit none
 integer, intent (in) :: ncell                              !< Number of volumes
 integer, intent (in) :: nvar                               !< Number of variables 
 real(stm_real),intent (in)  :: down_diag(ncell,nvar)       !< Values of the coefficients below diagonal in matrix
