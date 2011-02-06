@@ -33,30 +33,30 @@ contains
 subroutine test_gradient_calc
   use gradient
   implicit none
-  integer,parameter :: nx = 8
-  integer,parameter :: nconst = 2
-  real(stm_real) :: grad_lo(nx,nconst)
-  real(stm_real) :: grad_hi(nx,nconst)
-  real(stm_real) :: grad_c(nx,nconst)
-  integer        :: ix
+  integer,parameter :: nx = 8            !< Number of cells
+  integer,parameter :: nconst = 2        !< Number of constituents 
+  real(stm_real) :: grad_lo(nx,nconst)   !< Gradient on the left side of the cell 
+  real(stm_real) :: grad_hi(nx,nconst)   !< Gradient on the right side of the cell   
+  real(stm_real) :: grad_c(nx,nconst)    !< Centeral value gradient of the cell 
+  integer        :: ix                   !< Counter on the
   
   call allocate_state(nx,nconst)
-  conc(1,1)=0.D0
-  conc(2,1)=2.D0
-  conc(3,1)=3.D0  !sign reversal
-  conc(4,1)=2.D0
-  conc(5,1)=1.D0
-  conc(6,1)=-12.D0  !abrupt drop
-  conc(7,1)=-13.D0
-  conc(8,1)=-13.5D0
-  conc(1,2)=2.D0
-  conc(2,2)=2.D0
-  conc(3,2)=1.D0  !sign reversal
-  conc(4,2)=2.D0
-  conc(5,2)=3.D0
-  conc(6,2)=12.D0  !abrupt rise
+  conc(1,1)=0.d0
+  conc(2,1)=2.d0
+  conc(3,1)=3.d0  !sign reversal
+  conc(4,1)=2.d0
+  conc(5,1)=1.d0
+  conc(6,1)=-12.d0  !abrupt drop
+  conc(7,1)=-13.d0
+  conc(8,1)=-13.5d0
+  conc(1,2)=2.d0
+  conc(2,2)=2.d0
+  conc(3,2)=1.d0  !sign reversal
+  conc(4,2)=2.d0
+  conc(5,2)=3.d0
+  conc(6,2)=12.d0  !abrupt rise
   conc(7,2)=13.0
-  conc(8,2)=13.5D0
+  conc(8,2)=13.5d0
   
   call difference(grad_lo,grad_hi,grad_c,conc,nx,nconst)
   call assertEquals(grad_lo(1,1),LARGEREAL,"Gradient (1,1)")
@@ -87,31 +87,31 @@ end subroutine
 subroutine test_limiter
   use gradient
   implicit none
-  integer,parameter :: nx = 8
-  integer,parameter :: nconst = 2
-  real(stm_real) :: grad_lo(nx,nconst)
-  real(stm_real) :: grad_hi(nx,nconst)
-  real(stm_real) :: grad_c(nx,nconst)
-  real(stm_real) :: grad_lim(nx,nconst)
+  integer,parameter :: nx = 8            !< Number of cells
+  integer,parameter :: nconst = 2        !< Number of constituents 
+  real(stm_real) :: grad_lo(nx,nconst)   !< Gradient on the left side of the cell 
+  real(stm_real) :: grad_hi(nx,nconst)   !< Gradient on the right side of the cell
+  real(stm_real) :: grad_c(nx,nconst)    !< Centeral value gradient of the cell 
+  real(stm_real) :: grad_lim(nx,nconst)  !< Counter on the
   integer        :: ic
   
   call allocate_state(nx,nconst)
-  conc(1,1)=0.D0
-  conc(2,1)=2.D0
-  conc(3,1)=3.D0  !sign reversal
-  conc(4,1)=2.D0
-  conc(5,1)=1.D0
-  conc(6,1)=-12.D0  !abrupt drop
-  conc(7,1)=-13.D0
-  conc(8,1)=-13.5D0
-  conc(1,2)=2.D0
-  conc(2,2)=2.D0
-  conc(3,2)=1.D0  !sign reversal
-  conc(4,2)=2.5D0
-  conc(5,2)=3.D0
-  conc(6,2)=12.D0  !abrupt rise
-  conc(7,2)=13.0
-  conc(8,2)=13.5D0
+  conc(1,1)=0.d0
+  conc(2,1)=2.d0
+  conc(3,1)=3.d0  !sign reversal
+  conc(4,1)=2.d0
+  conc(5,1)=1.d0
+  conc(6,1)=-12.d0  !abrupt drop
+  conc(7,1)=-13.d0
+  conc(8,1)=-13.5d0
+  conc(1,2)=2.d0
+  conc(2,2)=2.d0
+  conc(3,2)=1.d0  !sign reversal
+  conc(4,2)=2.5d0
+  conc(5,2)=3.d0
+  conc(6,2)=12.d0  !abrupt rise
+  conc(7,2)=13.d0
+  conc(8,2)=13.5d0
   
   call difference(grad_lo,grad_hi,grad_c,conc,nx,nconst)
   call limiter(grad_lim,grad_lo,grad_hi,grad_c,nx,nconst)

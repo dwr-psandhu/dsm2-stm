@@ -1,4 +1,4 @@
-!<license>
+ !<license>
 !    Copyright (C) 1996, 1997, 1998, 2001, 2007, 2009 State of California,
 !    Department of Water Resources.
 !    This file is part of DSM2.
@@ -32,15 +32,16 @@ use stm_precision
 use primitive_variable_conversion
 
 implicit none
-  integer,parameter :: nx = 3       !interior and two ends
-  integer,parameter :: nconst = 2
-  character(LEN=64) :: message
-  real(stm_real) :: mass(nx,nconst)
-  real(stm_real) :: conc(nx,nconst)
-  real(stm_real) :: conc2(nx,nconst)
-  real(stm_real) :: area(nx)
-  integer :: ic, ix
-  logical :: nan_result
+  integer,parameter :: nx = 3             !< Number of cells 
+  ! the above is for interior and two ends
+  integer,parameter :: nconst = 2         !< Number of constituents 
+  character(LEN=64) :: message            !< Message 
+  real(stm_real) :: mass(nx,nconst)       !< Mass of the constiuent
+  real(stm_real) :: conc(nx,nconst)       !< Concentration of the constiuent I
+  real(stm_real) :: conc2(nx,nconst)      !< Concentration of the constiuent II
+  real(stm_real) :: area(nx)              !< Flow area
+  integer :: ic, ix                       !< Counters 
+  logical :: nan_result                   !< Flag for not a number detection
   
   conc(1,1) = sixteen
   conc(2,1) = zero

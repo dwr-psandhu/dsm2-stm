@@ -49,10 +49,10 @@ real(stm_real) :: dt = 0.25d0                          !< dt
 real(stm_real) :: time = zero                          !< Time 
 real(stm_real) :: dx = zero                            !< dx
 !---local
-integer        :: istep                                 !< Counter on time
-integer, parameter :: nstep  = 10            
-real(stm_real) :: reference_lo
-real(stm_real) :: reference_hi
+integer        :: istep                                !< Counter on time
+integer, parameter :: nstep  = 10                      !< Number of time increment
+real(stm_real) :: reference_lo                         !< Reference value to compare with at low side of a cell
+real(stm_real) :: reference_hi                         !< Reference value to compare with at low side of a cell
 
   
 boundary_diffusion_flux => neumann_zero_diffusive_flux
@@ -71,8 +71,7 @@ call boundary_diffusion_flux(diffusive_flux_lo, &
                              dt)
                                                            
  call assertEquals (diffusive_flux_lo(1,nvar),zero,eps,"Error in diffusive boundary flux low at new time")
- call assertEquals (diffusive_flux_hi(ncell,nvar),zero,eps,"Error in diffusive boundary flux high at new time")
-  
+ call assertEquals (diffusive_flux_hi(ncell,nvar),zero,eps,"Error in diffusive boundary flux high at new time") 
 
 boundary_diffusion_flux => neumann_sin_diffusive_flux
 
