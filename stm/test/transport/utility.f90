@@ -90,13 +90,14 @@ implicit none
 
 integer, intent(in) :: ncell                     !< Number of cells
 integer, intent(out):: which_cell                !< The cell in which largest error occurs
-real(stm_real), intent(out) :: norm_1            !< L-1   error norm
-real(stm_real), intent(out) :: norm_2            !< L-2   error norm
+real(stm_real), intent(out) :: norm_1            !< L-1  error norm
+real(stm_real), intent(out) :: norm_2            !< L-2  error norm
 real(stm_real), intent(out) :: norm_inf          !< L-inf error norm
 
 real(stm_real), intent(in) :: vals(ncell)        !< Calculated values
 real(stm_real), intent(in) :: reference(ncell)   !< Reference or 'other' values
-real(stm_real), optional   :: dx                 !< Spatial step !todo: do we use this????
+real(stm_real), optional   :: dx                 !< Spatial step
+!todo: do we use this?
 
 !------ locals                                    
 integer :: icell                                
@@ -125,7 +126,7 @@ norm_2 = sqrt(norm_2)/dble(ncell)
 return
 end subroutine
 
-!> claculates the total mass and checks the oscillations
+!> Claculates the total mass and checks the oscillations
 subroutine mass_calculator(total_mass,  &
                            vals,        &
                            num_cell,    &
@@ -135,11 +136,11 @@ use stm_precision
               
 implicit none
 
-real(stm_real), intent(out) :: total_mass        !< mass
-integer, intent(in) :: num_cell                  !< number of cells
-real(stm_real), intent(in) :: vals(num_cell)     !< input values
-real(stm_real), intent(in) :: dx                 !< space discretization
-logical, intent(in), optional :: mass_alarm      !< negative mass alarm
+real(stm_real), intent(out) :: total_mass        !< Mass
+integer, intent(in) :: num_cell                  !< Number of cells
+real(stm_real), intent(in) :: vals(num_cell)     !< Input values
+real(stm_real), intent(in) :: dx                 !< Space discretization
+logical, intent(in), optional :: mass_alarm      !< Negative mass alarm
 !---local
 integer :: icell
 
@@ -169,10 +170,10 @@ end subroutine
 subroutine create_converge_message(converge_message,norm_name,label,ratio)
 use stm_precision
 implicit none
-character(LEN=*),intent(out) :: converge_message !< message
-character(LEN=*),intent(in)  :: norm_name        !< name of norm (something like 'L-2 (fine)'
-character(LEN=*),intent(in)  :: label            !< label identifying problem
-real(stm_real),intent(in)    :: ratio            !< error ratio
+character(LEN=*),intent(out) :: converge_message !< Message
+character(LEN=*),intent(in)  :: norm_name        !< Name of norm (something like 'L-2 (fine)')
+character(LEN=*),intent(in)  :: label            !< Label identifying problem
+real(stm_real),intent(in)    :: ratio            !< Error ratio
 
 write(converge_message,"(a,' 2nd order on ',a, ' (error=', f7.4,')')")norm_name,label,ratio
 return
@@ -195,27 +196,26 @@ end subroutine
                                     dispersion,    &
                                     scheme_order,  &
                                     length_scale,  &
-                                    limiter_switch )
+                                    limiter_switch)
  use stm_precision
  implicit none
  
- integer, parameter  :: log_unit = 91
- integer, intent(in) :: nrefine
- integer, intent(in) :: which_cell(nrefine)
- integer, intent(in) :: ncell_base
- integer, intent(in) :: ntime_base
- real(stm_real),  intent(in) :: norm_error(3,nrefine)
- real(stm_real),  intent(in) :: dx
- real(stm_real),  intent(in) :: dt
- character(LEN=*),intent(in) :: label
- 
- real(stm_real),intent(in),optional :: scheme_order
- real(stm_real),intent(in),optional :: max_velocity
- real(stm_real),intent(in),optional :: reaction_rate
- real(stm_real),intent(in),optional :: dispersion
- real(stm_real),intent(in),optional :: length_scale
- real(stm_real) :: refine_rate = two
- logical,intent(in),optional :: limiter_switch
+ integer, parameter  :: log_unit = 91                 !< Unit ID of the output file 
+ integer, intent(in) :: nrefine                       !< Number of grid refinement 
+ integer, intent(in) :: which_cell(nrefine)           !< ID of the cell in which worst error is detected 
+ integer, intent(in) :: ncell_base                    !< Number of cells in the finest grid size
+ integer, intent(in) :: ntime_base                    !< Number of time steps in the finest grid size
+ real(stm_real),  intent(in) :: norm_error(3,nrefine) !< Matrix storing the norms of errors
+ real(stm_real),  intent(in) :: dx                    !< Spacial step
+ real(stm_real),  intent(in) :: dt                    !< Time step  
+ character(LEN=*),intent(in) :: label                 !< Test's label
+ real(stm_real),intent(in),optional :: scheme_order   !< Scheme's nominal order of accuracy 
+ real(stm_real),intent(in),optional :: max_velocity   !< Maximum velocity
+ real(stm_real),intent(in),optional :: reaction_rate  !< First order reaction rate (Lambda)
+ real(stm_real),intent(in),optional :: dispersion     !< Streamwise dispersion coefficient
+ real(stm_real),intent(in),optional :: length_scale   !< Length scale (assumed to be dx everywhere otherwise it is mentioned)  
+ real(stm_real) :: refine_rate = two                  !< Refinement ration 
+ logical,intent(in),optional :: limiter_switch        !< Switch for the flux limiter
   ! local
  real(stm_real) :: order
 
@@ -225,10 +225,10 @@ else
     order = two
 end if
 
-!todo : which one do we want
+
 open(unit = log_unit, file= trim(label)//'_convergence_log.txt', &
       status='unknown')
-!open (unit = log_unit, file= 'log_of_run.txt', status='keep')
+
     
 write(log_unit,*)"==== Convergence test results "// label,' ====' 
 write(log_unit,*)

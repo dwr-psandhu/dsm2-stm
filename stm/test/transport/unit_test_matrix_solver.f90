@@ -34,10 +34,9 @@ use matrix_solver
 
 implicit none
   
-  integer,parameter :: ncell = 11             !< number of volumes 
-  integer,parameter :: nvar = 2               !< number of constituent 
-    
-    
+  integer,parameter :: ncell = 11                 !< Number of volumes 
+  integer,parameter :: nvar = 2                   !< Number of constituent 
+      
     real(stm_real)  :: down_diag(ncell,nvar)       !< Values of the coefficients below diagonal in matrix
     real(stm_real)  :: center_diag(ncell,nvar)     !< Values of the coefficients at the diagonal in matrix
     real(stm_real)  :: up_diag(ncell,nvar)         !< Values of the coefficients above the diagonal in matrix
@@ -58,7 +57,7 @@ integer :: ivar
  up_diag (:,2) = (/36.D0,37.D0,38.D0,39.D0,40.D0,41.D0,42.D0,43.D0,44.D0,45.D0,LARGEREAL/)
  right_hand_side(:,2)  = (/0.01D0,0.02D0,0.03D0,0.04D0,500.0D0,400.0D0,0.07D0,0.08D0,0.09D0,0.1D0,0.11D0/)
  ! todo: remove the doxygen comment
- !> two constituents were added to check the solver 
+ !> Two constituents were added to check the solver 
 do ivar = 1,nvar
   call tridi_solver (center_diag(:,ivar),up_diag(:,ivar),down_diag(:,ivar),right_hand_side(:,ivar),conc(:,ivar),ncell)
 end do

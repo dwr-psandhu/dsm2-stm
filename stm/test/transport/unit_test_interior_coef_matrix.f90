@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Write tests for interior lines of diffusion coefficient matrix
+!> Test for interior lines of diffusion coefficient matrix
 !>@ingroup test
 module test_interior_coef_matrix
 contains
@@ -33,6 +33,7 @@ use stm_precision
   
 integer, parameter:: ncell = 21                                !< Number of cells
 integer, parameter:: nvar = 1                                  !< Number of variables
+! todo: change it to 2
 
 real(stm_real)  :: down_diag(ncell,nvar)                       !< Values of the coefficients below diagonal in matrix
 real(stm_real)  :: center_diag(ncell,nvar)                     !< Values of the coefficients at the diagonal in matrix

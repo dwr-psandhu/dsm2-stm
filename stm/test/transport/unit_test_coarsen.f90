@@ -25,28 +25,28 @@ module test_coarsening
 
 contains
 
-!> tests the coarsening subroutine
+!> Tests the coarsening subroutine
 subroutine test_coarsen
 use fruit
 use test_utility
 use stm_precision
 implicit none
-  
+ 
 
 !---arg
-integer :: ncell_coarse
-integer,parameter :: ncell_fine = 6
-integer,parameter :: nvar = 2
-real(stm_real) :: fine_data(ncell_fine,nvar)
-real(stm_real), allocatable :: coarse_data(:,:)
+integer :: ncell_coarse                           !< Number of cells at coarser grid
+integer,parameter :: ncell_fine = 6               !< Number of cells at finer grid 
+integer,parameter :: nvar = 2                     !< Number of constituents
+real(stm_real) :: fine_data(ncell_fine,nvar)      !< Fine data values
+real(stm_real), allocatable :: coarse_data(:,:)   !< Coarse data values
 !---- local
-real(stm_real), parameter :: tol = 1.d-15
+real(stm_real), parameter :: tol = 1.d-15         !< Acceptable tolerance 
 
 fine_data(:,1) = (/1:6/)
 fine_data(:,2) = (/11:16/)
 
 
-
+!> It have to output same array if the coarsening factor is one 
 ncell_coarse = 6
 allocate (coarse_data(ncell_coarse,nvar))
 call coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)
@@ -54,6 +54,7 @@ call assertEquals(coarse_data(1,1),one,tol,"error in coarsening, no refinement (
 call assertEquals(coarse_data(6,2),16.d0,tol,"error in coarsening, no refinement (6,2)")
 deallocate(coarse_data)
 
+!> Check for coarsening factor of two
 ncell_coarse = 3
 allocate (coarse_data(ncell_coarse,nvar))
 call coarsen(coarse_data,fine_data,ncell_fine,ncell_coarse, nvar)

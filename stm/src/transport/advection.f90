@@ -38,7 +38,7 @@ contains
 !>   - compute_flux()
 !>   - advection_boundary_flux()   for boundary and special cases
 !>   - Compute conservative divergence
-!>   - Apply divergence in conservative_update along with Heun's method for sources
+!>   - Apply divergence in conservative_update along with Heun's method for sources.
 !>   Note that all these steps are operations on entire arrays of values -- this keeps things efficient
 subroutine advect(mass,     &
                   mass_prev,&

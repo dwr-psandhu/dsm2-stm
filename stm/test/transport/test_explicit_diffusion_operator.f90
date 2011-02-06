@@ -63,7 +63,7 @@ call explicit_diffusion_operator (explicit_diffuse_op,&
                                   ncell,              &
                                   nvar,               &
                                   time,               &
-                                  dx,                 s&
+                                  dx,                 &
                                   dt)                                                                     
   
   call assertEquals (explicit_diffuse_op(2,nvar),-225.7d0,weak_eps,"Error in explicit diffusive flux operator 2")

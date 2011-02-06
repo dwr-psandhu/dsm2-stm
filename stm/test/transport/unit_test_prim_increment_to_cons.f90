@@ -34,15 +34,15 @@ use stm_precision
 
     implicit none
     !--- args
-    integer,parameter:: nloc = 3       !< Number of cells or faces
-    integer,parameter:: nvar = 2       !< Number of variables
-    real(stm_real) :: mass(nloc,nvar)  !< Mass per unit length (converted from concentration)
-    real(stm_real) :: conc(nloc,nvar)  !< Concentrations to convert
-    real(stm_real) :: area(nloc)       !< Area at conversion locations
-    ! todo: here is a compiler bug and the fortran forums told it would be fixed 
+    integer,parameter:: nloc = 3          !< Number of cells or faces
+    integer,parameter:: nvar = 2          !< Number of variables
+    real(stm_real) :: mass(nloc,nvar)     !< Mass per unit length (converted from concentration)
+    real(stm_real) :: conc(nloc,nvar)     !< Concentrations to convert
+    real(stm_real) :: area(nloc)          !< Area at conversion locations
+    ! todo: here is a compiler bug and the Fortran forums told it would be fixed 
     ! change the scale intent to just (in)
-    real(stm_real) :: scale            !< Scale factor
-    real(stm_real) :: reference(nloc,nvar)!< to compare solution with
+    real(stm_real) :: scale               !< Scale factor
+    real(stm_real) :: reference(nloc,nvar)!< To compare solution with
     
   
      !---test positive and negetive scales with very large scale 

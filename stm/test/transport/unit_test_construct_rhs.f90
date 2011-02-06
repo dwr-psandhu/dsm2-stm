@@ -34,8 +34,8 @@ use stm_precision
  
   implicit none
   
-integer,parameter :: ncell = 6                                !< Number of cells
-integer,parameter :: nvar = 1                                 !< Number of variables
+integer,parameter :: ncell = 6                                 !< Number of cells
+integer,parameter :: nvar = 1                                  !< Number of variables
 
 real(stm_real) :: right_hand_side(ncell,nvar)                  !< The right hand side vector
 real(stm_real)  :: explicit_diffuse_op (ncell,nvar)            !< Explicit diffusion operator
@@ -49,8 +49,8 @@ real(stm_real)  :: time                                        !< Current time
 real(stm_real)  :: theta_stm                                   !< Explicitness coefficient; 0 is explicit, 0.5 Crank-Nicolson, 1 full implicit  
 real(stm_real)  :: dx                                          !< Spatial step  
 real(stm_real)  :: dt                                          !< Time step                                   
-real(stm_real)  :: diffusive_flux_boundary_lo (nvar)           !< diffusive flux operator at low side 
-real(stm_real)  :: diffusive_flux_boundary_hi (nvar)           !< diffusive flux operator at high side 
+real(stm_real)  :: diffusive_flux_boundary_lo (nvar)           !< Diffusive flux operator at low side 
+real(stm_real)  :: diffusive_flux_boundary_hi (nvar)           !< Diffusive flux operator at high side 
 
 
 conc_prev(:,1) = (/300.0d0,305.0d0,320.0d0,330.0d0,340.0d0,350.0d0/)
@@ -134,6 +134,6 @@ call construct_right_hand_side(right_hand_side,       &
 
 
 return
-end subroutine test_construct_elemnts_rhs 
+end subroutine 
 
 end module
