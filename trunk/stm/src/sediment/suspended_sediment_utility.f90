@@ -26,9 +26,9 @@ module suspended_utility
 contains
 
 !> Calculating particle's settling velocity. NOTE: the subroutine works with SI units.
-!> Settling velocity formula based on (Leo van Rijn, 1984b).
-!> The subroutine does not consider particles smaller than 0.9 micron (fine clay)
-!> The smaller particles assumed to be wash load or flocculat with other particles 
+!> Settling velocity formula based on Leo van Rijn (1984b).
+!> The subroutine does not consider particles smaller than 0.9 microns (fine clay).
+!> The smaller particles are assumed to be either part of wash load or to take part in flocs. 
 pure subroutine settling_velocity(w_s,              &
                                   nu,               &
                                   specific_gravity, &
@@ -38,11 +38,11 @@ pure subroutine settling_velocity(w_s,              &
 use stm_precision
 implicit none
 !--- arg
-real(stm_real),intent(out) :: w_s              !< Settling velocity
-real(stm_real),intent(in)  :: nu               !< Kinematic viscosity 
+real(stm_real),intent(out) :: w_s              !< Settling velocity (m/s)
+real(stm_real),intent(in)  :: nu               !< Kinematic viscosity (m2/sec)
 real(stm_real),intent(in)  :: specific_gravity !< Specific gravity of particle (~2.65)
-real(stm_real),intent(in)  :: diameter         !< Particle diameter 
-real(stm_real),intent(in)  :: g_acceleration   !< Gravitational acceleration
+real(stm_real),intent(in)  :: diameter         !< Particle diameter in meter
+real(stm_real),intent(in)  :: g_acceleration   !< Gravitational acceleration (m/sec2)
 
 if ( diameter > 1.0d-3 )    then
     w_s = 1.1d0*sqrt((specific_gravity - one)*g_acceleration*diameter)
