@@ -42,6 +42,8 @@ Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "test_transport", "..\test_t
 		{202C25E9-D1E7-44F9-8922-3301A3621F8D} = {202C25E9-D1E7-44F9-8922-3301A3621F8D}
 	EndProjectSection
 EndProject
+Project("{6989167D-11E4-40FE-8C1A-2192A86A7E90}") = "test_sediment", "test_sediment\test_sediment.vfproj", "{A7A914F9-5BFB-4F67-99E5-9B5B6EA1C1CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -76,6 +78,10 @@ Global
 		{D9095BB3-41CD-40E0-B891-8553F74E7F04}.Debug|Win32.Build.0 = Debug|Win32
 		{D9095BB3-41CD-40E0-B891-8553F74E7F04}.Release|Win32.ActiveCfg = Release|Win32
 		{D9095BB3-41CD-40E0-B891-8553F74E7F04}.Release|Win32.Build.0 = Release|Win32
+		{A7A914F9-5BFB-4F67-99E5-9B5B6EA1C1CA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A7A914F9-5BFB-4F67-99E5-9B5B6EA1C1CA}.Debug|Win32.Build.0 = Debug|Win32
+		{A7A914F9-5BFB-4F67-99E5-9B5B6EA1C1CA}.Release|Win32.ActiveCfg = Release|Win32
+		{A7A914F9-5BFB-4F67-99E5-9B5B6EA1C1CA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

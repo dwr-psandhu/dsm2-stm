@@ -29,5 +29,6 @@
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath="..\..\..\src\sediment\deposition.f90"/>
 		<File RelativePath="..\..\..\src\sediment\entrainment.f90"/>
-		<File RelativePath="..\..\..\src\sediment\sediment_source.f90"/></Filter></Files>
+		<File RelativePath="..\..\..\src\sediment\sediment_source.f90"/>
+		<File RelativePath="..\..\..\src\sediment\suspended_sediment_utility.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>
