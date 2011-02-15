@@ -20,6 +20,9 @@
 
 !>Dispersion coefficient interface to be fulfilled by driver or application
 !>@ingroup transport
+! todo: here we already hardwired the values of dispersion coefficient, BUT we should 
+! get U and depth from HYDRO and based on the well known formula by Fischer et al. (1979); it must be computed and fed here
+
 module dispersion_coefficient
 use stm_precision, only: stm_real
 
