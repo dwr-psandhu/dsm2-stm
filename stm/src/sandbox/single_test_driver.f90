@@ -23,14 +23,14 @@
 program single_test_driver
 
 use fruit
-use test_zoppou_advection_dispersion
+use unit_test_suspend_sed_utility
 
 implicit none
-logical :: verbose = .true.
+!logical :: verbose = .true.
 
 call init_fruit
 
-call test_advection_diffusion_zoppou(verbose)
+call test_settling_velocity
 
 call fruit_summary
 
