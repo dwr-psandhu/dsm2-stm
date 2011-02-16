@@ -21,6 +21,7 @@
 !> Tests the suspended sedimentutility subroutine
 !>@ingroup test 
 !todo: is it a correct place in doxygen?
+! todo: this test must be in the test_sediment project but temporarily placed here
 
 module unit_test_suspend_sed_utility
 
