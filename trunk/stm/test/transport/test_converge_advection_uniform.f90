@@ -52,6 +52,7 @@ real(stm_real), parameter :: domain_length = 25600.d0                  !< Domain
 real(stm_real), parameter :: origin = zero                             !< Domain origin X0
 real(stm_real), parameter :: constant_flow = 600.d0                    !< Constant flow
 real(stm_real), parameter :: constant_area = 1000.d0                   !< Constant Area 
+! todo: this must be reverse_time = total_time /two  
 real(stm_real), parameter :: reverse_time = total_time /two            !< The time when direction of flow reversed
 real(stm_real), parameter :: ic_center = origin + domain_length/three  !< Initial condition center of mass
 real(stm_real), parameter :: ic_peak = one                             !< Initial condition hight

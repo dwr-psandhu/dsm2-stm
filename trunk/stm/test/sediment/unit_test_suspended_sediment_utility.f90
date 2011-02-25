@@ -18,8 +18,8 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Tests the suspended sedimentutility subroutine
-!>@ingroup test 
+!> Tests the suspended sediment utility subroutine
+!>@ingroup test_sediment 
 !todo: is it a correct place in doxygen?
 ! todo: this test must be in the test_sediment project but temporarily placed here
 
@@ -47,7 +47,7 @@ real(stm_real) :: hand_calc_value                !< Value of the function which 
 ! Small value
 diameter = 0.1d-6
 hand_calc_value = minus * LARGEREAL
-call settling_velocity(w_s,              &
+call settling_velocity_van_rijn(w_s,              &
                        nu,               &
                        specific_g,       &
                        diameter,         &
@@ -58,7 +58,7 @@ call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, smal
 ! Zero value          
 diameter = zero
 hand_calc_value = minus * LARGEREAL
-call settling_velocity(w_s,              &
+call settling_velocity_van_rijn(w_s,              &
                        nu,               &
                        specific_g,       &
                        diameter,         &
@@ -69,7 +69,7 @@ call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, smal
 ! Medium size          
 diameter = 5.0d-4  ! meter
 hand_calc_value = 0.072114059730314d0
-call settling_velocity(w_s,              &
+call settling_velocity_van_rijn(w_s,              &
                        nu,               &
                        specific_g,       &
                        diameter,         &
@@ -80,7 +80,7 @@ call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, medi
 ! Large size
 diameter = 2.0d-3  ! meter
 hand_calc_value = 0.19781658171144d0
-call settling_velocity(w_s,              &
+call settling_velocity_van_rijn(w_s,              &
                        nu,               &
                        specific_g,       &
                        diameter,         &
