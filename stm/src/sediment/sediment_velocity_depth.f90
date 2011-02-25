@@ -22,7 +22,7 @@
 !>@ingroup sediment
 module hydro_data_sediment
       !> Generic interface for fetching hydrodynamic data
-      interface
+    abstract  interface
        !> Get hydrodynamic data for sediment module.
        !> This data might be calculated from a function or provided by another module
        

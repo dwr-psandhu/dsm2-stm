@@ -19,7 +19,7 @@
 !</license>
 
 !> Routines provide the general calculation for suspended sediment sink/source subroutines.
-!>@ingroup test !todo: test or test sediment
+!>@ingroup sediment !todo: test or test sediment
 
 module suspended_utility
 
@@ -29,11 +29,11 @@ contains
 !> Settling velocity formula based on Leo van Rijn (1984b).
 !> The subroutine does not consider particles smaller than 0.9 microns (fine clay).
 !> The smaller particles are assumed to be either part of wash load or to take part in flocs. 
-pure subroutine settling_velocity(w_s,              &
-                                  nu,               &
-                                  specific_gravity, &
-                                  diameter,         &
-                                  g_acceleration) 
+pure subroutine settling_velocity_van_rijn(w_s,              &
+                                           nu,               &
+                                           specific_gravity, &
+                                           diameter,         &
+                                           g_acceleration) 
                
 use stm_precision
 implicit none

@@ -21,6 +21,7 @@
 
 !> Interfaces for user to provide flow and area. Replaces the connectivity with HYDRO
 !> at this point 
+! todo: where is its place in doxygen
 module hydro_uniform_flow
 use stm_precision
 
