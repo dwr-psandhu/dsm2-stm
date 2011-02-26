@@ -108,7 +108,7 @@ module suspended_sediment_variable
  !> Example spatial and time variables that prints an error and bails
  subroutine example_spatiotemporal_data_sediment
      use stm_precision
-     useerror_handling
+     use error_handling
      implicit none
      
         call stm_fatal('ERROR HERE!')
@@ -118,23 +118,23 @@ module suspended_sediment_variable
   !> Example spatial variables that prints an error and bails
  subroutine example_spatial_data_sediment
     use stm_precision
-     useerror_handling
+     use error_handling
      implicit none
      
         call stm_fatal('ERROR HERE!')
  
-  implicit none
+ 
  end subroutine
  
  !> Example constants that prints an error and bails
  subroutine example_constant_data_sedimet
      use stm_precision
-     useerror_handling
+     use error_handling
      implicit none
      
         call stm_fatal('ERROR HERE!')
  
-  implicit none
+  
  end subroutine  
   
 end module

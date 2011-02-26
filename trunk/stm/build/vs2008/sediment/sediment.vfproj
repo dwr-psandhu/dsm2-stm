@@ -31,6 +31,6 @@
 		<File RelativePath="..\..\..\src\sediment\entrainment.f90"/>
 		<File RelativePath="..\..\..\src\sediment\sediment_source.f90"/>
 		<File RelativePath="..\..\..\src\sediment\sediment_variables_statics.f90"/>
-		<File RelativePath="..\..\..\src\sediment\sediment_velocity_depth.f90"/>
+		<File RelativePath="..\..\..\src\sediment\sediment_variable_data.f90"/>
 		<File RelativePath="..\..\..\src\sediment\suspended_sediment_utility.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>
