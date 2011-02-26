@@ -106,7 +106,10 @@ module suspended_sediment_variable
         
         ! todo: NOTE: UNIT is important here
         ! todo: Eli how we can set a whistleblower for wrong unit(s)[I mean SI and British] here?
-        ! todo: 
+        ! todo: What is your idea about seperating the following 14 items into two group 
+        ! first group will be the universal constants (g and von karman,...) and the second group will be the 
+        ! ones we assume them as constant (like rho_dry_bulk ..)
+        
         
     real(stm_real), intent(out) ::  g_accelration       !< Gravitational acceleration(out)
     real(stm_real), intent(out) ::  kapa                !< von Karman's constant(out)
