@@ -102,11 +102,39 @@ module suspended_sediment_variable
  !> Manning's n and channel width for the sediment source sink routine.
   procedure(constant_data_sediment_if),pointer :: fill_constant_sediment_data  => null()
  
- 
+ !> I can 
  contains
-  
-  
-  
-  
+ 
+ !> Example spatial and time variables that prints an error and bails
+ subroutine example_spatiotemporal_data_sediment
+     use stm_precision
+     useerror_handling
+     implicit none
+     
+        call stm_fatal('ERROR HERE!')
+ 
+ end subroutine 
+ 
+  !> Example spatial variables that prints an error and bails
+ subroutine example_spatial_data_sediment
+    use stm_precision
+     useerror_handling
+     implicit none
+     
+        call stm_fatal('ERROR HERE!')
+ 
+  implicit none
+ end subroutine
+ 
+ !> Example constants that prints an error and bails
+ subroutine example_constant_data_sedimet
+     use stm_precision
+     useerror_handling
+     implicit none
+     
+        call stm_fatal('ERROR HERE!')
+ 
+  implicit none
+ end subroutine  
   
 end module
