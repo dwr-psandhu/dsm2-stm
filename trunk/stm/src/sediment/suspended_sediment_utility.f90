@@ -131,7 +131,7 @@ real(stm_real),intent(in)  :: diameter       !< Particle diameter
 real(stm_real),intent(in)  :: nu_mixture     !< Kinematic viscosity of water sediment mixture (m2/sec)                            
 real(stm_real),intent(in) :: capital_r       !< Submerged specific gravity of sediment particles     
 
-d_star = diameter*(capital_r*g_acceleration/(nu_mixture**two))**(third)
+d_star = diameter*(capital_r*g_acceleration/(nu_mixture**two))**third
  
 return
 end subroutine
