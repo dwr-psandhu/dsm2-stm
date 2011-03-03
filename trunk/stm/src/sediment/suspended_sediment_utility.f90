@@ -65,7 +65,7 @@ pure subroutine submerged_specific_gravity(capital_r,  &
                                            rho_s)
  use stm_precision
  implicit none
- !-- argument
+ !-- arguments
 real(stm_real),intent(out) :: capital_r      !< Submerged specific gravity of sediment particles     
 real(stm_real),intent(in)  :: rho            !< Water density  
 real(stm_real),intent(in)  :: rho_s          !< Solid particle density
@@ -75,5 +75,41 @@ capital_r = rho_s/rho  - one
 return 
 end subroutine
 
+!> Calculates the explicit particle reynolds number
+pure subroutine explicit_particle_reynolds_number(exp_re_p,      &
+                                                  diameter,      &
+                                                  capital_r,     &
+                                                  g_acceleration, &
+                                                  nu)
+use stm_precision
+implicit none
+!--- arguments 
+real(stm_real),intent(out) :: exp_re_p       !< Explicit particle reynolds number
+real(stm_real),intent(in)  :: diameter       !< Particle diameter
+real(stm_real),intent(in)  :: capital_r      !< Submerged specific gravity of sediment particles  
+real(stm_real),intent(in)  :: g_acceleration !< Gravitational acceleration 
+real(stm_real),intent(in)  :: nu             !< Kinematic viscosity (m2/sec)
+
+exp_re_p = diameter*sqrt(diameter*capital_r*diameter)/nu
+
+return
+end subroutine
+
+pure subroutine particle_reynolds_number(re_p,      &
+                                         w_s,       &
+                                         diameter,  &
+                                         nu)
+
+use stm_precision
+implicit none
+!--- arguments 
+real(stm_real),intent(out) :: re_p           !< Particle reynolds number
+real(stm_real),intent(in)  :: w_s            !< Settling velocity
+real(stm_real),intent(in)  :: diameter       !< Particle diameter
+real(stm_real),intent(in)  :: nu             !< Kinematic viscosity (m2/sec)                            
+ 
+ re_p= w_s*diameter/nu
+return
+end subroutine
 
 end module
