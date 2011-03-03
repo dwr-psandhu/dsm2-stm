@@ -56,6 +56,21 @@ else
    ! todo: the stm_fatal can not be called here because settling velocity is a pure subroutine
 end if 
 
+return
+end subroutine
+
+!> Calculates the submereged specific gravity
+pure subroutine submerged_specific_gravity(capital_r,  &
+                                           rho,        &
+                                           rho_s)
+ use stm_precision
+ implicit none
+ !-- argument
+real(stm_real),intent(out) :: capital_r      !< Submerged specific gravity of sediment particles     
+real(stm_real),intent(in)  :: rho            !< Water density  
+real(stm_real),intent(in)  :: rho_s          !< Solid particle density
+
+capital_r = rho_s/rho  - one                                     
 
 return 
 end subroutine
