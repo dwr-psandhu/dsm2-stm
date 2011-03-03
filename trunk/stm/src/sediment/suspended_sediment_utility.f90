@@ -110,9 +110,31 @@ real(stm_real),intent(in)  :: w_s            !< Settling velocity
 real(stm_real),intent(in)  :: diameter       !< Particle diameter
 real(stm_real),intent(in)  :: nu             !< Kinematic viscosity (m2/sec)                            
  
- re_p= w_s*diameter/nu
+ re_p = w_s*diameter/nu
  
 return
 end subroutine
+
+!> Calculates dimensionless particle diameter
+pure subroutine dimless_particle_diameter(d_star,        &
+                                          g_acceleration,&
+                                          diameter,      &
+                                          nu_mixture,    &
+                                          capital_r)
+
+use stm_precision
+implicit none
+!--- arguments 
+real(stm_real),intent(out) :: d_star         !< Dimensionless particle diameter
+real(stm_real),intent(in)  :: g_acceleration !< Gravitational acceleration 
+real(stm_real),intent(in)  :: diameter       !< Particle diameter
+real(stm_real),intent(in)  :: nu_mixture     !< Kinematic viscosity of water sediment mixture (m2/sec)                            
+real(stm_real),intent(in) :: capital_r       !< Submerged specific gravity of sediment particles     
+
+d_star = diameter*(capital_r*g_acceleration/(nu_mixture**two))**(third)
+ 
+return
+end subroutine
+
 
 end module
