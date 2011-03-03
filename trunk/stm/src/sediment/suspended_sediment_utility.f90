@@ -75,7 +75,7 @@ capital_r = rho_s/rho  - one
 return 
 end subroutine
 
-!> Calculates the explicit particle reynolds number
+!> Calculates the explicit particle Reynolds number
 pure subroutine explicit_particle_reynolds_number(exp_re_p,      &
                                                   diameter,      &
                                                   capital_r,     &
@@ -95,6 +95,7 @@ exp_re_p = diameter*sqrt(diameter*capital_r*diameter)/nu
 return
 end subroutine
 
+!> Calculates particle Reynolds number
 pure subroutine particle_reynolds_number(re_p,      &
                                          w_s,       &
                                          diameter,  &
@@ -105,10 +106,12 @@ implicit none
 !--- arguments 
 real(stm_real),intent(out) :: re_p           !< Particle reynolds number
 real(stm_real),intent(in)  :: w_s            !< Settling velocity
+! todo: Eli; do we need w_s and diameter as w_s(nvar)?
 real(stm_real),intent(in)  :: diameter       !< Particle diameter
 real(stm_real),intent(in)  :: nu             !< Kinematic viscosity (m2/sec)                            
  
  re_p= w_s*diameter/nu
+ 
 return
 end subroutine
 
