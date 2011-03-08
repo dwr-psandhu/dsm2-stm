@@ -61,7 +61,7 @@ logical, optional          :: function_van_rijn !< Flag for using van Rijn (1984
  real(stm_real) :: capital_r       !< Submerged specific gravity of sediment particles 
   
 
- van_rijn_flag = .false.
+ van_rijn_flag = .true.
 if (present(function_van_rijn)) then
      van_rijn_flag = function_van_rijn
 end if
