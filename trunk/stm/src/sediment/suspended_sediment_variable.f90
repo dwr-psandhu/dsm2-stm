@@ -30,32 +30,78 @@ contains
 !> Settling velocity formula based on Leo van Rijn (1984b).
 !> The subroutine does not consider particles smaller than 0.9 microns (fine clay).
 !> The smaller particles are assumed to be either part of wash load or to take part in flocs. 
-pure subroutine settling_velocity(w_s,              &
-                                  nu,               &
-                                  specific_gravity, &
-                                  diameter,         &
-                                  g_acceleration) 
+subroutine settling_velocity(w_s,              &
+                             nu,               &
+                             specific_gravity, &
+                             diameter,         &
+                             g_acceleration,   &
+                             function_van_rijn) 
                
 use stm_precision
 implicit none
 !--- arg
-real(stm_real),intent(out) :: w_s              !< Settling velocity (m/s)
-real(stm_real),intent(in)  :: nu               !< Kinematic viscosity (m2/sec)
-real(stm_real),intent(in)  :: specific_gravity !< Specific gravity of particle (~2.65)
-real(stm_real),intent(in)  :: diameter         !< Particle diameter in meter
-real(stm_real),intent(in)  :: g_acceleration   !< Gravitational acceleration (m/sec2)
+real(stm_real),intent(out) :: w_s               !< Settling velocity (m/s)
+real(stm_real),intent(in)  :: nu                !< Kinematic viscosity (m2/sec)
+real(stm_real),intent(in)  :: specific_gravity  !< Specific gravity of particle (~2.65)
+real(stm_real),intent(in)  :: diameter          !< Particle diameter in meter
+real(stm_real),intent(in)  :: g_acceleration    !< Gravitational acceleration (m/sec2)
+logical, optional          :: function_van_rijn !< Flag for using van Rijn (1984) formula or Dietrich (1982) the default is Dietrich
+!--local
+ logical :: van_rijn_flag
+ ! todo: I checked the Journal article by Dietrich and these numbers are not the same
+ ! todo: I am not sure if the log10 or log e 
+ real(stm_real) :: b_1 = 2.891394d0
+ real(stm_real) :: b_2 = 0.95296d0
+ real(stm_real) :: b_3 = 0.056835d0
+ real(stm_real) :: b_4 = 0.002892d0
+ real(stm_real) :: b_5 = 0.000245d0
 
-if ( diameter > 1.0d-3 )    then
-    w_s = 1.1d0*sqrt((specific_gravity - one)*g_acceleration*diameter)
-elseif (diameter > 1.0d-4)  then
-    w_s = (ten*nu/diameter)*(sqrt(one + (0.01d0*(specific_gravity - one)*g_acceleration*diameter**three)/nu**two)- one)
-elseif (diameter > 0.9d-6 ) then
-    ! Stokes low
-    w_s = ((specific_gravity - one)*g_acceleration*diameter**two) /(18.0d0*nu)
-else
-   w_s = minus * LARGEREAL
-   ! todo: the stm_fatal can not be called here because settling velocity is a pure subroutine
-end if 
+ real(stm_real) :: dimless_fall_velocity
+ real(stm_real) :: exp_re_p        !< Explicit Reynols particle number 
+ real(stm_real) :: capital_r       !< Submerged specific gravity of sediment particles 
+  
+
+ van_rijn_flag = .false.
+if (present(function_van_rijn)) then
+     van_rijn_flag = function_van_rijn
+end if
+ 
+select case (van_rijn_flag)
+ 
+   case (.true.)
+        if ( diameter > 1.0d-3 )    then
+            w_s = 1.1d0*sqrt((specific_gravity - one)*g_acceleration*diameter)
+        elseif (diameter > 1.0d-4)  then
+            w_s = (ten*nu/diameter)*(sqrt(one + (0.01d0*(specific_gravity - one)*g_acceleration*diameter**three)/nu**two)- one)
+        elseif (diameter > 0.9d-7 ) then
+            ! Stokes low
+            ! todo: what is the lower limit? for diameter
+            w_s = ((specific_gravity - one)*g_acceleration*diameter**two) /(18.0d0*nu)
+        else
+           w_s = minus * LARGEREAL
+           ! todo: the stm_fatal can not be called here because settling velocity is a pure subroutine
+        end if 
+   case(.false.)
+   
+        capital_r = specific_gravity - one
+        ! Stokes fall velocity
+        if ( diameter < 1.0d-4 )    then
+            w_s = (capital_r*g_acceleration*diameter**two) /(18.0d0*nu)
+        else
+            call explicit_particle_reynolds_number(exp_re_p,       &
+                                                   diameter,       &
+                                                   capital_r,      &
+                                                   g_acceleration, &
+                                                   nu)
+            
+            dimless_fall_velocity = exp(- b_1 + b_2*log(exp_re_p)**two - b_3*log(exp_re_p)**three &
+                                    - b_4*log(exp_re_p)**four + b_5*log(exp_re_p)**five)
+                                    
+            w_s = dimless_fall_velocity * sqrt(capital_r*g_acceleration*diameter)
+                 
+       end if   
+    
+end select 
 
 return
 end subroutine
@@ -143,29 +189,29 @@ end subroutine
 pure subroutine critical_shields_parameter(cr_shields_prmtr,   &
                                            d_star)
                                            
-use stm_precision
-implicit none
-!--- arguments  
-real(stm_real),intent(out):: cr_shields_prmtr !< Critical Shields parameter                                      
-real(stm_real),intent(in) :: d_star           !< Dimensionless particle diameter
+    use stm_precision
+    implicit none
+    !--- arguments  
+    real(stm_real),intent(out):: cr_shields_prmtr !< Critical Shields parameter                                      
+    real(stm_real),intent(in) :: d_star           !< Dimensionless particle diameter
 
-if    (d_star > 150.0d0) then
-    cr_shields_prmtr = 0.055d0   
-elseif (d_star > 20.0d0) then
-    cr_shields_prmtr = 0.013d0*d_star**0.29d0 
-elseif (d_star > 20.0d0) then
-    cr_shields_prmtr = 0.04d0*d_star**(-0.1d0)
-elseif (d_star > 4.0d0)  then
-    cr_shields_prmtr = 0.14d0*d_star**(-0.64d0)
-elseif (d_star > one)    then
-    cr_shields_prmtr = 0.24d0/d_star
-else
-    cr_shields_prmtr = minus*LARGEREAL
-    ! the number set here to prevent bad input (stm_fatal can not be called)
-end if                                                      
+    if    (d_star > 150.0d0) then
+        cr_shields_prmtr = 0.055d0   
+    elseif (d_star > 20.0d0) then
+        cr_shields_prmtr = 0.013d0*d_star**0.29d0 
+    elseif (d_star > 20.0d0) then
+        cr_shields_prmtr = 0.04d0*d_star**(-0.1d0)
+    elseif (d_star > 4.0d0)  then
+        cr_shields_prmtr = 0.14d0*d_star**(-0.64d0)
+    elseif (d_star > one)    then
+        cr_shields_prmtr = 0.24d0/d_star
+    else
+        cr_shields_prmtr = minus*LARGEREAL
+        ! the number set here to prevent bad input (stm_fatal can not be called)
+    end if                                                      
                                            
 return
-end subroutinr
+end subroutine
 
 
 end module
