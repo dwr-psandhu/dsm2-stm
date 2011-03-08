@@ -1,0 +1,171 @@
+!<license>
+!    Copyright (C) 1996, 1997, 1998, 2001, 2007, 2009 State of California,
+!    Department of Water Resources.
+!    This file is part of DSM2.
+!
+!    The Delta Simulation Model 2 (DSM2) is free software: 
+!    you can redistribute it and/or modify
+!    it under the terms of the GNU General Public License as published by
+!    the Free Software Foundation, either version 3 of the License, or
+!    (at your option) any later version.
+!
+!    DSM2 is distributed in the hope that it will be useful,
+!    but WITHOUT ANY WARRANTY; without even the implied warranty of
+!    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!    GNU General Public License for more details.
+!
+!    You should have received a copy of the GNU General Public License
+!    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
+!</license>
+
+!> Routines provide the general calculation for suspended sediment sink/source subroutines.
+!> All the constant based drived variables are here
+!>@ingroup sediment !todo: test or test sediment
+
+module suspended_utility
+
+contains
+
+!> Calculating particle's settling velocity. NOTE: the subroutine works with SI units.
+!> Settling velocity formula based on Leo van Rijn (1984b).
+!> The subroutine does not consider particles smaller than 0.9 microns (fine clay).
+!> The smaller particles are assumed to be either part of wash load or to take part in flocs. 
+pure subroutine settling_velocity(w_s,              &
+                                  nu,               &
+                                  specific_gravity, &
+                                  diameter,         &
+                                  g_acceleration) 
+               
+use stm_precision
+implicit none
+!--- arg
+real(stm_real),intent(out) :: w_s              !< Settling velocity (m/s)
+real(stm_real),intent(in)  :: nu               !< Kinematic viscosity (m2/sec)
+real(stm_real),intent(in)  :: specific_gravity !< Specific gravity of particle (~2.65)
+real(stm_real),intent(in)  :: diameter         !< Particle diameter in meter
+real(stm_real),intent(in)  :: g_acceleration   !< Gravitational acceleration (m/sec2)
+
+if ( diameter > 1.0d-3 )    then
+    w_s = 1.1d0*sqrt((specific_gravity - one)*g_acceleration*diameter)
+elseif (diameter > 1.0d-4)  then
+    w_s = (ten*nu/diameter)*(sqrt(one + (0.01d0*(specific_gravity - one)*g_acceleration*diameter**three)/nu**two)- one)
+elseif (diameter > 0.9d-6 ) then
+    ! Stokes low
+    w_s = ((specific_gravity - one)*g_acceleration*diameter**two) /(18.0d0*nu)
+else
+   w_s = minus * LARGEREAL
+   ! todo: the stm_fatal can not be called here because settling velocity is a pure subroutine
+end if 
+
+return
+end subroutine
+
+!> Calculates the submereged specific gravity
+pure subroutine submerged_specific_gravity(capital_r,  &
+                                           rho,        &
+                                           rho_s)
+ use stm_precision
+ implicit none
+ !-- arguments
+real(stm_real),intent(out) :: capital_r      !< Submerged specific gravity of sediment particles     
+real(stm_real),intent(in)  :: rho            !< Water density  
+real(stm_real),intent(in)  :: rho_s          !< Solid particle density
+
+capital_r = rho_s/rho  - one                                     
+
+return 
+end subroutine
+
+!> Calculates the explicit particle Reynolds number
+pure subroutine explicit_particle_reynolds_number(exp_re_p,      &
+                                                  diameter,      &
+                                                  capital_r,     &
+                                                  g_acceleration, &
+                                                  nu)
+use stm_precision
+implicit none
+!--- arguments 
+real(stm_real),intent(out) :: exp_re_p       !< Explicit particle reynolds number
+real(stm_real),intent(in)  :: diameter       !< Particle diameter
+real(stm_real),intent(in)  :: capital_r      !< Submerged specific gravity of sediment particles  
+real(stm_real),intent(in)  :: g_acceleration !< Gravitational acceleration 
+real(stm_real),intent(in)  :: nu             !< Kinematic viscosity (m2/sec)
+
+exp_re_p = diameter*sqrt(diameter*capital_r*diameter)/nu
+
+return
+end subroutine
+
+!> Calculates particle Reynolds number
+pure subroutine particle_reynolds_number(re_p,      &
+                                         w_s,       &
+                                         diameter,  &
+                                         nu)
+
+use stm_precision
+implicit none
+!--- arguments 
+real(stm_real),intent(out) :: re_p           !< Particle reynolds number
+real(stm_real),intent(in)  :: w_s            !< Settling velocity
+! todo: Eli; do we need w_s and diameter as w_s(nvar)?
+real(stm_real),intent(in)  :: diameter       !< Particle diameter
+real(stm_real),intent(in)  :: nu             !< Kinematic viscosity (m2/sec)                            
+ 
+ re_p = w_s*diameter/nu
+ 
+return
+end subroutine
+
+!> Calculates dimensionless particle diameter
+pure subroutine dimless_particle_diameter(d_star,        &
+                                          g_acceleration,&
+                                          diameter,      &
+                                          nu_mixture,    &
+                                          capital_r)
+
+use stm_precision
+implicit none
+!--- arguments 
+real(stm_real),intent(out) :: d_star         !< Dimensionless particle diameter
+real(stm_real),intent(in)  :: g_acceleration !< Gravitational acceleration 
+real(stm_real),intent(in)  :: diameter       !< Particle diameter
+real(stm_real),intent(in)  :: nu_mixture     !< Kinematic viscosity of water sediment mixture (m2/sec)                            
+real(stm_real),intent(in) :: capital_r       !< Submerged specific gravity of sediment particles     
+
+d_star = diameter*(capital_r*g_acceleration/(nu_mixture**two))**third
+ 
+return
+end subroutine
+
+!> Calculates critical shields parameter based on Yalin (1972) formula
+!> See van Rijn book equation (4.1.11)
+! todo: add Parker formula here
+pure subroutine critical_shields_parameter(cr_shields_prmtr,   &
+                                           d_star)
+                                           
+use stm_precision
+implicit none
+!--- arguments  
+real(stm_real),intent(out):: cr_shields_prmtr !< Critical Shields parameter                                      
+real(stm_real),intent(in) :: d_star           !< Dimensionless particle diameter
+
+if    (d_star > 150.0d0) then
+    cr_shields_prmtr = 0.055d0   
+elseif (d_star > 20.0d0) then
+    cr_shields_prmtr = 0.013d0*d_star**0.29d0 
+elseif (d_star > 20.0d0) then
+    cr_shields_prmtr = 0.04d0*d_star**(-0.1d0)
+elseif (d_star > 4.0d0)  then
+    cr_shields_prmtr = 0.14d0*d_star**(-0.64d0)
+elseif (d_star > one)    then
+    cr_shields_prmtr = 0.24d0/d_star
+else
+    cr_shields_prmtr = minus*LARGEREAL
+    ! the number set here to prevent bad input (stm_fatal can not be called)
+end if                                                      
+                                           
+return
+end subroutinr
+
+
+end module
