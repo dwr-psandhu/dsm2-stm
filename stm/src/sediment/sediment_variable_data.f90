@@ -52,7 +52,7 @@ module suspended_sediment_variable
  abstract interface 
        !> Get spacial varible data (Manning's n and  for sediment module.
        !> This data might be calculated from a function or provided by a subroutine
-       subroutine spatial_data_sediment(ncell,     &
+       subroutine spatial_data_sediment_if(ncell,     &
                                         time,      &
                                         dx,        &
                                         dt,        &
