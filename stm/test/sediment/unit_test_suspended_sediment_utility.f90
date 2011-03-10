@@ -43,7 +43,7 @@ real(stm_real), parameter :: g_accel = 9.80d0    !< Gravitational acceleration
 real(stm_real) :: hand_calc_value                !< Value of the function which is known
 
 ! Small value
-diameter = 0.1d-6
+diameter = 0.8d-7
 hand_calc_value = minus * LARGEREAL
 call settling_velocity(w_s,              &
                        nu,               &
@@ -62,7 +62,7 @@ call settling_velocity(w_s,              &
                        diameter,         &
                        g_accel) 
                        
-call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, small diameter!")
+call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, zero diameter!")
 
 ! Medium size          
 diameter = 5.0d-4  ! meter
