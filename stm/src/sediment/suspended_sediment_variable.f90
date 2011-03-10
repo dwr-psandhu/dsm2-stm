@@ -31,25 +31,25 @@ contains
 !> The subroutine does not consider particles smaller than 10 microns (fine clay).
 !> The smaller particles are assumed to be either part of wash load or to take part in flocs. 
 !> The subroutine is for non-cohesive particles.
-subroutine settling_velocity(settling_v,&
-                             kinematic_viscosity,               &
-                             specific_gravity, &
-                             diameter,         &
-                             g_acceleration,   &
+subroutine settling_velocity(settling_v,         &
+                             kinematic_viscosity,&
+                             specific_gravity,   &
+                             diameter,           &
+                             g_acceleration,     &
                              function_van_rijn) 
                
 use stm_precision
 implicit none
 !--- arg
-real(stm_real),intent(out) :: settling_v !< Settling velocity (m/s)
-real(stm_real),intent(in)  :: kinematic_viscosity                !< Kinematic viscosity (m2/sec)
-real(stm_real),intent(in)  :: specific_gravity  !< Specific gravity of particle (~2.65)
-real(stm_real),intent(in)  :: diameter          !< Particle diameter in meter
-real(stm_real),intent(in)  :: g_acceleration    !< Gravitational acceleration (m/sec2)
-logical, optional          :: function_van_rijn !< Flag for using van Rijn (1984) formula or Dietrich (1982) the default is Dietrich
+real(stm_real),intent(out) :: settling_v          !< Settling velocity (m/s)
+real(stm_real),intent(in)  :: kinematic_viscosity !< Kinematic viscosity (m2/sec)
+real(stm_real),intent(in)  :: specific_gravity    !< Specific gravity of particle (~2.65)
+real(stm_real),intent(in)  :: diameter            !< Particle diameter in meter
+real(stm_real),intent(in)  :: g_acceleration      !< Gravitational acceleration (m/sec2)
+logical, optional          :: function_van_rijn   !< Flag for using van Rijn (1984) formula or Dietrich (1982) the default is Dietrich
 !--local
  logical :: van_rijn_flag
- ! todo: I checked the Journal article by Dietrich and these numbers are not the same
+ ! todo: I checked the Journal article by Dietrich and these numbers are not the same, Ichecke d with the online book by Parker they are same
  ! todo: I am not sure if the log10 or log e 
  real(stm_real) :: b_1 = 2.891394d0
  real(stm_real) :: b_2 = 0.95296d0
@@ -57,9 +57,9 @@ logical, optional          :: function_van_rijn !< Flag for using van Rijn (1984
  real(stm_real) :: b_4 = 0.002892d0
  real(stm_real) :: b_5 = 0.000245d0
 
- real(stm_real) :: dimless_fall_velocity
- real(stm_real) :: exp_re_p        !< Explicit Reynols particle number 
- real(stm_real) :: capital_r       !< Submerged specific gravity of sediment particles 
+ real(stm_real) :: dimless_fall_velocity  ! todo: should we consider the local varibles in 
+ real(stm_real) :: exp_re_p               !< Explicit Reynols particle number 
+ real(stm_real) :: capital_r              !< Submerged specific gravity of sediment particles 
   
 
 
@@ -126,10 +126,10 @@ return
 end subroutine
 
 !> Calculates the explicit particle Reynolds number
-pure subroutine explicit_particle_reynolds_number(exp_re_p,      &
-                                                  diameter,      &
-                                                  capital_r,     &
-                                                  g_acceleration, &
+pure subroutine explicit_particle_reynolds_number(exp_re_p,          &
+                                                  diameter,          &
+                                                  capital_r,         &
+                                                  g_acceleration,    &
                                                   kinematic_viscosity)
 use stm_precision
 implicit none
@@ -137,8 +137,8 @@ implicit none
 real(stm_real),intent(out) :: exp_re_p       !< Explicit particle reynolds number
 real(stm_real),intent(in)  :: diameter       !< Particle diameter
 real(stm_real),intent(in)  :: capital_r      !< Submerged specific gravity of sediment particles  
-real(stm_real),intent(in)  :: g_acceleration !< Gravitational acceleration 
-real(stm_real),intent(in)  :: kinematic_viscosity             !< Kinematic viscosity (m2/sec)
+real(stm_real),intent(in)  :: g_acceleration          !< Gravitational acceleration 
+real(stm_real),intent(in)  :: kinematic_viscosity     !< Kinematic viscosity (m2/sec)
 
 exp_re_p = diameter*sqrt(diameter*capital_r*diameter)/kinematic_viscosity
 
