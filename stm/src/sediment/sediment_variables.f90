@@ -25,11 +25,21 @@
 !>@ingroup sediment
 module sediment_variables
     use stm_precision
-    integer :: ncell        !< Number of computational cells
+    integer :: ncell                       !< Number of computational cells
+    integer :: nvar                        !< Number of variables
     
-    !> Example of variables to define, where the variable is constant.
-    !> It is just a number    
-    real(stm_real),save :: g_acceleration                 !< acceleration of gravity; it must be in SI units (constant)
+   !> Sediment constants   
+    real(stm_real), save :: gravity                  !< Acceleration of gravity; it must be in SI units (constant)
+    real(stm_real), save :: water_density            !< Water density
+    real(stm_real), save :: sediment_density         !< Sediment density
+    
+    !> Derived sediment constants
+    real(stm_real), save :: specific_submerged_gravity     !< specific_submerged_gravity, function of water density and sediment density
+    
+    !> Spatial sediment parameters
+    real(stm_real), save, allocatable :: manning_n(:)      !< Manning's n 
+    
+    
 !todo: we need to add the other variables as in the table  
   
     !> Example of variables to define, where the variable is a function of space only. 
@@ -39,34 +49,40 @@ module sediment_variables
     
     
     contains
-    
-     
-    !> Initial value is LARGEREAL
+         
+   !> Set sediment constants and calculated sediment constants
     subroutine set_sediment_constant
         use error_handling
         implicit none
         
-        real(stm_real) :: g_acceleration  
+        real(stm_real) :: gravity 
+        real(stm_real) :: water_density
+        real(stm_real) :: sediment_density
+        real(stm_real) :: specific_submerged_gravity
+        
+        gravity = LARGEREAL
+        water_density = LARGEREAL
+        sediment_density = LARGEREAL
        
-        g_acceleration = LARGEREAL
+        specific_submerged_gravity = LARGEREAL
        
         return
     end subroutine
     
     
-    subroutine allocate_sediment_static(ncell)
+     !> Allocate spatial sediment parameters 
+    subroutine allocate_sediment_spatial_parameters(ncell)
         use error_handling
         implicit none
         integer,intent(in):: ncell    !<Number of cells
                    
-       allocate(manning_n(ncell))
-       
+        allocate(manning_n(ncell))
+        manning_n = LARGEREAL
         return
     end subroutine
     
     
     !> Deallocate the sediment static variable
-    !> including manning's n and width
     !> and reset ncell and nvar to zero.
     subroutine deallocate_sediment_static
         implicit none
@@ -77,6 +93,23 @@ module sediment_variables
       
         return
     end subroutine
+
+
+!! todo: Considering structural point of view I think it has to move to suspended sediment varible 
+!!> Calculate shear stress
+!    subroutine calculate_shear_stress(shear_stress,    &
+!                                      velocity,        &
+!                                      ncell,           &
+!                                      density)
+!        implicit none
+!        real(stm_real), intent(out) :: shear_stress(ncell)        
+!        integer, intent(in)         :: ncell
+!        real(stm_real), intent(in)  :: velocity(ncell)
+!        real(stm_real), intent(in)  :: density
+!        
+!        return  
+!    end subroutine
+
 
 end module
 
