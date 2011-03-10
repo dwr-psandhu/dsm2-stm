@@ -18,7 +18,7 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Routines provide the general calculation for suspended sediment sink/source subroutines.
+!> Routines provide the general calculation for suspended sediment sinks/sources routines.
 !> All the constant based drived variables are here
 !>@ingroup sediment !todo: test or test sediment
 
@@ -26,10 +26,10 @@ module suspended_utility
 
 contains
 
-!> Calculating particle's settling velocity. NOTE: the subroutine works with SI units.
+!> Calculates particle's settling velocity. NOTE: the subroutine works with SI units.
 !> Settling velocity formula based on Leo van Rijn (1984b).
 !> The subroutine does not consider particles smaller than 10 microns (fine clay).
-!> The smaller particles are assumed to be either part of wash load or to take part in flocs. 
+!> The smaller particles are assumed to be either part of wash load or pertain to cohesive sediment. 
 !> The subroutine is for non-cohesive particles.
 subroutine settling_velocity(settling_v,         &
                              kinematic_viscosity,&
@@ -46,11 +46,11 @@ real(stm_real),intent(in)  :: kinematic_viscosity !< Kinematic viscosity (m2/sec
 real(stm_real),intent(in)  :: specific_gravity    !< Specific gravity of particle (~2.65)
 real(stm_real),intent(in)  :: diameter            !< Particle diameter in meter
 real(stm_real),intent(in)  :: g_acceleration      !< Gravitational acceleration (m/sec2)
-logical, optional          :: function_van_rijn   !< Flag for using van Rijn (1984) formula or Dietrich (1982) the default is Dietrich
+logical, optional          :: function_van_rijn   !< Flag for using van Rijn (1984) formula o/ Dietrich (1982). the default is van Rijn
 !--local
  logical :: van_rijn_flag
- ! todo: I checked the Journal article by Dietrich and these numbers are not the same, Ichecke d with the online book by Parker they are same
- ! todo: I am not sure if the log10 or log e 
+ ! todo: I checked the Journal article by Dietrich and these numbers are not the same, I checked with the online book by Parker they are same
+ ! I checked the following values with the ebook on the website of Parker (UIUC)
  real(stm_real) :: b_1 = 2.891394d0
  real(stm_real) :: b_2 = 0.95296d0
  real(stm_real) :: b_3 = 0.056835d0
@@ -72,14 +72,14 @@ end if
 select case (van_rijn_flag)
  
    case (.true.)
-        if (diameter > 1.0d-3)    then
+        if (diameter > 1.0d-3)     then
             settling_v = 1.1d0*sqrt((specific_gravity - one)*g_acceleration*diameter)
-        elseif (diameter > 1.0d-4)  then
+        elseif (diameter > 1.0d-4) then
             settling_v = (ten*kinematic_viscosity/diameter)*(sqrt(one + (0.01d0*(specific_gravity - one)*g_acceleration*diameter**three)/kinematic_viscosity**two)- one)
         elseif (diameter > 0.9d-7) then
-            ! Stokes low
+            ! Stokes law
             ! todo: what is the lower limit? for diameter
-            settling_v = ((specific_gravity - one)*g_acceleration*diameter**two) /(18.0d0*kinematic_viscosity)
+            settling_v = ((specific_gravity - one)*g_acceleration*diameter**two)/(18.0d0*kinematic_viscosity)
         else
            settling_v = minus * LARGEREAL
            ! todo: the stm_fatal can not be called here because settling velocity is a pure subroutine
@@ -89,7 +89,7 @@ select case (van_rijn_flag)
         capital_r = specific_gravity - one
         ! Stokes fall velocity
         if ( diameter < 1.0d-4 )    then
-            settling_v = (capital_r*g_acceleration*diameter**two) /(18.0d0*kinematic_viscosity)
+            settling_v = (capital_r*g_acceleration*diameter**two)/(18.0d0*kinematic_viscosity)
         else
             call explicit_particle_reynolds_number(exp_re_p,       &
                                                    diameter,       &
@@ -109,7 +109,7 @@ end select
 return
 end subroutine
 
-!> Calculates the submereged specific gravity
+!> Calculates the submerged specific gravity
 pure subroutine submerged_specific_gravity(capital_r,  &
                                            rho,        &
                                            rho_s)
@@ -140,25 +140,25 @@ real(stm_real),intent(in)  :: capital_r      !< Submerged specific gravity of se
 real(stm_real),intent(in)  :: g_acceleration          !< Gravitational acceleration 
 real(stm_real),intent(in)  :: kinematic_viscosity     !< Kinematic viscosity (m2/sec)
 
-exp_re_p = diameter*sqrt(diameter*capital_r*diameter)/kinematic_viscosity
+exp_re_p = diameter*sqrt(g_acceleration*capital_r*diameter)/kinematic_viscosity
 
 return
 end subroutine
 
 !> Calculates particle Reynolds number
-pure subroutine particle_reynolds_number(re_p,      &
+pure subroutine particle_reynolds_number(re_p,             &
                                          settling_v,       &
-                                         diameter,  &
+                                         diameter,         &
                                          kinematic_viscosity)
 
 use stm_precision
 implicit none
 !--- arguments 
-real(stm_real),intent(out) :: re_p               !< Particle reynolds number
-real(stm_real),intent(in)  :: settling_v  !< Settling velocity
+real(stm_real),intent(out) :: re_p                !< Particle Reynolds number
+real(stm_real),intent(in)  :: settling_v          !< Settling velocity
 ! todo: Eli; do we need settling_velocity and diameter as settling_velocity(nvar)?
-real(stm_real),intent(in)  :: diameter           !< Particle diameter
-real(stm_real),intent(in)  :: kinematic_viscosity                !< Kinematic viscosity (m2/sec)                            
+real(stm_real),intent(in)  :: diameter            !< Particle diameter
+real(stm_real),intent(in)  :: kinematic_viscosity !< Kinematic viscosity (m2/sec)                            
  
  re_p = settling_v*diameter/kinematic_viscosity
  
@@ -178,7 +178,7 @@ implicit none
 real(stm_real),intent(out) :: d_star              !< Dimensionless particle diameter
 real(stm_real),intent(in)  :: g_acceleration      !< Gravitational acceleration 
 real(stm_real),intent(in)  :: diameter            !< Particle diameter
-real(stm_real),intent(in)  :: kinematic_viscosity !< Kinematic viscosity of water sediment mixture (m2/sec)                            
+real(stm_real),intent(in)  :: kinematic_viscosity !< Kinematic viscosity (m2/sec)                            
 real(stm_real),intent(in)  :: capital_r           !< Submerged specific gravity of sediment particles     
 
 d_star = diameter*(capital_r*g_acceleration/(kinematic_viscosity**two))**third
@@ -192,11 +192,11 @@ end subroutine
 pure subroutine critical_shields_parameter(cr_shields_prmtr,   &
                                            d_star)
                                            
-    use stm_precision
-    implicit none
-    !--- arguments  
-    real(stm_real),intent(out):: cr_shields_prmtr !< Critical Shields parameter                                      
-    real(stm_real),intent(in) :: d_star           !< Dimensionless particle diameter
+use stm_precision
+implicit none
+!--- arguments  
+real(stm_real),intent(out):: cr_shields_prmtr !< Critical Shields parameter                                      
+real(stm_real),intent(in) :: d_star           !< Dimensionless particle diameter
 
     if    (d_star > 150.0d0) then
         cr_shields_prmtr = 0.055d0   
