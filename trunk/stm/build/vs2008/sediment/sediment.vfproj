@@ -32,5 +32,5 @@
 		<File RelativePath="..\..\..\src\sediment\sediment_source.f90"/>
 		<File RelativePath="..\..\..\src\sediment\sediment_variable_data.f90"/>
 		<File RelativePath="..\..\..\src\sediment\sediment_variables.f90"/>
-		<File RelativePath="..\..\..\src\sediment\suspended_sediment_variable.f90"/></Filter></Files>
+		<File RelativePath="..\..\..\src\sediment\suspended_sediment_variables.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>
