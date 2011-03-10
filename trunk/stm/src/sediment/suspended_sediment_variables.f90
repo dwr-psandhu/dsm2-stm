@@ -49,7 +49,6 @@ real(stm_real),intent(in)  :: g_acceleration      !< Gravitational acceleration 
 logical, optional          :: function_van_rijn   !< Flag for using van Rijn (1984) formula o/ Dietrich (1982). the default is van Rijn
 !--local
  logical :: van_rijn_flag
- ! todo: I checked the Journal article by Dietrich and these numbers are not the same, I checked with the online book by Parker they are same
  ! I checked the following values with the ebook on the website of Parker (UIUC)
  real(stm_real) :: b_1 = 2.891394d0
  real(stm_real) :: b_2 = 0.95296d0
@@ -78,7 +77,6 @@ select case (van_rijn_flag)
             settling_v = (ten*kinematic_viscosity/diameter)*(sqrt(one + (0.01d0*(specific_gravity - one)*g_acceleration*diameter**three)/kinematic_viscosity**two)- one)
         elseif (diameter > 0.9d-7) then
             ! Stokes law
-            ! todo: what is the lower limit? for diameter
             settling_v = ((specific_gravity - one)*g_acceleration*diameter**two)/(18.0d0*kinematic_viscosity)
         else
            settling_v = minus * LARGEREAL
@@ -110,17 +108,17 @@ return
 end subroutine
 
 !> Calculates the submerged specific gravity
-pure subroutine submerged_specific_gravity(capital_r,  &
-                                           rho,        &
-                                           rho_s)
+pure subroutine submerged_specific_gravity(capital_r,            &
+                                           water_density,        &
+                                           sediment_density)
  use stm_precision
  implicit none
  !-- arguments
-real(stm_real),intent(out) :: capital_r      !< Submerged specific gravity of sediment particles     
-real(stm_real),intent(in)  :: rho            !< Water density  
-real(stm_real),intent(in)  :: rho_s          !< Solid particle density
+real(stm_real),intent(out) :: capital_r        !< Submerged specific gravity of sediment particles     
+real(stm_real),intent(in)  :: water_density    !< Water density  
+real(stm_real),intent(in)  :: sediment_density !< Solid particle density
 
-capital_r = rho_s/rho  - one                                     
+capital_r = sediment_density/water_density  - one                                     
 
 return 
 end subroutine
