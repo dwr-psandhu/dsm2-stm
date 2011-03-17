@@ -29,8 +29,8 @@
 		<Filter Name="Source Files" Filter="f90;for;f;fpp;ftn;def;odl;idl">
 		<File RelativePath="..\..\..\src\sediment\bed_load.f90"/>
 		<File RelativePath="..\..\..\src\sediment\cohesive_source.f90"/>
-		<File RelativePath="..\..\..\src\sediment\get_hydrodynamic_data.f90"/>
 		<File RelativePath="..\..\..\src\sediment\non_cohesive_source.f90"/>
-		<File RelativePath="..\..\..\src\sediment\sediment_variables.f90"/>
-		<File RelativePath="..\..\..\src\sediment\suspended_sediment_variables.f90"/></Filter></Files>
+		<File RelativePath="..\..\..\src\sediment\sediment_hydro_data.f90"/>
+		<File RelativePath="..\..\..\src\sediment\sediment_variables_constant.f90"/>
+		<File RelativePath="..\..\..\src\sediment\sediment_variables_derived.f90"/></Filter></Files>
 	<Globals/></VisualStudioProject>
