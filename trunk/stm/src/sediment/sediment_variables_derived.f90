@@ -36,19 +36,22 @@ subroutine settling_velocity(settling_v,         &
                              specific_gravity,   &
                              diameter,           &
                              g_acceleration,     &
-                             function_van_rijn) 
+                             function_van_rijn,  &
+                             nclass) 
                
 use stm_precision
 implicit none
 !--- arg
-real(stm_real),intent(out) :: settling_v          !< Settling velocity (m/s)
+integer,intent(in)         :: nclass              !< Number of sediment diameter classes
+real(stm_real),intent(out) :: settling_v(nclass)  !< Settling velocity (m/s)
 real(stm_real),intent(in)  :: kinematic_viscosity !< Kinematic viscosity (m2/sec)
 real(stm_real),intent(in)  :: specific_gravity    !< Specific gravity of particle (~2.65)
-real(stm_real),intent(in)  :: diameter            !< Particle diameter in meter
+real(stm_real),intent(in)  :: diameter(nclass)    !< Particle diameter in meter
 real(stm_real),intent(in)  :: g_acceleration      !< Gravitational acceleration (m/sec2)
 logical, optional          :: function_van_rijn   !< Flag for using van Rijn (1984) formula o/ Dietrich (1982). the default is van Rijn
 !--local
  logical :: van_rijn_flag
+ integer :: iclass
  ! I checked the following values with the ebook on the website of Parker (UIUC)
  real(stm_real) :: b_1 = 2.891394d0
  real(stm_real) :: b_2 = 0.95296d0
@@ -56,12 +59,10 @@ logical, optional          :: function_van_rijn   !< Flag for using van Rijn (19
  real(stm_real) :: b_4 = 0.002892d0
  real(stm_real) :: b_5 = 0.000245d0
 
- real(stm_real) :: dimless_fall_velocity  ! todo: should we consider the local varibles in 
- real(stm_real) :: exp_re_p               !< Explicit Reynols particle number 
- real(stm_real) :: capital_r              !< Submerged specific gravity of sediment particles 
+ real(stm_real) :: dimless_fall_velocity(nclass)  ! todo: should we consider the local varibles in 
+ real(stm_real) :: exp_re_p(nclass)               !< Explicit Reynols particle number 
+ real(stm_real) :: capital_r                      !< Submerged specific gravity of sediment particles 
   
-
-
 
  van_rijn_flag = .true.
 if (present(function_van_rijn)) then
@@ -71,29 +72,33 @@ end if
 select case (van_rijn_flag)
  
    case (.true.)
-        if (diameter > 1.0d-3)     then
-            settling_v = 1.1d0*sqrt((specific_gravity - one)*g_acceleration*diameter)
-        elseif (diameter > 1.0d-4) then
-            settling_v = (ten*kinematic_viscosity/diameter)*(sqrt(one + (0.01d0*(specific_gravity - one)*g_acceleration*diameter**three)/kinematic_viscosity**two)- one)
-        elseif (diameter > 0.9d-7) then
-            ! Stokes law
-            settling_v = ((specific_gravity - one)*g_acceleration*diameter**two)/(18.0d0*kinematic_viscosity)
-        else
-           settling_v = minus * LARGEREAL
-           ! todo: the stm_fatal can not be called here because settling velocity is a pure subroutine
-        end if 
+      do iclass=1,nclass
+            if (diameter(iclass) > 1.0d-3)     then
+                settling_v(iclass) = 1.1d0*sqrt((specific_gravity - one)*g_acceleration*diameter(iclass))
+            elseif (diameter(iclass) > 1.0d-4) then
+                settling_v(iclass) = (ten*kinematic_viscosity/diameter(iclass))*(sqrt(one + (0.01d0*(specific_gravity - one) &
+                                               *g_acceleration*diameter(iclass)**three)/kinematic_viscosity**two)- one)
+            elseif (diameter(iclass) > 0.9d-7) then
+                ! Stokes law
+                settling_v(iclass) = ((specific_gravity - one)*g_acceleration*diameter(iclass)**two)/(18.0d0*kinematic_viscosity)
+            else
+                settling_v(iclass) = minus * LARGEREAL
+               ! todo: the stm_fatal can not be called here because settling velocity is a pure subroutine
+            end if 
+        end do   
    case(.false.)
-   
+     do iclass=1,nclass
         capital_r = specific_gravity - one
         ! Stokes fall velocity
-        if ( diameter < 1.0d-4 )    then
+        if ( diameter(iclass) < 1.0d-4 )    then
             settling_v = (capital_r*g_acceleration*diameter**two)/(18.0d0*kinematic_viscosity)
         else
-            call explicit_particle_reynolds_number(exp_re_p,       &
-                                                   diameter,       &
-                                                   capital_r,      &
-                                                   g_acceleration, &
-                                                   kinematic_viscosity)
+            call explicit_particle_reynolds_number(exp_re_p,            &
+                                                   diameter,            &
+                                                   capital_r,           &
+                                                   g_acceleration,      &
+                                                   kinematic_viscosity, &
+                                                   nclass)
             
             dimless_fall_velocity = exp(- b_1 + b_2*log(exp_re_p)**two - b_3*log(exp_re_p)**three &
                                     - b_4*log(exp_re_p)**four + b_5*log(exp_re_p)**five)
@@ -101,7 +106,7 @@ select case (van_rijn_flag)
             settling_v = dimless_fall_velocity * sqrt(capital_r*g_acceleration*diameter)
                  
        end if   
-    
+     end do 
 end select 
 
 return
@@ -124,17 +129,19 @@ return
 end subroutine
 
 !> Calculates the explicit particle Reynolds number
-pure subroutine explicit_particle_reynolds_number(exp_re_p,          &
-                                                  diameter,          &
-                                                  capital_r,         &
-                                                  g_acceleration,    &
-                                                  kinematic_viscosity)
+pure subroutine explicit_particle_reynolds_number(exp_re_p,           &
+                                                  diameter,           &
+                                                  capital_r,          &
+                                                  g_acceleration,     &
+                                                  kinematic_viscosity,&
+                                                  nclass)
 use stm_precision
 implicit none
 !--- arguments 
-real(stm_real),intent(out) :: exp_re_p       !< Explicit particle reynolds number
-real(stm_real),intent(in)  :: diameter       !< Particle diameter
-real(stm_real),intent(in)  :: capital_r      !< Submerged specific gravity of sediment particles  
+integer, intent(in) :: nclass                         !< Number of sediment diameter classes
+real(stm_real),intent(out) :: exp_re_p(nclass)        !< Explicit particle reynolds number
+real(stm_real),intent(in)  :: diameter(nclass)        !< Particle diameter
+real(stm_real),intent(in)  :: capital_r               !< Submerged specific gravity of sediment particles  
 real(stm_real),intent(in)  :: g_acceleration          !< Gravitational acceleration 
 real(stm_real),intent(in)  :: kinematic_viscosity     !< Kinematic viscosity (m2/sec)
 
@@ -144,18 +151,20 @@ return
 end subroutine
 
 !> Calculates particle Reynolds number
-pure subroutine particle_reynolds_number(re_p,             &
-                                         settling_v,       &
-                                         diameter,         &
-                                         kinematic_viscosity)
+pure subroutine particle_reynolds_number(re_p,                &
+                                         settling_v,          &
+                                         diameter,            &
+                                         kinematic_viscosity, &
+                                         nclass)
 
 use stm_precision
 implicit none
 !--- arguments 
-real(stm_real),intent(out) :: re_p                !< Particle Reynolds number
-real(stm_real),intent(in)  :: settling_v          !< Settling velocity
+integer, intent(in) :: nclass                     !< Number of sediment diameter classes
+real(stm_real),intent(out) :: re_p(nclass)        !< Particle Reynolds number
+real(stm_real),intent(in)  :: settling_v(nclass)  !< Settling velocity
 ! todo: Eli; do we need settling_velocity and diameter as settling_velocity(nvar)?
-real(stm_real),intent(in)  :: diameter            !< Particle diameter
+real(stm_real),intent(in)  :: diameter(nclass)    !< Particle diameter
 real(stm_real),intent(in)  :: kinematic_viscosity !< Kinematic viscosity (m2/sec)                            
  
  re_p = settling_v*diameter/kinematic_viscosity
@@ -168,14 +177,16 @@ pure subroutine dimless_particle_diameter(d_star,                 &
                                           g_acceleration,         &
                                           diameter,               &
                                           kinematic_viscosity,    &
-                                          capital_r)
+                                          capital_r,              &
+                                          nclass)
 
 use stm_precision
 implicit none
 !--- arguments 
-real(stm_real),intent(out) :: d_star              !< Dimensionless particle diameter
+integer, intent(in) :: nclass                     !< Number of sediment diameter classes
+real(stm_real),intent(out) :: d_star(nclass)      !< Dimensionless particle diameter
 real(stm_real),intent(in)  :: g_acceleration      !< Gravitational acceleration 
-real(stm_real),intent(in)  :: diameter            !< Particle diameter
+real(stm_real),intent(in)  :: diameter(nclass)    !< Particle diameter
 real(stm_real),intent(in)  :: kinematic_viscosity !< Kinematic viscosity (m2/sec)                            
 real(stm_real),intent(in)  :: capital_r           !< Submerged specific gravity of sediment particles     
 
@@ -187,29 +198,38 @@ end subroutine
 !> Calculates critical shields parameter based on Yalin (1972) formula
 !> See van Rijn book equation (4.1.11)
 ! todo: add Parker formula here
+! todo: do we need a array calculation here?
 pure subroutine critical_shields_parameter(cr_shields_prmtr,   &
-                                           d_star)
+                                           d_star,             &
+                                           nclass)
                                            
 use stm_precision
 implicit none
 !--- arguments  
-real(stm_real),intent(out):: cr_shields_prmtr !< Critical Shields parameter                                      
-real(stm_real),intent(in) :: d_star           !< Dimensionless particle diameter
+integer, intent(in) :: nclass                         !< Number of sediment diameter classes
+real(stm_real),intent(out):: cr_shields_prmtr(nclass) !< Critical Shields parameter                                      
+real(stm_real),intent(in) :: d_star(nclass)           !< Dimensionless particle diameter
+!--local
+integer :: iclass
 
-    if    (d_star > 150.0d0) then
-        cr_shields_prmtr = 0.055d0   
-    elseif (d_star > 20.0d0) then
-        cr_shields_prmtr = 0.013d0*d_star**0.29d0 
-    elseif (d_star > 20.0d0) then
-        cr_shields_prmtr = 0.04d0*d_star**(-0.1d0)
-    elseif (d_star > 4.0d0)  then
-        cr_shields_prmtr = 0.14d0*d_star**(-0.64d0)
-    elseif (d_star > one)    then
-        cr_shields_prmtr = 0.24d0/d_star
+do iclass =1,nclass
+
+    if    (d_star(iclass) > 150.0d0) then
+        cr_shields_prmtr(iclass) = 0.055d0   
+    elseif (d_star(iclass) > 20.0d0) then
+        cr_shields_prmtr(iclass) = 0.013d0*d_star(iclass)**0.29d0 
+    elseif (d_star(iclass) > 20.0d0) then
+        cr_shields_prmtr(iclass) = 0.04d0*d_star(iclass)**(-0.1d0)
+    elseif (d_star(iclass) > 4.0d0)  then
+        cr_shields_prmtr(iclass) = 0.14d0*d_star(iclass)**(-0.64d0)
+    elseif (d_star(iclass) > one)    then
+        cr_shields_prmtr(iclass) = 0.24d0/d_star(iclass)
     else
-        cr_shields_prmtr = minus*LARGEREAL
+        cr_shields_prmtr(iclass) = minus*LARGEREAL
         ! the number set here to prevent bad input (stm_fatal can not be called)
-    end if                                                      
+    end if    
+    
+end do                                                  
                                            
 return
 end subroutine
