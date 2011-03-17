@@ -25,12 +25,12 @@ module suspended_sediment_variable
     abstract  interface
        !> Get hydrodynamic data for sediment module.
        !> This data might be calculated from a function or provided by another module
-        subroutine spatiotemporal_data_sediment_if(velocity,  &
-                                                   depth,     &
-                                                   ncell,     &
-                                                   time,      &
-                                                   dx,        &
-                                                   dt)
+        subroutine sediment_hydro_if(velocity,  &
+                                     depth,     &
+                                     ncell,     &
+                                     time,      &
+                                     dx,        &
+                                     dt)
         use stm_precision
         implicit none
         integer, intent(in) :: ncell                    !< Number of cells (in)
@@ -46,7 +46,7 @@ module suspended_sediment_variable
       
  !> This pointer should be set by the driver or client code to specify the 
  !> depth and velocity for the sediment source sink routine
- procedure(spatiotemporal_data_sediment_if),pointer :: fill_spatiotemporal_sediment_data  => null()
+ procedure(sediment_hydro_if),pointer :: fill_spatiotemporal_sediment_data  => null()
  
  
  !> todo: fill here 
@@ -76,7 +76,6 @@ module suspended_sediment_variable
         call stm_fatal('ERROR IN SPATIOTEMPORAL DATA !')
  
  end subroutine 
- 
   
   
 end module
