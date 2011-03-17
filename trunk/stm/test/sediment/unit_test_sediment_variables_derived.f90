@@ -19,7 +19,7 @@
 !</license>
 
 !> Tests the suspended sediment utility subroutine
-!>@ingroup sediment
+!>@ingroup test sediment
 module unit_test_suspend_sed_utility
 !todo: is it a correct place in doxygen?
 ! todo: this test must be in the test_sediment project but temporarily placed here
