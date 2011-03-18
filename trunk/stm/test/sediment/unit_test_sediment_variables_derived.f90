@@ -152,6 +152,42 @@ call assertEquals(hand_calc_value(3),exp_re_p(3),weak_eps,"Error in subroutine e
 return
 end subroutine
 
+subroutine test_particle_reynolds_number
+
+use fruit
+use suspended_utility
+use stm_precision
+
+implicit none
+!---args
+integer, parameter :: nclas = 3       !< Number of sediment diameter classes
+real(stm_real):: re_p(nclas)          !< Particle Reynolds number
+real(stm_real):: settling_v(nclas)    !< Settling velocity
+real(stm_real):: diameter(nclas)      !< Particle diameter
+real(stm_real):: kinematic_viscosity  !< Kinematic viscosity (m2/sec)
+real(stm_real):: hand_calc_value(nclas)
+
+
+diameter =  (/2d-3,0.25d-3,0.031d-3/) ! coarse silt medium sand and sand
+kinematic_viscosity = 1.0d-6 
+settling_v = (/162d-3,25.7d-3,0.49d-3/)
+
+hand_calc_value =  (/324.0d0,6.425d0,0.01519d0/)
+
+call particle_reynolds_number(re_p,                &
+                              settling_v,          &
+                              diameter,            &
+                              kinematic_viscosity, &
+                              nclas)
+                              
+                              
+
+call assertEquals(hand_calc_value(1),re_p(1),weak_eps,"Error in subroutine particle_reynolds_number!")
+call assertEquals(hand_calc_value(2),re_p(2),weak_eps,"Error in subroutine particle_reynolds_number!")
+call assertEquals(hand_calc_value(3),re_p(3),weak_eps,"Error in subroutine particle_reynolds_number!")
+                                         
+return
+end subroutine
 
 
 
