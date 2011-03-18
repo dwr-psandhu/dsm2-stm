@@ -225,6 +225,42 @@ call assertEquals(hand_calc_value(2),d_star(2),weak_eps,"Error in subroutine dim
 return 
 end subroutine
 
+subroutine test_critical_shields_parameter
+
+use fruit
+use suspended_utility
+use stm_precision
+
+implicit none
+
+integer, parameter :: nclas = 7          !< Number of sediment diameter classes
+real(stm_real):: d_star(nclas)          
+real(stm_real):: cr_shields_prmtr(nclas) !< Critical Shields parameter                                      
+real(stm_real):: hand_calc_value(nclas)
+integer :: iclas
+
+d_star =  (/160d0,21d0,15d0,10d0,2d0,1d0,-4d0/) ! coarse silt and medium sand 
+
+hand_calc_value =  (/0.055d0,             &
+                     0.031433080718165d0, &
+                     0.030510608231307d0, &
+                     0.0320721471387d0,   &
+                     0.12d0,              &
+                     LARGEREAL,           &
+                     LARGEREAL/)
+
+call critical_shields_parameter(cr_shields_prmtr,   &
+                                d_star,             &
+                                nclas)                        
+
+do iclas=1,nclas
+    call assertEquals(hand_calc_value(iclas),cr_shields_prmtr(iclas),weak_eps,"Error in subroutine dcritical_shields_parameter!")
+end do
+
+
+return 
+end subroutine
+
 
 
 end module

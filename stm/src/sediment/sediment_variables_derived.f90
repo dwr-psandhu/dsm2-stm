@@ -198,7 +198,6 @@ end subroutine
 !> Calculates critical shields parameter based on Yalin (1972) formula
 !> See van Rijn book equation (4.1.11)
 ! todo: add Parker formula here
-! todo: do we need a array calculation here?
 pure subroutine critical_shields_parameter(cr_shields_prmtr,   &
                                            d_star,             &
                                            nclass)
@@ -218,14 +217,14 @@ do iclass =1,nclass
         cr_shields_prmtr(iclass) = 0.055d0   
     elseif (d_star(iclass) > 20.0d0) then
         cr_shields_prmtr(iclass) = 0.013d0*d_star(iclass)**0.29d0 
-    elseif (d_star(iclass) > 20.0d0) then
+    elseif (d_star(iclass) > 10.0d0) then
         cr_shields_prmtr(iclass) = 0.04d0*d_star(iclass)**(-0.1d0)
     elseif (d_star(iclass) > 4.0d0)  then
         cr_shields_prmtr(iclass) = 0.14d0*d_star(iclass)**(-0.64d0)
     elseif (d_star(iclass) > one)    then
         cr_shields_prmtr(iclass) = 0.24d0/d_star(iclass)
     else
-        cr_shields_prmtr(iclass) = minus*LARGEREAL
+        cr_shields_prmtr(iclass) = LARGEREAL
         ! the number set here to prevent bad input (stm_fatal can not be called)
     end if    
     

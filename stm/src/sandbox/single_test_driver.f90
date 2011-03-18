@@ -34,6 +34,7 @@ call test_submerged_specific_gravity
 call test_explicit_particle_reynolds_number
 call test_particle_reynolds_number
 call test_dimless_particle_diameter
+call test_critical_shields_parameter
 
 call fruit_summary
 
