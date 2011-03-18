@@ -33,6 +33,7 @@ call init_fruit
 call test_submerged_specific_gravity
 call test_explicit_particle_reynolds_number
 call test_particle_reynolds_number
+call test_dimless_particle_diameter
 
 call fruit_summary
 
