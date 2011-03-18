@@ -110,9 +110,49 @@ call submerged_specific_gravity(big_r,       &
                                 rho_w,       &
                                 rho_s)
                                 
-call assertEquals(big_r,hand_calc_value,weak_eps,"Error in ssubmerged_specific_gravity subroutine!")
+call assertEquals(big_r,hand_calc_value,weak_eps,"Error in submerged_specific_gravity subroutine!")
 
 return
 end subroutine
+
+subroutine test_explicit_particle_reynolds_number
+
+use fruit
+use suspended_utility
+use stm_precision
+
+implicit none
+!---args
+integer,parameter  :: nclas = 3            !< Number of sediment diameter classes
+real(stm_real)  :: exp_re_p(nclas)         !< Explicit particle reynolds number
+real(stm_real)  :: diameter(nclas)         !< Particle diameter
+real(stm_real)  :: capital_r               !< Submerged specific gravity of sediment particles  
+real(stm_real)  :: g_acceleration          !< Gravitational acceleration 
+real(stm_real)  :: kinematic_viscosity     !< Kinematic viscosity (m2/sec)
+real(stm_real)  :: hand_calc_value(nclas)
+
+diameter =  (/1d-2,2d-2,1d-3/)
+g_acceleration = 9.81d0
+capital_r = 1.65d0
+kinematic_viscosity = 1.0d-6 
+
+hand_calc_value =  (/4023.2449589852d0,11379.455171492d0,127.22617655184d0/)
+ 
+call explicit_particle_reynolds_number(exp_re_p,           &
+                                       diameter,           &
+                                       capital_r,          &
+                                       g_acceleration,     &
+                                       kinematic_viscosity,&
+                                       nclas)
+                                       
+call assertEquals(hand_calc_value(1),exp_re_p(1),weak_eps,"Error in subroutine explicit_particle_reynolds_number!")
+call assertEquals(hand_calc_value(2),exp_re_p(2),weak_eps,"Error in subroutine explicit_particle_reynolds_number!")
+call assertEquals(hand_calc_value(3),exp_re_p(3),weak_eps,"Error in subroutine explicit_particle_reynolds_number!")
+
+return
+end subroutine
+
+
+
 
 end module
