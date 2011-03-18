@@ -31,6 +31,7 @@ implicit none
 call init_fruit
 
 call test_submerged_specific_gravity
+call test_explicit_particle_reynolds_number
 
 call fruit_summary
 
