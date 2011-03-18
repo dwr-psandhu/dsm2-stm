@@ -30,7 +30,7 @@ implicit none
 
 call init_fruit
 
-call test_settling_velocity
+call test_submerged_specific_gravity
 
 call fruit_summary
 

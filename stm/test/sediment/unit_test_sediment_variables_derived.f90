@@ -26,68 +26,93 @@ module unit_test_suspend_sed_utility
 contains
 
 !> Tests the coarsening subroutine
-subroutine test_settling_velocity
+!subroutine test_settling_velocity
+!
+!use fruit
+!use suspended_utility
+!use stm_precision
+!
+!implicit none
+!!---arg
+!real(stm_real) :: w_s                            !< Settling velocity
+!real(stm_real), parameter :: nu =1.0d-6          !< Kinematic viscosity 
+!real(stm_real), parameter :: specific_g = 2.65d0 !< Specific gravity of particle (~2.65)
+!real(stm_real) :: diameter                       !< Particle diameter in meter
+!real(stm_real), parameter :: g_accel = 9.80d0    !< Gravitational acceleration
+!!---- local
+!real(stm_real) :: hand_calc_value                !< Value of the function which is known
+!
+!! Small value
+!diameter = 0.8d-7
+!hand_calc_value = minus * LARGEREAL
+!call settling_velocity(w_s,              &
+!                       nu,               &
+!                       specific_g,       &
+!                       diameter,         &
+!                       g_accel) 
+!                       
+!call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, small diameter!")
+!             
+!! Zero value          
+!diameter = zero
+!hand_calc_value = minus * LARGEREAL
+!call settling_velocity(w_s,              &
+!                       nu,               &
+!                       specific_g,       &
+!                       diameter,         &
+!                       g_accel) 
+!                       
+!call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, zero diameter!")
+!
+!! Medium size          
+!diameter = 5.0d-4  ! meter
+!hand_calc_value = 0.072114059730314d0
+!call settling_velocity(w_s,              &
+!                       nu,               &
+!                       specific_g,       &
+!                       diameter,         &
+!                       g_accel) 
+!                       
+!call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, medium diameter!")
+!
+!! Large size
+!diameter = 2.0d-3  ! meter
+!hand_calc_value = 0.19781658171144d0
+!call settling_velocity(w_s,              &
+!                       nu,               &
+!                       specific_g,       &
+!                       diameter,         &
+!                       g_accel) 
+!                       
+!call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, large diameter!")
+!
+!return
+!end subroutine 
+
+subroutine test_submerged_specific_gravity
 
 use fruit
 use suspended_utility
 use stm_precision
 
 implicit none
-!---arg
-real(stm_real) :: w_s                            !< Settling velocity
-real(stm_real), parameter :: nu =1.0d-6          !< Kinematic viscosity 
-real(stm_real), parameter :: specific_g = 2.65d0 !< Specific gravity of particle (~2.65)
-real(stm_real) :: diameter                       !< Particle diameter in meter
-real(stm_real), parameter :: g_accel = 9.80d0    !< Gravitational acceleration
-!---- local
-real(stm_real) :: hand_calc_value                !< Value of the function which is known
+!---args
+real(stm_real) :: big_r
+real(stm_real) :: rho_w
+real(stm_real) :: rho_s
+real(stm_real) :: hand_calc_value
 
-! Small value
-diameter = 0.8d-7
-hand_calc_value = minus * LARGEREAL
-call settling_velocity(w_s,              &
-                       nu,               &
-                       specific_g,       &
-                       diameter,         &
-                       g_accel) 
-                       
-call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, small diameter!")
-             
-! Zero value          
-diameter = zero
-hand_calc_value = minus * LARGEREAL
-call settling_velocity(w_s,              &
-                       nu,               &
-                       specific_g,       &
-                       diameter,         &
-                       g_accel) 
-                       
-call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, zero diameter!")
+rho_w = 1000d0
+rho_s = 2650d0
+hand_calc_value = 1.65d0
 
-! Medium size          
-diameter = 5.0d-4  ! meter
-hand_calc_value = 0.072114059730314d0
-call settling_velocity(w_s,              &
-                       nu,               &
-                       specific_g,       &
-                       diameter,         &
-                       g_accel) 
-                       
-call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, medium diameter!")
-
-! Large size
-diameter = 2.0d-3  ! meter
-hand_calc_value = 0.19781658171144d0
-call settling_velocity(w_s,              &
-                       nu,               &
-                       specific_g,       &
-                       diameter,         &
-                       g_accel) 
-                       
-call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, large diameter!")
+call submerged_specific_gravity(big_r,       &
+                                rho_w,       &
+                                rho_s)
+                                
+call assertEquals(big_r,hand_calc_value,weak_eps,"Error in ssubmerged_specific_gravity subroutine!")
 
 return
-end subroutine 
-
+end subroutine
 
 end module
