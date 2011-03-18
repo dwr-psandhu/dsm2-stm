@@ -189,6 +189,42 @@ call assertEquals(hand_calc_value(3),re_p(3),weak_eps,"Error in subroutine parti
 return
 end subroutine
 
+subroutine test_dimless_particle_diameter
+
+use fruit
+use suspended_utility
+use stm_precision
+
+implicit none
+
+integer, parameter :: nclas = 2        !< Number of sediment diameter classes
+real(stm_real):: d_star(nclas)          
+real(stm_real):: capital_r             !< Submerged specific gravity of sediment particles  
+real(stm_real):: g_accel               !< Gravitational acceleration 
+real(stm_real):: diameter(nclas)       !< Particle diameter
+real(stm_real):: kinematic_viscosity   !< Kinematic viscosity (m2/sec)
+real(stm_real):: hand_calc_value(nclas)
+
+diameter =  (/2d-3,0.25d-3/) ! coarse silt and medium sand 
+kinematic_viscosity = 1.0d-6
+g_accel = 9.81d0
+capital_r = 1.65d0
+
+hand_calc_value =  (/50.591898800422d0,6.3239873500d0/)
+
+call dimless_particle_diameter(d_star,                 &
+                               g_accel,                &
+                               diameter,               &
+                               kinematic_viscosity,    &
+                               capital_r,              &
+                               nclas)                        
+
+call assertEquals(hand_calc_value(1),d_star(1),weak_eps,"Error in subroutine dimensionless particle number!")
+call assertEquals(hand_calc_value(2),d_star(2),weak_eps,"Error in subroutine dimensionless particle number!")
+
+return 
+end subroutine
+
 
 
 end module
