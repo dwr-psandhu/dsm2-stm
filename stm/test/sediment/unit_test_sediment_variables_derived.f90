@@ -26,68 +26,73 @@ module unit_test_suspend_sed_utility
 contains
 
 !> Tests the coarsening subroutine
-!subroutine test_settling_velocity
-!
-!use fruit
-!use suspended_utility
-!use stm_precision
-!
-!implicit none
-!!---arg
-!real(stm_real) :: w_s                            !< Settling velocity
-!real(stm_real), parameter :: nu =1.0d-6          !< Kinematic viscosity 
-!real(stm_real), parameter :: specific_g = 2.65d0 !< Specific gravity of particle (~2.65)
-!real(stm_real) :: diameter                       !< Particle diameter in meter
-!real(stm_real), parameter :: g_accel = 9.80d0    !< Gravitational acceleration
-!!---- local
-!real(stm_real) :: hand_calc_value                !< Value of the function which is known
-!
-!! Small value
-!diameter = 0.8d-7
-!hand_calc_value = minus * LARGEREAL
-!call settling_velocity(w_s,              &
-!                       nu,               &
-!                       specific_g,       &
-!                       diameter,         &
-!                       g_accel) 
-!                       
-!call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, small diameter!")
-!             
-!! Zero value          
-!diameter = zero
-!hand_calc_value = minus * LARGEREAL
-!call settling_velocity(w_s,              &
-!                       nu,               &
-!                       specific_g,       &
-!                       diameter,         &
-!                       g_accel) 
-!                       
-!call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, zero diameter!")
-!
-!! Medium size          
-!diameter = 5.0d-4  ! meter
-!hand_calc_value = 0.072114059730314d0
-!call settling_velocity(w_s,              &
-!                       nu,               &
-!                       specific_g,       &
-!                       diameter,         &
-!                       g_accel) 
-!                       
-!call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, medium diameter!")
-!
-!! Large size
-!diameter = 2.0d-3  ! meter
-!hand_calc_value = 0.19781658171144d0
-!call settling_velocity(w_s,              &
-!                       nu,               &
-!                       specific_g,       &
-!                       diameter,         &
-!                       g_accel) 
-!                       
-!call assertEquals(w_s,hand_calc_value,weak_eps,"Error in settling velocity, large diameter!")
-!
-!return
-!end subroutine 
+subroutine test_settling_velocity
+
+use fruit
+use suspended_utility
+use stm_precision
+
+implicit none
+!---arg
+integer,parameter :: nclas = 5
+real(stm_real) :: w_s(nclas)                     !< Settling velocity
+real(stm_real), parameter :: nu =1.0d-6          !< Kinematic viscosity 
+real(stm_real), parameter :: specific_g = 2.65d0 !< Specific gravity of particle (~2.65)
+real(stm_real) :: diameter(nclas)                !< Particle diameter in meter
+real(stm_real), parameter :: g_accel = 9.80d0    !< Gravitational acceleration
+real(stm_real) :: hand_calc_value(nclas)         !< Value of the function which is known
+logical :: pick_up_function
+integer :: iclas
+! Small value
+diameter = (/0.8d-7,zero,5.0d-4,5.0d-5,2.0d-3/)
+hand_calc_value = (/-LARGEREAL,-LARGEREAL,0.072114059730314d0,0.0022458333333d0,0.19781658171144d0/) 
+! van Rijn 
+call settling_velocity(w_s,              &
+                       nu,               &
+                       specific_g,       &
+                       diameter,         &
+                       g_accel,          &
+                       nclas) 
+do iclas=1,nclas                                                                   
+    call assertEquals(w_s(iclas),hand_calc_value(iclas),weak_eps,"Error in settling velocity, van Rijn, no optional input!")
+end do
+
+pick_up_function =.true.
+! agian van Rijn
+call settling_velocity(w_s,              &
+                       nu,               &
+                       specific_g,       &
+                       diameter,         &
+                       g_accel,          &
+                       nclas,            &
+                       pick_up_function) 
+                       
+do iclas=1,nclas                                                                   
+    call assertEquals(w_s(iclas),hand_calc_value(iclas),weak_eps,"Error in settling velocity, van Rijn optional input=.true.!")
+end do
+
+!Dietrich 
+pick_up_function =.false.
+
+diameter = (/100d-3,10d-3,1d-3,0.1d-3,0.01d-3/)
+hand_calc_value = (/1.956501332d0,0.740273587d0,0.154941357d0,0.007477904d0,7.9999d-05/)
+
+
+call settling_velocity(w_s,              &
+                       nu,               &
+                       specific_g,       &
+                       diameter,         &
+                       g_accel,          &
+                       nclas,            &
+                       pick_up_function)
+
+
+do iclas=1,nclas                                                                   
+    call assertEquals(w_s(iclas),hand_calc_value(iclas),weak_eps,"Error in settling velocity, Dietrich optional input=.false.!")
+end do
+
+return
+end subroutine 
 
 subroutine test_submerged_specific_gravity
 
