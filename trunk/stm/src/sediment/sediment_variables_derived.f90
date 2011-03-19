@@ -36,8 +36,8 @@ subroutine settling_velocity(settling_v,         &
                              specific_gravity,   &
                              diameter,           &
                              g_acceleration,     &
-                             function_van_rijn,  &
-                             nclass) 
+                             nclass,             &
+                             function_van_rijn) 
                
 use stm_precision
 implicit none
@@ -50,21 +50,21 @@ real(stm_real),intent(in)  :: diameter(nclass)    !< Particle diameter in meter
 real(stm_real),intent(in)  :: g_acceleration      !< Gravitational acceleration (m/sec2)
 logical, optional          :: function_van_rijn   !< Flag for using van Rijn (1984) formula o/ Dietrich (1982). the default is van Rijn
 !--local
- logical :: van_rijn_flag
- integer :: iclass
- ! I checked the following values with the ebook on the website of Parker (UIUC)
- real(stm_real) :: b_1 = 2.891394d0
- real(stm_real) :: b_2 = 0.95296d0
- real(stm_real) :: b_3 = 0.056835d0
- real(stm_real) :: b_4 = 0.002892d0
- real(stm_real) :: b_5 = 0.000245d0
+logical :: van_rijn_flag
+integer :: iclass
+! I checked the following values with the ebook on the website of Parker (UIUC)
+real(stm_real) :: b_1 = 2.891394d0
+real(stm_real) :: b_2 = 0.95296d0
+real(stm_real) :: b_3 = 0.056835d0
+real(stm_real) :: b_4 = 0.002892d0
+real(stm_real) :: b_5 = 0.000245d0
 
- real(stm_real) :: dimless_fall_velocity(nclass)  ! todo: should we consider the local varibles in 
- real(stm_real) :: exp_re_p(nclass)               !< Explicit Reynols particle number 
- real(stm_real) :: capital_r                      !< Submerged specific gravity of sediment particles 
-  
+real(stm_real) :: dimless_fall_velocity(nclass)  ! todo: should we consider the local varibles in 
+real(stm_real) :: exp_re_p(nclass)               !< Explicit Reynols particle number 
+real(stm_real) :: capital_r                      !< Submerged specific gravity of sediment particles 
+ 
 
- van_rijn_flag = .true.
+van_rijn_flag = .true.
 if (present(function_van_rijn)) then
      van_rijn_flag = function_van_rijn
 end if
@@ -72,6 +72,7 @@ end if
 select case (van_rijn_flag)
  
    case (.true.)
+      ! van Rijn formula
       do iclass=1,nclass
             if (diameter(iclass) > 1.0d-3)     then
                 settling_v(iclass) = 1.1d0*sqrt((specific_gravity - one)*g_acceleration*diameter(iclass))
@@ -79,7 +80,7 @@ select case (van_rijn_flag)
                 settling_v(iclass) = (ten*kinematic_viscosity/diameter(iclass))*(sqrt(one + (0.01d0*(specific_gravity - one) &
                                                *g_acceleration*diameter(iclass)**three)/kinematic_viscosity**two)- one)
             elseif (diameter(iclass) > 0.9d-7) then
-                ! Stokes law
+                ! Stokes law here
                 settling_v(iclass) = ((specific_gravity - one)*g_acceleration*diameter(iclass)**two)/(18.0d0*kinematic_viscosity)
             else
                 settling_v(iclass) = minus * LARGEREAL
@@ -87,11 +88,12 @@ select case (van_rijn_flag)
             end if 
         end do   
    case(.false.)
+     ! Dietrich formula
+     capital_r = specific_gravity - one
      do iclass=1,nclass
-        capital_r = specific_gravity - one
-        ! Stokes fall velocity
-        if ( diameter(iclass) < 1.0d-4 )    then
-            settling_v = (capital_r*g_acceleration*diameter**two)/(18.0d0*kinematic_viscosity)
+               ! Stokes fall velocity
+        if ( diameter(iclass) < 1.0d-5 )    then
+            settling_v(iclass) = (capital_r*g_acceleration*diameter(iclass)**two)/(18.0d0*kinematic_viscosity)
         else
             call explicit_particle_reynolds_number(exp_re_p,            &
                                                    diameter,            &
@@ -100,10 +102,10 @@ select case (van_rijn_flag)
                                                    kinematic_viscosity, &
                                                    nclass)
             
-            dimless_fall_velocity = exp(- b_1 + b_2*log(exp_re_p)**two - b_3*log(exp_re_p)**three &
-                                    - b_4*log(exp_re_p)**four + b_5*log(exp_re_p)**five)
-                                    
-            settling_v = dimless_fall_velocity * sqrt(capital_r*g_acceleration*diameter)
+            dimless_fall_velocity(iclass) = exp(minus*b_1 + b_2*log(exp_re_p(iclass)) - b_3*(log(exp_re_p(iclass)))**two &
+                                                   - b_4*(log(exp_re_p(iclass)))**three + b_5*(log(exp_re_p(iclass)))**four)
+                                               
+            settling_v(iclass) = dimless_fall_velocity(iclass) * sqrt(capital_r*g_acceleration*diameter(iclass))
                  
        end if   
      end do 
