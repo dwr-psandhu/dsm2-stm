@@ -259,13 +259,80 @@ call critical_shields_parameter(cr_shields_prmtr,   &
                                 nclas)                        
 
 do iclas=1,nclas
-    call assertEquals(hand_calc_value(iclas),cr_shields_prmtr(iclas),weak_eps,"Error in subroutine dcritical_shields_parameter!")
+    call assertEquals(hand_calc_value(iclas),cr_shields_prmtr(iclas),weak_eps,"Error in subroutine critical_shields_parameter!")
+end do
+
+return 
+end subroutine
+
+subroutine test_shear_velocity
+
+use fruit
+use suspended_utility
+use stm_precision
+
+implicit none
+
+integer, parameter :: nvol = 3          !< Number cells 
+real(stm_real):: vel(nvol)              !< Velocity vector         
+real(stm_real):: manning_n(nvol)        !< Manning's n                                     
+real(stm_real):: hand_calc_value(nvol)  !< The sought output 
+real(stm_real):: big_r(nvol)            !< Hydraulic radius 
+real(stm_real):: gravity                !< Gravity
+real(stm_real):: shear_v(nvol)          !< Shear velocity 
+logical :: si_br                        !< SI and British unit switch
+integer :: iclas
+
+vel =  (/1.1d0,.7d0,-1.5d0/)    ! values for a river
+manning_n = (/0.02d0,0.03d0,0.045d0/)
+gravity = 9.8d0
+big_r = (/three,five,seven/)
+
+hand_calc_value =  (/ 0.057347634619921d0,   0.050273292832295d0,  -0.152780222207618d0/)
+
+call shear_velocity_calculator(shear_v,    &
+                                vel,       &
+                                manning_n, &
+                                gravity,   &
+                                big_r,     &
+                                nvol)                      
+
+do iclas=1,nvol
+    call assertEquals(hand_calc_value(iclas),shear_v(iclas),weak_eps,"Error in subroutine Shear Velocity!")
+end do
+
+si_br =.true.
+
+call shear_velocity_calculator(shear_v,    &
+                                vel,       &
+                                manning_n, &
+                                gravity,   &
+                                big_r,     &
+                                nvol,      &
+                                si_br)                      
+
+do iclas=1,nvol
+    call assertEquals(hand_calc_value(iclas),shear_v(iclas),weak_eps,"Error in subroutine Shear Velocity, SI unit!")
+end do
+
+gravity =32.2d0
+si_br = .false.
+hand_calc_value =  (/ 0.069953846244591d0,   0.061324415911969d0,  -0.186364516066955d0/)
+
+call shear_velocity_calculator(shear_v,    &
+                                vel,       &
+                                manning_n, &
+                                gravity,   &
+                                big_r,     &
+                                nvol,      &
+                                si_br)                      
+
+do iclas=1,nvol
+    call assertEquals(hand_calc_value(iclas),shear_v(iclas),weak_eps,"Error in subroutine Shear Velocity, British unit!")
 end do
 
 
 return 
 end subroutine
-
-
 
 end module
