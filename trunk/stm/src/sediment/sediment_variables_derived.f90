@@ -257,12 +257,15 @@ logical, optional         :: si_flag               !< SI and British unit switch
 ! todo: is it safe to have si_falg optional?
 !---local
 real(stm_real) :: phi
+logical :: flag
 
-if (.not.(present(si_flag))) then
-     si_flag = .true.
+flag = .true.
+
+if (present(si_flag)) then
+     flag = si_flag
 end if
 
-if (si_flag)then
+if (flag)then
    phi=one
 else 
    phi = 1.486d0
