@@ -26,18 +26,25 @@
 module non_cohesive_source
 
 contains 
-subroutine source_non_cohesive(nvol,nclass,pick_up_flag)
+subroutine source_non_cohesive(nvol,nclass,pick_up_flag,dx,dt,time)
 
 use stm_precision 
 use suspended_sediment_variable
 use sediment_variables
+use suspended_utility
 
 implicit none
+real(stm_real),intent(in) :: dx
+real(stm_real),intent(in) :: dt
+real(stm_real),intent(in) :: time
 integer, intent(in) :: nvol
 integer, intent(in) :: nclass
 character(len=32), optional, intent(in) :: pick_up_flag
 !---local
 character :: pick_up_function 
+procedure(sediment_hydro_if),pointer :: velocity_non_cohesive 
+
+velocity_non_cohesive => sediment_velocity_width
 
 pick_up_function = 'garcia_parker'
 
@@ -62,16 +69,44 @@ call set_sediment_values(gravity,                 &
                          crit_stress_partial_dep, & 
                          crit_stress_surf_erosion,&
                          density_dry_bulk,        &        
-                         ta_floc)   
+                         ta_floc)  
+                         
+call shear_velocity 
 
-    !subroutine entrainment_garcia_parker()
-    !use suspended_utility
-    !implicit none 
-
-   ! end subroutine 
+select case (pick_up_function)
+   
+    case('garcia_parker')
+    
+   call entrainment_garcia_parker()
+      
+!   case('zyserman_fredsoe')
+!   
+!    subroutine entrainment_zyserman_fredsoe()
+!      implicit none 
+!
+!    end subroutine entrainment_zyserman_fredsoe ! todo: remove 
+!   
+!   case('van_rijn')
+!   
+!   subroutine entrainment_van_rijn()
+!      implicit none 
+!
+!    end subroutine  entrainment_van_rijn
+!    
+!   case('smith_mclean')
+!    call entrainment_smith_mclean()
+  
+end select
    
 call deallocate_sediment_static()
 
-end subroutine
+end subroutine 
+
+    subroutine entrainment_garcia_parker()
+      implicit none 
+
+    end subroutine 
+    
+    
 
 end module 

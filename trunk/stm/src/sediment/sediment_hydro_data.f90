@@ -76,6 +76,29 @@ module suspended_sediment_variable
         call stm_fatal('ERROR IN SPATIOTEMPORAL DATA !')
  
  end subroutine 
+ 
+ subroutine sediment_velocity_width(velocity,  &
+                                    depth,     &
+                                    ncell,     &
+                                    time,      &
+                                    dx,        &
+                                    dt)
+     use stm_precision
+     use error_handling
+     implicit none
+     
+        integer, intent(in) :: ncell                    !< Number of cells (in)
+        real(stm_real), intent(in)  :: time             !< Time of request (in)
+        real(stm_real), intent(in)  :: dx               !< Spatial step (in)
+        real(stm_real), intent(in)  :: dt               !< Time step  (in)
+        real(stm_real), intent(out) :: velocity(ncell)  !< Cell and time centered velocity (out)
+        real(stm_real), intent(out) :: depth(ncell)     !< Cell center depth (out)
+        ! just to avoid warning
+        velocity = .8d0
+        depth = 3.5d0
+     
+ 
+ end subroutine 
   
   
 end module
