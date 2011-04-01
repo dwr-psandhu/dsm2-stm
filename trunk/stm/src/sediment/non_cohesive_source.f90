@@ -25,33 +25,52 @@
 
 module non_cohesive_source
 
-
 contains 
-
-subroutine source_non_cohesive(pick_up_flag)
+subroutine source_non_cohesive(nvol,nclass,pick_up_flag)
 
 use stm_precision 
 use suspended_sediment_variable
 use sediment_variables
 
 implicit none
+integer, intent(in) :: nvol
+integer, intent(in) :: nclass
 character(len=32), optional, intent(in) :: pick_up_flag
 !---local
-character :: default_function
+character :: pick_up_function 
 
+pick_up_function = 'garcia_parker'
 
+if (present(pick_up_flag)) then
+     pick_up_function = pick_up_flag
+end if
 
-call
-call
-
-
-
+!- initialization to LARGEREAL
+call set_sediment_constants
+call allocate_sediment_parameters(nvol,nclass)
+! gives manning n + width and non_cohesive diameters
+!- getting the values
+call set_sediment_values(gravity,                 &                 
+                         water_density,           &           
+                         sediment_density,        &        
+                         kappa,                   &                   
+                         kinematic_viscosity,     &     
+                         floc_density,            &            
+                         cohesive_diameter,       &       
+                         crit_stress_full_dep,    &    
+                         density_wet_bulk,        &        
+                         crit_stress_partial_dep, & 
+                         crit_stress_surf_erosion,&
+                         density_dry_bulk,        &        
+                         ta_floc)   
 
     !subroutine entrainment_garcia_parker()
     !use suspended_utility
     !implicit none 
 
    ! end subroutine 
+   
+call deallocate_sediment_static()
 
 end subroutine
 
