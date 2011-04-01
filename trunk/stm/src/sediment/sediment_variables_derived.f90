@@ -235,5 +235,42 @@ end do
 return
 end subroutine
 
+! todo: should we assume depth = Rh? it is larger than 1/10 in delta 
+subroutine shear_velocity_calculator(shear_velocity,      &
+                                     velocity,            &
+                                     manning,             &
+                                     gravity,             &
+                                     hydr_radius,         &
+                                     ncell,               &
+                                     si_flag)
+                                     
+use stm_precision
+implicit none
+
+integer, intent(in) :: ncell                       !< Number of cells
+real(stm_real),intent(in) :: velocity(ncell)       !< Flow velocity  
+real(stm_real),intent(in) :: manning(ncell)        !< Manning's n 
+real(stm_real),intent(in) :: hydr_radius(ncell)    !< Hydraulic radius 
+real(stm_real),intent(in) :: gravity               !< Gravity
+real(stm_real),intent(out):: shear_velocity(ncell) !< Shear velocity 
+logical, optional         :: si_flag               !< SI and British unit switch
+! todo: is it safe to have si_falg optional?
+!---local
+real(stm_real) :: phi
+
+if (.not.(present(si_flag))) then
+     si_flag = .true.
+end if
+
+if (si_flag)then
+   phi=one
+else 
+   phi = 1.486d0
+end if
+
+shear_velocity = velocity*manning*sqrt(gravity)/(hydr_radius**(one/six))/phi
+
+end subroutine
+
 
 end module
