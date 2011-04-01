@@ -126,6 +126,59 @@ module sediment_variables
    
      return
  end subroutine
+ 
+ subroutine set_sediment_values(gravity,                 &                 
+                                water_density,           &           
+                                sediment_density,        &        
+                                kappa,                   &                   
+                                kinematic_viscosity,     &     
+                                floc_density,            &            
+                                cohesive_diameter,       &       
+                                crit_stress_full_dep,    &    
+                                density_wet_bulk,        &        
+                                crit_stress_partial_dep, & 
+                                crit_stress_surf_erosion,&
+                                density_dry_bulk,        &        
+                                ta_floc)                 
+    
+ 
+    implicit none
+ real(stm_real),intent(inout):: gravity                     !< Gravitational acceleration in SI unit
+ real(stm_real),intent(inout):: water_density               !< Water density
+ real(stm_real),intent(inout):: sediment_density            !< Sediment density
+ real(stm_real),intent(inout):: kappa                       !< von Karman's constant
+ real(stm_real),intent(inout):: kinematic_viscosity         !< Kinematic viscosity of water    
+ real(stm_real),intent(inout):: floc_density                !< Floc density
+ real(stm_real),intent(inout):: cohesive_diameter           !< Representative cohesive mixture diameter       
+ real(stm_real),intent(inout):: crit_stress_full_dep        !< Critical shear stress for full deposition    
+ real(stm_real),intent(inout):: density_wet_bulk            !< Wet bulk density of the deposit
+ real(stm_real),intent(inout):: crit_stress_partial_dep     !< Critical shear stress for partial deposition
+ real(stm_real),intent(inout):: crit_stress_surf_erosion    !< Critical shear stress for surface erosion 
+ real(stm_real),intent(inout):: density_dry_bulk            !< Dry bulk density 
+ real(stm_real),intent(inout):: ta_floc                     !< Floc strength 
+  
+ 
+ gravity                   = 9.81d0
+ water_density             = 1000d0
+ sediment_density          = 2600d0
+ kappa                     = 0.41d0
+ kinematic_viscosity       = 1.307d6 ! 10 deg C
+ floc_density              = LARGEREAL
+ cohesive_diameter         = LARGEREAL
+ crit_stress_full_dep      = LARGEREAL
+ density_wet_bulk          = LARGEREAL
+ crit_stress_partial_dep   = LARGEREAL
+ crit_stress_surf_erosion  = LARGEREAL
+ density_dry_bulk          = LARGEREAL
+ ta_floc                   = LARGEREAL      
+ 
+ 
+ end subroutine
+ 
+! subroutine
+!    implicit none
+! 
+! end subroutine
 
 end module
 
