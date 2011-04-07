@@ -113,9 +113,11 @@ end subroutine
 !> Calculates the first Einstein integral values
 !> This subroutine is developed based on analtycal solution of Guo and Julien (2004)
 !> To avoid disambiguation: C_bar = c_b_bar * first_einstein_integral
-!> the out put of the subroutine is equal to J_1 in the page 116 of ASCE sediment manual     
+!> the out put of the subroutine is equal to J_1 in the page 116 of ASCE sediment manual  
+!> To avoid singularities here an analytical solution used for integers    
 ! todo: Should we place this subroutine here? another separate file? or sediment derived variable?
 ! I think we will use it again in the bedload
+
 subroutine first_einstein_integral(I_1,      &
                                    delta_b,  &
                                    rouse_num) 
@@ -127,6 +129,17 @@ real(stm_real),intent(in) :: rouse_num        !< Rouse dimenssionless number
 real(stm_real),intent(in) :: delta_b          !< Relative bed layer thickness = b/H 
 real(stm_real),intent(out):: I_1              !< First Einstein integral value
 
+
+if (rouse_num > 3.98d0) then
+!todo: I am not sure if we need this subroutine in bed load or not 
+    call stm_fatal("This is not a Rouse number value for suspended sediment!")
+elseif (abs(rouse_num - three)< 0.03d0) then
+    I_1 = -three*log(delta_b)* + one/(two*delta_b*delta_b) - three/delta_b + three/two + delta_b
+elseif (abs(rouse_num - two)< 0.03d0) then
+    I_1 = 1/delta_b + half + two * log(delta_b) - delta_b
+elseif(abs(rouse_num - one)< 0.03d0) then  
+    I_1 = -log(delta_b) + delta_b - one
+else
 I_1   = (rouse_num*pi/sin(rouse_num*pi) - ((1-delta_b)**rouse_num)/(delta_b**(rouse_num-1)) &
          - rouse_num*(((delta_b/(1-delta_b))**(1-rouse_num))/(1-rouse_num))                & 
          + rouse_num*(((delta_b/(1-delta_b))**(2-rouse_num))/(1-rouse_num))                &
@@ -138,6 +151,7 @@ I_1   = (rouse_num*pi/sin(rouse_num*pi) - ((1-delta_b)**rouse_num)/(delta_b**(ro
          + rouse_num*(((delta_b/(1-delta_b))**(8-rouse_num))/(1-rouse_num)))               &
          * (delta_b**(rouse_num)/((1-delta_b)**rouse_num))
          
+end if
                                    
 
 end subroutine
