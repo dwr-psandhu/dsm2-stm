@@ -134,22 +134,25 @@ if (rouse_num > 3.98d0) then
 !todo: I am not sure if we need this subroutine in bed load or not 
     call stm_fatal("This is not a Rouse number value for suspended sediment!")
 elseif (abs(rouse_num - three)< 0.02d0) then
-    I_1 = -three*log(delta_b)* + one/(two*delta_b*delta_b) - three/delta_b + three/two + delta_b
+    I_1 = (-three*log(delta_b)* + one/(two*delta_b*delta_b) - three/delta_b + three/two + delta_b) &
+           * (delta_b**(rouse_num)/((one-delta_b)**rouse_num))
 elseif (abs(rouse_num - two)< 0.02d0) then
-    I_1 = 1/delta_b + half + two * log(delta_b) - delta_b
+    I_1 = (1/delta_b + half + two * log(delta_b) - delta_b)* &
+          (delta_b**(rouse_num)/((one-delta_b)**rouse_num))
 elseif(abs(rouse_num - one)< 0.02d0) then  
-    I_1 = -log(delta_b) + delta_b - one
+    I_1 = (-log(delta_b) + delta_b - one)* &
+          (delta_b**(rouse_num)/((one-delta_b)**rouse_num))
 else
-I_1   = (rouse_num*pi/sin(rouse_num*pi) - ((1-delta_b)**rouse_num)/(delta_b**(rouse_num-1)) &
-         - rouse_num*(((delta_b/(1-delta_b))**(1-rouse_num))/(1-rouse_num))                 & 
-         + rouse_num*(((delta_b/(1-delta_b))**(2-rouse_num))/(1-rouse_num))                 &
-         - rouse_num*(((delta_b/(1-delta_b))**(3-rouse_num))/(1-rouse_num))                 &
-         + rouse_num*(((delta_b/(1-delta_b))**(4-rouse_num))/(1-rouse_num))                 &
-         - rouse_num*(((delta_b/(1-delta_b))**(5-rouse_num))/(1-rouse_num))                 &
-         + rouse_num*(((delta_b/(1-delta_b))**(6-rouse_num))/(1-rouse_num))                 &
-         - rouse_num*(((delta_b/(1-delta_b))**(7-rouse_num))/(1-rouse_num))                 &
-         + rouse_num*(((delta_b/(1-delta_b))**(8-rouse_num))/(1-rouse_num)))                &
-         * (delta_b**(rouse_num)/((1-delta_b)**rouse_num))
+I_1   = (rouse_num*pi/sin(rouse_num*pi) - ((one-delta_b)**rouse_num)/(delta_b**(rouse_num-one)) &
+         - rouse_num*(((delta_b/(one-delta_b))**(one-rouse_num))  /(one-rouse_num))                 & 
+         + rouse_num*(((delta_b/(one-delta_b))**(two-rouse_num))  /(one-rouse_num))                 &
+         - rouse_num*(((delta_b/(one-delta_b))**(three-rouse_num))/(one-rouse_num))                 &
+         + rouse_num*(((delta_b/(one-delta_b))**(four-rouse_num)) /(one-rouse_num))                 &
+         - rouse_num*(((delta_b/(one-delta_b))**(five-rouse_num)) /(one-rouse_num))                 &
+         + rouse_num*(((delta_b/(one-delta_b))**(six-rouse_num))  /(one-rouse_num))                 &
+         - rouse_num*(((delta_b/(one-delta_b))**(seven-rouse_num))/(one-rouse_num))                 &
+         + rouse_num*(((delta_b/(one-delta_b))**(eight-rouse_num))/(one-rouse_num)))                &
+         * (delta_b**(rouse_num)/((one-delta_b)**rouse_num))
          
 end if
                                    
