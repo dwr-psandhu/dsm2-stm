@@ -22,4 +22,44 @@
 !>@ingroup test sediment
 module test_non_cohesive
 
+contains
+
+!> Tests Einsstein's first integral 
+! todo: incase the main subroutine replaced somewhere else this counterpart should place in the correct test package
+subroutine test_first_einstein_integral
+
+use fruit
+use non_cohesive_source
+use stm_precision
+
+implicit none
+!---args
+
+real(stm_real)  :: exp_re_p(nclas)         !< Explicit particle reynolds number
+real(stm_real)  :: diameter(nclas)         !< Particle diameter
+real(stm_real)  :: capital_r               !< Submerged specific gravity of sediment particles  
+!--- local
+real(stm_real)  :: hand_calc_value
+
+diameter =  (/1d-2,2d-2,1d-3/)
+g_acceleration = 9.81d0
+capital_r = 1.65d0
+kinematic_viscosity = 1.0d-6 
+
+hand_calc_value = 
+ 
+call explicit_particle_reynolds_number(exp_re_p,           &
+                                       diameter,           &
+                                       capital_r,          &
+                                       g_acceleration,     &
+                                       kinematic_viscosity,&
+                                       nclas)
+                                       
+call assertEquals(hand_calc_value(1),exp_re_p(1),weak_eps,"Error in subroutine explicit_particle_reynolds_number!")
+call assertEquals(hand_calc_value(2),exp_re_p(2),weak_eps,"Error in subroutine explicit_particle_reynolds_number!")
+call assertEquals(hand_calc_value(3),exp_re_p(3),weak_eps,"Error in subroutine explicit_particle_reynolds_number!")
+
+return
+end subroutine
+
 end module
