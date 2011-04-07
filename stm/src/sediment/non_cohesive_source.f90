@@ -33,6 +33,7 @@ use suspended_sediment_variable
 use sediment_variables
 use suspended_utility
 
+
 implicit none
 real(stm_real),intent(in) :: dx
 real(stm_real),intent(in) :: dt
@@ -71,15 +72,15 @@ call set_sediment_values(gravity,                 &
                          density_dry_bulk,        &        
                          ta_floc)  
                          
-call shear_velocity 
+!call shear_velocity 
 
 select case (pick_up_function)
    
     case('garcia_parker')
     
-   call entrainment_garcia_parker()
-   
-   call deposition()
+   !call entrainment_garcia_parker()
+   !
+  ! call deposition()
    
       
 !   case('zyserman_fredsoe')
@@ -123,6 +124,7 @@ subroutine first_einstein_integral(I_1,      &
                                    rouse_num) 
                                    
 use stm_precision
+use error_handling
 implicit none
 
 real(stm_real),intent(in) :: rouse_num        !< Rouse dimenssionless number  
@@ -133,13 +135,14 @@ real(stm_real),intent(out):: I_1              !< First Einstein integral value
 if (rouse_num > 3.98d0) then
 !todo: I am not sure if we need this subroutine in bed load or not 
     call stm_fatal("This is not a Rouse number value for suspended sediment!")
-elseif (abs(rouse_num - three)< 0.02d0) then
-    I_1 = (-three*log(delta_b)* + one/(two*delta_b*delta_b) - three/delta_b + three/two + delta_b) &
-           * (delta_b**(rouse_num)/((one-delta_b)**rouse_num))
-elseif (abs(rouse_num - two)< 0.02d0) then
-    I_1 = (1/delta_b + half + two * log(delta_b) - delta_b)* &
-          (delta_b**(rouse_num)/((one-delta_b)**rouse_num))
-elseif(abs(rouse_num - one)< 0.02d0) then  
+elseif (abs(rouse_num - three)< 0.015d0) then
+    I_1 = (minus*three*log(delta_b) + one/(two*delta_b*delta_b) - three/delta_b + three/two + delta_b) &
+           * ((delta_b**(rouse_num))/((one-delta_b)**rouse_num))          
+elseif (abs(rouse_num - two)< 0.015d0) then
+    I_1 = (1/delta_b  + two*log(delta_b) - delta_b)* &
+          ((delta_b**(rouse_num))/((one-delta_b)**rouse_num))
+     
+elseif(abs(rouse_num - one)< 0.015d0) then  
     I_1 = (-log(delta_b) + delta_b - one)* &
           (delta_b**(rouse_num)/((one-delta_b)**rouse_num))
 else
