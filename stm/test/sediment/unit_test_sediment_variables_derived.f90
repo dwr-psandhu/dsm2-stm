@@ -75,7 +75,7 @@ end do
 pick_up_function =.false.
 
 diameter = (/100d-3,10d-3,1d-3,0.1d-3,0.01d-3/)
-hand_calc_value = (/1.956501332d0,0.740273587d0,0.154941357d0,0.007477904d0,7.9999d-05/)
+hand_calc_value = (/1.9697877833755d0,0.741517868347728d0,0.15497120869d0,0.0074779137192d0,7.9999d-05/)
 
 
 call settling_velocity(w_s,              &
@@ -274,7 +274,7 @@ use stm_precision
 implicit none
 
 integer, parameter :: nvol = 3          !< Number cells 
-real(stm_real):: vel(nvol)              !< Velocity vector         
+real(stm_real):: vel(nvol)              !< Velocity          
 real(stm_real):: manning_n(nvol)        !< Manning's n                                     
 real(stm_real):: hand_calc_value(nvol)  !< The sought output 
 real(stm_real):: big_r(nvol)            !< Hydraulic radius 
@@ -290,12 +290,12 @@ big_r = (/three,five,seven/)
 
 hand_calc_value =  (/ 0.057347634619921d0,   0.050273292832295d0,  -0.152780222207618d0/)
 
-call shear_velocity_calculator(shear_v,    &
-                                vel,       &
-                                manning_n, &
-                                gravity,   &
-                                big_r,     &
-                                nvol)                      
+call shear_velocity_calculator(shear_v,   &
+                               vel,       &
+                               manning_n, &
+                               gravity,   &
+                               big_r,     &
+                               nvol)                      
 
 do iclas=1,nvol
     call assertEquals(hand_calc_value(iclas),shear_v(iclas),weak_eps,"Error in subroutine Shear Velocity!")
