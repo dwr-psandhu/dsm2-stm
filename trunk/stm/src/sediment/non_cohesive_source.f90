@@ -131,22 +131,69 @@ real(stm_real),intent(in) :: rouse_num        !< Rouse dimenssionless number
 real(stm_real),intent(in) :: delta_b          !< Relative bed layer thickness = b/H 
 real(stm_real),intent(out):: I_1              !< First Einstein integral value
 
+!-- local
+real(stm_real) :: ro_l   
+real(stm_real) :: ro_r    !right
+real(stm_real) :: i_1_l
+real(stm_real) :: i_1_r   !right
+
+
 
 if (rouse_num > 3.98d0) then
 !todo: I am not sure if we need this subroutine in bed load or not 
     call stm_fatal("This is not a Rouse number value for suspended sediment!")
-elseif (abs(rouse_num - three)< 0.015d0) then
-    I_1 = (minus*three*log(delta_b) + one/(two*delta_b*delta_b) - three/delta_b + three/two + delta_b) &
-           * ((delta_b**(rouse_num))/((one-delta_b)**rouse_num))          
-elseif (abs(rouse_num - two)< 0.015d0) then
-    I_1 = (1/delta_b  + two*log(delta_b) - delta_b)* &
-          ((delta_b**(rouse_num))/((one-delta_b)**rouse_num))
+elseif (abs(rouse_num - three)< 0.01d0) then
+
+ro_l = three - 0.05d0
+ro_r = three + 0.05d0 
+
+call inside_i_1(i_1_l,delta_b,ro_l)
+call inside_i_1(i_1_r,delta_b,ro_r)
+
+I_1 = (i_1_r + i_1_l) / two
+
+         
+elseif (abs(rouse_num - two)< 0.01d0) then
+
+ro_l = two - 0.05d0
+ro_r = two + 0.05d0 
+
+call inside_i_1(i_1_l,delta_b,ro_l)
+call inside_i_1(i_1_r,delta_b,ro_r)
+
+I_1 = (i_1_r + i_1_l) / two
+  
      
-elseif(abs(rouse_num - one)< 0.015d0) then  
-    I_1 = (-log(delta_b) + delta_b - one)* &
-          (delta_b**(rouse_num)/((one-delta_b)**rouse_num))
+elseif(abs(rouse_num - one)< 0.01d0) then  
+
+ro_l = one - 0.05d0
+ro_r = one + 0.05d0 
+
+call inside_i_1(i_1_l,delta_b,ro_l)
+call inside_i_1(i_1_r,delta_b,ro_r)
+
+I_1 = (i_1_r + i_1_l) / two
+    
 else
-I_1   = (rouse_num*pi/sin(rouse_num*pi) - ((one-delta_b)**rouse_num)/(delta_b**(rouse_num-one)) &
+   call inside_i_1(I_1,      &
+                   delta_b,  &
+                   rouse_num)
+         
+end if
+
+end subroutine
+
+pure subroutine inside_i_1(I_1,      &
+                           delta_b,  &
+                           rouse_num)   
+                            
+use stm_precision
+implicit none
+real(stm_real),intent(in) :: rouse_num        !< Rouse dimenssionless number  
+real(stm_real),intent(in) :: delta_b          !< Relative bed layer thickness = b/H 
+real(stm_real),intent(out):: I_1              !< First Einstein integral value
+
+I_1   = (rouse_num*pi/sin(rouse_num*pi) - ((one-delta_b)**rouse_num)/(delta_b**(rouse_num-one))     &
          - rouse_num*(((delta_b/(one-delta_b))**(one-rouse_num))  /(one-rouse_num))                 & 
          + rouse_num*(((delta_b/(one-delta_b))**(two-rouse_num))  /(one-rouse_num))                 &
          - rouse_num*(((delta_b/(one-delta_b))**(three-rouse_num))/(one-rouse_num))                 &
@@ -154,12 +201,12 @@ I_1   = (rouse_num*pi/sin(rouse_num*pi) - ((one-delta_b)**rouse_num)/(delta_b**(
          - rouse_num*(((delta_b/(one-delta_b))**(five-rouse_num)) /(one-rouse_num))                 &
          + rouse_num*(((delta_b/(one-delta_b))**(six-rouse_num))  /(one-rouse_num))                 &
          - rouse_num*(((delta_b/(one-delta_b))**(seven-rouse_num))/(one-rouse_num))                 &
-         + rouse_num*(((delta_b/(one-delta_b))**(eight-rouse_num))/(one-rouse_num)))                &
+         + rouse_num*(((delta_b/(one-delta_b))**(eight-rouse_num))/(one-rouse_num))                 &
+         - rouse_num*(((delta_b/(one-delta_b))**(nine-rouse_num)) /(one-rouse_num))                 &
+         + rouse_num*(((delta_b/(one-delta_b))**(ten -rouse_num)) /(one-rouse_num)))                &
          * (delta_b**(rouse_num)/((one-delta_b)**rouse_num))
-         
-end if
-                                   
+                               
 
-end subroutine
+end subroutine 
 
 end module 

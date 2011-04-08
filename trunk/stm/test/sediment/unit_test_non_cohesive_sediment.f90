@@ -90,7 +90,7 @@ call assertEquals(hand_calc_value,J_1,weak_eps,"Error in subroutine first Einste
 
 
 rouse = two
-hand_calc_value = 0.007954898765675d0 !MATLAB calculation
+hand_calc_value =   0.009262285443120d0 !MATLAB calculation
  
 call first_einstein_integral(J_1,    &
                              delta,  &
