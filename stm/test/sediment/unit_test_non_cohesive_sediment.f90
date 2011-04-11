@@ -108,12 +108,6 @@ call first_einstein_integral(J_1,    &
 call assertEquals(hand_calc_value,J_1,weak_eps,"Error in subroutine first Einstein integral integer=3!")
 
 
-
-
-
-
-
-
 return
 end subroutine
 
