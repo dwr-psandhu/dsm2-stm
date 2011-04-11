@@ -246,7 +246,7 @@ integer :: iclas
 
 d_star =  [160d0,21d0,15d0,10d0,2d0,1d0,-4d0] ! coarse silt and medium sand 
 
-hand_calc_value =  [0.055d0,             &
+hand_calc_value =  [0.055d0,              &
                      0.031433080718165d0, &
                      0.030510608231307d0, &
                      0.0320721471387d0,   &

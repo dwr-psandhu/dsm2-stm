@@ -53,18 +53,18 @@ real(stm_real)  :: diffusive_flux_boundary_lo (nvar)           !< Diffusive flux
 real(stm_real)  :: diffusive_flux_boundary_hi (nvar)           !< Diffusive flux operator at high side 
 
 
-conc_prev(:,1) = (/300.0d0,305.0d0,320.0d0,330.0d0,340.0d0,350.0d0/)
-explicit_diffuse_op(:,1) = (/112.7d0,225.7d0,-112.8d0,-0.2d0,-0.4d0,-225.d0/)
-area_lo_prev(:) = (/100.0d0,98.0d0, 96.0d0,94.0d0,92.0d0,90.0d0/)
-area_hi_prev(:) = (/98.0d0, 96.0d0,94.0d0,92.0d0,90.0d0,88.0d0/)
-area_prev (:) = (/99d0,97d0,95d0,93d0,91d0,89d0/)
+conc_prev(:,1) = [300.0d0,305.0d0,320.0d0,330.0d0,340.0d0,350.0d0]
+explicit_diffuse_op(:,1) = [112.7d0,225.7d0,-112.8d0,-0.2d0,-0.4d0,-225.d0]
+area_lo_prev(:) = [100.0d0,98.0d0, 96.0d0,94.0d0,92.0d0,90.0d0]
+area_hi_prev(:) = [98.0d0, 96.0d0,94.0d0,92.0d0,90.0d0,88.0d0]
+area_prev (:) = [99d0,97d0,95d0,93d0,91d0,89d0]
 diffusive_flux_boundary_lo(:) = zero
 diffusive_flux_boundary_hi(:) = zero
 dx=2.0d0
 dt=1.0d0
 theta_stm = 1.0d0
-disp_coef_lo_prev(:,1) = (/0.9d0,0.92d0,0.94d0,0.96d0,0.98d0,1.d0/)
-disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1.d0,1.02d0/)
+disp_coef_lo_prev(:,1) = [0.9d0,0.92d0,0.94d0,0.96d0,0.98d0,1.d0]
+disp_coef_hi_prev(:,1) = [0.92d0,0.94d0,0.96d0,0.98d0,1.d0,1.02d0]
 time =LARGEREAL 
 
    !--theta =1 

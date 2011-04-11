@@ -46,11 +46,11 @@ real(stm_real) :: dx                                          !< Spacial step
 real(stm_real) :: dt                                          !< Time step  
 
 !-- set the values and the known answer
-conc_prev(:,1)  = (/300d0,305d0,320d0,330d0,340d0,350d0/)
-area_lo_prev(:) = (/100d0,98d0,96d0,94d0,92d0,90d0/)
-area_hi_prev(:) = (/98d0,96d0,94d0,92d0,90d0,88d0/)
-disp_coef_lo_prev(:,1) = (/0.9d0,0.92d0,0.94d0,0.96d0,0.98d0,1d0/)
-disp_coef_hi_prev(:,1) = (/0.92d0,0.94d0,0.96d0,0.98d0,1d0,1.02d0/)
+conc_prev(:,1)  = [300d0,305d0,320d0,330d0,340d0,350d0]
+area_lo_prev(:) = [100d0,98d0,96d0,94d0,92d0,90d0]
+area_hi_prev(:) = [98d0,96d0,94d0,92d0,90d0,88d0]
+disp_coef_lo_prev(:,1) = [0.9d0,0.92d0,0.94d0,0.96d0,0.98d0,1d0]
+disp_coef_hi_prev(:,1) = [0.92d0,0.94d0,0.96d0,0.98d0,1d0,1.02d0]
 dx = 2.0d0 
 time =LARGEREAL 
                                             
