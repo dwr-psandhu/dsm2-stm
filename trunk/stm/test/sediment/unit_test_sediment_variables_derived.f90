@@ -44,8 +44,8 @@ real(stm_real) :: hand_calc_value(nclas)         !< Value of the function which 
 logical :: pick_up_function
 integer :: iclas
 ! Small value
-diameter = (/0.8d-7,zero,5.0d-4,5.0d-5,2.0d-3/)
-hand_calc_value = (/-LARGEREAL,-LARGEREAL,0.072114059730314d0,0.0022458333333d0,0.19781658171144d0/) 
+diameter = [0.8d-7,zero,5.0d-4,5.0d-5,2.0d-3]
+hand_calc_value = [-LARGEREAL,-LARGEREAL,0.072114059730314d0,0.0022458333333d0,0.19781658171144d0] 
 ! van Rijn 
 call settling_velocity(w_s,              &
                        nu,               &
@@ -74,8 +74,8 @@ end do
 !Dietrich 
 pick_up_function =.false.
 
-diameter = (/100d-3,10d-3,1d-3,0.1d-3,0.01d-3/)
-hand_calc_value = (/1.9697877833755d0,0.741517868347728d0,0.15497120869d0,0.0074779137192d0,7.9999d-05/)
+diameter = [100d-3,10d-3,1d-3,0.1d-3,0.01d-3]
+hand_calc_value = [1.9697877833755d0,0.741517868347728d0,0.15497120869d0,0.0074779137192d0,7.9999d-05]
 
 
 call settling_velocity(w_s,              &
@@ -136,12 +136,12 @@ real(stm_real)  :: g_acceleration          !< Gravitational acceleration
 real(stm_real)  :: kinematic_viscosity     !< Kinematic viscosity (m2/sec)
 real(stm_real)  :: hand_calc_value(nclas)
 
-diameter =  (/1d-2,2d-2,1d-3/)
+diameter =  [1d-2,2d-2,1d-3]
 g_acceleration = 9.81d0
 capital_r = 1.65d0
 kinematic_viscosity = 1.0d-6 
 
-hand_calc_value =  (/4023.2449589852d0,11379.455171492d0,127.22617655184d0/)
+hand_calc_value =  [4023.2449589852d0,11379.455171492d0,127.22617655184d0]
  
 call explicit_particle_reynolds_number(exp_re_p,           &
                                        diameter,           &
@@ -173,11 +173,11 @@ real(stm_real):: kinematic_viscosity  !< Kinematic viscosity (m2/sec)
 real(stm_real):: hand_calc_value(nclas)
 
 
-diameter =  (/2d-3,0.25d-3,0.031d-3/) ! coarse silt medium sand and sand
+diameter =  [2d-3,0.25d-3,0.031d-3] ! coarse silt medium sand and sand
 kinematic_viscosity = 1.0d-6 
-settling_v = (/162d-3,25.7d-3,0.49d-3/)
+settling_v = [162d-3,25.7d-3,0.49d-3]
 
-hand_calc_value =  (/324.0d0,6.425d0,0.01519d0/)
+hand_calc_value =  [324.0d0,6.425d0,0.01519d0]
 
 call particle_reynolds_number(re_p,                &
                               settling_v,          &
@@ -210,12 +210,12 @@ real(stm_real):: diameter(nclas)       !< Particle diameter
 real(stm_real):: kinematic_viscosity   !< Kinematic viscosity (m2/sec)
 real(stm_real):: hand_calc_value(nclas)
 
-diameter =  (/2d-3,0.25d-3/) ! coarse silt and medium sand 
+diameter =  [2d-3,0.25d-3] ! coarse silt and medium sand 
 kinematic_viscosity = 1.0d-6
 g_accel = 9.81d0
 capital_r = 1.65d0
 
-hand_calc_value =  (/50.591898800422d0,6.3239873500d0/)
+hand_calc_value =  [50.591898800422d0,6.3239873500d0]
 
 call dimless_particle_diameter(d_star,                 &
                                g_accel,                &
@@ -244,15 +244,15 @@ real(stm_real):: cr_shields_prmtr(nclas) !< Critical Shields parameter
 real(stm_real):: hand_calc_value(nclas)
 integer :: iclas
 
-d_star =  (/160d0,21d0,15d0,10d0,2d0,1d0,-4d0/) ! coarse silt and medium sand 
+d_star =  [160d0,21d0,15d0,10d0,2d0,1d0,-4d0] ! coarse silt and medium sand 
 
-hand_calc_value =  (/0.055d0,             &
+hand_calc_value =  [0.055d0,             &
                      0.031433080718165d0, &
                      0.030510608231307d0, &
                      0.0320721471387d0,   &
                      0.12d0,              &
                      LARGEREAL,           &
-                     LARGEREAL/)
+                     LARGEREAL]
 
 call critical_shields_parameter(cr_shields_prmtr,   &
                                 d_star,             &
@@ -283,12 +283,12 @@ real(stm_real):: shear_v(nvol)          !< Shear velocity
 logical :: si_br                        !< SI and British unit switch
 integer :: iclas
 
-vel =  (/1.1d0,.7d0,-1.5d0/)    ! values for a river
-manning_n = (/0.02d0,0.03d0,0.045d0/)
+vel =  [1.1d0,.7d0,-1.5d0]    ! values for a river
+manning_n = [0.02d0,0.03d0,0.045d0]
 gravity = 9.8d0
-big_r = (/three,five,seven/)
+big_r = [three,five,seven]
 
-hand_calc_value =  (/ 0.057347634619921d0,   0.050273292832295d0,  -0.152780222207618d0/)
+hand_calc_value =  [ 0.057347634619921d0,   0.050273292832295d0,  -0.152780222207618d0]
 
 call shear_velocity_calculator(shear_v,   &
                                vel,       &
@@ -317,7 +317,7 @@ end do
 
 gravity =32.2d0
 si_br = .false.
-hand_calc_value =  (/ 0.069953846244591d0,   0.061324415911969d0,  -0.186364516066955d0/)
+hand_calc_value =  [ 0.069953846244591d0,   0.061324415911969d0,  -0.186364516066955d0]
 
 call shear_velocity_calculator(shear_v,    &
                                 vel,       &

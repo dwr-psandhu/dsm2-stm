@@ -111,4 +111,38 @@ call assertEquals(hand_calc_value,J_1,weak_eps,"Error in subroutine first Einste
 return
 end subroutine
 
+subroutine test_es_garcia_parker()
+
+use fruit
+use non_cohesive_source
+use stm_precision
+
+integer,parameter :: nvol = 3                  !< Number of computational volumes in a channel
+integer,parameter :: nclass = 2                !< Number of non-cohesive sediment grain classes
+real(stm_real) :: e_s(nvol,nclass)             !< Dimenssionless rate of entrainment of bed sediment into suspension 
+real(stm_real) :: shear_v(nvol)                !< Shear Velocity
+real(stm_real) :: exp_re_p(nclass)             !< Explicit particle Reynolds number
+real(stm_real) :: settling_v(nclass)           !< Settling velocity
+real(stm_real) :: hand_calc_value(nvol,nclass)
+
+shear_v =(/0.1d0,0.4d0,one/)
+exp_re_p =(/two,ten/)
+settling_v = (/0.001d0,0.1d0/)
+
+!hand_calc_value = 
+
+call es_garcia_parker(e_s,         &
+                      shear_v,     &
+                      exp_re_p,    &
+                      settling_v,  & 
+                      nclass,      &
+                      nvol)
+
+
+
+
+return
+end subroutine
+
+
 end module
