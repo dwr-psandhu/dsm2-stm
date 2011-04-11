@@ -216,7 +216,6 @@ end do
 
 big_e_sub_s  = cap_a*(z_u**five)/(one + (z_u**five)*cap_a/0.3d0)                                  
                                      
-
 end subroutine
 
 end module 
