@@ -46,8 +46,8 @@ use stm_precision
     
   
      !---test positive and negetive scales with very large scale 
-    mass(:,1) = (/1:3/)
-    mass(:,2) = (/11:13/)
+    mass(:,1) = [1:3]
+    mass(:,2) = [11:13]
     reference = mass
     scale =LARGEREAL
     area (:) = four*four
@@ -63,8 +63,8 @@ use stm_precision
     call assertEquals (mass(3,2),reference(3,2),1d-12,"problem in converting prim increment to mass, array 3,2 ")
      
       !---test  scales equal to zero  
-    mass(:,1) = (/1:3/)
-    mass(:,2) = (/11:13/)
+    mass(:,1) = [1:3]
+    mass(:,2) = [11:13]
     reference = mass
     scale = zero
     
@@ -74,8 +74,8 @@ use stm_precision
     call assertEquals (mass(3,2),reference(3,2),1d-12,"problem in converting prim increment to mass, array 3,2 ")
   
     !---test area = zero ,mass must be the same at the end
-    mass(:,1) = (/1:3/)
-    mass(:,2) = (/11:13/)
+    mass(:,1) = [1:3]
+    mass(:,2) = [11:13]
     reference = mass
     scale = LARGEREAL
     conc = LARGEREAL
@@ -87,8 +87,8 @@ use stm_precision
     call assertEquals (mass(3,2),reference(3,2),1d-12,"problem in converting prim increment to mass, array 3,2 ")
     
     !--- test 
-    mass(:,1) = (/1:3/)
-    mass(:,2) = (/11:13/)
+    mass(:,1) = [1:3]
+    mass(:,2) = [11:13]
     reference = mass + ten
     scale = one
     conc = five

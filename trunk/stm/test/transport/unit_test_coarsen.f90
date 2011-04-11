@@ -42,8 +42,8 @@ real(stm_real), allocatable :: coarse_data(:,:)   !< Coarse data values
 !---- local
 real(stm_real), parameter :: tol = 1.d-15         !< Acceptable tolerance 
 
-fine_data(:,1) = (/1:6/)
-fine_data(:,2) = (/11:16/)
+fine_data(:,1) = [1:6]
+fine_data(:,2) = [11:16]
 
 
 !> It have to output same array if the coarsening factor is one 
