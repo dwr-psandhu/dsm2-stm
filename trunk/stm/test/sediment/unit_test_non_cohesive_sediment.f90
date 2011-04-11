@@ -123,13 +123,16 @@ real(stm_real) :: e_s(nvol,nclass)             !< Dimenssionless rate of entrain
 real(stm_real) :: shear_v(nvol)                !< Shear Velocity
 real(stm_real) :: exp_re_p(nclass)             !< Explicit particle Reynolds number
 real(stm_real) :: settling_v(nclass)           !< Settling velocity
+!---local
 real(stm_real) :: hand_calc_value(nvol,nclass)
+integer :: ivol
 
-shear_v =(/0.1d0,0.4d0,one/)
-exp_re_p =(/two,ten/)
-settling_v = (/0.001d0,0.1d0/)
+shear_v =[0.1d0,0.4d0,one]
+exp_re_p =[two,ten]
+settling_v = [0.001d0,0.1d0]
 
-!hand_calc_value = 
+hand_calc_value = reshape ([107.3127329d0,429.2509316d0,1073.1273291d0,3.9810717d0,15.9242868d0,39.8107171d0],[3,2])
+
 
 call es_garcia_parker(e_s,         &
                       shear_v,     &
@@ -137,6 +140,11 @@ call es_garcia_parker(e_s,         &
                       settling_v,  & 
                       nclass,      &
                       nvol)
+                      
+do ivol=1,nvol
+  call assertEquals(hand_calc_value(ivol,1),e_s(ivol,1),weak_eps,"Error in subroutine es_garcia_parker")
+  call assertEquals(hand_calc_value(ivol,2),e_s(ivol,2),weak_eps,"Error in subroutine es_garcia_parker")
+end do 
 
 
 
