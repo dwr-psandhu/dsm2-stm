@@ -236,6 +236,7 @@ return
 end subroutine
 
 ! todo: should we assume depth = Rh? it is larger than 1/10 in delta 
+! todo: Shear velocity is always positive?!?!
 subroutine shear_velocity_calculator(shear_velocity,      &
                                      velocity,            &
                                      manning,             &
