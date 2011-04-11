@@ -131,8 +131,8 @@ shear_v =[0.1d0,0.4d0,one]
 exp_re_p =[two,ten]
 settling_v = [0.001d0,0.1d0]
 
-hand_calc_value = reshape ([0.2999514d0,	0.3000000d0,	0.3000000d0, &
-                            0.0001299d0,	0.0922054d0,	0.2932331d0],[3,2])
+hand_calc_value = reshape ([0.29995136236d0,	0.29999995249d0,	0.29999999951d0, &
+                            0.00012994369d0,	0.09220539342d0,	0.29323308271d0],[3,2])
 
 
 call es_garcia_parker(e_s,         &
@@ -146,8 +146,6 @@ do ivol=1,nvol
   call assertEquals(hand_calc_value(ivol,1),e_s(ivol,1),weak_eps,"Error in subroutine es_garcia_parker")
   call assertEquals(hand_calc_value(ivol,2),e_s(ivol,2),weak_eps,"Error in subroutine es_garcia_parker")
 end do 
-
-
 
 
 return

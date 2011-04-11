@@ -236,7 +236,6 @@ return
 end subroutine
 
 ! todo: should we assume depth = Rh? it is larger than 1/10 in delta 
-! todo: Shear velocity is always positive?!?!
 subroutine shear_velocity_calculator(shear_velocity,      &
                                      velocity,            &
                                      manning,             &
@@ -272,7 +271,7 @@ else
    phi = 1.486d0
 end if
 
-! todo: I wonder if the ABS must be used in shear velocity or not?
+! the ABS used due to the nature of shear velocity 
 shear_velocity = abs(velocity)*manning*sqrt(gravity)/(hydr_radius**(one/six))/phi
 
 end subroutine
