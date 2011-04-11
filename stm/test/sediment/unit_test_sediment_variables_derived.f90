@@ -288,7 +288,7 @@ manning_n = [0.02d0,0.03d0,0.045d0]
 gravity = 9.8d0
 big_r = [three,five,seven]
 
-hand_calc_value =  [ 0.057347634619921d0,   0.050273292832295d0,  -0.152780222207618d0]
+hand_calc_value =  [ 0.057347634619921d0,   0.050273292832295d0,   0.152780222207618d0]
 
 call shear_velocity_calculator(shear_v,   &
                                vel,       &
@@ -317,7 +317,7 @@ end do
 
 gravity =32.2d0
 si_br = .false.
-hand_calc_value =  [ 0.069953846244591d0,   0.061324415911969d0,  -0.186364516066955d0]
+hand_calc_value =  [ 0.069953846244591d0,   0.061324415911969d0,   0.186364516066955d0]
 
 call shear_velocity_calculator(shear_v,    &
                                 vel,       &
