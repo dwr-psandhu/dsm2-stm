@@ -272,7 +272,8 @@ else
    phi = 1.486d0
 end if
 
-shear_velocity = velocity*manning*sqrt(gravity)/(hydr_radius**(one/six))/phi
+! todo: I wonder if the ABS must be used in shear velocity or not?
+shear_velocity = abs(velocity)*manning*sqrt(gravity)/(hydr_radius**(one/six))/phi
 
 end subroutine
 
