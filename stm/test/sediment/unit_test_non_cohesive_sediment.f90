@@ -131,7 +131,8 @@ shear_v =[0.1d0,0.4d0,one]
 exp_re_p =[two,ten]
 settling_v = [0.001d0,0.1d0]
 
-hand_calc_value = reshape ([107.3127329d0,429.2509316d0,1073.1273291d0,3.9810717d0,15.9242868d0,39.8107171d0],[3,2])
+hand_calc_value = reshape ([0.2999514d0,	0.3000000d0,	0.3000000d0, &
+                            0.0001299d0,	0.0922054d0,	0.2932331d0],[3,2])
 
 
 call es_garcia_parker(e_s,         &
