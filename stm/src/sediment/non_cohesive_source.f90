@@ -183,4 +183,37 @@ I_1   = (rouse_num*pi/sin(rouse_num*pi) - ((one-delta_b)**rouse_num)/(delta_b**(
 
 end subroutine 
 
+subroutine entrainment_garcia_parker(big_e_sub_s,       &
+                                     shear_velocity,    &
+                                     explt_prtcl_re_num,&
+                                     settling_v,        & 
+                                     nclass,            &
+                                     nvol)
+use stm_precision
+implicit none
+
+!-- arg
+integer, intent(in):: nvol                                !< Number of computational volumes in a channel
+integer, intent(in):: nclass                              !< Number of non-cohesive sediment grain classes
+real(stm_real),intent(out):: big_e_sub_s(nvol,nclass)     !< Dimenssionless rate of entrainment of bed sediment into suspension (i.e., vol entrained sediment/unit bed area/time)                                       
+!  big_e_sub_s is in a range of 0.0002 ~ 0.06
+real(stm_real),intent(in) :: shear_v(nvol)                !< Shear Velocity
+real(stm_real),intent(in) :: exp_re_p(nclass)             !< Explicit particle Reynolds number
+real(stm_real),intent(in) :: settling_v(nclass)           !< Settling velocity
+!---local
+real(stm_real) :: z_u(nvol,nclass)                        !< Captial z sub u a measure for strength of shear stress but it also takes into account the particle size in Garcia notation
+real(stm_real), parameter :: cap_a = 1.3d-7               ! Constant value (see ASCE sediment manual no. 110 page 118)
+
+
+  z_u = shear_v*(exp_re_p**0.6d0)/settling_v
+
+where (exp_re_p < 3.5d0)
+   z_u = 0.708d0*shear_v*(exp_re_p**0.6d0)/settling_v
+end where 
+
+big_e_sub_s  = cap_a*(z_u**five)/(one + (z_u**five)*cap_a/0.3d0)                                  
+                                     
+
+end subroutine
+
 end module 
