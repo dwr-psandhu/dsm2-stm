@@ -72,35 +72,9 @@ call set_sediment_values(gravity,                 &
                          density_dry_bulk,        &        
                          ta_floc)  
                          
-!call shear_velocity 
+ 
 
-select case (pick_up_function)
-   
-    case('garcia_parker')
-    
-   !call entrainment_garcia_parker()
-   !
-  ! call deposition()
-   
-      
-!   case('zyserman_fredsoe')
-!   
-!    subroutine entrainment_zyserman_fredsoe()
-!      implicit none 
-!
-!    end subroutine entrainment_zyserman_fredsoe ! todo: remove 
-!   
-!   case('van_rijn')
-!   
-!   subroutine entrainment_van_rijn()
-!      implicit none 
-!
-!    end subroutine  entrainment_van_rijn
-!    
-!   case('smith_mclean')
-!    call entrainment_smith_mclean()
-  
-end select
+
    
 call deallocate_sediment_static()
 
