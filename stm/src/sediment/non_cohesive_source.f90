@@ -26,25 +26,37 @@
 module non_cohesive_source
 
 contains 
-subroutine source_non_cohesive(nvol,nclass,pick_up_flag,dx,dt,time)
+subroutine source_non_cohesive(vertical_flux,    &
+                               conc,             &
+                               nvol,             &
+                               nclass,           &
+                               pick_up_flag,     &
+                               dx,               &
+                               dt,               &
+                               time)
 
 use stm_precision 
 use suspended_sediment_variable
 use sediment_variables
 use suspended_utility
 
-
 implicit none
-real(stm_real),intent(in) :: dx
-real(stm_real),intent(in) :: dt
-real(stm_real),intent(in) :: time
-integer, intent(in) :: nvol
-integer, intent(in) :: nclass
-character(len=32), optional, intent(in) :: pick_up_flag
+real(stm_real),intent(out):: vertical_flux(nvol,nclass)    !< Vertical sediment net flux into the water column
+real(stm_real),intent(in) :: conc(nvol)                    !< Concentration at new time
+real(stm_real),intent(in) :: dx                            !< Grid size in space
+real(stm_real),intent(in) :: dt                            !< Step size in time
+real(stm_real),intent(in) :: time                          !< Current time
+integer, intent(in)       :: nvol                          !< Number of cells 
+integer, intent(in)       :: nclass                        !< Number of classes for non-cohesive sediment in suspension
+character(len=32), optional, intent(in) :: pick_up_flag    !< Switch for sediment pickup function
+
 !---local
+real(stm_real) :: c_bar_bed(nvol,nclass)        !< Near bed vaule of mean volumetric sediment concentration
+real(stm_real) :: fall_vel(nclass)              !< Settling velocity                       
 character :: pick_up_function 
 procedure(sediment_hydro_if),pointer :: velocity_non_cohesive 
 
+! set velocity and width
 velocity_non_cohesive => sediment_velocity_width
 
 pick_up_function = 'garcia_parker'
@@ -55,8 +67,10 @@ end if
 
 !- initialization to LARGEREAL
 call set_sediment_constants
+
+! allocate manning n + width and non_cohesive diameters
 call allocate_sediment_parameters(nvol,nclass)
-! gives manning n + width and non_cohesive diameters
+
 !- getting the values
 call set_sediment_values(gravity,                 &                 
                          water_density,           &           
@@ -71,8 +85,16 @@ call set_sediment_values(gravity,                 &
                          crit_stress_surf_erosion,&
                          density_dry_bulk,        &        
                          ta_floc)  
-                         
- 
+!------ set the values of manning's n, width and diameters of grains                     
+call set_manning_width_diameter(manning_n,    &
+                                width,        &
+                                diameter,     &
+                                nclass,       &
+                                nvol)
+                                
+! here verfical_net_sediment_flux = settling_vel * (Es - c_bar_sub_b)
+
+
 
 
    
@@ -80,11 +102,8 @@ call deallocate_sediment_static()
 
 end subroutine 
 
-    subroutine entrainment_garcia_parker()
-      implicit none 
-
-    end subroutine 
-
+!-----------------------------------------------------------------
+ 
 !> Calculates the first Einstein integral values
 !> This subroutine is developed based on analtycal solution of Guo and Julien (2004)
 !> To avoid disambiguation: C_bar = c_b_bar * first_einstein_integral
@@ -92,7 +111,6 @@ end subroutine
 !> To avoid singularities here an analytical solution used for integers    
 ! todo: Should we place this subroutine here? another separate file? or sediment derived variable?
 ! I think we will use it again in the bedload
-
 subroutine first_einstein_integral(I_1,      &
                                    delta_b,  &
                                    rouse_num) 
@@ -182,6 +200,8 @@ I_1   = (rouse_num*pi/sin(rouse_num*pi) - ((one-delta_b)**rouse_num)/(delta_b**(
                                
 
 end subroutine 
+
+!------------------------------------------------------------------------
 
 subroutine es_garcia_parker(big_e_sub_s,       &
                             shear_v,           &
