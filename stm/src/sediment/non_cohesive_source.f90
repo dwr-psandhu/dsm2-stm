@@ -51,8 +51,8 @@ integer, intent(in)       :: nclass                        !< Number of classes 
 character(len=32), optional, intent(in) :: pick_up_flag    !< Switch for sediment pickup function
 
 !---local
-real(stm_real) :: c_bar_bed(nvol,nclass)        !< Near bed vaule of mean volumetric sediment concentration
-real(stm_real) :: fall_vel(nclass)              !< Settling velocity                       
+real(stm_real) :: c_bar_bed(nvol,nclass)                   !< Near bed vaule of mean volumetric sediment concentration
+real(stm_real) :: fall_vel(nclass)                         !< Settling velocity                       
 character :: pick_up_function 
 procedure(sediment_hydro_if),pointer :: velocity_non_cohesive 
 
@@ -72,6 +72,7 @@ call set_sediment_constants
 call allocate_sediment_parameters(nvol,nclass)
 
 !- getting the values
+! todo: this must change to 3 subroutine for cohesive non-cohesive and bedload
 call set_sediment_values(gravity,                 &                 
                          water_density,           &           
                          sediment_density,        &        
@@ -93,6 +94,26 @@ call set_manning_width_diameter(manning_n,    &
                                 nvol)
                                 
 ! here verfical_net_sediment_flux = settling_vel * (Es - c_bar_sub_b)
+call settling_velocity(settling_v,         &
+                       kinematic_viscosity,&
+                       specific_gravity,   &
+                       diameter,           &
+                       g_acceleration,     &
+                       nclass,             &
+                       function_van_rijn)
+!------Es                       
+call es_garcia_parker(big_e_sub_s,       &
+                      shear_v,           &
+                      exp_re_p,          &
+                      settling_v,        & 
+                      nclass,            &
+                      nvol)
+!  C_bar _b
+call first_einstein_integral(I_1,      &
+                             delta_b,  &
+                             rouse_num)
+
+c_bar_b = conc/I_1
 
 
 
