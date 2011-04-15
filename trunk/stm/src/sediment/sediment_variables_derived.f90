@@ -276,5 +276,44 @@ shear_velocity = abs(velocity)*manning*sqrt(gravity)/(hydr_radius**(one/six))/ph
 
 end subroutine
 
+!> Calculate Rouse number from given shear velocity 
+!> Ro # < 0.8 wash load and does not consider in sed transport
+!> Ro # (0.8~1.2) 100% suspended load
+!> Ro # (1.2~2.5) 50% suspended load
+!> Ro # (2.5~ 7 ) bedload
+!> Ro # > 7 not move at all
+subroutine rouse_dimensionless_number(rouse_num,   &
+                                      fall_vel,    &
+                                      shear_vel,   &
+                                      nvol,        &
+                                      nclass,      &
+                                      von_karman)                                 
+
+use stm_precision
+
+implicit none
+integer :: nclass                                    !< Number of sediment classes 
+integer :: nvol                                      !< Number of cells
+real(stm_real),intent(out):: rouse_num(nvol,nclass)  !< Rouse dimensionless number  
+real(stm_real),intent(in) :: fall_vel(nclass)        !< Settling velocity
+real(stm_real),intent(in) :: shear_vel(nvol)         !< Shear velocity 
+real(stm_real),intent(in),optional :: von_karman     !< Von karman constant, Kappa = 0.41
+!----local
+real(stm_real) :: kappa
+integer        :: icell
+
+kappa = 0.41d0
+
+if (present(von_karman)) then
+    kappa = von_karman
+end if
+
+do icell=1,nvol
+    rouse_num(icell,:)= fall_vel/shear_vel(icell)/kappa
+end do
+
+return
+end subroutine
+
 
 end module
