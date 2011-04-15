@@ -31,17 +31,18 @@ implicit none
 
 call init_fruit
 
-call test_submerged_specific_gravity
-call test_explicit_particle_reynolds_number
-call test_particle_reynolds_number
-call test_dimless_particle_diameter
-call test_critical_shields_parameter
-call test_settling_velocity
-call test_shear_velocity
+!call test_submerged_specific_gravity
+!call test_explicit_particle_reynolds_number
+!call test_particle_reynolds_number
+!call test_dimless_particle_diameter
+!call test_critical_shields_parameter
+!call test_settling_velocity
+!call test_shear_velocity
+call test_rouse_number
 
 ! Non_cohesive sink source
-call test_first_einstein_integral
-Call test_es_garcia_parker
+!call test_first_einstein_integral
+!Call test_es_garcia_parker
 
 call fruit_summary
 
