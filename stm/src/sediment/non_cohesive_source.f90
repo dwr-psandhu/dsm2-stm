@@ -42,7 +42,7 @@ use suspended_utility
 
 implicit none
 real(stm_real),intent(out):: vertical_flux(nvol,nclass)    !< Vertical sediment net flux into the water column
-real(stm_real),intent(in) :: conc(nvol)                    !< Concentration at new time
+real(stm_real),intent(in) :: conc(nvol,nclass)             !< Concentration at new time
 real(stm_real),intent(in) :: dx                            !< Grid size in space
 real(stm_real),intent(in) :: dt                            !< Step size in time
 real(stm_real),intent(in) :: time                          !< Current time
@@ -52,8 +52,16 @@ character(len=32), optional, intent(in) :: pick_up_flag    !< Switch for sedimen
 
 !---local
 real(stm_real) :: c_bar_bed(nvol,nclass)                   !< Near bed vaule of mean volumetric sediment concentration
-real(stm_real) :: fall_vel(nclass)                         !< Settling velocity                       
+real(stm_real) :: fall_vel(nclass)                         !< Settling velocity         
+real(stm_real) :: rouse_num(nvol,nclass)                   !< Rouse dimensionless number  
+real(stm_real) :: delta_b                                  !< Bed leyer relative tickness 
+real(stm_real) :: specific_gravity                         !< Specific gravity
+real(stm_real) :: big_e_sub_s(nvol,nclass)                 !< Dimenssionless rate of entrainment of bed sediment into suspension  
+real(stm_real) :: shear_v(nvol)                            !< Shear velocity   
+real(stm_real) :: exp_re_p(nclass)                         !< Explicit particle reynolds number
+real(stm_real) :: capital_r        !< Submerged specific gravity of sediment particles                 
 character :: pick_up_function 
+logical   :: function_van_rijn 
 procedure(sediment_hydro_if),pointer :: velocity_non_cohesive 
 
 ! set velocity and width
@@ -86,26 +94,42 @@ call set_sediment_values(gravity,                 &
                          crit_stress_surf_erosion,&
                          density_dry_bulk,        &        
                          ta_floc)  
+                         
+specific_gravity  = sediment_density/water_density
 !------ set the values of manning's n, width and diameters of grains                     
 call set_manning_width_diameter(manning_n,    &
                                 width,        &
                                 diameter,     &
                                 nclass,       &
                                 nvol)
+
                                 
 ! here verfical_net_sediment_flux = settling_vel * (Es - c_bar_sub_b)
-call settling_velocity(settling_v,         &
+call settling_velocity(fall_vel,           &
                        kinematic_viscosity,&
                        specific_gravity,   &
                        diameter,           &
-                       g_acceleration,     &
+                       gravity,            &
                        nclass,             &
                        function_van_rijn)
+                       
+call submerged_specific_gravity(capital_r,            &
+                                water_density,        &
+                                sediment_density)
+
+                       
+call explicit_particle_reynolds_number(exp_re_p,           &
+                                       diameter,           &
+                                       capital_r,          &
+                                       gravity,            &
+                                       kinematic_viscosity,&
+                                       nclass)
+                       
 !------Es                       
 call es_garcia_parker(big_e_sub_s,       &
                       shear_v,           &
                       exp_re_p,          &
-                      settling_v,        & 
+                      fall_vel,          & 
                       nclass,            &
                       nvol)
 !  C_bar _b
@@ -113,10 +137,10 @@ call first_einstein_integral(I_1,      &
                              delta_b,  &
                              rouse_num)
 
-c_bar_b = conc/I_1
+c_bar_bed = conc/I_1
 
 ! dimension is area per time
-vertical_flux = width*settling_v*(big_e_sub_s - c_bar_b)
+vertical_flux = width*fall_vel*(big_e_sub_s - c_bar_bed)
    
 call deallocate_sediment_static()
 
