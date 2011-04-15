@@ -115,9 +115,8 @@ call first_einstein_integral(I_1,      &
 
 c_bar_b = conc/I_1
 
-
-
-
+! dimension is area per time
+vertical_flux = width*settling_v*(big_e_sub_s - c_bar_b)
    
 call deallocate_sediment_static()
 
