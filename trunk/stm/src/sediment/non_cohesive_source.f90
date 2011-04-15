@@ -97,11 +97,11 @@ call set_sediment_values(gravity,                 &
                          
 specific_gravity  = sediment_density/water_density
 !------ set the values of manning's n, width and diameters of grains                     
-call set_manning_width_diameter(manning_n,    &
-                                width,        &
-                                diameter,     &
-                                nclass,       &
-                                nvol)
+!call set_manning_width_diameter(manning_n,    &
+!                                width,        &
+!                                diameter,     &
+!                                nclass,       &
+!                                nvol)
 
                                 
 ! here verfical_net_sediment_flux = settling_vel * (Es - c_bar_sub_b)
@@ -133,14 +133,14 @@ call es_garcia_parker(big_e_sub_s,       &
                       nclass,            &
                       nvol)
 !  C_bar _b
-call first_einstein_integral(I_1,      &
-                             delta_b,  &
-                             rouse_num)
-
-c_bar_bed = conc/I_1
+!call first_einstein_integral(I_1,      &
+!                             delta_b,  &
+!                             rouse_num)
+!
+!c_bar_bed = conc/I_1
 
 ! dimension is area per time
-vertical_flux = width*fall_vel*(big_e_sub_s - c_bar_bed)
+!!vertical_flux = width*fall_vel*(big_e_sub_s - c_bar_bed)
    
 call deallocate_sediment_static()
 

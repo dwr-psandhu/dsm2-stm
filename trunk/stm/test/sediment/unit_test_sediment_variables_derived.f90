@@ -335,4 +335,62 @@ end do
 return 
 end subroutine
 
+subroutine test_rouse_number()
+
+use fruit
+use suspended_utility
+use stm_precision
+
+implicit none
+
+integer, parameter :: nclas   = 2
+integer, parameter :: nvolume = 3
+
+real(stm_real) :: rouse_num(nvolume,nclas)   !< Rouse dimensionless number  
+real(stm_real) :: fall_vel(nclas)            !< Settling velocity
+real(stm_real) :: shear_vel(nvolume)         !< Shear velocity 
+real(stm_real) :: hand_value(nvolume,nclas)  !< Shear velocity 
+real(stm_real) :: von_karman                 !< Von karman constant, Kappa = 0.41
+!---local
+integer:: iclas,ivol
+
+fall_vel  = [0.001d0, 0.1d0]
+shear_vel = [one,two,five]/ten
+
+hand_value = reshape ([0.024390244d0,	0.012195122d0,	0.004878049d0, &
+                       2.439024390d0,	1.219512195d0,	0.487804878d0 ],[3,2])
+
+call rouse_dimensionless_number(rouse_num,   &
+                                fall_vel,    &
+                                shear_vel,   &
+                                nvolume,     &
+                                nclas)
+                                
+do iclas=1,nclas
+    do ivol =1, nvolume
+        call assertEquals(hand_value(ivol,iclas),rouse_num(ivol,iclas),weak_eps,"Error in subroutine Rouse number!")
+    end do
+end do
+
+hand_value = hand_value/two
+von_karman = 0.82d0
+
+call rouse_dimensionless_number(rouse_num,   &
+                                fall_vel,    &
+                                shear_vel,   &
+                                nvolume,     &
+                                nclas,       &
+                                von_karman)
+                                
+do iclas=1,nclas
+    do ivol =1, nvolume
+        call assertEquals(hand_value(ivol,iclas),rouse_num(ivol,iclas),weak_eps,"Error in subroutine Rouse number!")
+    end do
+end do
+                                
+
+
+return
+end subroutine
+
 end module
