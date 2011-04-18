@@ -64,7 +64,8 @@ real(stm_real) :: capital_r                                !< Submerged specific
 real(stm_real) :: velocity(nvol)                           !< Velocity     
 real(stm_real) :: manning(nvol)                            !< Manning's n
 real(stm_real) :: hydr_radius(nvol)                        !< Hydraulic radius
-real(stm_real) :: I_1(nvol,nclass)                         !< First Einstein integral value     
+real(stm_real) :: I_1(nvol,nclass)                         !< First Einstein integral value   
+integer :: iclass                                          !< Counter on grain class  
          
 character :: pick_up_function 
 logical   :: function_van_rijn 
@@ -168,8 +169,10 @@ call first_einstein_integral(I_1,      &
 
 c_bar_bed = conc/I_1
 
-! dimension is area per time
-!vertical_flux = width*fall_vel*(big_e_sub_s - c_bar_bed)
+! dimension of sediment vertical flux is area per time
+do iclass=1,nclass
+  vertical_flux(:,iclass) = width(:)*fall_vel(iclass)*(big_e_sub_s(:,iclass) - c_bar_bed(:,iclass))
+end do  
    
 call deallocate_sediment_static()
 
