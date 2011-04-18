@@ -30,6 +30,7 @@ subroutine source_non_cohesive(vertical_flux,    &
                                conc,             &
                                nvol,             &
                                nclass,           &
+                               delta_b,          &
                                pick_up_flag,     &
                                dx,               &
                                dt,               &
@@ -46,6 +47,7 @@ real(stm_real),intent(in) :: conc(nvol,nclass)             !< Concentration at n
 real(stm_real),intent(in) :: dx                            !< Grid size in space
 real(stm_real),intent(in) :: dt                            !< Step size in time
 real(stm_real),intent(in) :: time                          !< Current time
+real(stm_real),intent(in) :: delta_b                       !< Bed leyer relative tickness 
 integer, intent(in)       :: nvol                          !< Number of cells 
 integer, intent(in)       :: nclass                        !< Number of classes for non-cohesive sediment in suspension
 character(len=32), optional, intent(in) :: pick_up_flag    !< Switch for sediment pickup function
@@ -54,12 +56,13 @@ character(len=32), optional, intent(in) :: pick_up_flag    !< Switch for sedimen
 real(stm_real) :: c_bar_bed(nvol,nclass)                   !< Near bed vaule of mean volumetric sediment concentration
 real(stm_real) :: fall_vel(nclass)                         !< Settling velocity         
 real(stm_real) :: rouse_num(nvol,nclass)                   !< Rouse dimensionless number  
-real(stm_real) :: delta_b                                  !< Bed leyer relative tickness 
 real(stm_real) :: specific_gravity                         !< Specific gravity
 real(stm_real) :: big_e_sub_s(nvol,nclass)                 !< Dimenssionless rate of entrainment of bed sediment into suspension  
 real(stm_real) :: shear_v(nvol)                            !< Shear velocity   
 real(stm_real) :: exp_re_p(nclass)                         !< Explicit particle reynolds number
-real(stm_real) :: capital_r        !< Submerged specific gravity of sediment particles                 
+real(stm_real) :: capital_r                                !< Submerged specific gravity of sediment particles    
+real(stm_real) :: velocity(nvol)                           !< Velocity     
+real(stm_real) :: manning(nvol)        
 character :: pick_up_function 
 logical   :: function_van_rijn 
 procedure(sediment_hydro_if),pointer :: velocity_non_cohesive 
@@ -97,7 +100,7 @@ call set_sediment_values(gravity,                 &
                          
 specific_gravity  = sediment_density/water_density
 !------ set the values of manning's n, width and diameters of grains                     
-!call set_manning_width_diameter(manning_n,    &
+!call set_manning_width_diameter(manning,      &
 !                                width,        &
 !                                diameter,     &
 !                                nclass,       &
@@ -124,6 +127,16 @@ call explicit_particle_reynolds_number(exp_re_p,           &
                                        gravity,            &
                                        kinematic_viscosity,&
                                        nclass)
+
+call shear_velocity_calculator(shear_v,             &
+                               velocity,            &
+                               manning,             &
+                               gravity,             &
+                               hydr_radius,         &
+                               ncell,               &
+                               si_flag)
+                                       
+                                       
                        
 !------Es                       
 call es_garcia_parker(big_e_sub_s,       &
@@ -132,6 +145,15 @@ call es_garcia_parker(big_e_sub_s,       &
                       fall_vel,          & 
                       nclass,            &
                       nvol)
+                      
+call rouse_dimensionless_number(rouse_num,   &
+                                fall_vel,    &
+                                shear_v,     &
+                                nvol,        &
+                                nclass) 
+
+
+
 !  C_bar _b
 !call first_einstein_integral(I_1,      &
 !                             delta_b,  &
@@ -157,90 +179,99 @@ end subroutine
 ! I think we will use it again in the bedload
 subroutine first_einstein_integral(I_1,      &
                                    delta_b,  &
-                                   rouse_num) 
+                                   rouse_num,&
+                                   nvol,     &
+                                   nclass) 
                                    
 use stm_precision
 use error_handling
 implicit none
-
-real(stm_real),intent(in) :: rouse_num        !< Rouse dimenssionless number  
-real(stm_real),intent(in) :: delta_b          !< Relative bed layer thickness = b/H 
-real(stm_real),intent(out):: I_1              !< First Einstein integral value
+!-- arg
+integer, intent(in):: nvol                            !< Number of computational volumes in a channel
+integer, intent(in):: nclass                          !< Number of non-cohesive sediment grain classes
+real(stm_real),intent(in) :: rouse_num(nvol,nclass)   !< Rouse dimenssionless number  
+real(stm_real),intent(in) :: delta_b                  !< Relative bed layer thickness = b/H 
+real(stm_real),intent(out):: I_1(nvol,nclass)         !< First Einstein integral value
 
 !-- local
+integer :: ivol
+integer :: iclass
 real(stm_real) :: ro_l   
 real(stm_real) :: ro_r    !right
 real(stm_real) :: i_1_l
 real(stm_real) :: i_1_r   !right
 
 
+do ivol=1,nvol
+    do iclass=1,nclass
+        if (rouse_num(ivol,iclass) > 3.98d0) then
+        !todo: I am not sure if we need this subroutine in bed load or not 
+            call stm_fatal("This is not a Rouse number value for suspended sediment!")
+        elseif (abs(rouse_num(ivol,iclass) - three)< 0.01d0) then
 
-if (rouse_num > 3.98d0) then
-!todo: I am not sure if we need this subroutine in bed load or not 
-    call stm_fatal("This is not a Rouse number value for suspended sediment!")
-elseif (abs(rouse_num - three)< 0.01d0) then
+        ro_l = three - 0.05d0
+        ro_r = three + 0.05d0 
 
-ro_l = three - 0.05d0
-ro_r = three + 0.05d0 
+        call inside_i_1(i_1_l,delta_b,ro_l)
+        call inside_i_1(i_1_r,delta_b,ro_r)
 
-call inside_i_1(i_1_l,delta_b,ro_l)
-call inside_i_1(i_1_r,delta_b,ro_r)
+        I_1(ivol,iclass) = (i_1_r + i_1_l) / two
 
-I_1 = (i_1_r + i_1_l) / two
+                 
+        elseif (abs(rouse_num(ivol,iclass) - two)< 0.01d0) then
 
-         
-elseif (abs(rouse_num - two)< 0.01d0) then
+        ro_l = two - 0.05d0
+        ro_r = two + 0.05d0 
 
-ro_l = two - 0.05d0
-ro_r = two + 0.05d0 
+        call inside_i_1(i_1_l,delta_b,ro_l)
+        call inside_i_1(i_1_r,delta_b,ro_r)
 
-call inside_i_1(i_1_l,delta_b,ro_l)
-call inside_i_1(i_1_r,delta_b,ro_r)
+        I_1(ivol,iclass) = (i_1_r + i_1_l) / two
+          
+             
+        elseif(abs(rouse_num(ivol,iclass) - one)< 0.01d0) then  
 
-I_1 = (i_1_r + i_1_l) / two
-  
-     
-elseif(abs(rouse_num - one)< 0.01d0) then  
+        ro_l = one - 0.05d0
+        ro_r = one + 0.05d0 
 
-ro_l = one - 0.05d0
-ro_r = one + 0.05d0 
+        call inside_i_1(i_1_l,delta_b,ro_l)
+        call inside_i_1(i_1_r,delta_b,ro_r)
 
-call inside_i_1(i_1_l,delta_b,ro_l)
-call inside_i_1(i_1_r,delta_b,ro_r)
-
-I_1 = (i_1_r + i_1_l) / two
-    
-else
-   call inside_i_1(I_1,      &
-                   delta_b,  &
-                   rouse_num)
-         
-end if
+        I_1(ivol,iclass) = (i_1_r + i_1_l) / two
+            
+        else
+           call inside_i_1(I_1(ivol,iclass),      &
+                           delta_b,               &
+                           rouse_num(ivol,iclass))
+                 
+        end if
+    end do
+end do
 
 end subroutine
 
-pure subroutine inside_i_1(I_1,      &
+pure subroutine inside_i_1(J_1,      &
                            delta_b,  &
-                           rouse_num)   
+                           rouse)   
                             
 use stm_precision
 implicit none
-real(stm_real),intent(in) :: rouse_num        !< Rouse dimenssionless number  
+real(stm_real),intent(in) :: rouse        !< Rouse dimenssionless number  
 real(stm_real),intent(in) :: delta_b          !< Relative bed layer thickness = b/H 
-real(stm_real),intent(out):: I_1              !< First Einstein integral value
+real(stm_real),intent(out):: J_1              !< First Einstein integral value
 
-I_1   = (rouse_num*pi/sin(rouse_num*pi) - ((one-delta_b)**rouse_num)/(delta_b**(rouse_num-one))     &
-         - rouse_num*(((delta_b/(one-delta_b))**(one-rouse_num))  /(one-rouse_num))                 & 
-         + rouse_num*(((delta_b/(one-delta_b))**(two-rouse_num))  /(one-rouse_num))                 &
-         - rouse_num*(((delta_b/(one-delta_b))**(three-rouse_num))/(one-rouse_num))                 &
-         + rouse_num*(((delta_b/(one-delta_b))**(four-rouse_num)) /(one-rouse_num))                 &
-         - rouse_num*(((delta_b/(one-delta_b))**(five-rouse_num)) /(one-rouse_num))                 &
-         + rouse_num*(((delta_b/(one-delta_b))**(six-rouse_num))  /(one-rouse_num))                 &
-         - rouse_num*(((delta_b/(one-delta_b))**(seven-rouse_num))/(one-rouse_num))                 &
-         + rouse_num*(((delta_b/(one-delta_b))**(eight-rouse_num))/(one-rouse_num))                 &
-         - rouse_num*(((delta_b/(one-delta_b))**(nine-rouse_num)) /(one-rouse_num))                 &
-         + rouse_num*(((delta_b/(one-delta_b))**(ten -rouse_num)) /(one-rouse_num)))                &
-         * (delta_b**(rouse_num)/((one-delta_b)**rouse_num))
+J_1   = (rouse*pi/sin(rouse*pi) - ((one-delta_b)**rouse)/(delta_b**(rouse-one))     &
+         - rouse*(((delta_b/(one-delta_b))**(one-rouse))  /(one-rouse))                 & 
+         + rouse*(((delta_b/(one-delta_b))**(two-rouse))  /(one-rouse))                 &
+         - rouse*(((delta_b/(one-delta_b))**(three-rouse))/(one-rouse))                 &
+         + rouse*(((delta_b/(one-delta_b))**(four-rouse)) /(one-rouse))                 &
+         - rouse*(((delta_b/(one-delta_b))**(five-rouse)) /(one-rouse))                 &
+         + rouse*(((delta_b/(one-delta_b))**(six-rouse))  /(one-rouse))                 &
+         - rouse*(((delta_b/(one-delta_b))**(seven-rouse))/(one-rouse))                 &
+         + rouse*(((delta_b/(one-delta_b))**(eight-rouse))/(one-rouse))                 &
+         - rouse*(((delta_b/(one-delta_b))**(nine-rouse)) /(one-rouse))                 &
+         + rouse*(((delta_b/(one-delta_b))**(ten -rouse)) /(one-rouse)))                &
+         * (delta_b**(rouse)/((one-delta_b)**rouse))
                                
 
 end subroutine 

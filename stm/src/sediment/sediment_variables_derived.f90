@@ -281,7 +281,7 @@ end subroutine
 !> Ro # (0.8~1.2) 100% suspended load
 !> Ro # (1.2~2.5) 50% suspended load
 !> Ro # (2.5~ 7 ) bedload
-!> Ro # > 7 not move at all
+!> Ro # > 7 does not move at all
 subroutine rouse_dimensionless_number(rouse_num,   &
                                       fall_vel,    &
                                       shear_vel,   &
