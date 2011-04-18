@@ -34,78 +34,95 @@ use stm_precision
 
 implicit none
 !---args
+integer,parameter :: nvol = 1                 !< Number of volumes              
+integer,parameter :: nclass =1                !< Number of sediment grain classes
+real(stm_real)  :: rouse(nvol,nclass)         !< Rouse dimenssionless number  
+real(stm_real)  :: delta                      !< Relative bed layer thickness = b/H 
+real(stm_real)  :: J_1(nvol,nclass)           !< First Einstein integral value  
 
-real(stm_real)  :: rouse         !< Rouse dimenssionless number  
-real(stm_real)  :: delta         !< Relative bed layer thickness = b/H 
-real(stm_real)  :: J_1           !< First Einstein integral value     
 !--- local
 real(stm_real)  :: hand_calc_value
+
 
 delta = 0.01d0
 rouse = 0.1d0
 hand_calc_value = 0.630990839362793d0 !MATLAB calculation
  
-call first_einstein_integral(J_1,    &
+call first_einstein_integral(J_1,      &
                              delta,  &
-                             rouse)
+                             rouse,&
+                             nvol,     & 
+                             nclass)  
                                        
-call assertEquals(hand_calc_value,J_1,weak_eps,"Error in subroutine first Einstein integral!")
+call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral!")
 
 rouse = 0.7d0
 hand_calc_value = 0.075646372654714d0 !MATLAB calculation
  
-call first_einstein_integral(J_1,    &
+call first_einstein_integral(J_1,      &
                              delta,  &
-                             rouse)
-                                       
-call assertEquals(hand_calc_value,J_1,weak_eps,"Error in subroutine first Einstein integral!")
+                             rouse,&
+                             nvol,     &
+                             nclass)   
+                                      
+call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral!")
 
 rouse = 1.7d0
 hand_calc_value = 0.011612330444738d0 !MATLAB calculation
  
-call first_einstein_integral(J_1,    &
+call first_einstein_integral(J_1,      &
                              delta,  &
-                             rouse)
+                             rouse,&
+                             nvol,     &
+                             nclass)
                                        
-call assertEquals(hand_calc_value,J_1,weak_eps,"Error in subroutine first Einstein integral!")
+call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral!")
 
 rouse = 2.7d0
 hand_calc_value = 0.005925241451994d0 !MATLAB calculation
  
-call first_einstein_integral(J_1,    &
+call first_einstein_integral(J_1,      &
                              delta,  &
-                             rouse)
+                             rouse,&
+                             nvol,     & 
+                             nclass)  
                                        
-call assertEquals(hand_calc_value,J_1,weak_eps,"Error in subroutine first Einstein integral!")
+call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral!")
 
 
 rouse = one
 hand_calc_value = 0.03651687056d0 !MATLAB calculation
  
-call first_einstein_integral(J_1,    &
+call first_einstein_integral(J_1,      &
                              delta,  &
-                             rouse)
+                             rouse,&
+                             nvol,     &
+                             nclass) 
                                        
-call assertEquals(hand_calc_value,J_1,weak_eps,"Error in subroutine first Einstein integral integer=1!")
+call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral integer=1!")
 
 
 rouse = two
 hand_calc_value =   0.009262285443120d0 !MATLAB calculation
  
-call first_einstein_integral(J_1,    &
+call first_einstein_integral(J_1,      &
                              delta,  &
-                             rouse)
+                             rouse,&
+                             nvol,     & 
+                             nclass)  
                                        
-call assertEquals(hand_calc_value,J_1,weak_eps,"Error in subroutine first Einstein integral integer=2!")
+call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral integer=2!")
 
 rouse = three
 hand_calc_value =  0.004859662341771d0 !MATLAB calculation
  
-call first_einstein_integral(J_1,    &
+call first_einstein_integral(J_1,      &
                              delta,  &
-                             rouse)
+                             rouse,&
+                             nvol,     & 
+                             nclass)  
                                        
-call assertEquals(hand_calc_value,J_1,weak_eps,"Error in subroutine first Einstein integral integer=3!")
+call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral integer=3!")
 
 
 return
