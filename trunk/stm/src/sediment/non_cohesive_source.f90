@@ -62,9 +62,13 @@ real(stm_real) :: shear_v(nvol)                            !< Shear velocity
 real(stm_real) :: exp_re_p(nclass)                         !< Explicit particle reynolds number
 real(stm_real) :: capital_r                                !< Submerged specific gravity of sediment particles    
 real(stm_real) :: velocity(nvol)                           !< Velocity     
-real(stm_real) :: manning(nvol)        
+real(stm_real) :: manning(nvol)                            !< Manning's n
+real(stm_real) :: hydr_radius(nvol)                        !< Hydraulic radius
+real(stm_real) :: I_1(nvol,nclass)                         !< First Einstein integral value     
+         
 character :: pick_up_function 
 logical   :: function_van_rijn 
+logical   :: si_unit 
 procedure(sediment_hydro_if),pointer :: velocity_non_cohesive 
 
 ! set velocity and width
@@ -134,7 +138,7 @@ call shear_velocity_calculator(shear_v,             &
                                gravity,             &
                                hydr_radius,         &
                                ncell,               &
-                               si_flag)
+                               si_unit)
                                        
                                        
                        
@@ -155,14 +159,17 @@ call rouse_dimensionless_number(rouse_num,   &
 
 
 !  C_bar _b
-!call first_einstein_integral(I_1,      &
-!                             delta_b,  &
-!                             rouse_num)
-!
-!c_bar_bed = conc/I_1
+call first_einstein_integral(I_1,      &
+                             delta_b,  &
+                             rouse_num,&
+                             nvol,     &
+                             nclass) 
+
+
+c_bar_bed = conc/I_1
 
 ! dimension is area per time
-!!vertical_flux = width*fall_vel*(big_e_sub_s - c_bar_bed)
+!vertical_flux = width*fall_vel*(big_e_sub_s - c_bar_bed)
    
 call deallocate_sediment_static()
 

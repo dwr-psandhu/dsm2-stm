@@ -27,7 +27,7 @@ use unit_test_suspend_sed_utility
 use test_non_cohesive
 
 implicit none
-!logical :: verbose = .true.
+logical :: verbose = .true.
 
 call init_fruit
 
@@ -45,6 +45,7 @@ call test_first_einstein_integral
 call test_es_garcia_parker
 
 call fruit_summary
+
 
 pause
 end program 
