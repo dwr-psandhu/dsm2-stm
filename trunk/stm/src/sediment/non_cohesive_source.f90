@@ -28,6 +28,7 @@ module non_cohesive_source
 contains 
 subroutine source_non_cohesive(vertical_flux,    &
                                conc,             &
+                               velocity,         &
                                nvol,             &
                                nclass,           &
                                delta_b,          &
@@ -37,13 +38,15 @@ subroutine source_non_cohesive(vertical_flux,    &
                                time)
 
 use stm_precision 
-use suspended_sediment_variable
+!use suspended_sediment_variable
 use sediment_variables
 use suspended_utility
 
 implicit none
 real(stm_real),intent(out):: vertical_flux(nvol,nclass)    !< Vertical sediment net flux into the water column
 real(stm_real),intent(in) :: conc(nvol,nclass)             !< Concentration at new time
+real(stm_real),intent(in) :: velocity(nvol)                !< Velocity
+!real(stm_real),intent(in) :: width(nvol)                   !< Channel width
 real(stm_real),intent(in) :: dx                            !< Grid size in space
 real(stm_real),intent(in) :: dt                            !< Step size in time
 real(stm_real),intent(in) :: time                          !< Current time
@@ -60,8 +63,7 @@ real(stm_real) :: specific_gravity                         !< Specific gravity
 real(stm_real) :: big_e_sub_s(nvol,nclass)                 !< Dimenssionless rate of entrainment of bed sediment into suspension  
 real(stm_real) :: shear_v(nvol)                            !< Shear velocity   
 real(stm_real) :: exp_re_p(nclass)                         !< Explicit particle reynolds number
-real(stm_real) :: capital_r                                !< Submerged specific gravity of sediment particles    
-real(stm_real) :: velocity(nvol)                           !< Velocity     
+real(stm_real) :: capital_r                                !< Submerged specific gravity of sediment particles     
 real(stm_real) :: manning(nvol)                            !< Manning's n
 real(stm_real) :: hydr_radius(nvol)                        !< Hydraulic radius
 real(stm_real) :: I_1(nvol,nclass)                         !< First Einstein integral value   
@@ -70,10 +72,6 @@ integer :: iclass                                          !< Counter on grain c
 character :: pick_up_function 
 logical   :: function_van_rijn 
 logical   :: si_unit 
-procedure(sediment_hydro_if),pointer :: velocity_non_cohesive 
-
-! set velocity and width
-velocity_non_cohesive => sediment_velocity_width
 
 pick_up_function = 'garcia_parker'
 
@@ -105,11 +103,11 @@ call set_sediment_values(gravity,                 &
                          
 specific_gravity  = sediment_density/water_density
 !------ set the values of manning's n, width and diameters of grains                     
-!call set_manning_width_diameter(manning,      &
-!                                width,        &
-!                                diameter,     &
-!                                nclass,       &
-!                                nvol)
+call set_manning_width_diameter(manning,      &
+                                width,        &
+                                diameter,     &
+                                nclass,       &
+                                nvol)
 
                                 
 ! here verfical_net_sediment_flux = settling_vel * (Es - c_bar_sub_b)
