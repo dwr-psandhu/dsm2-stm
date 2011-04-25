@@ -29,9 +29,9 @@ contains
 subroutine source_non_cohesive(vertical_flux,    &
                                conc,             &
                                velocity,         &
-                               width,            &
-                               manning,          &
-                               diameter,         &
+                               !width,            &
+                               !manning,          &
+                              ! diameter,         &
                                nvol,             &
                                nclass,           &
                                delta_b,          &
@@ -49,7 +49,9 @@ implicit none
 real(stm_real),intent(out):: vertical_flux(nvol,nclass)    !< Vertical sediment net flux into the water column
 real(stm_real),intent(in) :: conc(nvol,nclass)             !< Concentration at new time
 real(stm_real),intent(in) :: velocity(nvol)                !< Velocity
-real(stm_real),intent(in) :: width(nvol)                   !< Channel width
+!real(stm_real),intent(in) :: width(nvol)                   !< Channel width
+!real(stm_real),intent(in) :: manning(nvol)                 !< Manning's n
+!real(stm_real),intent(in) :: diameter(nclass)              !< Diameters of non-cohesive paticles
 real(stm_real),intent(in) :: dx                            !< Grid size in space
 real(stm_real),intent(in) :: dt                            !< Step size in time
 real(stm_real),intent(in) :: time                          !< Current time
@@ -67,7 +69,6 @@ real(stm_real) :: big_e_sub_s(nvol,nclass)                 !< Dimenssionless rat
 real(stm_real) :: shear_v(nvol)                            !< Shear velocity   
 real(stm_real) :: exp_re_p(nclass)                         !< Explicit particle reynolds number
 real(stm_real) :: capital_r                                !< Submerged specific gravity of sediment particles     
-real(stm_real) :: manning(nvol)                            !< Manning's n
 real(stm_real) :: hydr_radius(nvol)                        !< Hydraulic radius
 real(stm_real) :: I_1(nvol,nclass)                         !< First Einstein integral value   
 integer :: iclass                                          !< Counter on grain class  
@@ -172,7 +173,7 @@ c_bar_bed = conc/I_1
 
 ! dimension of sediment vertical flux is area per time
 do iclass=1,nclass
-  vertical_flux(:,iclass) = width(:)*fall_vel(iclass)*(big_e_sub_s(:,iclass) - c_bar_bed(:,iclass))
+  vertical_flux(:,iclass) = width*fall_vel(iclass)*(big_e_sub_s(:,iclass) - c_bar_bed(:,iclass))
 end do  
    
 call deallocate_sediment_static()
