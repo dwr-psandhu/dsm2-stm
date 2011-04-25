@@ -29,9 +29,10 @@ contains
 subroutine source_non_cohesive(vertical_flux,    &
                                conc,             &
                                velocity,         &
+                               area,             &
                                !width,            &
                                !manning,          &
-                              ! diameter,         &
+                               !diameter,         &
                                nvol,             &
                                nclass,           &
                                delta_b,          &
@@ -49,6 +50,7 @@ implicit none
 real(stm_real),intent(out):: vertical_flux(nvol,nclass)    !< Vertical sediment net flux into the water column
 real(stm_real),intent(in) :: conc(nvol,nclass)             !< Concentration at new time
 real(stm_real),intent(in) :: velocity(nvol)                !< Velocity
+real(stm_real),intent(in) :: area(nvol)                    !< Area
 !real(stm_real),intent(in) :: width(nvol)                   !< Channel width
 !real(stm_real),intent(in) :: manning(nvol)                 !< Manning's n
 !real(stm_real),intent(in) :: diameter(nclass)              !< Diameters of non-cohesive paticles
