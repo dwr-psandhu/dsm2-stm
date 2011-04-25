@@ -29,6 +29,9 @@ contains
 subroutine source_non_cohesive(vertical_flux,    &
                                conc,             &
                                velocity,         &
+                               width,            &
+                               manning,          &
+                               diameter,         &
                                nvol,             &
                                nclass,           &
                                delta_b,          &
@@ -38,7 +41,7 @@ subroutine source_non_cohesive(vertical_flux,    &
                                time)
 
 use stm_precision 
-!use suspended_sediment_variable
+use suspended_sediment_variable
 use sediment_variables
 use suspended_utility
 
@@ -46,7 +49,7 @@ implicit none
 real(stm_real),intent(out):: vertical_flux(nvol,nclass)    !< Vertical sediment net flux into the water column
 real(stm_real),intent(in) :: conc(nvol,nclass)             !< Concentration at new time
 real(stm_real),intent(in) :: velocity(nvol)                !< Velocity
-!real(stm_real),intent(in) :: width(nvol)                   !< Channel width
+real(stm_real),intent(in) :: width(nvol)                   !< Channel width
 real(stm_real),intent(in) :: dx                            !< Grid size in space
 real(stm_real),intent(in) :: dt                            !< Step size in time
 real(stm_real),intent(in) :: time                          !< Current time
@@ -102,12 +105,12 @@ call set_sediment_values(gravity,                 &
                          ta_floc)  
                          
 specific_gravity  = sediment_density/water_density
-!------ set the values of manning's n, width and diameters of grains                     
-call set_manning_width_diameter(manning,      &
-                                width,        &
-                                diameter,     &
-                                nclass,       &
-                                nvol)
+!!------ set the values of manning's n, width and diameters of grains                     
+!call set_manning_width_diameter(manning,      &
+!                                width,        &
+!                                diameter,     &
+!                                nclass,       &
+!                                nvol)
 
                                 
 ! here verfical_net_sediment_flux = settling_vel * (Es - c_bar_sub_b)
