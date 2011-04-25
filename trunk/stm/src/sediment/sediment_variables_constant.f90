@@ -48,7 +48,7 @@ module sediment_variables
  real(stm_real), save :: density_dry_bulk         !< Dry bulk density 
  real(stm_real), save :: ta_floc                  !< Floc strength 
  !> Spatial sediment parameters
- real(stm_real), save, allocatable :: manning_n(:)!< Manning's n 
+ real(stm_real), save, allocatable :: manning(:)  !< Manning's n 
  real(stm_real), save, allocatable :: width(:)    !< Channel width 
     
  contains
@@ -101,11 +101,11 @@ module sediment_variables
      integer,intent(in):: ncell    !< Number of cells
      integer,intent(in):: nvar     !< Number of sediment classes
             
-     allocate(manning_n(ncell))
+     allocate(manning(ncell))
      allocate(width(ncell))
      allocate(diameter(nvar))
          
-     manning_n = LARGEREAL
+     manning   = LARGEREAL
      width     = LARGEREAL
      diameter  = LARGEREAL
      
@@ -120,7 +120,7 @@ module sediment_variables
      ncell = 0
      nvar  = 0 
    
-     deallocate(manning_n)
+     deallocate(manning)
      deallocate(width)
      deallocate(diameter)
    
@@ -175,11 +175,6 @@ module sediment_variables
  
  end subroutine
  
-! subroutine
-!    implicit none
-! 
-! end subroutine
-
 end module
 
 
