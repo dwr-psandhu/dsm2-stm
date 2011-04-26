@@ -220,7 +220,10 @@ do ivol=1,nvol
     do iclass=1,nclass
         if (rouse_num(ivol,iclass) > 3.98d0) then
         !todo: I am not sure if we need this subroutine in bed load or not 
+            print *, 'error in rouse number' ! todo: remove
+            pause
             call stm_fatal("This is not a Rouse number value for suspended sediment!")
+            
         elseif (abs(rouse_num(ivol,iclass) - three)< 0.01d0) then
 
         ro_l = three - 0.05d0
