@@ -125,6 +125,8 @@ call first_einstein_integral(J_1,      &
 call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral integer=3!")
 
 
+
+
 return
 end subroutine
 
@@ -163,6 +165,8 @@ do ivol=1,nvol
   call assertEquals(hand_calc_value(ivol,1),e_s(ivol,1),weak_eps,"Error in subroutine es_garcia_parker")
   call assertEquals(hand_calc_value(ivol,2),e_s(ivol,2),weak_eps,"Error in subroutine es_garcia_parker")
 end do 
+
+
 
 
 return
@@ -216,8 +220,5 @@ end subroutine
  
  end subroutine
  
-! subroutine 
-! 
-! end subroutine
 
 end module
