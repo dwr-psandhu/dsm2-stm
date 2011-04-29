@@ -25,6 +25,7 @@ program single_test_driver
 use fruit
 use unit_test_suspend_sed_utility
 use test_non_cohesive
+use test_bed_load
 
 implicit none
 logical :: verbose = .true.
