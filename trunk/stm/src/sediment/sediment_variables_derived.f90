@@ -318,20 +318,28 @@ end subroutine
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! bed load related  subroutines here after
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!> Subroutine for calculating the q_b based on q_* (see Garcia, 2008, page 70)
 subroutine volumetric_bedload_transport_rate(q_sub_b,                &
                                              einstein_bedload_num,   &
                                              diameter,               &
-                                             big_r,                  &
+                                             capital_r,              &
                                              gravity,                &
                                              nclass)
+
 use stm_precision
-implicit none                                             
-integer,intent(in) :: nclass                                    !< Number of sediment classes 
-real(stm_real),intent(in) :: gravity               !< Gravity
-
-
+implicit none
                                              
-           
+integer,intent(in) :: nclass                             !< Number of sediment classes 
+real(stm_real),intent(in) ::gravity                      !< Gravity
+real(stm_real),intent(in) ::capital_r                    !< Submerged specific gravity of sediment particles  
+real(stm_real),intent(in) ::diameter(nclass)             !< Particle diameter
+real(stm_real),intent(in) ::einstein_bedload_num(nclass) !< Dimensionless belload transport rate 
+real(stm_real),intent(out)::q_sub_b(nclass)              !< Volumetric bedload transport rate
+                                             
+q_sub_b = diameter * einstein_bedload_num * sqrt(gravity*capital_r*diameter)
 
+return
+end subroutine 
 
 end module
