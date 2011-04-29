@@ -22,4 +22,8 @@
 !>@ingroup test sediment
 module test_bed_load
 
+contains 
+
+
+
 end module  
