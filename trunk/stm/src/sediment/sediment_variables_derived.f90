@@ -292,8 +292,8 @@ subroutine rouse_dimensionless_number(rouse_num,   &
 use stm_precision
 
 implicit none
-integer :: nclass                                    !< Number of sediment classes 
-integer :: nvol                                      !< Number of cells
+integer,intent(in) :: nclass                                    !< Number of sediment classes 
+integer,intent(in) :: nvol                                      !< Number of cells
 real(stm_real),intent(out):: rouse_num(nvol,nclass)  !< Rouse dimensionless number  
 real(stm_real),intent(in) :: fall_vel(nclass)        !< Settling velocity
 real(stm_real),intent(in) :: shear_vel(nvol)         !< Shear velocity 
@@ -314,6 +314,24 @@ end do
 
 return
 end subroutine
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! bed load related  subroutines here after
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+subroutine volumetric_bedload_transport_rate(q_sub_b,                &
+                                             einstein_bedload_num,   &
+                                             diameter,               &
+                                             big_r,                  &
+                                             gravity,                &
+                                             nclass)
+use stm_precision
+implicit none                                             
+integer,intent(in) :: nclass                                    !< Number of sediment classes 
+real(stm_real),intent(in) :: gravity               !< Gravity
+
+
+                                             
+           
 
 
 end module
