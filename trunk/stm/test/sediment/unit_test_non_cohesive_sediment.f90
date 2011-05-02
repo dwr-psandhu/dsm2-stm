@@ -34,11 +34,11 @@ use stm_precision
 
 implicit none
 !---args
-integer,parameter :: nvol = 1                 !< Number of volumes              
+integer,parameter :: ncell = 1                 !< Number of volumes              
 integer,parameter :: nclass =1                !< Number of sediment grain classes
-real(stm_real)  :: rouse(nvol,nclass)         !< Rouse dimenssionless number  
+real(stm_real)  :: rouse(ncell,nclass)         !< Rouse dimenssionless number  
 real(stm_real)  :: delta                      !< Relative bed layer thickness = b/H 
-real(stm_real)  :: J_1(nvol,nclass)           !< First Einstein integral value  
+real(stm_real)  :: J_1(ncell,nclass)           !< First Einstein integral value  
 
 !--- local
 real(stm_real)  :: hand_calc_value
@@ -51,7 +51,7 @@ hand_calc_value = 0.630990839362793d0 !MATLAB calculation
 call first_einstein_integral(J_1,      &
                              delta,  &
                              rouse,&
-                             nvol,     & 
+                             ncell,     & 
                              nclass)  
                                        
 call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral!")
@@ -62,7 +62,7 @@ hand_calc_value = 0.075646372654714d0 !MATLAB calculation
 call first_einstein_integral(J_1,      &
                              delta,  &
                              rouse,&
-                             nvol,     &
+                             ncell,     &
                              nclass)   
                                       
 call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral!")
@@ -73,7 +73,7 @@ hand_calc_value = 0.011612330444738d0 !MATLAB calculation
 call first_einstein_integral(J_1,      &
                              delta,  &
                              rouse,&
-                             nvol,     &
+                             ncell,     &
                              nclass)
                                        
 call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral!")
@@ -84,7 +84,7 @@ hand_calc_value = 0.005925241451994d0 !MATLAB calculation
 call first_einstein_integral(J_1,      &
                              delta,  &
                              rouse,&
-                             nvol,     & 
+                             ncell,     & 
                              nclass)  
                                        
 call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral!")
@@ -96,7 +96,7 @@ hand_calc_value = 0.03651687056d0 !MATLAB calculation
 call first_einstein_integral(J_1,      &
                              delta,  &
                              rouse,&
-                             nvol,     &
+                             ncell,     &
                              nclass) 
                                        
 call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral integer=1!")
@@ -108,7 +108,7 @@ hand_calc_value =   0.009262285443120d0 !MATLAB calculation
 call first_einstein_integral(J_1,      &
                              delta,  &
                              rouse,&
-                             nvol,     & 
+                             ncell,     & 
                              nclass)  
                                        
 call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral integer=2!")
@@ -119,7 +119,7 @@ hand_calc_value =  0.004859662341771d0 !MATLAB calculation
 call first_einstein_integral(J_1,      &
                              delta,  &
                              rouse,&
-                             nvol,     & 
+                             ncell,     & 
                              nclass)  
                                        
 call assertEquals(hand_calc_value,J_1(1,1),weak_eps,"Error in subroutine first Einstein integral integer=3!")
@@ -136,14 +136,14 @@ use fruit
 use non_cohesive_source
 use stm_precision
 
-integer,parameter :: nvol = 3                  !< Number of computational volumes in a channel
+integer,parameter :: ncell = 3                  !< Number of computational volumes in a channel
 integer,parameter :: nclass = 2                !< Number of non-cohesive sediment grain classes
-real(stm_real) :: e_s(nvol,nclass)             !< Dimenssionless rate of entrainment of bed sediment into suspension 
-real(stm_real) :: shear_v(nvol)                !< Shear Velocity
+real(stm_real) :: e_s(ncell,nclass)             !< Dimenssionless rate of entrainment of bed sediment into suspension 
+real(stm_real) :: shear_v(ncell)                !< Shear Velocity
 real(stm_real) :: exp_re_p(nclass)             !< Explicit particle Reynolds number
 real(stm_real) :: settling_v(nclass)           !< Settling velocity
 !---local
-real(stm_real) :: hand_calc_value(nvol,nclass)
+real(stm_real) :: hand_calc_value(ncell,nclass)
 integer :: ivol
 
 shear_v =[0.1d0,0.4d0,one]
@@ -159,9 +159,9 @@ call es_garcia_parker(e_s,         &
                       exp_re_p,    &
                       settling_v,  & 
                       nclass,      &
-                      nvol)
+                      ncell)
                       
-do ivol=1,nvol
+do ivol=1,ncell
   call assertEquals(hand_calc_value(ivol,1),e_s(ivol,1),weak_eps,"Error in subroutine es_garcia_parker")
   call assertEquals(hand_calc_value(ivol,2),e_s(ivol,2),weak_eps,"Error in subroutine es_garcia_parker")
 end do 

@@ -28,7 +28,7 @@ subroutine bedload(q_sub_b,       &
                    velocity,      &
                    area,          &
                    nclass,        &
-                   nvol,          &
+                   ncell,          &
                    !!!!!!! todo: fill other ones
                    bedload_func)                   
 
@@ -38,10 +38,10 @@ use suspended_utility
 implicit none
 
 integer,intent(in) :: nclass                  !< Number of grain classes in bedload transport
-integer,intent(in) :: nvol                    !< Number of volumes in a channel
-real(stm_real),intent(in) :: velocity(nvol)                !< Velocity
-real(stm_real),intent(in) :: area(nvol)                    !< Area
-real(stm_real),intent(out)::q_sub_b(nvol,nclass)           !< Volumetric bedload transport rate
+integer,intent(in) :: ncell                    !< Number of volumes in a channel
+real(stm_real),intent(in) :: velocity(ncell)                !< Velocity
+real(stm_real),intent(in) :: area(ncell)                    !< Area
+real(stm_real),intent(out)::q_sub_b(ncell,nclass)           !< Volumetric bedload transport rate
 character, intent(in),optional :: bedload_func             !< Bedload relation 
 !---
 character,parameter :: default ='meyer_peter_muller'
@@ -67,18 +67,18 @@ subroutine volumetric_bedload_transport_rate(q_sub_b,                &
                                              capital_r,              &
                                              gravity,                &
                                              nclass,                 &
-                                             nvol)
+                                             ncell)
 
 use stm_precision
 implicit none
                                              
 integer,intent(in) :: nclass                                  !< Number of sediment classes 
-integer,intent(in) :: nvol                                    !< Number of volume
+integer,intent(in) :: ncell                                    !< Number of volume
 real(stm_real),intent(in) ::gravity                           !< Gravity
 real(stm_real),intent(in) ::capital_r                         !< Submerged specific gravity of sediment particles  
 real(stm_real),intent(in) ::diameter(nclass)                  !< Particle diameter
-real(stm_real),intent(in) ::einstein_bedload_num(nvol,nclass) !< Dimensionless belload transport rate 
-real(stm_real),intent(out)::q_sub_b(nvol,nclass)              !< Volumetric bedload transport rate
+real(stm_real),intent(in) ::einstein_bedload_num(ncell,nclass) !< Dimensionless belload transport rate 
+real(stm_real),intent(out)::q_sub_b(ncell,nclass)              !< Volumetric bedload transport rate
 !--- local
 integer:: iclass
 

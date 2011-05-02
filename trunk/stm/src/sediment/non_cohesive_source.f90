@@ -33,7 +33,7 @@ subroutine source_non_cohesive(vertical_flux,    &
                                !width,            &
                                !manning,          &
                                !diameter,         &
-                               nvol,             &
+                               ncell,             &
                                nclass,           &
                                delta_b,          &
                                pick_up_flag,     &
@@ -42,37 +42,37 @@ subroutine source_non_cohesive(vertical_flux,    &
                                time)
 
 use stm_precision 
-use suspended_sediment_variable
+!use suspended_sediment_variable
 use sediment_variables
 use suspended_utility
 
 implicit none
-real(stm_real),intent(out):: vertical_flux(nvol,nclass)    !< Vertical sediment net flux into the water column
-real(stm_real),intent(in) :: conc(nvol,nclass)             !< Concentration at new time
-real(stm_real),intent(in) :: velocity(nvol)                !< Velocity
-real(stm_real),intent(in) :: area(nvol)                    !< Area
-!real(stm_real),intent(in) :: width(nvol)                   !< Channel width
-!real(stm_real),intent(in) :: manning(nvol)                 !< Manning's n
+real(stm_real),intent(out):: vertical_flux(ncell,nclass)    !< Vertical sediment net flux into the water column
+real(stm_real),intent(in) :: conc(ncell,nclass)             !< Concentration at new time
+real(stm_real),intent(in) :: velocity(ncell)                !< Velocity
+real(stm_real),intent(in) :: area(ncell)                    !< Area
+!real(stm_real),intent(in) :: width(ncell)                   !< Channel width
+!real(stm_real),intent(in) :: manning(ncell)                 !< Manning's n
 !real(stm_real),intent(in) :: diameter(nclass)              !< Diameters of non-cohesive paticles
 real(stm_real),intent(in) :: dx                            !< Grid size in space
 real(stm_real),intent(in) :: dt                            !< Step size in time
 real(stm_real),intent(in) :: time                          !< Current time
 real(stm_real),intent(in) :: delta_b                       !< Bed leyer relative tickness 
-integer, intent(in)       :: nvol                          !< Number of cells 
+integer, intent(in)       :: ncell                          !< Number of cells 
 integer, intent(in)       :: nclass                        !< Number of classes for non-cohesive sediment in suspension
 character(len=32), optional, intent(in) :: pick_up_flag    !< Switch for sediment pickup function
 
 !---local
-real(stm_real) :: c_bar_bed(nvol,nclass)                   !< Near bed vaule of mean volumetric sediment concentration
+real(stm_real) :: c_bar_bed(ncell,nclass)                   !< Near bed vaule of mean volumetric sediment concentration
 real(stm_real) :: fall_vel(nclass)                         !< Settling velocity         
-real(stm_real) :: rouse_num(nvol,nclass)                   !< Rouse dimensionless number  
+real(stm_real) :: rouse_num(ncell,nclass)                   !< Rouse dimensionless number  
 real(stm_real) :: specific_gravity                         !< Specific gravity
-real(stm_real) :: big_e_sub_s(nvol,nclass)                 !< Dimenssionless rate of entrainment of bed sediment into suspension  
-real(stm_real) :: shear_v(nvol)                            !< Shear velocity   
+real(stm_real) :: big_e_sub_s(ncell,nclass)                 !< Dimenssionless rate of entrainment of bed sediment into suspension  
+real(stm_real) :: shear_v(ncell)                            !< Shear velocity   
 real(stm_real) :: exp_re_p(nclass)                         !< Explicit particle reynolds number
 real(stm_real) :: capital_r                                !< Submerged specific gravity of sediment particles     
-real(stm_real) :: hydr_radius(nvol)                        !< Hydraulic radius
-real(stm_real) :: I_1(nvol,nclass)                         !< First Einstein integral value   
+real(stm_real) :: hydr_radius(ncell)                        !< Hydraulic radius
+real(stm_real) :: I_1(ncell,nclass)                         !< First Einstein integral value   
 integer :: iclass                                          !< Counter on grain class  
          
 character :: pick_up_function 
@@ -89,7 +89,7 @@ end if
 call set_sediment_constants
 
 ! allocate manning n + width and non_cohesive diameters
-call allocate_sediment_parameters(nvol,nclass)
+call allocate_sediment_parameters(ncell,nclass)
 
 !- getting the values
 ! todo: this must change to 3 subroutine for cohesive non-cohesive and bedload
@@ -113,7 +113,7 @@ specific_gravity  = sediment_density/water_density
 !                                width,        &
 !                                diameter,     &
 !                                nclass,       &
-!                                nvol)
+!                                ncell)
 
                                 
 ! here verfical_net_sediment_flux = settling_vel * (Es - c_bar_sub_b)
@@ -153,12 +153,12 @@ call es_garcia_parker(big_e_sub_s,       &
                       exp_re_p,          &
                       fall_vel,          & 
                       nclass,            &
-                      nvol)
+                      ncell)
                       
 call rouse_dimensionless_number(rouse_num,   &
                                 fall_vel,    &
                                 shear_v,     &
-                                nvol,        &
+                                ncell,        &
                                 nclass) 
 
 
@@ -167,7 +167,7 @@ call rouse_dimensionless_number(rouse_num,   &
 call first_einstein_integral(I_1,      &
                              delta_b,  &
                              rouse_num,&
-                             nvol,     &
+                             ncell,     &
                              nclass) 
 
 
@@ -194,18 +194,18 @@ end subroutine
 subroutine first_einstein_integral(I_1,      &
                                    delta_b,  &
                                    rouse_num,&
-                                   nvol,     &
+                                   ncell,     &
                                    nclass) 
                                    
 use stm_precision
 use error_handling
 implicit none
 !-- arg
-integer, intent(in):: nvol                            !< Number of computational volumes in a channel
+integer, intent(in):: ncell                            !< Number of computational volumes in a channel
 integer, intent(in):: nclass                          !< Number of non-cohesive sediment grain classes
-real(stm_real),intent(in) :: rouse_num(nvol,nclass)   !< Rouse dimenssionless number  
+real(stm_real),intent(in) :: rouse_num(ncell,nclass)   !< Rouse dimenssionless number  
 real(stm_real),intent(in) :: delta_b                  !< Relative bed layer thickness = b/H 
-real(stm_real),intent(out):: I_1(nvol,nclass)         !< First Einstein integral value
+real(stm_real),intent(out):: I_1(ncell,nclass)         !< First Einstein integral value
 
 !-- local
 integer :: ivol
@@ -216,7 +216,7 @@ real(stm_real) :: i_1_l
 real(stm_real) :: i_1_r   !right
 
 
-do ivol=1,nvol
+do ivol=1,ncell
     do iclass=1,nclass
         if (rouse_num(ivol,iclass) > 3.98d0) then
         !todo: I am not sure if we need this subroutine in bed load or not 
@@ -300,24 +300,24 @@ subroutine es_garcia_parker(big_e_sub_s,       &
                             exp_re_p,          &
                             settling_v,        & 
                             nclass,            &
-                            nvol)
+                            ncell)
 use stm_precision
 implicit none
 
 !-- arg
-integer, intent(in):: nvol                                !< Number of computational volumes in a channel
+integer, intent(in):: ncell                                !< Number of computational volumes in a channel
 integer, intent(in):: nclass                              !< Number of non-cohesive sediment grain classes
-real(stm_real),intent(out):: big_e_sub_s(nvol,nclass)     !< Dimenssionless rate of entrainment of bed sediment into suspension (i.e., vol entrained sediment/unit bed area/time)                                       
+real(stm_real),intent(out):: big_e_sub_s(ncell,nclass)     !< Dimenssionless rate of entrainment of bed sediment into suspension (i.e., vol entrained sediment/unit bed area/time)                                       
 !  big_e_sub_s is in a range of 0.0002 ~ 0.06
-real(stm_real),intent(in) :: shear_v(nvol)                !< Shear Velocity
+real(stm_real),intent(in) :: shear_v(ncell)                !< Shear Velocity
 real(stm_real),intent(in) :: exp_re_p(nclass)             !< Explicit particle Reynolds number
 real(stm_real),intent(in) :: settling_v(nclass)           !< Settling velocity
 !---local
-real(stm_real) :: z_u(nvol,nclass)                        !< Captial z sub u a measure for strength of shear stress but it also takes into account the particle size in Garcia notation
+real(stm_real) :: z_u(ncell,nclass)                        !< Captial z sub u a measure for strength of shear stress but it also takes into account the particle size in Garcia notation
 real(stm_real), parameter :: cap_a = 1.3d-7               ! Constant value (see ASCE sediment manual no. 110 page 118)
 integer :: ivol
 
-do ivol=1,nvol
+do ivol=1,ncell
 
     z_u(ivol,:) = shear_v(ivol)*(exp_re_p**0.6d0)/settling_v
     where (exp_re_p < 3.5d0)

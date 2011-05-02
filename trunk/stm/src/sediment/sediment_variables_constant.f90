@@ -29,8 +29,8 @@ module sediment_variables
  ! todo: I am not sure about the correct place of d(nvar) and 
  ! todo: if we need d_cohesive(nvar) or not 
  
- integer :: ncell                                 !< Number of computational cells
- integer :: nvar                                  !< Number of variables non cohesive
+ !integer :: ncell                                 !< Number of computational cells
+ !integer :: nvar                                  !< Number of variables non cohesive
  !integer :: nvar_cohesive                        !< Number of variables cohesive
  !> Sediment constants   
  real(stm_real), save :: gravity                  !< Acceleration of gravity; it must be in SI units (constant)
@@ -95,15 +95,15 @@ module sediment_variables
  end subroutine
     
   !> Allocate spatial sediment parameters 
- subroutine allocate_sediment_parameters(ncell,nvar)
+ subroutine allocate_sediment_parameters(a_ncell,a_nvar)
      use error_handling
      implicit none
-     integer,intent(in):: ncell    !< Number of cells
-     integer,intent(in):: nvar     !< Number of sediment classes
+     integer,intent(in):: a_ncell    !< Number of cells
+     integer,intent(in):: a_nvar     !< Number of sediment classes
             
-     allocate(manning(ncell))
-     allocate(width(ncell))
-     allocate(diameter(nvar))
+     allocate(manning(a_ncell))
+     allocate(width(a_ncell))
+     allocate(diameter(a_nvar))
          
      manning   = LARGEREAL
      width     = LARGEREAL
@@ -116,10 +116,9 @@ module sediment_variables
  !> and reset ncell and nvar to zero.
  subroutine deallocate_sediment_static()
      implicit none
-
-     ncell = 0
-     nvar  = 0 
-   
+     ! todo: Do we need to set ncell=0 and nvar=0?
+         
+    
      deallocate(manning)
      deallocate(width)
      deallocate(diameter)
