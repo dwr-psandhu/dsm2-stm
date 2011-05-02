@@ -274,13 +274,13 @@ use stm_precision
 
 implicit none
 
-integer, parameter :: nvol = 3          !< Number cells 
-real(stm_real):: vel(nvol)              !< Velocity          
-real(stm_real):: manning_n(nvol)        !< Manning's n                                     
-real(stm_real):: hand_calc_value(nvol)  !< The sought output 
-real(stm_real):: big_r(nvol)            !< Hydraulic radius 
+integer, parameter :: ncell = 3          !< Number cells 
+real(stm_real):: vel(ncell)              !< Velocity          
+real(stm_real):: manning_n(ncell)        !< Manning's n                                     
+real(stm_real):: hand_calc_value(ncell)  !< The sought output 
+real(stm_real):: big_r(ncell)            !< Hydraulic radius 
 real(stm_real):: gravity                !< Gravity
-real(stm_real):: shear_v(nvol)          !< Shear velocity 
+real(stm_real):: shear_v(ncell)          !< Shear velocity 
 logical :: si_br                        !< SI and British unit switch
 integer :: iclas
 
@@ -296,9 +296,9 @@ call shear_velocity_calculator(shear_v,   &
                                manning_n, &
                                gravity,   &
                                big_r,     &
-                               nvol)                      
+                               ncell)                      
 
-do iclas=1,nvol
+do iclas=1,ncell
     call assertEquals(hand_calc_value(iclas),shear_v(iclas),weak_eps,"Error in subroutine Shear Velocity!")
 end do
 
@@ -309,10 +309,10 @@ call shear_velocity_calculator(shear_v,    &
                                 manning_n, &
                                 gravity,   &
                                 big_r,     &
-                                nvol,      &
+                                ncell,      &
                                 si_br)                      
 
-do iclas=1,nvol
+do iclas=1,ncell
     call assertEquals(hand_calc_value(iclas),shear_v(iclas),weak_eps,"Error in subroutine Shear Velocity, SI unit!")
 end do
 
@@ -325,10 +325,10 @@ call shear_velocity_calculator(shear_v,    &
                                 manning_n, &
                                 gravity,   &
                                 big_r,     &
-                                nvol,      &
+                                ncell,      &
                                 si_br)                      
 
-do iclas=1,nvol
+do iclas=1,ncell
     call assertEquals(hand_calc_value(iclas),shear_v(iclas),weak_eps,"Error in subroutine Shear Velocity, British unit!")
 end do
 

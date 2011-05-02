@@ -285,7 +285,7 @@ end subroutine
 subroutine rouse_dimensionless_number(rouse_num,   &
                                       fall_vel,    &
                                       shear_vel,   &
-                                      nvol,        &
+                                      ncell,        &
                                       nclass,      &
                                       von_karman)                                 
 
@@ -293,10 +293,10 @@ use stm_precision
 
 implicit none
 integer,intent(in) :: nclass                                    !< Number of sediment classes 
-integer,intent(in) :: nvol                                      !< Number of cells
-real(stm_real),intent(out):: rouse_num(nvol,nclass)  !< Rouse dimensionless number  
+integer,intent(in) :: ncell                                      !< Number of cells
+real(stm_real),intent(out):: rouse_num(ncell,nclass)  !< Rouse dimensionless number  
 real(stm_real),intent(in) :: fall_vel(nclass)        !< Settling velocity
-real(stm_real),intent(in) :: shear_vel(nvol)         !< Shear velocity 
+real(stm_real),intent(in) :: shear_vel(ncell)         !< Shear velocity 
 real(stm_real),intent(in),optional :: von_karman     !< Von karman constant, Kappa = 0.41
 !----local
 real(stm_real) :: kappa
@@ -308,7 +308,7 @@ if (present(von_karman)) then
     kappa = von_karman
 end if
 
-do icell=1,nvol
+do icell=1,ncell
     rouse_num(icell,:)= fall_vel/shear_vel(icell)/kappa
 end do
 
