@@ -316,8 +316,10 @@ return
 end subroutine
 
 ! The formula here is adopted from B. Greimann, Y. Lai and J. Huang, 2008
-!> subroutine to calculate the percentage in suspension 
+!> subroutine to calculate the percentage in suspension
+! todo: what should we do with large Rouse numbers? and exclude them from bedload? 
 subroutine allocation_ratio(susp_percent,    &
+                            bed_percent,     &
                             rouse_num,       &
                             nclass,          &
                             ncell)
@@ -329,8 +331,10 @@ integer,intent(in) :: nclass                             !< Number of sediment c
 integer,intent(in) :: ncell                              !< Number of cells
 real(stm_real),intent(in) :: rouse_num(ncell,nclass)     !< Rouse dimensionless number  
 real(stm_real),intent(out):: susp_percent(ncell,nclass)  !< Percentage in suspension  
+real(stm_real),intent(out):: bed_percent(ncell,nclass)   !< Percentage in bedload
 
-susp_percent = min (one,(exp(rouse_num)))
+susp_percent = min (one,(exp(-rouse_num)))
+bed_percent  = one - susp_percent
 
 
 return
