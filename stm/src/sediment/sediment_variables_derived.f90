@@ -333,7 +333,7 @@ real(stm_real),intent(in) :: rouse_num(ncell,nclass)     !< Rouse dimensionless 
 real(stm_real),intent(out):: susp_percent(ncell,nclass)  !< Percentage in suspension  
 real(stm_real),intent(out):: bed_percent(ncell,nclass)   !< Percentage in bedload
 
-susp_percent = min (one,(exp(-rouse_num)))
+susp_percent = min (one,(2.5d0*exp(-rouse_num)))
 bed_percent  = one - susp_percent
 
 

@@ -41,6 +41,7 @@ call test_settling_velocity
 call test_shear_velocity
 call test_rouse_number
 
+call test_allocation_ratio()
 
 ! Non_cohesive sink source
 call test_first_einstein_integral
