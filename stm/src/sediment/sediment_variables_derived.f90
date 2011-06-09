@@ -315,6 +315,28 @@ end do
 return
 end subroutine
 
+! The formula here is adopted from B. Greimann, Y. Lai and J. Huang, 2008
+!> subroutine to calculate the percentage in suspension 
+subroutine allocation_ratio(susp_percent,    &
+                            rouse_num,       &
+                            nclass,          &
+                            ncell)
+                            
+use stm_precision
+
+implicit none
+integer,intent(in) :: nclass                             !< Number of sediment classes 
+integer,intent(in) :: ncell                              !< Number of cells
+real(stm_real),intent(in) :: rouse_num(ncell,nclass)     !< Rouse dimensionless number  
+real(stm_real),intent(out):: susp_percent(ncell,nclass)  !< Percentage in suspension  
+
+susp_percent = min (one,(exp(rouse_num)))
+
+
+return
+end subroutine 
+
+
 
 
 end module
