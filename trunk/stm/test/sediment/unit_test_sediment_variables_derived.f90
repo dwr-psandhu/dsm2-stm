@@ -350,7 +350,7 @@ integer, parameter :: nvolume = 3
 real(stm_real) :: rouse_num(nvolume,nclas)   !< Rouse dimensionless number  
 real(stm_real) :: fall_vel(nclas)            !< Settling velocity
 real(stm_real) :: shear_vel(nvolume)         !< Shear velocity 
-real(stm_real) :: hand_value(nvolume,nclas)  !< Shear velocity 
+real(stm_real) :: hand_value(nvolume,nclas)  !< Calculated values 
 real(stm_real) :: von_karman                 !< Von karman constant, Kappa = 0.41
 !---local
 integer:: iclas,ivol
@@ -393,5 +393,58 @@ end do
 
 return
 end subroutine
+
+
+subroutine test_allocation_ratio()
+
+use fruit
+use suspended_utility
+use stm_precision
+
+implicit none
+
+integer, parameter :: nclas   = 2
+integer, parameter :: nvolume = 3
+
+real(stm_real) :: rouse_num(nvolume,nclas)    !< Rouse dimensionless number  
+real(stm_real) :: susp_percent(nvolume,nclas) !< Percentage in suspension  
+real(stm_real) :: bed_percent(nvolume,nclas)  !< Percentage in bedload
+real(stm_real) :: hand_value(nvolume,nclas)   !< Calculated value
+!---local
+integer:: iclas,ivol
+
+rouse_num  = reshape ([0.5d0,	one ,	1.1d0, &
+                       2d0,	 5.5d0,	8.5d0 ],[3,2])
+                                             
+
+hand_value = reshape ([1.000000000000000d0,   0.919698602928606d0,   0.832177709245199d0, &
+                       0.338338208091532d0,   0.010216928596160d0,   0.000508670922527d0],[3,2])
+
+call allocation_ratio(susp_percent,    &
+                      bed_percent,     &
+                      rouse_num,       &
+                      nclas,           &
+                      nvolume)
+                                
+do iclas=1,nclas
+    do ivol =1, nvolume
+        call assertEquals(hand_value(ivol,iclas),susp_percent(ivol,iclas),weak_eps,"Error in subroutine bedload allocation ratio!")
+    end do
+end do
+
+hand_value = one - hand_value
+
+do iclas=1,nclas
+    do ivol =1, nvolume
+        call assertEquals(hand_value(ivol,iclas),bed_percent(ivol,iclas),weak_eps,"Error in subroutine bedload allocation ratio!")
+    end do
+end do
+
+
+return
+end subroutine
+
+
+
 
 end module
