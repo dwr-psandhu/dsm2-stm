@@ -430,10 +430,10 @@ subroutine solve(center_diag ,         &
                  nvar)
 
 use matrix_solver
-                                                        
-! ----- args
 use stm_precision
-implicit none
+implicit none                                                       
+! ----- args
+
 integer, intent (in) :: ncell                              !< Number of volumes
 integer, intent (in) :: nvar                               !< Number of variables 
 real(stm_real),intent (in)  :: down_diag(ncell,nvar)       !< Values of the coefficients below diagonal in matrix
