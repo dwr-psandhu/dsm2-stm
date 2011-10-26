@@ -29,13 +29,13 @@ use stm_precision
 ! the problem here was with CFL larger than one r
 integer, parameter  :: nconc = 2                      !< Number of constituents
 integer, parameter  :: nstep_base = 256               !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 256               !< Number of spatial discritization in finer mesh 
+integer, parameter  :: nx_base    = 128               !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero             !< Origin
-real(stm_real),parameter :: x0 = 15000.0d0            !< Location of the initial condition discontinuity
-real(stm_real),parameter :: x_left = 20000.0d0        !< Left hand side of the channel
-real(stm_real),parameter :: x_right = 140000.0d0      !< Right hand side of the channel
+real(stm_real),parameter :: x0 = 10000.0d0            !< Location of the initial condition discontinuity
+real(stm_real),parameter :: x_left = 10000.0d0        !< Left hand side of the channel
+real(stm_real),parameter :: x_right = 15000.0d0      !< Right hand side of the channel
 real(stm_real),parameter :: start_time = 8000.0d0     !< Starts at 100000 sec (second)
-real(stm_real),parameter :: end_time = 12000.0d0      !< Ends at 190000 (second)
+real(stm_real),parameter :: end_time = 10000.0d0      !< Ends at 190000 (second)
 real(stm_real),parameter :: a0 = 1.0d7                !< Constant of area A=A0*(x^-1)
 real(stm_real),parameter :: c0 = sixteen              !< Constant concentration
 real(stm_real),parameter :: d0 = 1.0d-6               !< Constant of dispersion coefficent D=D0*(x^2)
