@@ -18,34 +18,33 @@
 !    along with DSM2.  If not, see <http://www.gnu.org/licenses>.
 !</license>
 
-!> Testing advection and diffusion with spacially variable coefficents vs. analytical solution
+!> Testing advection and diffusion with spacially  and temporally variable coefficents vs. analytical solution
+!> The source term here is derived based on MMS
 !>@ingroup test
-module test_zoppou_advection_dispersion
+module test_mms_advection_dispersion
 use stm_precision
 !----- module variables
 ! todo: make the names more meaningful
 ! NOTE: the parameters here should not change, the have been chosen in a range to be 
 ! meaningful 
-! the problem here was with CFL larger than one r
+! the problem here was with CFL larger than one 
 integer, parameter  :: nconc = 2                      !< Number of constituents
 integer, parameter  :: nstep_base = 256               !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 128               !< Number of spatial discritization in finer mesh 
+integer, parameter  :: nx_base    = 64                !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero             !< Origin
-real(stm_real),parameter :: x0 = 10000.0d0            !< Location of the initial condition discontinuity
-real(stm_real),parameter :: x_left = 10000.0d0        !< Left hand side of the channel
-real(stm_real),parameter :: x_right = 15000.0d0      !< Right hand side of the channel
-real(stm_real),parameter :: start_time = 8000.0d0     !< Starts at 100000 sec (second)
-real(stm_real),parameter :: end_time = 10000.0d0      !< Ends at 190000 (second)
-real(stm_real),parameter :: a0 = 1.0d7                !< Constant of area A=A0*(x^-1)
-real(stm_real),parameter :: c0 = sixteen              !< Constant concentration
-real(stm_real),parameter :: d0 = 1.0d-6               !< Constant of dispersion coefficent D=D0*(x^2)
-real(stm_real),parameter :: u0 = 1.0d-4               !< Constant of velocity U=u0*x
+real(stm_real),parameter :: x0 = zero                 !< Location of the initial condition discontinuity
+real(stm_real),parameter :: x_left = zero             !< Left hand side of the channel
+real(stm_real),parameter :: x_right = one             !< Right hand side of the channel
+real(stm_real),parameter :: start_time = zero         !< Starts at zero sec (second)
+real(stm_real),parameter :: end_time = one            !< Ends at one (second)
+real(stm_real),parameter :: a0 = seven                !< Constant of area A=A0*exp(x+t)
+real(stm_real),parameter :: d0 = half*half            !< Constant dispersion coefficent D
 
 contains
 
 !> Tests the convergence of error rate in advection and dispersion of 
 !> mass with spacially varing velocity, dispersion coefficent, and area 
-subroutine test_advection_diffusion_zoppou(verbose)
+subroutine test_advection_diffusion_mms(verbose)
 
 use hydro_data
 use boundary_advection
@@ -59,7 +58,7 @@ use single_channel_boundary
 use dispersion_coefficient
 
 implicit none
-procedure(hydro_data_if),pointer :: zoppou_hydro          !< The pointer points to the test's flow data
+procedure(hydro_data_if),pointer :: mms_hydro             !< The pointer points to the test's flow data
 logical :: verbose                                        !< The flag for showing the details on the screen
 logical :: detail_printout=.true.                         !< The flag for printing out the details
 real(stm_real) :: fine_initial_condition(nx_base,nconc)   !< initial condition at finest resolution
@@ -81,31 +80,31 @@ procedure(boundary_diffusive_matrix_if),pointer :: bc_diff_matrix => null() !< P
 !       for zoppou. This is needed for both advection and dispersion. You will also need 
 !       to use the proper API for setting dispersion.
 
-zoppou_hydro => zoppou_flow 
-compute_source => no_source
-dispersion_coef => zoppou_disp_coef
+mms_hydro => manufactured_solution_flow 
+compute_source => manufactured_solution_source
+dispersion_coef => mms_const_disp_coef
 
-label = 'advection_dispersion_zoppou' 
+label = 'advection_dispersion_manufactured_solution' 
 test_domain_length = x_right - x_left
 total_time = end_time - start_time
 
-cfl_number = u0*x_right*total_time*nx_base/nstep_base/test_domain_length
-
-if (cfl_number > one) then
-   call stm_fatal('Courant Number Larger Than One, Zoppou Test!') 
-end if
+!cfl_number = u0*x_right*total_time*nx_base/nstep_base/test_domain_length
+!
+!if (cfl_number > one) then
+!   call stm_fatal('Courant Number Larger Than One, MMS Test!') 
+!end if
 ! remove ">"
 !> load the initial values and reference final values to feed the test routine
-call initial_fine_solution_zoppou(fine_initial_condition, &
-                                  fine_solution,          &
-                                  nx_base,                &
-                                  nstep_base,             &
-                                  nconc)                  
+call initial_fine_solution_mms(fine_initial_condition, &
+                               fine_solution,          &
+                               nx_base,                &
+                               nstep_base,             &
+                               nconc)                  
                                     
                                       
-call set_single_channel_boundary(dirichlet_advective_flux_lo, bc_data_zoppou, &
-                                 dirichlet_advective_flux_hi, bc_data_zoppou, &
-                                 dirichlet_diffusive_flux_lo, bc_data_zoppou, &
+call set_single_channel_boundary(dirichlet_advective_flux_lo, bc_data_mms, &
+                                 dirichlet_advective_flux_hi, bc_data_mms, &
+                                 dirichlet_diffusive_flux_lo, bc_data_mms, &
                                  dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data )
 
 boundary_diffusion_flux => single_channel_boundary_diffusive_flux
@@ -116,11 +115,11 @@ boundary_diffusion_matrix => single_channel_boundary_diffusive_matrix
 !> compute the norms, after each step coarsen the values and repeat computation.
 !> at the end  calculates the ratio of the norms and prints a log 
 call test_convergence(label,                  &
-                      zoppou_hydro ,          &
+                      mms_hydro,              &
                       single_channel_boundary_advective_flux,   &
-                      boundary_diffusion_flux,&
-                      boundary_diffusion_matrix,&
-                      no_source,              &
+                      boundary_diffusion_flux,      &
+                      boundary_diffusion_matrix,    &
+                      manufactured_solution_source, &
                       test_domain_length,     &
                       total_time,             &
                       start_time,             &
@@ -135,25 +134,18 @@ call test_convergence(label,                  &
 return                      
 end subroutine
 
-subroutine zoppou_solution(value_zoppou, &
-                           xpos,         &
-                           time)                
+subroutine mms_solution(value_mms,   &
+                        xpos,        &
+                        time)                
                                     
 use stm_precision                                       
 implicit none
 
-real(stm_real),intent(out):: value_zoppou   !< Dirichlet initial condition at left side of channel
+real(stm_real),intent(out):: value_mms      !< Dirichlet initial condition at left side of channel
 real(stm_real),intent(in) :: xpos           !< Location where data is requested
 real(stm_real),intent(in) :: time           !< Time
 
-!----local
-real(stm_real):: c_term1
-real(stm_real):: c_term2
-
-c_term1 =  erfc((log(xpos/x0)-(u0-d0)*time)/(two*sqrt(d0*time)))
-c_term2 =  erfc((log(xpos/x0)+(u0-d0)*time)/(two*sqrt(d0*time)))*exp((u0-d0)*log(xpos/x0)/d0)
-
-value_zoppou = (c0*half)*(c_term1 + c_term2)
+value_mms =exp(xpos-time)
 
 return
 end subroutine
@@ -162,11 +154,11 @@ end subroutine
 !> Generates a fine initial and final solution of analytical mass distribution 
 !> The cell averaging is done by the Composite Simpson's rule 
 !> int (f,a,b) = 1/12 *(Fa+ 4*F2 + 2*F3 + 4*F4 + Fb)
-subroutine initial_fine_solution_zoppou(fine_initial_condition, &
-                                        fine_solution,          &
-                                        nx_base,                &
-                                        nstep_base,             &
-                                        nconc)
+subroutine initial_fine_solution_mms(fine_initial_condition, &
+                                     fine_solution,          &
+                                     nx_base,                &
+                                     nstep_base,             &
+                                     nconc)
                                        
 implicit none
 
@@ -190,37 +182,37 @@ fine_initial_condition = zero
 do icell=1,nx_base
   ! x = x0
   xpos    = x_left +(dble(icell)-one)*dx
-  call zoppou_solution(point_value,xpos,start_time)
+  call mms_solution(point_value,xpos,start_time)
   fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (half/six)*point_value
-  call zoppou_solution(point_value,xpos,end_time)
+  call mms_solution(point_value,xpos,end_time)
   fine_solution(icell,:) = fine_solution(icell,:) + (half/six)*point_value
 
   ! x = x0 + 1/4L
   xpos    = x_left +(dble(icell)- three/four)*dx
-  call zoppou_solution(point_value,xpos,start_time)
+  call mms_solution(point_value,xpos,start_time)
   fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (two/six)*point_value
-  call zoppou_solution(point_value,xpos,end_time)
+  call mms_solution(point_value,xpos,end_time)
   fine_solution(icell,:) = fine_solution(icell,:) + (two/six)*point_value
   
   ! x = x0 + 2/4L
   xpos    = x_left +(dble(icell)- half)*dx
-  call zoppou_solution(point_value,xpos,start_time)
+  call mms_solution(point_value,xpos,start_time)
   fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (one/six)*point_value
-  call zoppou_solution(point_value,xpos,end_time)
+  call mms_solution(point_value,xpos,end_time)
   fine_solution(icell,:) = fine_solution(icell,:) + (one/six)*point_value
   
   ! x = x0 + 3/4L
   xpos    = x_left +(dble(icell)- fourth)*dx
-  call zoppou_solution(point_value,xpos,start_time)
+  call mms_solution(point_value,xpos,start_time)
   fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (two/six)*point_value
-  call zoppou_solution(point_value,xpos,end_time)
+  call mms_solution(point_value,xpos,end_time)
   fine_solution(icell,:) = fine_solution(icell,:) + (two/six)*point_value
   
   ! x = x0 + 4/4L = x_right
   xpos    = x_left +(dble(icell))*dx
-  call zoppou_solution(point_value,xpos,start_time)
+  call mms_solution(point_value,xpos,start_time)
   fine_initial_condition(icell,:) = fine_initial_condition(icell,:) + (half/six)*point_value
-  call zoppou_solution(point_value,xpos,end_time)
+  call mms_solution(point_value,xpos,end_time)
   fine_solution(icell,:) = fine_solution(icell,:) + (half/six)*point_value
   
 end do
@@ -228,17 +220,17 @@ end do
 return
 end subroutine
 !///////////////////////////////////
-!> zoppou flow and area in the finite volume form
-subroutine zoppou_flow(flow,    &
-                       flow_lo, &
-                       flow_hi, &
-                       area,    &
-                       area_lo, &
-                       area_hi, &
-                       ncell,   &
-                       time,    &
-                       dx,      &
-                       dt)
+!> mms flow and area in the finite volume form
+subroutine manufactured_solution_flow(flow,    &
+                                      flow_lo, &
+                                      flow_hi, &
+                                      area,    &
+                                      area_lo, &
+                                      area_hi, &
+                                      ncell,   &
+                                      time,    &
+                                      dx,      &
+                                      dt)
                       
 implicit none
 integer, intent(in) :: ncell                  !< Number of cells
@@ -259,31 +251,31 @@ real(stm_real) :: xpos
 integer :: icell
 
 do icell = 1,ncell  
-  xpos_lo = x_left + dble(icell-1)*dx
-  xpos_hi = x_left + dble(icell)*dx
+  xpos_lo = x_left + dble(icell-1)    *dx
+  xpos_hi = x_left + dble(icell)      *dx
   xpos    = x_left +(dble(icell)-half)*dx
-  area(icell)    = (a0/dx)*(log(xpos_hi)-log(xpos_lo)) 
-  area_lo(icell) = a0/xpos_lo
-  area_hi(icell) = a0/xpos_hi
+  area   (icell) = a0*exp(xpos   +time)
+  area_lo(icell) = a0*exp(xpos_lo+time)
+  area_hi(icell) = a0*exp(xpos_hi+time)
+  flow(icell)    = area   (icell)*(exp(-xpos)-one)   
+  flow_lo(icell) = area_lo(icell)*(exp(-xpos_lo)-one)
+  flow_hi(icell) = area_hi(icell)*(exp(-xpos_hi)-one)
 end do
- 
-  flow(:)    = u0*a0   
-  flow_lo(:) = u0*a0
-  flow_hi(:) = u0*a0
+
   
 return
 end subroutine
 
-subroutine zoppou_disp_coef(disp_coef_lo,         &
-                            disp_coef_hi,         &
-                            flow,                 &
-                            flow_lo,              &
-                            flow_hi,              &
-                            time,                 &
-                            dx,                   &
-                            dt,                   &
-                            ncell,                &
-                            nvar)  
+subroutine mms_const_disp_coef(disp_coef_lo,         &
+                               disp_coef_hi,         &
+                               flow,                 &
+                               flow_lo,              &
+                               flow_hi,              &
+                               time,                 &
+                               dx,                   &
+                               dt,                   &
+                               ncell,                &
+                               nvar)  
      
      use stm_precision
          
@@ -299,42 +291,30 @@ subroutine zoppou_disp_coef(disp_coef_lo,         &
     real(stm_real),intent(in) :: flow_lo(ncell)          !< Flow on lo side of cells centered in time
     real(stm_real),intent(in) :: flow_hi(ncell)          !< Flow on hi side of cells centered in time       
     real(stm_real),intent(in) :: flow(ncell)             !< Flow on center of cells 
-    !--
-    integer :: ivar
-    integer :: icell
-    real(stm_real) :: xpos
-    real(stm_real) :: xpos_lo
-    real(stm_real) :: xpos_hi
-        
-    do icell = 1,ncell
-      xpos_lo = x_left + dble(icell-1)*dx
-      xpos_hi = x_left + dble(icell  )*dx
-      disp_coef_lo(icell) = d0*xpos_lo**two 
-      disp_coef_hi(icell) = d0*xpos_hi**two 
-    end do
-                
+
+      disp_coef_lo(:) = d0 
+      disp_coef_hi(:) = d0
+                  
      return
  end subroutine
 
 
-
-
-subroutine bc_data_zoppou(bc_value_zoppou, &
-                           xloc,           &
-                           conc,           &
-                           nx_base,        &
-                           nconc,          &
-                           origin,         &
-                           time,           &
-                           dx,             &
-                           dt)                
+subroutine bc_data_mms(bc_value_mms,   &
+                       xloc,           &
+                       conc,           &
+                       nx_base,        &
+                       nconc,          &
+                       origin,         &
+                       time,           &
+                       dx,             &
+                       dt)                
                                     
 use stm_precision                                       
 implicit none
 
 integer,intent(in) :: nconc 
 integer,intent(in) :: nx_base 
-real(stm_real),intent(out):: bc_value_zoppou(nconc)     !< Dirichlet initial condition at left side of channel
+real(stm_real),intent(out):: bc_value_mms(nconc)        !< Dirichlet initial condition at left side of channel
 real(stm_real),intent(in) :: xloc                       !< Location where data is requested
 real(stm_real),intent(in) :: time                       !< Time
 real(stm_real),intent(in) :: dt                         !< Time step
@@ -343,16 +323,52 @@ real(stm_real),intent(in) :: conc(nx_base,nconc)        !< Concentration
 real(stm_real),intent(in) :: origin                     !< Space origin
 
 !----local
-real(stm_real):: c_term1
-real(stm_real):: c_term2
+
 real(stm_real):: xpos
 real(stm_real):: point_value
 
 xpos = xloc + x_left  ! value comes in relative to zero origin right now
 
-call zoppou_solution(point_value,xpos,time)
-bc_value_zoppou(:) = point_value
+call mms_solution(point_value,xpos,time)
+bc_value_mms(:) = point_value
 
+return
+end subroutine
+
+subroutine manufactured_solution_source(source, & 
+                                        conc,   &
+                                        area,   &
+                                        flow,   &
+                                        ncell,  &
+                                        nvar,   &
+                                        time)
+                                         
+ use stm_precision 
+
+implicit none
+ !--- args
+ integer,intent(in)  :: ncell                        !< Number of cells
+ integer,intent(in)  :: nvar                         !< Number of variables
+ real(stm_real),intent(inout) :: source(ncell,nvar)  !< cell centered source 
+ real(stm_real),intent(in)    :: conc(ncell,nvar)    !< Concentration
+ real(stm_real),intent(in)    :: area(ncell)         !< area at source     
+ real(stm_real),intent(in)    :: flow(ncell)         !< flow at source location
+ real(stm_real),intent(in)    :: time                !< time
+ !--- local
+integer :: ivar  
+integer :: icell     
+real(stm_real) :: dx
+real(stm_real) :: xpos
+
+dx = (x_right-x_left)/ncell
+
+do ivar = 1,nvar
+    do icell = 1,ncell  
+        xpos    = x_left +(dble(icell)-half)*dx
+        source(icell,ivar) = two*exp(xpos)*(one-exp(xpos)+half*d0*exp(-time))
+    end do
+end do
+     
 return
 end subroutine
 
