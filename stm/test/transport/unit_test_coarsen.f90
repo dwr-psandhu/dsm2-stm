@@ -64,4 +64,109 @@ deallocate (coarse_data)
 
 return
 end subroutine 
+
+
+!> Tests the detect wiggle subroutine
+subroutine test_detect_wiggle
+use fruit
+use test_utility
+use stm_precision
+implicit none
+ 
+!---arg
+integer,parameter :: ncell = 6            !< Number of cells 
+integer :: oscillation                    !< Number of extra oscillation in value_2
+real(stm_real) :: base_val(ncell)         !< Benchmark values    
+real(stm_real) :: numeric_val(ncell)      !< Numerical solution values
+real(stm_real), parameter :: tol = 1.d-15 !< Acceptable tolerance 
+
+base_val = [1:6]
+numeric_val = [11:16]
+
+call detect_wiggle(numeric_val,  &
+                   base_val,     &
+                   ncell,        &
+                   oscillation)
+
+call assertEquals(oscillation,0,"error in detect wiggles")
+
+base_val = [1.0d0,2.0d0,3.0d0,4.0d0,3.0d0,4.0d0]
+numeric_val = [1.0d0,2.0d0,1.0d0,2.0d0,1.0d0,2.0d0]
+
+call detect_wiggle(numeric_val,  &
+                   base_val,     &
+                   ncell,        &
+                   oscillation)
+
+
+call assertEquals(oscillation,2,"error in detect wiggles")
+
+call detect_wiggle(base_val,     &
+                   base_val,     &
+                   ncell,        &
+                   oscillation)
+
+
+call assertEquals(oscillation,0,"error in detect wiggles")
+
+call detect_wiggle(base_val,     &
+                   numeric_val,  &
+                   ncell,        &
+                   oscillation)
+
+call assertEquals(oscillation,-2,"error in detect wiggles")
+
+return
+end subroutine 
+
+
+!> Tests the detect wiggle subroutine
+subroutine test_mass_comparison
+use fruit
+use test_utility
+use stm_precision
+implicit none
+ 
+!---arg
+integer,parameter :: ncell = 6            !< Number of cells 
+real(stm_real) :: base_val(ncell)         !< Benchmark values    
+real(stm_real) :: numeric_val(ncell)      !< Numerical solution values
+real(stm_real), parameter :: tol = 1.d-15 !< Acceptable tolerance 
+real(stm_real), parameter :: dx = half    !< dx 
+real(stm_real) :: error
+logical :: alarm
+
+
+base_val = [1d0,2d0,1d0,2d0,1d0,2d0]
+numeric_val = base_val*1.1d0
+
+call mass_comparison(numeric_val,     &
+                     base_val,        &
+                     ncell,           &
+                     dx,              &
+                     error,           &
+                     alarm)
+
+call assertEquals(error,-0.1d0,tol," error in mass comparison percentage")
+call assertEquals(alarm,.false.,  " error in mass comparison percentage")
+
+base_val = [1d0,2d0,1d0,-2d0,1d0,2d0]
+numeric_val = base_val*0.9d0
+
+call mass_comparison(numeric_val,     &
+                     base_val,        &
+                     ncell,           &
+                     dx,              &
+                     error,           &
+                     alarm)
+                     
+call assertEquals(error,+0.1d0,tol," error in mass comparison percentage")
+call assertEquals(alarm,.true.,  " error in mass comparison percentage")
+
+
+return
+end subroutine 
+
+
+
 end module
