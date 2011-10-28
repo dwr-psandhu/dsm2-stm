@@ -100,7 +100,7 @@ call test_tidal_advection_reaction(verbose)
 !/////Advection-Diffusion tests
 call test_zoppou_flow()    ! unit test that goes with convergence test
 call test_advection_diffusion_zoppou(verbose)
-call test_advection_diffusion_time_dependent(verbose)
+!call test_advection_diffusion_time_dependent(verbose)
 
 !/// Advection-diffusion-reaction
 
