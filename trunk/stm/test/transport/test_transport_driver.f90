@@ -49,6 +49,7 @@ use test_convergence_transport_uniform
 !&&&&&&&&&&&&&&&&&&
 use test_zoppou_advection_dispersion
 use test_time_dependent_advection_dispersion
+use test_mms_advection_dispersion
 
 implicit none
 
@@ -103,6 +104,7 @@ call test_advection_diffusion_zoppou(verbose)
 !call test_advection_diffusion_time_dependent(verbose)
 
 !/// Advection-diffusion-reaction
+call test_advection_diffusion_mms(verbose)
 
 call fruit_summary
 
