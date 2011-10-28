@@ -42,11 +42,13 @@ use test_uniform_flow
 use test_prim_increment_to_cons
 use test_gradient
 use test_diffusion_fletcher
+use test_diffusion_nonlinear_decay
 
 !&&&&&&&&&&&&&&&&&&&
 use test_convergence_transport_uniform
 !&&&&&&&&&&&&&&&&&&
 use test_zoppou_advection_dispersion
+use test_time_dependent_advection_dispersion
 
 implicit none
 
@@ -56,7 +58,6 @@ call init_fruit
 
 ! todo: we have 6 pointers, [2 diff + 1 adv + 1 source + 1 hydro + 1 disp_coef]
 ! can we right nullify(the six pointer) after each test?  
-
 
 !//////// Advection unit tests
 call test_gradient_calc
@@ -82,10 +83,14 @@ call test_explicit_interior_diffusion_op
 call test_interior_coef_matrix_sub
 call test_construct_elemnts_rhs 
 call test_coarsen
+call test_detect_wiggle
+call test_mass_comparison
 
 !////// Diffusion convergence
 call test_diffusion_convergence_fletcher(verbose)
 
+!///// Diffusion-reaction convergence
+call test_diffusion_cubic_decay(verbose)
 
 ! Advection - reaction problems
 ! todo: need to set an automatic check for hitting the boundary with coarse meshes
@@ -95,6 +100,7 @@ call test_tidal_advection_reaction(verbose)
 !/////Advection-Diffusion tests
 call test_zoppou_flow()    ! unit test that goes with convergence test
 call test_advection_diffusion_zoppou(verbose)
+call test_advection_diffusion_time_dependent(verbose)
 
 !/// Advection-diffusion-reaction
 
