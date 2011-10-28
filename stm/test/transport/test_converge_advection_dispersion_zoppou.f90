@@ -26,7 +26,7 @@ use stm_precision
 ! todo: make the names more meaningful
 ! NOTE: the parameters here should not change, the have been chosen in a range to be 
 ! meaningful 
-! the problem here was with CFL larger than one r
+! the problem here was with CFL larger than one 
 integer, parameter  :: nconc = 2                      !< Number of constituents
 integer, parameter  :: nstep_base = 256               !< Number of time steps in finer discritization
 integer, parameter  :: nx_base    = 128               !< Number of spatial discritization in finer mesh 
@@ -343,8 +343,7 @@ real(stm_real),intent(in) :: conc(nx_base,nconc)        !< Concentration
 real(stm_real),intent(in) :: origin                     !< Space origin
 
 !----local
-real(stm_real):: c_term1
-real(stm_real):: c_term2
+
 real(stm_real):: xpos
 real(stm_real):: point_value
 
