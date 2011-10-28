@@ -100,8 +100,8 @@ uniform_hydro => uniform_flow_area
 
 boundary_diffusion_matrix  => dirichlet_test_diffusion_matrix
 boundary_diffusion_flux    => dirichlet_test_diffusive_flux
-advection_boundary_flux   => zero_advective_flux
-compute_source            => no_source
+advection_boundary_flux    => zero_advective_flux
+compute_source             => no_source
 call set_constant_dispersion(disp_coef)
 
 
@@ -218,9 +218,6 @@ fine_solution(:,2) = fine_solution(:,1)
 
 return
 end subroutine
-
-
-
 
 
 end module
