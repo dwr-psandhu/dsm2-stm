@@ -126,39 +126,37 @@ norm_2 = sqrt(norm_2)/dble(ncell)
 return
 end subroutine
 
-!> Claculates the total mass and checks the oscillations
-subroutine mass_calculator(total_mass,  &
-                           vals,        &
-                           num_cell,    &
-                           dx,          &
+!> Claculates the total mass error and checks the oscillations
+subroutine mass_comparison(vals,            &
+                           benchmark_val,   &
+                           num_cell,        &
+                           dx,              &
+                           mass_error,      &
                            mass_alarm)
 use stm_precision
               
 implicit none
 
-real(stm_real), intent(out) :: total_mass        !< Mass
-integer, intent(in) :: num_cell                  !< Number of cells
-real(stm_real), intent(in) :: vals(num_cell)     !< Input values
-real(stm_real), intent(in) :: dx                 !< Space discretization
-logical, intent(in), optional :: mass_alarm      !< Negative mass alarm
-!---local
-integer :: icell
+integer, intent(in) :: num_cell                         !< Number of cells
+real(stm_real), intent(in)  :: vals(num_cell)           !< Numerical values 
+real(stm_real), intent(in)  :: benchmark_val(num_cell)  !< Benchmark (analytical) values
+real(stm_real), intent(in)  :: dx                       !< Space discretization
+real(stm_real), intent(out) :: mass_error               !< Error of mass_val from mass_benchmark in percent
+logical, intent(out) :: mass_alarm                      !< Negative mass alarm =.true. , no negative mass = .false.
+!--- local
+real(stm_real) :: mass_val                              !< Total mass of the numerical solution
+real(stm_real) :: mass_benchmark                        !< Total mass of the benchmark values
 
-total_mass=zero
 
-total_mass = sum(vals)
-total_mass = total_mass*dx
+mass_val       = sum(vals)         *dx
+mass_benchmark = sum(benchmark_val)*dx
 
-if (present(mass_alarm)) then
-    if (mass_alarm ==.true.) then
-        do icell=2,num_cell
-          if (vals(icell)*vals(icell-1) < zero) then
-           ! todo: call error report
-           ! todo: how we should find oscillations in case we shift the concentrations up
-           !  should we check gradients? grad_left*grad_right >0  
-          end if
-        end do        
-    end if
+mass_error = (mass_benchmark - mass_val)/mass_benchmark
+
+if (minval(vals)< zero) then
+    mass_alarm = .true.
+else
+    mass_alarm = .false.
 end if
 
 return
@@ -225,10 +223,8 @@ else
     order = two
 end if
 
-
 open(unit = log_unit, file= trim(label)//'_convergence_log.txt', &
       status='unknown')
-
     
 write(log_unit,*)"==== Convergence test results "// label,' ====' 
 write(log_unit,*)
@@ -306,6 +302,48 @@ end if
 write (log_unit,*) '====================================' 
 close (log_unit)
    
+return
+end subroutine
+
+!> Subroutine to detect unphysical (numerical) oscillation 
+subroutine detect_wiggle(val,             &
+                         benchmark_val,   &
+                         ncell,           &
+                         extra_oscillation)
+ use stm_precision
+ implicit none
+ 
+real(stm_real),intent(in) :: val(ncell)          !< numerical results which is to be checked for oscillation
+real(stm_real),intent(in) :: benchmark_val(ncell)!< benchmark values for  
+integer,intent(out):: extra_oscillation          !< number of oscillation in val minus number of oscillation in benchmark
+integer,intent(in) :: ncell                      !< number of cells                             
+!---- local
+integer :: nval
+integer :: nbenchmark 
+integer :: icell
+real(stm_real) :: phi_val(ncell-1)
+real(stm_real) :: phi_benchmark(ncell-1)
+
+do icell=1,(ncell-1)
+    phi_val(icell)       = val(icell) - val(icell+1)
+    phi_benchmark(icell) = benchmark_val(icell)-benchmark_val(icell+1)
+end do
+
+nval = 0
+nbenchmark = 0
+
+do icell=1,ncell-2
+    if (phi_val(icell)*phi_val(icell+1) < zero ) then
+        nval = nval +1
+    end if
+    if (phi_benchmark(icell)*phi_benchmark(icell+1) < zero ) then
+        nbenchmark = nbenchmark +1
+    end if   
+   
+end do
+
+extra_oscillation = nval - nbenchmark                  
+
 return
 end subroutine
 
