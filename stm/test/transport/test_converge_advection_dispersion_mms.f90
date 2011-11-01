@@ -37,8 +37,7 @@ real(stm_real),parameter :: x_left = zero             !< Left hand side of the c
 real(stm_real),parameter :: x_right = one             !< Right hand side of the channel
 real(stm_real),parameter :: start_time = zero         !< Starts at zero sec (second)
 real(stm_real),parameter :: end_time = one            !< Ends at one (second)
-real(stm_real),parameter :: a0 = seven                !< Constant of area A=A0*exp(x+t)
-real(stm_real),parameter :: d0 = half*half            !< Constant dispersion coefficent D
+real(stm_real),parameter :: d0 = one                  !< Constant dispersion coefficent D
 
 contains
 
@@ -99,8 +98,7 @@ call initial_fine_solution_mms(fine_initial_condition, &
                                fine_solution,          &
                                nx_base,                &
                                nstep_base,             &
-                               nconc)                  
-                                    
+                               nconc)                                                  
                                       
 call set_single_channel_boundary(dirichlet_advective_flux_lo, bc_data_mms, &
                                  dirichlet_advective_flux_hi, bc_data_mms, &
@@ -117,9 +115,9 @@ boundary_diffusion_matrix => single_channel_boundary_diffusive_matrix
 call test_convergence(label,                  &
                       mms_hydro,              &
                       single_channel_boundary_advective_flux,   &
-                      boundary_diffusion_flux,      &
-                      boundary_diffusion_matrix,    &
-                      manufactured_solution_source, &
+                      boundary_diffusion_flux,                  &
+                      boundary_diffusion_matrix,                &
+                      manufactured_solution_source,             &
                       test_domain_length,     &
                       total_time,             &
                       start_time,             &
@@ -145,7 +143,7 @@ real(stm_real),intent(out):: value_mms      !< Dirichlet initial condition at le
 real(stm_real),intent(in) :: xpos           !< Location where data is requested
 real(stm_real),intent(in) :: time           !< Time
 
-value_mms =exp(xpos-time)
+value_mms =exp(xpos*half-time)
 
 return
 end subroutine
@@ -254,14 +252,13 @@ do icell = 1,ncell
   xpos_lo = x_left + dble(icell-1)    *dx
   xpos_hi = x_left + dble(icell)      *dx
   xpos    = x_left +(dble(icell)-half)*dx
-  area   (icell) = a0*exp(xpos   +time)
-  area_lo(icell) = a0*exp(xpos_lo+time)
-  area_hi(icell) = a0*exp(xpos_hi+time)
-  flow(icell)    = area   (icell)*(exp(-xpos)-one)   
-  flow_lo(icell) = area_lo(icell)*(exp(-xpos_lo)-one)
-  flow_hi(icell) = area_hi(icell)*(exp(-xpos_hi)-one)
+  area   (icell) = exp(half*xpos   +time)
+  area_lo(icell) = exp(half*xpos_lo+time)
+  area_hi(icell) = exp(half*xpos_hi+time)
+  flow(icell)    = area   (icell)*(exp(-xpos   *half)-two)   
+  flow_lo(icell) = area_lo(icell)*(exp(-xpos_lo*half)-two)
+  flow_hi(icell) = area_hi(icell)*(exp(-xpos_hi*half)-two)
 end do
-
   
 return
 end subroutine
@@ -277,27 +274,26 @@ subroutine mms_const_disp_coef(disp_coef_lo,         &
                                ncell,                &
                                nvar)  
      
-     use stm_precision
-         
-     implicit none
-      !--- args          
-    real(stm_real),intent(out):: disp_coef_lo(ncell)     !< Low side constituent dispersion coef
-    real(stm_real),intent(out):: disp_coef_hi(ncell)     !< High side constituent dispersion coef      
-    integer,intent(in)  :: ncell                         !< Number of cells
-    integer,intent(in)  :: nvar                          !< Number of variables   
-    real(stm_real),intent(in) :: time                    !< Current time
-    real(stm_real),intent(in) :: dx                      !< Spatial step  
-    real(stm_real),intent(in) :: dt                      !< Time step 
-    real(stm_real),intent(in) :: flow_lo(ncell)          !< Flow on lo side of cells centered in time
-    real(stm_real),intent(in) :: flow_hi(ncell)          !< Flow on hi side of cells centered in time       
-    real(stm_real),intent(in) :: flow(ncell)             !< Flow on center of cells 
+use stm_precision
+     
+implicit none
+  !--- args          
+real(stm_real),intent(out):: disp_coef_lo(ncell)     !< Low side constituent dispersion coef
+real(stm_real),intent(out):: disp_coef_hi(ncell)     !< High side constituent dispersion coef      
+integer,intent(in)  :: ncell                         !< Number of cells
+integer,intent(in)  :: nvar                          !< Number of variables   
+real(stm_real),intent(in) :: time                    !< Current time
+real(stm_real),intent(in) :: dx                      !< Spatial step  
+real(stm_real),intent(in) :: dt                      !< Time step 
+real(stm_real),intent(in) :: flow_lo(ncell)          !< Flow on lo side of cells centered in time
+real(stm_real),intent(in) :: flow_hi(ncell)          !< Flow on hi side of cells centered in time       
+real(stm_real),intent(in) :: flow(ncell)             !< Flow on center of cells 
 
-      disp_coef_lo(:) = d0 
-      disp_coef_hi(:) = d0
+      disp_coef_lo(:) = d0*exp(time) 
+      disp_coef_hi(:) = d0*exp(time) 
                   
-     return
- end subroutine
-
+return
+end subroutine
 
 subroutine bc_data_mms(bc_value_mms,   &
                        xloc,           &
@@ -365,7 +361,7 @@ dx = (x_right-x_left)/ncell
 do ivar = 1,nvar
     do icell = 1,ncell  
         xpos    = x_left +(dble(icell)-half)*dx
-        source(icell,ivar) = two*exp(xpos)*(one-exp(xpos)+half*d0*exp(-time))
+        source(icell,ivar) = half*(exp(xpos/two)-four*exp(xpos)-exp(time+xpos))
     end do
 end do
      
