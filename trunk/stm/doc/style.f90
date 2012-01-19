@@ -45,12 +45,16 @@ contains
 
 !> Calculates undivided differences [expand for style comments]
 !>  Style comments: 
-!>    - subroutine names should be lower_case_underscore and readable.
+!>    - prefer subroutine to function
+!>    - subroutine names should be lower_case_underscore and readable
 !>    - variable names should be lower_case_underscore
+!>    - prefer clear, slightly longer variable and routine names to "obvious" comments
 !>    - output arguments should be listed before input
 !>    - first line of the comment is treated specially by doxygen
 !>    - all variables are implicit none
 !>    - argument intent should be listed, this makes the code much easier to follow for others
+!>    - avoid passing anything but the most global data to subroutines by "use" statements. Prefer arguments, as they make
+!>       the subroutine more self-contained, easier to understand plus unit testing is more straightforward.
 !>    - indentation for loops and conditionals is two spaces, avoid tabs
 !>    - note that the !> is for comments above a subroutine and !< is for comments to the right of an argument
 !>    - avoid over-shortening names

@@ -3,7 +3,7 @@
 
 \section intro_sec Introduction
 This module of DSM2 is a transport code modeling advection, diffusion, 
-sediment processes and reactions. 
+sediment processes and reactions in 1D channel networks. 
 
 \section order Recommended Work Plan
 -# Get doxygen working. The documentation is automatically built by the MS Visual Studio solution as
