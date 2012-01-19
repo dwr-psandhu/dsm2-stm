@@ -3,17 +3,8 @@ Add this block, but it can be empty. License text will be automatically inserted
 !<license>
 !</license>
 
-!!! Style comments: 1. Name collisions can occur between module and subroutine names. We avoid this by naming modules
-!!!                    without a verb describing the action, e.g. "module gradient" and "subroutine calc_gradient"
-!!!                 2. The markup below creates doxygen comments  at the "application module" level, which in other languages would be called a "package".
-!!!                    the creation of the transport package is done in a separate file.
-!!!                 3. Generally one module per file, as this makes Makefiles more reliable and general. However, this is violated here in order to 
-!!!                    present one variable-centric and one subroutine-centric module
-!!!                 4. First line of doxygen docs usually means something, so it should be short and a complete thought, so "as well as" was not
-!!!                    placed arbitrarily below
-!!!                 5. Module names are lower-case underscore.
 
-!> Module containing mostly variables. Defines module variables and perhaps functions to allocate them. [please expand for style comments]
+!> Example module (in the fortran sense) containing global variables. Might also define functions to allocate them. [please expand for style comments]
 !>  - Module names are lower_case_underscore with no particular designation as a module
 !>  - First part of doxygen comment is prominently displayed, so choose it carefully.
 !>  - One module per file preferred as it makes the build system more robust. Ignored here to keep the style guide one file.
@@ -24,45 +15,37 @@ Add this block, but it can be empty. License text will be automatically inserted
 !>@ingroup style_guide
 module mostly_variables
     use stm_precision
-    integer :: ncell  !< number of computation cells, a module level variable documented to the right of the variable using "!<"
-    integer :: nvar   !< number of variables
+    integer :: ncell  !< a module level variable documented to the right of the variable using "!<"
     
-    !> Mass of constituent in the current/new time step documented above the variable for room using "!>"
+    !> Module variable documented above the variable for room using "!>"
     !> dimensions (ncell, nvar)
     real(stm_real),save,allocatable :: mass(:,:)
-    
-    !> Mass of constituent in the previous time step,
-    !> dimensions (ncell, nvar)
-    real(stm_real),save,allocatable :: mass_prev(:,:)
-    
+        
 end module    
 
 
-!> Module containing routines for calculating things (comes from code calculating differences and limiters)
+!> Example module containing routines for calculating things
 !>@ingroup style_guide
 module only_subroutines
 contains
 
-!> Calculates undivided differences [expand for style comments]
-!>  Style comments: 
+!> Short description of what subroutine does -- remember the first part is most visible [expand for style comments]
 !>    - prefer subroutine to function
 !>    - subroutine names should be lower_case_underscore and readable
 !>    - variable names should be lower_case_underscore
 !>    - prefer clear, slightly longer variable and routine names to "obvious" comments
 !>    - output arguments should be listed before input
-!>    - first line of the comment is treated specially by doxygen
+!>    - argument intent should be listed and args should be documented
 !>    - all variables are implicit none
-!>    - argument intent should be listed, this makes the code much easier to follow for others
-!>    - avoid passing anything but the most global data to subroutines by "use" statements. Prefer arguments, as they make
-!>       the subroutine more self-contained, easier to understand plus unit testing is more straightforward.
-!>    - indentation for loops and conditionals is two spaces, avoid tabs
+!>    - avoid passing anything but the most global data to subroutines by "use" statements. Passing things behind the scenes makes them
+!>       untestable in isolation. 
+!>    - indentat loops and conditionals two spaces
 !>    - note that the !> is for comments above a subroutine and !< is for comments to the right of an argument
-!>    - avoid over-shortening names
 !>    - initialize floating point variables to LARGEREALVAL, which is a large number (1.234567d8)
-!>    - do not set double precision variables to single precision constants, ie use 123.d0 not 123.0
+!>       - do not set double precision variables to single precision constants, ie use 123.d0 not 123.0
 !>       - this is more than a style issue, failure is the biggest reason debug != release
-!>       - we have constants: quarter, half, zero, one, ... ten and pi, gravity. 
-
+!>    - we have typesafe constants that are more fun to read: quarter, half, zero, one, ... ten and pi, gravity. 
+!>    - end routines with "end subroutine" not "end".
 subroutine calc_something(grad_lo,grad_hi,grad_center,vals,ncell,nvar)
 use stm_precision
 
@@ -78,7 +61,7 @@ real(stm_real),intent(out) :: grad_center(ncell,nvar) !< Dentered diff, LARGEREA
 
 !----local
 integer :: ivar
-
+S
 do ivar = 1, nvar
   grad_center(2:(ncell-1),ivar) = (vals(3:ncell,ivar) - vals(1:(ncell-2),ivar))/two
   grad_center(1,ivar)=LARGEREAL
@@ -91,7 +74,6 @@ end do
 
 return
 end subroutine
-
 
 end module
 
