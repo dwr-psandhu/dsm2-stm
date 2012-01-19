@@ -124,7 +124,7 @@ you turn in code every other week, it would be nice if you took 1-2 hours to go 
      face on the lo (n-1) or hi (n+1) side of the cell.
  - Variables are also lower_underscore. 
  - Some constants associated with precision like LARGEREAL and STM_REAL are all caps.
-   - OK, this is a bit consistent but the typesafe scalar values for numbers 
+   - This is a bit inconsistent but the typesafe scalar values for numbers 
      (one, two, half, etc) in the stm_precision module are lower because... well it just looks way better
  - Use the typesafe scalar values for numbers that have them: x = two*y. This avoids having to keep track of the "d" for double precision
    and prevents real-double conversion.
@@ -151,4 +151,5 @@ you turn in code every other week, it would be nice if you took 1-2 hours to go 
 
 @defgroup test test_transport
 @defgroup transport transport
+@defgroup style_guide style_guide
 */
