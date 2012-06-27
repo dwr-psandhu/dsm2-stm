@@ -33,7 +33,7 @@ integer, parameter  :: nx_base    = 128               !< Number of spatial discr
 real(stm_real),parameter :: origin = zero             !< Origin
 real(stm_real),parameter :: x0 = 10000.0d0            !< Location of the initial condition discontinuity
 real(stm_real),parameter :: x_left = 10000.0d0        !< Left hand side of the channel
-real(stm_real),parameter :: x_right = 15000.0d0      !< Right hand side of the channel
+real(stm_real),parameter :: x_right = 15000.0d0       !< Right hand side of the channel
 real(stm_real),parameter :: start_time = 8000.0d0     !< Starts at 100000 sec (second)
 real(stm_real),parameter :: end_time = 10000.0d0      !< Ends at 190000 (second)
 real(stm_real),parameter :: a0 = 1.0d7                !< Constant of area A=A0*(x^-1)

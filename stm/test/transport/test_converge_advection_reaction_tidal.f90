@@ -31,8 +31,8 @@ use stm_precision
 !----- module variables
 ! todo: make the names more meaningful
 integer, parameter  :: nconc = 2                              !< Number of constituents
-integer, parameter  :: nstep_base = 128                       !< Number of time steps in finer discritization
-integer, parameter  :: nx_base    = 256                       !< Number of spatial discritization in finer mesh 
+integer, parameter  :: nstep_base = 128*2                       !< Number of time steps in finer discritization
+integer, parameter  :: nx_base    = 256*2                       !< Number of spatial discritization in finer mesh 
 real(stm_real),parameter :: origin = zero                     !< Left hand side of the channel
 real(stm_real),parameter :: domain_length = 204800.d0/two     !< Domain Length in meter
 real(stm_real),parameter :: amplitude = half                  !< Tidal amplitude in meter    
