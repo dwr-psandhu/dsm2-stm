@@ -88,23 +88,23 @@ call test_detect_wiggle
 call test_mass_comparison
 
 !////// Diffusion convergence
-call test_diffusion_convergence_fletcher(verbose)
+!call test_diffusion_convergence_fletcher(verbose)
 
 !///// Diffusion-reaction convergence
-call test_diffusion_cubic_decay(verbose)
+!call test_diffusion_cubic_decay(verbose)
 
 ! Advection - reaction problems
 ! todo: need to set an automatic check for hitting the boundary with coarse meshes
 !       this frequently causes problems that are undetected without scrutiny
-call test_tidal_advection_reaction(verbose)
+!call test_tidal_advection_reaction(verbose)
 
 !/////Advection-Diffusion tests
-call test_zoppou_flow()    ! unit test that goes with convergence test
+!call test_zoppou_flow()    ! unit test that goes with convergence test
 call test_advection_diffusion_zoppou(verbose)
 !call test_advection_diffusion_time_dependent(verbose)
 
 !/// Advection-diffusion-reaction
-call test_advection_diffusion_mms(verbose)
+!call test_advection_diffusion_mms(verbose)
 
 call fruit_summary
 
