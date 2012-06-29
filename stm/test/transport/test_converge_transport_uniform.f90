@@ -404,7 +404,6 @@ subroutine gaussian_gradient_data(bc_data,           &
 return
 end subroutine
 
-
 subroutine extrapolate_hi_boundary_data(bc_data,           &
                                         xloc,              &
                                         conc,              &
