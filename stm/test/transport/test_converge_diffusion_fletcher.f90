@@ -209,11 +209,11 @@ end do
 
 current_time = init_time
 
-fine_initial_conc(:,1) = two*xposition(:) + four*cos(half*pi*xposition(:))*exp(-dispersion_coef*current_time*pi*pi/four )
+fine_initial_conc(:,1) = two*xposition(:) + four*dcos(half*pi*xposition(:))*dexp(-dispersion_coef*current_time*pi*pi/four )
 fine_initial_conc(:,2) = fine_initial_conc(:,1)
 
 current_time = init_time + total_time
-fine_solution(:,1) = two*xposition(:) + four*cos(half*pi*xposition(:))*exp(-dispersion_coef*current_time*pi*pi/four )
+fine_solution(:,1) = two*xposition(:) + four*dcos(half*pi*xposition(:))*dexp(-dispersion_coef*current_time*pi*pi/four )
 fine_solution(:,2) = fine_solution(:,1)
 
 return

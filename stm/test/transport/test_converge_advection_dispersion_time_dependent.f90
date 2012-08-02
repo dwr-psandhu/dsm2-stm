@@ -149,8 +149,8 @@ real(stm_real),intent(in) :: time                 !< Time
 real(stm_real):: c_term1
 real(stm_real):: c_term2
 
-c_term1 =  erfc((xpos-x0-two*u0*(time+ sin(pi*time/two)/pi))/(two*sqrt(d0*(two*time+two*sin(pi*time/two)/pi))))
-c_term2 =  erfc((xpos-x0+two*u0*(time+ sin(pi*time/two)/pi))/(two*sqrt(d0*(two*time+two*sin(pi*time/two)/pi))))*exp(u0*(xpos-x0)/d0)
+c_term1 =  erfc((xpos-x0-two*u0*(time+ dsin(pi*time/two)/pi))/(two*dsqrt(d0*(two*time+two*dsin(pi*time/two)/pi))))
+c_term2 =  erfc((xpos-x0+two*u0*(time+ dsin(pi*time/two)/pi))/(two*dsqrt(d0*(two*time+two*dsin(pi*time/two)/pi))))*dexp(u0*(xpos-x0)/d0)
 
 value_time_dependent = (c0*half)*(c_term1 + c_term2)
 
@@ -255,9 +255,9 @@ real(stm_real), intent(out):: area_hi(ncell)  !< Area high face
   area_lo(:) = a0
   area_hi(:) = a0
 
-  flow(:)    = u0*(two+cos(pi*time/two))*a0   
-  flow_lo(:) = u0*(two+cos(pi*time/two))*a0  
-  flow_hi(:) = u0*(two+cos(pi*time/two))*a0  
+  flow(:)    = u0*(two+dcos(pi*time/two))*a0   
+  flow_lo(:) = u0*(two+dcos(pi*time/two))*a0  
+  flow_hi(:) = u0*(two+dcos(pi*time/two))*a0  
   
 return
 end subroutine
@@ -289,8 +289,8 @@ subroutine time_dependent_disp_coef(disp_coef_lo,         &
     real(stm_real),intent(in) :: flow(ncell)             !< Flow on center of cells 
     !--
        
-      disp_coef_lo(:) = d0*(two+cos(pi*time/two))
-      disp_coef_hi(:) = d0*(two+cos(pi*time/two))
+      disp_coef_lo(:) = d0*(two+dcos(pi*time/two))
+      disp_coef_hi(:) = d0*(two+dcos(pi*time/two))
                 
      return
  end subroutine

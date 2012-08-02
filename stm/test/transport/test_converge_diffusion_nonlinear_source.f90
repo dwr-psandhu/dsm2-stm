@@ -181,11 +181,11 @@ end do
 
 current_time = init_time
 
-fine_initial_conc(:,1) = sqrt(two*dispersion_coef/lambda)*two*xposition(:)/(one+six*dispersion_coef*current_time+xposition(:)*xposition(:))
+fine_initial_conc(:,1) = dsqrt(two*dispersion_coef/lambda)*two*xposition(:)/(one+six*dispersion_coef*current_time+xposition(:)*xposition(:))
 fine_initial_conc(:,2) = fine_initial_conc(:,1)
 
 current_time = init_time + total_time
-fine_solution(:,1) = sqrt(two*dispersion_coef/lambda)*two*xposition(:)/(one+six*dispersion_coef*current_time+xposition(:)*xposition(:))
+fine_solution(:,1) = dsqrt(two*dispersion_coef/lambda)*two*xposition(:)/(one+six*dispersion_coef*current_time+xposition(:)*xposition(:))
 fine_solution(:,2) = fine_solution(:,1)
 
 return
@@ -282,7 +282,7 @@ disp_coef = half*(disp_coef_lo(ncell)+disp_coef_hi(ncell))
 dt_by_dxsq = dt/(dx*dx)
 
 ! here time is new time and area and Ks for updating rhs are for time stap n+1
-conc_end = sqrt(two*disp_coef/lambda)/(one+three*disp_coef*time)
+conc_end = dsqrt(two*disp_coef/lambda)/(one+three*disp_coef*time)
 conc_start = zero
 ! todo: one part of center diag is based on old time and other part new time
 center_diag(1,:)=  center_diag(1,:) &
@@ -342,7 +342,7 @@ real(stm_real), parameter :: lambda = three/ten/ten    !< Constant coefficient o
 
 disp_coef = half*(disp_coef_lo(ncell)+disp_coef_hi(ncell))
 
-conc_end = sqrt(two*disp_coef/lambda)/(one+three*disp_coef*time)
+conc_end = dsqrt(two*disp_coef/lambda)/(one+three*disp_coef*time)
 conc_start = zero
 
 ! todo: check convergence for second order boundary fitting 

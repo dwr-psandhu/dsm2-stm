@@ -113,7 +113,7 @@ call initial_fine_solution_zoppou(fine_initial_condition, &
 call set_single_channel_boundary(dirichlet_advective_flux_lo, bc_data_zoppou, &
                                  dirichlet_advective_flux_hi, bc_data_zoppou, &
                                  dirichlet_diffusive_flux_lo, bc_data_zoppou, &
-                                 dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data )
+                                 dirichlet_diffusive_flux_hi, extrapolate_hi_boundary_data)
 
 boundary_diffusion_flux => single_channel_boundary_diffusive_flux
 boundary_diffusion_matrix => single_channel_boundary_diffusive_matrix
@@ -157,8 +157,8 @@ real(stm_real),intent(in) :: time           !< Time
 real(stm_real):: c_term1
 real(stm_real):: c_term2
 
-c_term1 =  erfc((log(xpos/x0)-(u0-d0)*time)/(two*sqrt(d0*time)))
-c_term2 =  erfc((log(xpos/x0)+(u0-d0)*time)/(two*sqrt(d0*time)))*exp((u0-d0)*log(xpos/x0)/d0)
+c_term1 =  erfc((dlog(xpos/x0)-(u0-d0)*time)/(two*dsqrt(d0*time)))
+c_term2 =  erfc((dlog(xpos/x0)+(u0-d0)*time)/(two*dsqrt(d0*time)))*dexp((u0-d0)*dlog(xpos/x0)/d0)
 
 value_zoppou = (c0*half)*(c_term1 + c_term2)
 
@@ -269,7 +269,7 @@ do icell = 1,ncell
   xpos_lo = x_left + dble(icell-1)*dx
   xpos_hi = x_left + dble(icell)*dx
   xpos    = x_left +(dble(icell)-half)*dx
-  area(icell)    = (a0/dx)*(log(xpos_hi)-log(xpos_lo)) 
+  area(icell)    = (a0/dx)*(dlog(xpos_hi)-dlog(xpos_lo)) 
   area_lo(icell) = a0/xpos_lo
   area_hi(icell) = a0/xpos_hi
 end do
@@ -470,10 +470,10 @@ real(stm_real):: c_term1
 real(stm_real):: c_term2
 real(stm_real):: ta
 
-ta = two*time + sin(omega*time)/omega
+ta = two*time + dsin(omega*time)/omega
 
-c_term1 =  erfc((xpos - u0_t*ta)/(two*sqrt(d0_t*ta)))
-c_term2 =  erfc((xpos + u0_t*ta)/(two*sqrt(d0_t*ta)))*exp(u0_t*xpos/d0_t)
+c_term1 =  erfc((xpos - u0_t*ta)/(two*dsqrt(d0_t*ta)))
+c_term2 =  erfc((xpos + u0_t*ta)/(two*dsqrt(d0_t*ta)))*dexp(u0_t*xpos/d0_t)
 
 value_time_dep = (c0*half)*(c_term1 + c_term2)
 
@@ -585,9 +585,9 @@ do icell = 1,ncell
   area_hi(icell) = a0_t
 end do
  
-  flow(:)    = u0_t*(two+cos(omega*time))*a0_t   
-  flow_lo(:) = u0_t*(two+cos(omega*time))*a0_t  
-  flow_hi(:) = u0_t*(two+cos(omega*time))*a0_t 
+  flow(:)    = u0_t*(two+dcos(omega*time))*a0_t   
+  flow_lo(:) = u0_t*(two+dcos(omega*time))*a0_t  
+  flow_hi(:) = u0_t*(two+dcos(omega*time))*a0_t 
   
 return
 end subroutine
@@ -622,8 +622,8 @@ subroutine time_disp_coef(disp_coef_lo,         &
     integer :: icell
      
     do icell = 1,ncell
-      disp_coef_lo(icell) = d0_t*(two+cos(omega*time)) 
-      disp_coef_hi(icell) = d0_t*(two+cos(omega*time)) 
+      disp_coef_lo(icell) = d0_t*(two+dcos(omega*time)) 
+      disp_coef_hi(icell) = d0_t*(two+dcos(omega*time)) 
     end do
                 
      return

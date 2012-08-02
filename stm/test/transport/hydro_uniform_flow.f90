@@ -25,7 +25,7 @@
 module hydro_uniform_flow
 use stm_precision
 
-real(stm_real) :: const_flow = zero                    !< Constant flow 
+real(stm_real) :: const_flow = one                    !< Constant flow 
 real(stm_real) :: const_area = zero                    !< Constant area
 real(stm_real) :: reversal_time = LARGEREAL            !< Time flow direction switches   
 

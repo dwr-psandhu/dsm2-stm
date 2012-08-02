@@ -280,7 +280,7 @@ call fill_gaussian(fine_solution(:,2),nx_base,origin,dx, &
                    solution_center,solution_gaussin_sd,one)
 
 fine_initial_condition(:,2)=fine_initial_condition(:,1)
-fine_solution = exp(-total_time*tidal_ar_decay_rate)*fine_initial_condition
+fine_solution = dexp(-total_time*tidal_ar_decay_rate)*fine_initial_condition
 
 return
 end subroutine
@@ -329,8 +329,8 @@ do icell=1,nx_base
         fine_initial_condition(icell,1) = zero
   else
         fine_initial_condition(icell,1)= one + &
-            (dye_length*half/pi)*(sin((x_hi - dye_center)*two*pi/dye_length) - &
-                                  sin((x_lo-dye_center)*two*pi/dye_length))/dx
+            (dye_length*half/pi)*(dsin((x_hi - dye_center)*two*pi/dye_length) - &
+                                  dsin((x_lo-dye_center)*two*pi/dye_length))/dx
   end if 
 end do
 
@@ -382,8 +382,8 @@ integer :: icell
 
 half_time = time - half*dt
 old_time = time - dt
-big_b = freq/sqrt(gravity*depth)
-big_a = amplitude* sqrt(gravity*depth)/(depth*cos(big_b*domain_length))
+big_b = freq/dsqrt(gravity*depth)
+big_a = amplitude* dsqrt(gravity*depth)/(depth*dcos(big_b*domain_length))
 
 ! width is assumed to be equal to 1 meter 
 do icell = 1,ncell  
@@ -394,26 +394,26 @@ do icell = 1,ncell
   xpos    = domain_length-(dble(icell)-half)*dx
   
  
-  area(icell)    = depth + (amplitude*cos(freq*time))/(dx*big_b*cos(big_b*domain_length)) &
-                    *(sin(big_b*xpos_hi) - sin(big_b*xpos_lo))
+  area(icell)    = depth + (amplitude*dcos(freq*time))/(dx*big_b*dcos(big_b*domain_length)) &
+                    *(dsin(big_b*xpos_hi) - dsin(big_b*xpos_lo))
   
-  area_lo(icell) = depth + amplitude * cos(big_b*xpos_lo)/cos(big_b*domain_length)*cos(freq*half_time)  
-  area_hi(icell) = depth + amplitude * cos(big_b*xpos_hi)/cos(big_b*domain_length)*cos(freq*half_time)  
+  area_lo(icell) = depth + amplitude * dcos(big_b*xpos_lo)/dcos(big_b*domain_length)*dcos(freq*half_time)  
+  area_hi(icell) = depth + amplitude * dcos(big_b*xpos_hi)/dcos(big_b*domain_length)*dcos(freq*half_time)  
  
 
-   flow(icell)    = big_a*depth*sin(freq*time)*(cos(big_b*xpos_hi)-cos(big_b*xpos_lo))/(dx*big_b) &
-                   + big_a*amplitude*sin(two*freq*time)*(one/(four*dx*big_b*cos(big_b*domain_length))) * &
-                   (cos(big_b*xpos_hi)**two - cos(big_b*xpos_lo)**two)
+   flow(icell)    = big_a*depth*dsin(freq*time)*(dcos(big_b*xpos_hi)-dcos(big_b*xpos_lo))/(dx*big_b) &
+                   + big_a*amplitude*dsin(two*freq*time)*(one/(four*dx*big_b*dcos(big_b*domain_length))) * &
+                   (dcos(big_b*xpos_hi)**two - dcos(big_b*xpos_lo)**two)
 
-   flow_term1 = - big_a*depth*sin(big_b*xpos_lo)*(cos(freq*time)-cos(freq*old_time))/(dt*freq)
-   flow_term2 = - big_a*amplitude*sin(two*big_b*xpos_lo)*(cos(freq*time)**two-cos(freq*old_time)**two)&
-                   /(four*freq*cos(big_b*domain_length)*dt)
+   flow_term1 = - big_a*depth*dsin(big_b*xpos_lo)*(dcos(freq*time)-dcos(freq*old_time))/(dt*freq)
+   flow_term2 = - big_a*amplitude*dsin(two*big_b*xpos_lo)*(dcos(freq*time)**two-dcos(freq*old_time)**two)&
+                   /(four*freq*dcos(big_b*domain_length)*dt)
    flow_lo(icell) = flow_term1+flow_term2
           
 
-   flow_term1 = - big_a*depth*sin(big_b*xpos_hi)*(cos(freq*time)-cos(freq*old_time))/(dt*freq)
-   flow_term2 = - big_a*amplitude*sin(two*big_b*xpos_hi)*(cos(freq*time)**two-cos(freq*old_time)**two)&
-                   /(four*freq*cos(big_b*domain_length)*dt)
+   flow_term1 = - big_a*depth*dsin(big_b*xpos_hi)*(dcos(freq*time)-dcos(freq*old_time))/(dt*freq)
+   flow_term2 = - big_a*amplitude*dsin(two*big_b*xpos_hi)*(dcos(freq*time)**two-dcos(freq*old_time)**two)&
+                   /(four*freq*dcos(big_b*domain_length)*dt)
    flow_hi(icell) = flow_term1+flow_term2
    
    
@@ -465,8 +465,8 @@ integer :: icell
 
 half_time = time - half*dt
 old_time = time - dt
-big_b = freq/sqrt(gravity*depth)
-big_a = amplitude* sqrt(gravity*depth)/(depth*cos(big_b*domain_length))
+big_b = freq/dsqrt(gravity*depth)
+big_a = amplitude* dsqrt(gravity*depth)/(depth*dcos(big_b*domain_length))
 
 ! width is assumed to be equal to 1 meter 
 do icell = 1,ncell  
@@ -476,42 +476,42 @@ do icell = 1,ncell
   xpos_hi = domain_length- dble(icell)*dx
   xpos    = domain_length-(dble(icell)-half)*dx
   
-   area(icell) = (big_a/(freq*dx))*(depth*cos(freq*time)*(sin(big_b*xpos_hi)-sin(big_b*xpos_lo))+&
-                                  amplitude*cos(two*freq*time)*(sin(two*big_b*xpos_hi)-sin(two*big_b*xpos_lo))/(eight*cos(big_b*domain_length)))
+   area(icell) = (big_a/(freq*dx))*(depth*dcos(freq*time)*(dsin(big_b*xpos_hi)-dsin(big_b*xpos_lo))+&
+                                  amplitude*dcos(two*freq*time)*(dsin(two*big_b*xpos_hi)-dsin(two*big_b*xpos_lo))/(eight*dcos(big_b*domain_length)))
  ! todo: is it a correction factor for constant in integeration?
  ! check this
    area(icell) = depth + area(icell)
-   area_lo(icell) = depth + amplitude * cos(big_b*xpos_lo)/cos(big_b*domain_length)*cos(freq*half_time)  
+   area_lo(icell) = depth + amplitude * dcos(big_b*xpos_lo)/dcos(big_b*domain_length)*dcos(freq*half_time)  
 
-   area_lo(icell) = big_a*big_b*(-depth*cos(big_b*xpos_lo)*cos(freq*half_time)/freq - &
-                                amplitude*cos(two*freq*half_time)*cos(two*big_b*xpos_lo)&
-                               /(four*freq*cos(big_b*domain_length)))
+   area_lo(icell) = big_a*big_b*(-depth*dcos(big_b*xpos_lo)*dcos(freq*half_time)/freq - &
+                                amplitude*dcos(two*freq*half_time)*dcos(two*big_b*xpos_lo)&
+                               /(four*freq*dcos(big_b*domain_length)))
   ! todo:
    ! i just match them base on old values ???                             
   area_lo(icell) = depth + area_lo(icell)
  
-  area_hi(icell) = depth + amplitude * cos(big_b*xpos_hi)/cos(big_b*domain_length)*cos(freq*half_time) 
+  area_hi(icell) = depth + amplitude * dcos(big_b*xpos_hi)/dcos(big_b*domain_length)*dcos(freq*half_time) 
    
-  area_hi(icell) = big_a*big_b*(-depth*cos(big_b*xpos_hi)*cos(freq*half_time)/freq - &
-                                amplitude*cos(two*freq*half_time)*cos(two*big_b*xpos_hi)&
-                               /(four*freq*cos(big_b*domain_length)))
+  area_hi(icell) = big_a*big_b*(-depth*dcos(big_b*xpos_hi)*dcos(freq*half_time)/freq - &
+                                amplitude*dcos(two*freq*half_time)*dcos(two*big_b*xpos_hi)&
+                               /(four*freq*dcos(big_b*domain_length)))
    
    area_hi(icell) = depth + area_hi(icell)
                          
     
-   flow(icell)    = big_a*depth*sin(freq*time)*(cos(big_b*xpos_hi)-cos(big_b*xpos_lo))/(dx*big_b) &
-                   + big_a*amplitude*sin(two*freq*time)*(one/(four*dx*big_b*cos(big_b*domain_length))) * &
-                   (cos(big_b*xpos_hi)**two - cos(big_b*xpos_lo)**two)
+   flow(icell)    = big_a*depth*dsin(freq*time)*(dcos(big_b*xpos_hi)-dcos(big_b*xpos_lo))/(dx*big_b) &
+                   + big_a*amplitude*dsin(two*freq*time)*(one/(four*dx*big_b*dcos(big_b*domain_length))) * &
+                   (dcos(big_b*xpos_hi)**two - dcos(big_b*xpos_lo)**two)
   
-   flow_term1 = - big_a*depth*sin(big_b*xpos_lo)*(cos(freq*time)-cos(freq*old_time))/(dt*freq)
-   flow_term2 = - big_a*amplitude*sin(two*big_b*xpos_lo)*(cos(freq*time)**two-cos(freq*old_time)**two)&
-                   /(four*freq*cos(big_b*domain_length)*dt)
+   flow_term1 = - big_a*depth*dsin(big_b*xpos_lo)*(dcos(freq*time)-dcos(freq*old_time))/(dt*freq)
+   flow_term2 = - big_a*amplitude*dsin(two*big_b*xpos_lo)*(dcos(freq*time)**two-dcos(freq*old_time)**two)&
+                   /(four*freq*dcos(big_b*domain_length)*dt)
    flow_lo(icell) = flow_term1+flow_term2
           
 
-   flow_term1 = - big_a*depth*sin(big_b*xpos_hi)*(cos(freq*time)-cos(freq*old_time))/(dt*freq)
-   flow_term2 = - big_a*amplitude*sin(two*big_b*xpos_hi)*(cos(freq*time)**two-cos(freq*old_time)**two)&
-                   /(four*freq*cos(big_b*domain_length)*dt)
+   flow_term1 = - big_a*depth*dsin(big_b*xpos_hi)*(dcos(freq*time)-dcos(freq*old_time))/(dt*freq)
+   flow_term2 = - big_a*amplitude*dsin(two*big_b*xpos_hi)*(dcos(freq*time)**two-dcos(freq*old_time)**two)&
+                   /(four*freq*dcos(big_b*domain_length)*dt)
    flow_hi(icell) = flow_term1+flow_term2
    
    
