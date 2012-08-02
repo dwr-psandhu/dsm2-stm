@@ -41,7 +41,7 @@ real(stm_real), parameter :: sixteen  =  1.6d1  !< Real constant  16.  properly 
 real(stm_real), parameter :: half     =  5.d-1  !< Real constant  0.5  properly typed
 real(stm_real), parameter :: third = one/three  !< Real constant  1/3  properly typed
 real(stm_real), parameter :: fourth   =  2.5d-1 !< Real constant  0.25 properly typed
-real(stm_real), parameter :: pi = acos(-one)    !< Pi 
+real(stm_real), parameter :: pi = dacos(-one)   !< Pi 
 
 
 !> Absurd high value, for initialization and for marking undefined

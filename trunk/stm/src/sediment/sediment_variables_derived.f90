@@ -75,9 +75,9 @@ select case (van_rijn_flag)
       ! van Rijn formula
       do iclass=1,nclass
             if (diameter(iclass) > 1.0d-3)     then
-                settling_v(iclass) = 1.1d0*sqrt((specific_gravity - one)*g_acceleration*diameter(iclass))
+                settling_v(iclass) = 1.1d0*dsqrt((specific_gravity - one)*g_acceleration*diameter(iclass))
             elseif (diameter(iclass) > 1.0d-4) then
-                settling_v(iclass) = (ten*kinematic_viscosity/diameter(iclass))*(sqrt(one + (0.01d0*(specific_gravity - one) &
+                settling_v(iclass) = (ten*kinematic_viscosity/diameter(iclass))*(dsqrt(one + (0.01d0*(specific_gravity - one) &
                                                *g_acceleration*diameter(iclass)**three)/kinematic_viscosity**two)- one)
             elseif (diameter(iclass) > 0.9d-7) then
                 ! Stokes law here
@@ -102,10 +102,10 @@ select case (van_rijn_flag)
                                                    kinematic_viscosity, &
                                                    nclass)
             
-            dimless_fall_velocity(iclass) = exp(minus*b_1 + b_2*log(exp_re_p(iclass)) - b_3*(log(exp_re_p(iclass)))**two &
-                                                   - b_4*(log(exp_re_p(iclass)))**three + b_5*(log(exp_re_p(iclass)))**four)
+            dimless_fall_velocity(iclass) = dexp(minus*b_1 + b_2*dlog(exp_re_p(iclass)) - b_3*(dlog(exp_re_p(iclass)))**two &
+                                                   - b_4*(dlog(exp_re_p(iclass)))**three + b_5*(dlog(exp_re_p(iclass)))**four)
                                                
-            settling_v(iclass) = dimless_fall_velocity(iclass) * sqrt(capital_r*g_acceleration*diameter(iclass))
+            settling_v(iclass) = dimless_fall_velocity(iclass) * dsqrt(capital_r*g_acceleration*diameter(iclass))
                  
        end if   
      end do 
@@ -147,7 +147,7 @@ real(stm_real),intent(in)  :: capital_r               !< Submerged specific grav
 real(stm_real),intent(in)  :: g_acceleration          !< Gravitational acceleration 
 real(stm_real),intent(in)  :: kinematic_viscosity     !< Kinematic viscosity (m2/sec)
 
-exp_re_p = diameter*sqrt(g_acceleration*capital_r*diameter)/kinematic_viscosity
+exp_re_p = diameter*dsqrt(g_acceleration*capital_r*diameter)/kinematic_viscosity
 
 return
 end subroutine
@@ -272,7 +272,7 @@ else
 end if
 
 ! the ABS used due to the nature of shear velocity 
-shear_velocity = abs(velocity)*manning*sqrt(gravity)/(hydr_radius**(one/six))/phi
+shear_velocity = abs(velocity)*manning*dsqrt(gravity)/(hydr_radius**(one/six))/phi
 
 end subroutine
 
@@ -333,7 +333,7 @@ real(stm_real),intent(in) :: rouse_num(ncell,nclass)     !< Rouse dimensionless 
 real(stm_real),intent(out):: susp_percent(ncell,nclass)  !< Percentage in suspension  
 real(stm_real),intent(out):: bed_percent(ncell,nclass)   !< Percentage in bedload
 
-susp_percent = min (one,(2.5d0*exp(-rouse_num)))
+susp_percent = min (one,(2.5d0*dexp(-rouse_num)))
 bed_percent  = one - susp_percent
 
 

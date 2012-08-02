@@ -277,7 +277,7 @@ real(stm_real),intent(in) :: rouse        !< Rouse dimenssionless number
 real(stm_real),intent(in) :: delta_b          !< Relative bed layer thickness = b/H 
 real(stm_real),intent(out):: J_1              !< First Einstein integral value
 
-J_1   = (rouse*pi/sin(rouse*pi) - ((one-delta_b)**rouse)/(delta_b**(rouse-one))     &
+J_1   = (rouse*pi/dsin(rouse*pi) - ((one-delta_b)**rouse)/(delta_b**(rouse-one))     &
          - rouse*(((delta_b/(one-delta_b))**(one-rouse))  /(one-rouse))                 & 
          + rouse*(((delta_b/(one-delta_b))**(two-rouse))  /(one-rouse))                 &
          - rouse*(((delta_b/(one-delta_b))**(three-rouse))/(one-rouse))                 &
