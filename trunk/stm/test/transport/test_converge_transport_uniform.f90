@@ -309,13 +309,13 @@ end if
 
 do ivar = 1, nconc
   call fill_gaussian(fine_initial_conc(:,ivar),nx_base,origin,dx, &
-                   ic_center,sqrt(two*const_disp_coef*diffuse_start_time),ic_peak)
+                   ic_center,dsqrt(two*const_disp_coef*diffuse_start_time),ic_peak)
   call fill_gaussian(fine_solution_conc(:,ivar),nx_base,origin,dx, & 
-                   final_center,sqrt(two*const_disp_coef*diffuse_end_time), &
-                   ic_peak*sqrt(diffuse_start_time/diffuse_end_time))
+                   final_center,dsqrt(two*const_disp_coef*diffuse_end_time), &
+                   ic_peak*dsqrt(diffuse_start_time/diffuse_end_time))
 end do
 
-fine_solution_conc = fine_solution_conc * exp(-decay_rate*total_time)
+fine_solution_conc = fine_solution_conc * dexp(-decay_rate*total_time)
 
 return
 end subroutine
@@ -355,8 +355,8 @@ subroutine gaussian_data(bc_data,           &
     else
         diffuse_time = diffuse_start_time
     end if
-    call gaussian(val,xloc,current_center,sqrt(two*const_disp_coef*diffuse_time), &
-                                          ic_peak*sqrt(diffuse_start_time/diffuse_time))
+    call gaussian(val,xloc,current_center,dsqrt(two*const_disp_coef*diffuse_time), &
+                                          ic_peak*dsqrt(diffuse_start_time/diffuse_time))
     bc_data=val
 return
 end subroutine
@@ -398,8 +398,8 @@ subroutine gaussian_gradient_data(bc_data,           &
         diffuse_time = diffuse_start_time
     end if
   
-    call derivative_gaussian(val,xloc,current_center,sqrt(two*const_disp_coef*diffuse_time), &
-                                          ic_peak*sqrt(diffuse_start_time/diffuse_time))
+    call derivative_gaussian(val,xloc,current_center,dsqrt(two*const_disp_coef*diffuse_time), &
+                                          ic_peak*dsqrt(diffuse_start_time/diffuse_time))
     bc_data=val
 return
 end subroutine

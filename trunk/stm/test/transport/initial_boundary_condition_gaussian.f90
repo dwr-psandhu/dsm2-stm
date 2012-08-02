@@ -35,7 +35,7 @@ real(stm_real) function gaussian_cdf(x0,mean,sd)
     real(stm_real), intent(in) :: x0   !< End of integration
     real(stm_real), intent(in) :: mean !< Mean
     real(stm_real), intent(in) :: sd   !< Sigma (standard deviation)
-    gaussian_cdf = half + half*erf((x0-mean)/(sqrt(two)*sd))
+    gaussian_cdf = half + half*erf((x0-mean)/(dsqrt(two)*sd))
     return
 end function
 
@@ -62,9 +62,9 @@ subroutine fill_gaussian(vals,nloc,origin,dx,mean,sd,scale)
     real(stm_real) :: actual_scale                !< Scale 
    
     if (present(scale))then
-        actual_scale = scale*sqrt(two*pi*sd*sd)
+        actual_scale = scale*dsqrt(two*pi*sd*sd)
     else
-        actual_scale = one*sqrt(two*pi*sd*sd)
+        actual_scale = one*dsqrt(two*pi*sd*sd)
     end if
     
     do iloc = 1,nloc
@@ -93,7 +93,7 @@ subroutine gaussian(val,xposition,center,sd,scale)
     real(stm_real), intent(in)  :: scale          !< scale
     !---locals
    
-    val = scale*exp(-(xposition-center)**2/(two*sd*sd)) 
+    val = scale*dexp(-(xposition-center)**2/(two*sd*sd)) 
    
     return
 end subroutine
@@ -115,7 +115,7 @@ subroutine derivative_gaussian(val,xposition,center,sd,scale)
     real(stm_real), intent(in)  :: scale          !< Scale
     !---locals
    
-    val = -(scale*(xposition - center)/(sd*sd))*exp(-(xposition-center)**2/(two*sd*sd)) 
+    val = -(scale*(xposition - center)/(sd*sd))*dexp(-(xposition-center)**2/(two*sd*sd)) 
    
     return
 end subroutine
@@ -171,10 +171,10 @@ subroutine neumann_diffusion_matrix(center_diag ,       &
     real(stm_real) :: xend =51200d0/two
     dt_by_dxsq = dt/(dx*dx) 
     
-    flux_start(:) = -area_lo(1)*disp_coef_lo(1)*(1/sqrt(four*pi*disp_coef_lo(1)))* &
-                             (xend/two/disp_coef_lo(1)/time)*exp(-(xend**2)/four/disp_coef_lo(1)/time)
-    flux_end(:) = -area_hi(ncell)*disp_coef_hi(ncell)*(1/sqrt(four*pi*disp_coef_hi(ncell)))* &
-                                   (-xend/two/disp_coef_hi(1)/time)*exp(-(xend**2)/four/disp_coef_lo(1)/time)
+    flux_start(:) = -area_lo(1)*disp_coef_lo(1)*(1/dsqrt(four*pi*disp_coef_lo(1)))* &
+                             (xend/two/disp_coef_lo(1)/time)*dexp(-(xend**2)/four/disp_coef_lo(1)/time)
+    flux_end(:) = -area_hi(ncell)*disp_coef_hi(ncell)*(1/dsqrt(four*pi*disp_coef_hi(ncell)))* &
+                                   (-xend/two/disp_coef_hi(1)/time)*dexp(-(xend**2)/four/disp_coef_lo(1)/time)
     
         
     center_diag(1,:)= area(1)+ theta_stm*dt_by_dxsq* area_hi(1)*disp_coef_hi(1)  
@@ -242,8 +242,8 @@ subroutine n_d_test_diffusion_matrix(center_diag ,       &
     ! area is new?!? 
     !todo: call flux
     !todo: which is dirchlet?
-    flux_start(:) = - area_lo(1)*disp_coef_lo(1)*(two-two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1)*pi*pi*time/four)) 
-    flux_end(:) = - area_hi(ncell)*disp_coef_hi(ncell)*(two-two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell)*pi*pi*time/four))
+    flux_start(:) = - area_lo(1)*disp_coef_lo(1)*(two-two*pi*dsin(pi*xstart/two)*dexp(-disp_coef_lo(1)*pi*pi*time/four)) 
+    flux_end(:) = - area_hi(ncell)*disp_coef_hi(ncell)*(two-two*pi*dsin(pi*xend/two)*dexp(-disp_coef_hi(ncell)*pi*pi*time/four))
          
     center_diag(1,:)= area(1)+ theta_stm*dt_by_dxsq* area_hi(1)*disp_coef_hi(1)  
     right_hand_side(1,:) = right_hand_side(1,:) &
@@ -308,7 +308,7 @@ subroutine dirichlet_test_diffusion_matrix(center_diag ,       &
    xend = one 
    ! here time is new time and area and Ks for updating rhs are for time stap n+1
    conc_end = two
-   conc_start = two*xstart + four*cos(pi*xstart/two)*exp(-disp_coef_lo(1)*time*pi*pi/four)
+   conc_start = two*xstart + four*dcos(pi*xstart/two)*dexp(-disp_coef_lo(1)*time*pi*pi/four)
    ! todo: one part of center diag is based on old time and other part new time
    center_diag(1,:)=  center_diag(1,:) &
                          + theta_stm*dt_by_dxsq*(area_lo(1)*disp_coef_lo(1))                  
@@ -356,8 +356,8 @@ subroutine n_d_test_diffusive_flux(diffusive_flux_lo, &
     real(stm_real) :: xstart = 0.1d0
     real(stm_real) :: xend = one
               
-    diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1)*(two - two*pi*sin(pi*xstart/two)*exp(-disp_coef_lo(1)*pi*pi*time/four))
-    diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell)*(two - two*pi*sin(pi*xend/two)*exp(-disp_coef_hi(ncell)*pi*pi*time/four))
+    diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1)*(two - two*pi*dsin(pi*xstart/two)*dexp(-disp_coef_lo(1)*pi*pi*time/four))
+    diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell)*(two - two*pi*dsin(pi*xend/two)*dexp(-disp_coef_hi(ncell)*pi*pi*time/four))
     
     return
  end subroutine
@@ -398,7 +398,7 @@ subroutine dirichlet_test_diffusive_flux(diffusive_flux_lo, &
     real(stm_real) :: xstart = 0.1d0
    
     conc_end(:) = two
-    conc_start(:) = two*xstart + four*cos(pi*xstart/two)*exp(-disp_coef_lo(1)*pi*pi*time/four)
+    conc_start(:) = two*xstart + four*dcos(pi*xstart/two)*dexp(-disp_coef_lo(1)*pi*pi*time/four)
    
    ! todo: check convergence for second order boundary fitting 
    ! todo: this area also must be area_prev  
@@ -441,10 +441,10 @@ subroutine dirichlet_test_diffusive_flux(diffusive_flux_lo, &
     real(stm_real), intent (in)   :: dx                             !< Spatial step
     real(stm_real) :: xend  
     xend = 51200d0/two
-    diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1)*(1/sqrt(four*pi*disp_coef_lo(1)))* &
-                             (xend/(two*disp_coef_lo(1)*time))*exp(-(xend**2)/four/disp_coef_lo(1)/time)
-    diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell)*(1/sqrt(four*pi*disp_coef_hi(ncell)))* &
-                             (-xend/two/disp_coef_hi(1)/time)*exp(-(xend**2)/four/disp_coef_lo(1)/time)
+    diffusive_flux_lo(1,:) = -area_lo(1)*disp_coef_lo(1)*(1/dsqrt(four*pi*disp_coef_lo(1)))* &
+                             (xend/(two*disp_coef_lo(1)*time))*dexp(-(xend**2)/four/disp_coef_lo(1)/time)
+    diffusive_flux_hi(ncell,:) = -area_hi(ncell)*disp_coef_hi(ncell)*(1/dsqrt(four*pi*disp_coef_hi(ncell)))* &
+                             (-xend/two/disp_coef_hi(1)/time)*dexp(-(xend**2)/four/disp_coef_lo(1)/time)
        
     return
  end subroutine

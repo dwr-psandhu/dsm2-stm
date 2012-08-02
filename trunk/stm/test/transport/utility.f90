@@ -121,7 +121,7 @@ do icell=1,ncell
    norm_2 = norm_2 + sq_error
 end do
 norm_1 = norm_1/dble(ncell)
-norm_2 = sqrt(norm_2)/dble(ncell)
+norm_2 = dsqrt(norm_2)/dble(ncell)
 
 return
 end subroutine
@@ -237,11 +237,11 @@ write(log_unit,*)'L-1 error ratio '
 write(log_unit,*) norm_error(1,2)/norm_error(1,1),norm_error(1,3)/norm_error(1,2)
 write(log_unit,*)
 write(log_unit,*)'L-inf convergence rate estimate'
-write(log_unit,*)'fine :',log(norm_error(3,2)/norm_error(3,1))/log(refine_rate),' coarse :',log(norm_error(3,3)/norm_error(3,2))/log(refine_rate)  
+write(log_unit,*)'fine :',dlog(norm_error(3,2)/norm_error(3,1))/dlog(refine_rate),' coarse :',dlog(norm_error(3,3)/norm_error(3,2))/dlog(refine_rate)  
 write(log_unit,*)'L-2 convergence rate estimate'
-write(log_unit,*)'fine :',log(norm_error(2,2)/norm_error(2,1))/log(refine_rate),' coarse :',log(norm_error(2,3)/norm_error(2,2))/log(refine_rate)  
+write(log_unit,*)'fine :',dlog(norm_error(2,2)/norm_error(2,1))/dlog(refine_rate),' coarse :',dlog(norm_error(2,3)/norm_error(2,2))/dlog(refine_rate)  
 write(log_unit,*)'L-1 convergence rate estimate'
-write(log_unit,*)'fine :',log(norm_error(1,2)/norm_error(1,1))/log(refine_rate),' coarse :',log(norm_error(1,3)/norm_error(1,2))/log(refine_rate)  
+write(log_unit,*)'fine :',dlog(norm_error(1,2)/norm_error(1,1))/dlog(refine_rate),' coarse :',dlog(norm_error(1,3)/norm_error(1,2))/dlog(refine_rate)  
 write(log_unit,*)
 write(log_unit,*)'number of cells : ',ncell_base,ncell_base/2,ncell_base/4
 write(log_unit,*)'L-inf occures at :',which_cell(1),which_cell(2),which_cell(3)

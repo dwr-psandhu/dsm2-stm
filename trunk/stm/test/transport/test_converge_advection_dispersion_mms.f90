@@ -143,7 +143,7 @@ real(stm_real),intent(out):: value_mms      !< Dirichlet initial condition at le
 real(stm_real),intent(in) :: xpos           !< Location where data is requested
 real(stm_real),intent(in) :: time           !< Time
 
-value_mms =exp(xpos*half-time)
+value_mms =dexp(xpos*half-time)
 
 return
 end subroutine
@@ -252,12 +252,12 @@ do icell = 1,ncell
   xpos_lo = x_left + dble(icell-1)    *dx
   xpos_hi = x_left + dble(icell)      *dx
   xpos    = x_left +(dble(icell)-half)*dx
-  area   (icell) = exp(half*xpos   +time)
-  area_lo(icell) = exp(half*xpos_lo+time)
-  area_hi(icell) = exp(half*xpos_hi+time)
-  flow(icell)    = area   (icell)*(exp(-xpos   *half)-two)   
-  flow_lo(icell) = area_lo(icell)*(exp(-xpos_lo*half)-two)
-  flow_hi(icell) = area_hi(icell)*(exp(-xpos_hi*half)-two)
+  area   (icell) = dexp(half*xpos   +time)
+  area_lo(icell) = dexp(half*xpos_lo+time)
+  area_hi(icell) = dexp(half*xpos_hi+time)
+  flow(icell)    = area   (icell)*(dexp(-xpos   *half)-two)   
+  flow_lo(icell) = area_lo(icell)*(dexp(-xpos_lo*half)-two)
+  flow_hi(icell) = area_hi(icell)*(dexp(-xpos_hi*half)-two)
 end do
   
 return
@@ -289,8 +289,8 @@ real(stm_real),intent(in) :: flow_lo(ncell)          !< Flow on lo side of cells
 real(stm_real),intent(in) :: flow_hi(ncell)          !< Flow on hi side of cells centered in time       
 real(stm_real),intent(in) :: flow(ncell)             !< Flow on center of cells 
 
-      disp_coef_lo(:) = d0*exp(time) 
-      disp_coef_hi(:) = d0*exp(time) 
+      disp_coef_lo(:) = d0*dexp(time) 
+      disp_coef_hi(:) = d0*dexp(time) 
                   
 return
 end subroutine
@@ -361,7 +361,7 @@ dx = (x_right-x_left)/ncell
 do ivar = 1,nvar
     do icell = 1,ncell  
         xpos    = x_left +(dble(icell)-half)*dx
-        source(icell,ivar) = half*(exp(xpos/two)-four*exp(xpos)-exp(time+xpos))
+        source(icell,ivar) = half*(dexp(xpos/two)-four*dexp(xpos)-dexp(time+xpos))
     end do
 end do
      
