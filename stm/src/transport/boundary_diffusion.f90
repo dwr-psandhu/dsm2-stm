@@ -237,8 +237,8 @@ end subroutine
     real(stm_real),intent(in)   :: dt                           !< Spatial step  
     real(stm_real),intent(in)   :: dx                           !< Time step     
     
-   diffusive_flux_lo(1,:) = two*cos(pi*time/three)               !Just for test 
-   diffusive_flux_hi(ncell,:) = five*sin (pi*time/seven)
+   diffusive_flux_lo(1,:) = two*dcos(pi*time/three)               !Just for test 
+   diffusive_flux_hi(ncell,:) = five*dsin (pi*time/seven)
        
    return
  end subroutine

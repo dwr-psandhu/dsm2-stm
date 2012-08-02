@@ -84,7 +84,7 @@ integer:: iclass
 
                 
 do iclass=1,nclass                             
-    q_sub_b(:,iclass) = diameter * einstein_bedload_num(:,iclass) * sqrt(gravity*capital_r*diameter)
+    q_sub_b(:,iclass) = diameter * einstein_bedload_num(:,iclass) * dsqrt(gravity*capital_r*diameter)
 end do 
 
 

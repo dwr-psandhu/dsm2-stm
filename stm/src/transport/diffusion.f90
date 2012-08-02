@@ -357,7 +357,7 @@ integer :: icell
 
 do ivar = 1,nvar
          right_hand_side(:,ivar) = area_prev(:)*conc_prev(:,ivar) &
-                                       - (one-theta)*dt* explicit_diffuse_op(:,ivar) 
+                                       - (one-theta)*dt*explicit_diffuse_op(:,ivar) 
 end do
 
 return
